@@ -1,0 +1,10 @@
+all : libname.a ../../include/namegen.h
+../../include/namegen.h: namegen.h
+	copy namegen.h ..\..\include\namegen.h
+libname.a : namegen.o usename.o
+	ar crs libname.a namegen.o usename.o
+	copy libname.a ..\..\lib
+namegen.o : namegen.cpp
+	gcc -c namegen.cpp -O2
+usename.o : usename.cpp
+	gcc -c usename.cpp -O2

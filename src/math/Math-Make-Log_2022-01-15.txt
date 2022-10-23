@@ -1,0 +1,549 @@
+BASH on Mate Terminal on Manjaro Linux aragorn@Square-Rigger Sat 2022-01-15, 06:58:14 PM
+/d/rhe/src/math
+%make
+$PLATFORM is Linux
+$INCDIR   is /rhe/include
+$EXEDIR   is /home/aragorn/bin/math
+$LIBDIR   is /home/aragorn/lib
+Using pattern rule %:%.c to compile ackermann.c to ackermann:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   ackermann.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/ackermann
+ackermann is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile add.c to add:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   add.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/add
+add is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile average.cpp to average:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 average.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/average
+average is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile bearings.cpp to bearings:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 bearings.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/bearings
+bearings is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile binary.cpp to binary:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 binary.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/binary
+binary is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile circle-area.c to circle-area:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   circle-area.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/circle-area
+circle-area is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile collatz.c to collatz:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   collatz.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/collatz
+collatz is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile collatz-minus-length.c to collatz-minus-length:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   collatz-minus-length.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/collatz-minus-length
+collatz-minus-length is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile collatz-plus-length.c to collatz-plus-length:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   collatz-plus-length.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/collatz-plus-length
+collatz-plus-length is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile comb.c to comb:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   comb.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/comb
+comb is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile comb-iter.c to comb-iter:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   comb-iter.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/comb-iter
+comb-iter.c: In function ‘main’:
+comb-iter.c:34:16: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   34 |          "%s\n%s\n%s\n",
+      |               ~^
+      |                |
+      |                char *
+comb-iter.c:34:20: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   34 |          "%s\n%s\n%s\n",
+      |                   ~^
+      |                    |
+      |                    char *
+comb-iter.c:48:16: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   48 |          "%s\n%s\n%s\n",
+      |               ~^
+      |                |
+      |                char *
+comb-iter.c:48:20: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   48 |          "%s\n%s\n%s\n",
+      |                   ~^
+      |                    |
+      |                    char *
+comb-iter.c:62:16: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   62 |          "%s\n%s\n%s\n",
+      |               ~^
+      |                |
+      |                char *
+comb-iter.c:62:20: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   62 |          "%s\n%s\n%s\n",
+      |                   ~^
+      |                    |
+      |                    char *
+comb-iter.c:75:16: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   75 |          "%s\n%s\n%s\n",
+      |               ~^
+      |                |
+      |                char *
+comb-iter.c:75:20: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   75 |          "%s\n%s\n%s\n",
+      |                   ~^
+      |                    |
+      |                    char *
+comb-iter is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile comb-recu.c to comb-recu:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   comb-recu.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/comb-recu
+comb-recu.c: In function ‘main’:
+comb-recu.c:32:16: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   32 |          "%s\n%s\n%s\n",
+      |               ~^
+      |                |
+      |                char *
+comb-recu.c:32:20: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   32 |          "%s\n%s\n%s\n",
+      |                   ~^
+      |                    |
+      |                    char *
+comb-recu.c:46:16: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   46 |          "%s\n%s\n%s\n",
+      |               ~^
+      |                |
+      |                char *
+comb-recu.c:46:20: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   46 |          "%s\n%s\n%s\n",
+      |                   ~^
+      |                    |
+      |                    char *
+comb-recu.c:60:16: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   60 |          "%s\n%s\n%s\n",
+      |               ~^
+      |                |
+      |                char *
+comb-recu.c:60:20: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   60 |          "%s\n%s\n%s\n",
+      |                   ~^
+      |                    |
+      |                    char *
+comb-recu.c:73:16: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   73 |          "%s\n%s\n%s\n",
+      |               ~^
+      |                |
+      |                char *
+comb-recu.c:73:20: warning: format ‘%s’ expects a matching ‘char *’ argument [-Wformat=]
+   73 |          "%s\n%s\n%s\n",
+      |                   ~^
+      |                    |
+      |                    char *
+comb-recu is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile complex.cpp to complex:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 complex.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/complex
+complex is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile convert-base.c to convert-base:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   convert-base.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/convert-base
+convert-base is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile convert-base-zeros.c to convert-base-zeros:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   convert-base-zeros.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/convert-base-zeros
+convert-base-zeros is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile c-template.c to c-template:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   c-template.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/c-template
+c-template.c:4: warning: macro "MY_HEADER_NAME" is not used [-Wunused-macros]
+    4 | #define MY_HEADER_NAME  // For headers only
+      | 
+c-template is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile divisors.c to divisors:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   divisors.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/divisors
+divisors is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile factor-count.c to factor-count:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   factor-count.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/factor-count
+factor-count.c: In function ‘main’:
+factor-count.c:15:4: error: unknown type name ‘uint64_t’
+   15 |    uint64_t i = 0ul; // Index for "for" loop.
+      |    ^~~~~~~~
+factor-count.c:12:1: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+   11 | #include <stdlib.h>
+  +++ |+#include <stdint.h>
+   12 | 
+factor-count.c:16:4: error: unknown type name ‘uint64_t’
+   16 |    uint64_t n = 0ul; // Counter for factors.
+      |    ^~~~~~~~
+factor-count.c:16:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+factor-count.c:17:4: error: unknown type name ‘uint64_t’
+   17 |    uint64_t x = 0ul; // Number to be factored.
+      |    ^~~~~~~~
+factor-count.c:17:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+factor-count.c:26:9: error: ‘uint64_t’ undeclared (first use in this function)
+   26 |    x = (uint64_t)strtoul(Luthien[1], NULL, 10);
+      |         ^~~~~~~~
+factor-count.c:26:9: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+factor-count.c:26:9: note: each undeclared identifier is reported only once for each function it appears in
+factor-count.c:26:18: error: expected ‘;’ before ‘strtoul’
+   26 |    x = (uint64_t)strtoul(Luthien[1], NULL, 10);
+      |                  ^~~~~~~
+      |                  ;
+factor-count.c:28:10: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+   28 |    if (x < 3ul || x > 18446744073709551611ul)
+      |          ^
+factor-count.c:28:21: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+   28 |    if (x < 3ul || x > 18446744073709551611ul)
+      |                     ^
+factor-count.c:36:21: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   36 |    while ( 0ul == x % 2ul )
+      |                     ^
+factor-count.c:38:9: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   38 |       x /= 2ul;
+      |         ^~
+factor-count.c:41:10: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+   41 |    if (n > 0ul)
+      |          ^
+factor-count.c:42:35: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 2 has type ‘int’ [-Wformat=]
+   42 |       printf("Factor 2 occurred %lu times.\n", n);
+      |                                 ~~^            ~
+      |                                   |            |
+      |                                   |            int
+      |                                   long unsigned int
+      |                                 %u
+factor-count.c:44:31: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   44 |    for ( i = 3ul ; i <= x ; i += 2ul )
+      |                               ^~
+factor-count.c:54:13: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+   54 |       if (n > 0ul)
+      |             ^
+factor-count.c:55:27: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 2 has type ‘int’ [-Wformat=]
+   55 |          printf("Factor %lu occurred %lu times.\n", i, n);
+      |                         ~~^                         ~
+      |                           |                         |
+      |                           long unsigned int         int
+      |                         %u
+factor-count.c:55:40: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 3 has type ‘int’ [-Wformat=]
+   55 |          printf("Factor %lu occurred %lu times.\n", i, n);
+      |                                      ~~^               ~
+      |                                        |               |
+      |                                        |               int
+      |                                        long unsigned int
+      |                                      %u
+factor-count.c:13:31: warning: unused parameter ‘Luthien’ [-Wunused-parameter]
+   13 | int main ( int Beren, char ** Luthien )
+      |                       ~~~~~~~~^~~~~~~
+make: [/rhe/src/maketail:281: factor-count] Error 1 (ignored)
+factor-count is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile factorial.c to factorial:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   factorial.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/factorial
+factorial is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile factors.cpp to factors:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 factors.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/factors
+factors is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile factor-unlimited.c to factor-unlimited:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   factor-unlimited.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/factor-unlimited
+factor-unlimited is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile fast-pi-series-2.c to fast-pi-series-2:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fast-pi-series-2.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/fast-pi-series-2
+fast-pi-series-2 is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile fast-pi-series.c to fast-pi-series:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fast-pi-series.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/fast-pi-series
+fast-pi-series is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile fib-gmp-500.c to fib-gmp-500:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fib-gmp-500.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/fib-gmp-500
+fib-gmp-500 is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile fib-index-for-digits.cpp to fib-index-for-digits:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 fib-index-for-digits.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/fib-index-for-digits
+fib-index-for-digits is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile fib-index-n.c to fib-index-n:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fib-index-n.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/fib-index-n
+fib-index-n is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile fib-rhm.cpp to fib-rhm:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 fib-rhm.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/fib-rhm
+fib-rhm is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile fib-sum-even-4million.c to fib-sum-even-4million:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fib-sum-even-4million.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/fib-sum-even-4million
+fib-sum-even-4million is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile first-n-composites.c to first-n-composites:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-composites.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/first-n-composites
+first-n-composites is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile first-n-primes.c to first-n-primes:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/first-n-primes
+first-n-primes is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile first-n-primes-fewer-comments.c to first-n-primes-fewer-comments:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-fewer-comments.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/first-n-primes-fewer-comments
+first-n-primes-fewer-comments is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile first-n-primes-reel.c to first-n-primes-reel:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-reel.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/first-n-primes-reel
+first-n-primes-reel is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile first-n-primes-table-1.c to first-n-primes-table-1:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-table-1.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/first-n-primes-table-1
+first-n-primes-table-1 is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile first-n-primes-table-2.c to first-n-primes-table-2:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-table-2.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/first-n-primes-table-2
+first-n-primes-table-2 is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile first-n-primes-wheel.c to first-n-primes-wheel:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-wheel.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/first-n-primes-wheel
+first-n-primes-wheel is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile fract.c to fract:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fract.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/fract
+fract is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile generalized-collatz.c to generalized-collatz:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   generalized-collatz.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/generalized-collatz
+generalized-collatz is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile goldbach.c to goldbach:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   goldbach.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/goldbach
+goldbach is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile harmonic.c to harmonic:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   harmonic.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/harmonic
+harmonic is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile hatley-primes.c to hatley-primes:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   hatley-primes.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/hatley-primes
+hatley-primes.c: In function ‘main’:
+hatley-primes.c:29:13: warning: unused variable ‘c’ [-Wunused-variable]
+   29 |    int      c          = 0; // character from user
+      |             ^
+hatley-primes.c:26:14: warning: unused parameter ‘Beren’ [-Wunused-parameter]
+   26 | int main(int Beren, char * Luthien[])
+      |          ~~~~^~~~~
+hatley-primes.c:26:28: warning: unused parameter ‘Luthien’ [-Wunused-parameter]
+   26 | int main(int Beren, char * Luthien[])
+      |                     ~~~~~~~^~~~~~~~~
+hatley-primes is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile isprime.cpp to isprime:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 isprime.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/isprime
+isprime is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile makechange.cpp to makechange:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 makechange.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/makechange
+makechange is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile mult35.c to mult35:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   mult35.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/mult35
+mult35 is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile number-of-digits.c to number-of-digits:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   number-of-digits.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/number-of-digits
+number-of-digits is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile number-of-divisors.c to number-of-divisors:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   number-of-divisors.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/number-of-divisors
+number-of-divisors is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile odometer.c to odometer:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   odometer.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/odometer
+odometer is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile part.c to part:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   part.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/part
+part is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile permute-0.c to permute-0:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute-0.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/permute-0
+permute-0 is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile permute-1.c to permute-1:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute-1.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/permute-1
+permute-1 is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile permute.c to permute:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/permute
+permute is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile permute-cpp.cpp to permute-cpp:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 permute-cpp.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/permute-cpp
+permute-cpp is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile permute-cryptic.c to permute-cryptic:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute-cryptic.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/permute-cryptic
+permute-cryptic is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile permute-no-comments.c to permute-no-comments:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute-no-comments.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/permute-no-comments
+permute-no-comments is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile pi.c to pi:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   pi.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/pi
+pi.c:18:32: error: unknown type name ‘uint64_t’
+   18 | void OddProd (mpf_t Odd, const uint64_t n);
+      |                                ^~~~~~~~
+pi.c:19:32: error: unknown type name ‘uint64_t’
+   19 | void EvnProd (mpf_t Evn, const uint64_t n);
+      |                                ^~~~~~~~
+pi.c: In function ‘main’:
+pi.c:25:4: error: unknown type name ‘uint64_t’
+   25 |    uint64_t  Digits      = 100;  // number of significant digits
+      |    ^~~~~~~~
+pi.c:17:1: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+   16 | #include <gmp.h>
+  +++ |+#include <stdint.h>
+   17 | 
+pi.c:26:4: error: unknown type name ‘uint64_t’
+   26 |    uint64_t  Iterations  = 200;  // number of iterations
+      |    ^~~~~~~~
+pi.c:26:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+pi.c:27:4: error: unknown type name ‘uint64_t’
+   27 |    uint64_t  Bits        = 512;  // number of bits
+      |    ^~~~~~~~
+pi.c:27:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+pi.c:28:4: error: unknown type name ‘uint64_t’
+   28 |    uint64_t  Input       =   0;  // user input
+      |    ^~~~~~~~
+pi.c:28:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+pi.c:29:4: error: unknown type name ‘uint64_t’
+   29 |    uint64_t  n           =   0;  // sum term index
+      |    ^~~~~~~~
+pi.c:29:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+pi.c:30:4: error: unknown type name ‘uint64_t’
+   30 |    uint64_t  Two         =   0;  // 2n+1
+      |    ^~~~~~~~
+pi.c:30:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+pi.c:60:15: warning: conversion from ‘long unsigned int’ to ‘int’ may change value [-Wconversion]
+   60 |       Input = strtoul(Luthien[1], NULL, 10);
+      |               ^~~~~~~
+pi.c:61:17: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+   61 |       if (Input < 1UL)
+      |                 ^
+pi.c:63:17: warning: comparison of integer expressions of different signedness: ‘int’ and ‘long unsigned int’ [-Wsign-compare]
+   63 |       if (Input > 1000000000UL)
+      |                 ^
+pi.c:68:15: error: ‘uint64_t’ undeclared (first use in this function)
+   68 |       Bits = (uint64_t)(64.0*ceil(3.5*(double)Digits/64.0));
+      |               ^~~~~~~~
+pi.c:68:15: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+pi.c:68:15: note: each undeclared identifier is reported only once for each function it appears in
+pi.c:74:25: warning: conversion to ‘mp_bitcnt_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   74 |    mpf_set_default_prec(Bits);
+      |                         ^~~~
+pi.c:97:17: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   97 |       Two = 2UL * n + 1UL ;
+      |                 ^
+pi.c:97:13: warning: conversion from ‘long unsigned int’ to ‘int’ may change value [-Wconversion]
+   97 |       Two = 2UL * n + 1UL ;
+      |             ^~~
+pi.c:100:28: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  100 |       mpf_mul_ui(Den, Evn, Two);
+      |                            ^~~
+pi.c:101:30: warning: conversion to ‘mp_bitcnt_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  101 |       mpf_mul_2exp(Den, Den, Two);
+      |                              ^~~
+pi.c: At top level:
+pi.c:118:32: error: unknown type name ‘uint64_t’
+  118 | void OddProd (mpf_t Odd, const uint64_t n)
+      |                                ^~~~~~~~
+pi.c: In function ‘OddProd’:
+pi.c:120:4: error: unknown type name ‘uint64_t’
+  120 |    uint64_t i;
+      |    ^~~~~~~~
+pi.c:120:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+pi.c:124:31: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  124 |       mpf_mul_ui(Odd, Odd, 2UL*i-1UL);
+      |                               ^
+pi.c: At top level:
+pi.c:129:32: error: unknown type name ‘uint64_t’
+  129 | void EvnProd (mpf_t Evn, const uint64_t n)
+      |                                ^~~~~~~~
+pi.c: In function ‘EvnProd’:
+pi.c:131:4: error: unknown type name ‘uint64_t’
+  131 |    uint64_t i;
+      |    ^~~~~~~~
+pi.c:131:4: note: ‘uint64_t’ is defined in header ‘<stdint.h>’; did you forget to ‘#include <stdint.h>’?
+pi.c:135:31: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  135 |       mpf_mul_ui(Evn, Evn, 2UL*i);
+      |                               ^
+make: [/rhe/src/maketail:281: pi] Error 1 (ignored)
+pi is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile primes.cpp to primes:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 primes.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/primes
+primes is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile primes-in-range.c to primes-in-range:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   primes-in-range.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/primes-in-range
+primes-in-range is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile primes-in-range-debug.c to primes-in-range-debug:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   primes-in-range-debug.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/primes-in-range-debug
+primes-in-range-debug is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile primes-in-range-unlimited.c to primes-in-range-unlimited:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   primes-in-range-unlimited.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/primes-in-range-unlimited
+primes-in-range-unlimited is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile print-even-digits.c to print-even-digits:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   print-even-digits.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/print-even-digits
+print-even-digits is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile reverse.c to reverse:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   reverse.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/reverse
+reverse is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile reverse_recursive.cpp to reverse_recursive:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 reverse_recursive.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/reverse_recursive
+reverse_recursive is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile rhcalc.cpp to rhcalc:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 rhcalc.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/rhcalc
+rhcalc is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile series.c to series:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   series.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/series
+series is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile sizeof-gmp.c to sizeof-gmp:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   sizeof-gmp.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/sizeof-gmp
+sizeof-gmp is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile sqrt.cpp to sqrt:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 sqrt.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/sqrt
+sqrt is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile strand.c to strand:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   strand.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/strand
+strand is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile test-series.c to test-series:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   test-series.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/test-series
+test-series is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile treadmill-power.c to treadmill-power:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   treadmill-power.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/treadmill-power
+treadmill-power is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile two-dice.c to two-dice:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   two-dice.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/two-dice
+two-dice is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile weird.cpp to weird:
+g++ -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 weird.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/weird
+weird is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile zeta.c to zeta:
+gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   zeta.c -L/home/aragorn/lib -L/lib -L/usr/lib -lm -lncurses -lgmp -lrh -lname  -o /home/aragorn/bin/math/zeta
+zeta is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Math Program Collection is up to date.
+
+BASH on Mate Terminal on Manjaro Linux aragorn@Square-Rigger Sat 2022-01-15, 06:58:46 PM
+/d/rhe/src/math
+%

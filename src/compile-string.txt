@@ -1,0 +1,2 @@
+ g++ -I /rhe/include -pedantic -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Winline -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -c -O2 SOURCE -L/rhe/lib64 -L/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o DESTINATION
+ 

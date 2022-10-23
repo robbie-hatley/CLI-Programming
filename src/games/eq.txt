@@ -1,0 +1,1104 @@
+Solution #1 is:
+0 1 2 3 4 5 6 7  
+              Q 0
+  Q             1
+      Q         2
+Q               3
+            Q   4
+        Q       5
+    Q           6
+          Q     7
+
+
+Solution #2 is:
+0 1 2 3 4 5 6 7  
+              Q 0
+  Q             1
+        Q       2
+    Q           3
+Q               4
+            Q   5
+      Q         6
+          Q     7
+
+
+Solution #3 is:
+0 1 2 3 4 5 6 7  
+              Q 0
+    Q           1
+Q               2
+          Q     3
+  Q             4
+        Q       5
+            Q   6
+      Q         7
+
+
+Solution #4 is:
+0 1 2 3 4 5 6 7  
+              Q 0
+      Q         1
+Q               2
+    Q           3
+          Q     4
+  Q             5
+            Q   6
+        Q       7
+
+
+Solution #5 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+              Q 1
+      Q         2
+            Q   3
+Q               4
+          Q     5
+  Q             6
+        Q       7
+
+
+Solution #6 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+              Q 1
+      Q         2
+Q               3
+            Q   4
+  Q             5
+          Q     6
+    Q           7
+
+
+Solution #7 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+              Q 1
+Q               2
+        Q       3
+            Q   4
+  Q             5
+          Q     6
+    Q           7
+
+
+Solution #8 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+              Q 1
+  Q             2
+      Q         3
+Q               4
+            Q   5
+        Q       6
+    Q           7
+
+
+Solution #9 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+              Q 1
+        Q       2
+    Q           3
+Q               4
+            Q   5
+  Q             6
+          Q     7
+
+
+Solution #10 is:
+0 1 2 3 4 5 6 7  
+  Q             0
+              Q 1
+          Q     2
+Q               3
+    Q           4
+        Q       5
+            Q   6
+      Q         7
+
+
+Solution #11 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+              Q 1
+Q               2
+    Q           3
+          Q     4
+  Q             5
+            Q   6
+        Q       7
+
+
+Solution #12 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+              Q 1
+      Q         2
+Q               3
+    Q           4
+          Q     5
+  Q             6
+            Q   7
+
+
+Solution #13 is:
+0 1 2 3 4 5 6 7  
+            Q   0
+    Q           1
+              Q 2
+  Q             3
+        Q       4
+Q               5
+          Q     6
+      Q         7
+
+
+Solution #14 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+          Q     1
+              Q 2
+  Q             3
+            Q   4
+Q               5
+    Q           6
+        Q       7
+
+
+Solution #15 is:
+0 1 2 3 4 5 6 7  
+Q               0
+          Q     1
+              Q 2
+    Q           3
+            Q   4
+      Q         5
+  Q             6
+        Q       7
+
+
+Solution #16 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+    Q           1
+              Q 2
+      Q         3
+            Q   4
+Q               5
+          Q     6
+  Q             7
+
+
+Solution #17 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+  Q             1
+              Q 2
+        Q       3
+            Q   4
+Q               5
+    Q           6
+          Q     7
+
+
+Solution #18 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+          Q     1
+              Q 2
+Q               3
+        Q       4
+            Q   5
+  Q             6
+      Q         7
+
+
+Solution #19 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+          Q     1
+              Q 2
+    Q           3
+Q               4
+            Q   5
+        Q       6
+  Q             7
+
+
+Solution #20 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+          Q     1
+              Q 2
+Q               3
+      Q         4
+            Q   5
+        Q       6
+  Q             7
+
+
+Solution #21 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+Q               1
+              Q 2
+          Q     3
+    Q           4
+            Q   5
+  Q             6
+      Q         7
+
+
+Solution #22 is:
+0 1 2 3 4 5 6 7  
+Q               0
+        Q       1
+              Q 2
+          Q     3
+    Q           4
+            Q   5
+  Q             6
+      Q         7
+
+
+Solution #23 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+Q               1
+              Q 2
+      Q         3
+  Q             4
+            Q   5
+    Q           6
+          Q     7
+
+
+Solution #24 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+  Q             1
+              Q 2
+Q               3
+      Q         4
+            Q   5
+    Q           6
+          Q     7
+
+
+Solution #25 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+        Q       1
+              Q 2
+      Q         3
+Q               4
+            Q   5
+  Q             6
+          Q     7
+
+
+Solution #26 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+          Q     1
+              Q 2
+  Q             3
+      Q         4
+Q               5
+            Q   6
+        Q       7
+
+
+Solution #27 is:
+0 1 2 3 4 5 6 7  
+  Q             0
+          Q     1
+              Q 2
+    Q           3
+Q               4
+      Q         5
+            Q   6
+        Q       7
+
+
+Solution #28 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+  Q             1
+              Q 2
+          Q     3
+Q               4
+    Q           5
+        Q       6
+            Q   7
+
+
+Solution #29 is:
+0 1 2 3 4 5 6 7  
+            Q   0
+      Q         1
+  Q             2
+              Q 3
+          Q     4
+Q               5
+    Q           6
+        Q       7
+
+
+Solution #30 is:
+0 1 2 3 4 5 6 7  
+            Q   0
+Q               1
+    Q           2
+              Q 3
+          Q     4
+      Q         5
+  Q             6
+        Q       7
+
+
+Solution #31 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+            Q   1
+  Q             2
+              Q 3
+          Q     4
+      Q         5
+Q               6
+        Q       7
+
+
+Solution #32 is:
+0 1 2 3 4 5 6 7  
+  Q             0
+            Q   1
+        Q       2
+              Q 3
+Q               4
+      Q         5
+          Q     6
+    Q           7
+
+
+Solution #33 is:
+0 1 2 3 4 5 6 7  
+Q               0
+            Q   1
+        Q       2
+              Q 3
+  Q             4
+      Q         5
+          Q     6
+    Q           7
+
+
+Solution #34 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+            Q   1
+Q               2
+              Q 3
+        Q       4
+  Q             5
+          Q     6
+    Q           7
+
+
+Solution #35 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+            Q   1
+  Q             2
+              Q 3
+        Q       4
+Q               5
+      Q         6
+          Q     7
+
+
+Solution #36 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+            Q   1
+    Q           2
+              Q 3
+  Q             4
+        Q       5
+Q               6
+          Q     7
+
+
+Solution #37 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+      Q         1
+  Q             2
+              Q 3
+        Q       4
+            Q   5
+Q               6
+    Q           7
+
+
+Solution #38 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+        Q       1
+  Q             2
+              Q 3
+Q               4
+            Q   5
+      Q         6
+          Q     7
+
+
+Solution #39 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+Q               1
+        Q       2
+              Q 3
+  Q             4
+            Q   5
+    Q           6
+          Q     7
+
+
+Solution #40 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+    Q           1
+Q               2
+              Q 3
+      Q         4
+  Q             5
+            Q   6
+        Q       7
+
+
+Solution #41 is:
+0 1 2 3 4 5 6 7  
+  Q             0
+      Q         1
+          Q     2
+              Q 3
+    Q           4
+Q               5
+            Q   6
+        Q       7
+
+
+Solution #42 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+        Q       1
+  Q             2
+              Q 3
+          Q     4
+      Q         5
+            Q   6
+Q               7
+
+
+Solution #43 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+Q               1
+        Q       2
+              Q 3
+          Q     4
+    Q           5
+            Q   6
+  Q             7
+
+
+Solution #44 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+    Q           1
+        Q       2
+              Q 3
+Q               4
+      Q         5
+  Q             6
+            Q   7
+
+
+Solution #45 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+    Q           1
+Q               2
+              Q 3
+        Q       4
+  Q             5
+      Q         6
+            Q   7
+
+
+Solution #46 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+  Q             1
+        Q       2
+              Q 3
+          Q     4
+Q               5
+    Q           6
+            Q   7
+
+
+Solution #47 is:
+0 1 2 3 4 5 6 7  
+            Q   0
+    Q           1
+Q               2
+          Q     3
+              Q 4
+        Q       5
+  Q             6
+      Q         7
+
+
+Solution #48 is:
+0 1 2 3 4 5 6 7  
+            Q   0
+      Q         1
+  Q             2
+        Q       3
+              Q 4
+Q               5
+    Q           6
+          Q     7
+
+
+Solution #49 is:
+0 1 2 3 4 5 6 7  
+            Q   0
+  Q             1
+      Q         2
+Q               3
+              Q 4
+        Q       5
+    Q           6
+          Q     7
+
+
+Solution #50 is:
+0 1 2 3 4 5 6 7  
+  Q             0
+            Q   1
+    Q           2
+          Q     3
+              Q 4
+        Q       5
+Q               6
+      Q         7
+
+
+Solution #51 is:
+0 1 2 3 4 5 6 7  
+Q               0
+            Q   1
+      Q         2
+          Q     3
+              Q 4
+  Q             5
+        Q       6
+    Q           7
+
+
+Solution #52 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+            Q   1
+Q               2
+    Q           3
+              Q 4
+          Q     5
+      Q         6
+  Q             7
+
+
+Solution #53 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+            Q   1
+  Q             2
+      Q         3
+              Q 4
+Q               5
+    Q           6
+          Q     7
+
+
+Solution #54 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+    Q           1
+            Q   2
+  Q             3
+              Q 4
+        Q       5
+Q               6
+      Q         7
+
+
+Solution #55 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+      Q         1
+            Q   2
+Q               3
+              Q 4
+  Q             5
+        Q       6
+    Q           7
+
+
+Solution #56 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+Q               1
+            Q   2
+        Q       3
+              Q 4
+  Q             5
+      Q         6
+          Q     7
+
+
+Solution #57 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+Q               1
+        Q       2
+  Q             3
+              Q 4
+    Q           5
+            Q   6
+      Q         7
+
+
+Solution #58 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+      Q         1
+Q               2
+        Q       3
+              Q 4
+  Q             5
+            Q   6
+    Q           7
+
+
+Solution #59 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+          Q     1
+  Q             2
+        Q       3
+              Q 4
+Q               5
+            Q   6
+      Q         7
+
+
+Solution #60 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+          Q     1
+      Q         2
+  Q             3
+              Q 4
+        Q       5
+            Q   6
+Q               7
+
+
+Solution #61 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+          Q     1
+      Q         2
+Q               3
+              Q 4
+        Q       5
+            Q   6
+  Q             7
+
+
+Solution #62 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+Q               1
+      Q         2
+          Q     3
+              Q 4
+  Q             5
+            Q   6
+    Q           7
+
+
+Solution #63 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+  Q             1
+      Q         2
+          Q     3
+              Q 4
+    Q           5
+Q               6
+            Q   7
+
+
+Solution #64 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+    Q           1
+Q               2
+          Q     3
+              Q 4
+  Q             5
+      Q         6
+            Q   7
+
+
+Solution #65 is:
+0 1 2 3 4 5 6 7  
+            Q   0
+        Q       1
+    Q           2
+Q               3
+          Q     4
+              Q 5
+  Q             6
+      Q         7
+
+
+Solution #66 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+            Q   1
+      Q         2
+Q               3
+    Q           4
+              Q 5
+          Q     6
+  Q             7
+
+
+Solution #67 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+            Q   1
+Q               2
+      Q         3
+  Q             4
+              Q 5
+          Q     6
+    Q           7
+
+
+Solution #68 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+  Q             1
+            Q   2
+Q               3
+      Q         4
+              Q 5
+        Q       6
+    Q           7
+
+
+Solution #69 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+    Q           1
+            Q   2
+      Q         3
+Q               4
+              Q 5
+  Q             6
+        Q       7
+
+
+Solution #70 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+    Q           1
+            Q   2
+  Q             3
+      Q         4
+              Q 5
+Q               6
+        Q       7
+
+
+Solution #71 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+  Q             1
+            Q   2
+    Q           3
+          Q     4
+              Q 5
+        Q       6
+Q               7
+
+
+Solution #72 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+  Q             1
+            Q   2
+    Q           3
+          Q     4
+              Q 5
+Q               6
+        Q       7
+
+
+Solution #73 is:
+0 1 2 3 4 5 6 7  
+  Q             0
+        Q       1
+            Q   2
+      Q         3
+Q               4
+              Q 5
+          Q     6
+    Q           7
+
+
+Solution #74 is:
+0 1 2 3 4 5 6 7  
+  Q             0
+        Q       1
+            Q   2
+Q               3
+    Q           4
+              Q 5
+          Q     6
+      Q         7
+
+
+Solution #75 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+  Q             1
+            Q   2
+        Q       3
+Q               4
+              Q 5
+          Q     6
+    Q           7
+
+
+Solution #76 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+    Q           1
+Q               2
+            Q   3
+        Q       4
+              Q 5
+  Q             6
+      Q         7
+
+
+Solution #77 is:
+0 1 2 3 4 5 6 7  
+  Q             0
+          Q     1
+Q               2
+            Q   3
+      Q         4
+              Q 5
+    Q           6
+        Q       7
+
+
+Solution #78 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+  Q             1
+      Q         2
+            Q   3
+    Q           4
+              Q 5
+          Q     6
+Q               7
+
+
+Solution #79 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+    Q           1
+Q               2
+            Q   3
+  Q             4
+              Q 5
+          Q     6
+      Q         7
+
+
+Solution #80 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+          Q     1
+Q               2
+        Q       3
+  Q             4
+              Q 5
+    Q           6
+            Q   7
+
+
+Solution #81 is:
+0 1 2 3 4 5 6 7  
+            Q   0
+  Q             1
+          Q     2
+    Q           3
+Q               4
+      Q         5
+              Q 6
+        Q       7
+
+
+Solution #82 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+            Q   1
+  Q             2
+          Q     3
+    Q           4
+Q               5
+              Q 6
+      Q         7
+
+
+Solution #83 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+            Q   1
+        Q       2
+    Q           3
+Q               4
+          Q     5
+              Q 6
+  Q             7
+
+
+Solution #84 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+  Q             1
+            Q   2
+Q               3
+    Q           4
+        Q       5
+              Q 6
+      Q         7
+
+
+Solution #85 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+        Q       1
+            Q   2
+Q               3
+      Q         4
+  Q             5
+              Q 6
+          Q     7
+
+
+Solution #86 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+          Q     1
+  Q             2
+            Q   3
+        Q       4
+Q               5
+              Q 6
+      Q         7
+
+
+Solution #87 is:
+0 1 2 3 4 5 6 7  
+    Q           0
+          Q     1
+  Q             2
+            Q   3
+Q               4
+      Q         5
+              Q 6
+        Q       7
+
+
+Solution #88 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+  Q             1
+          Q     2
+Q               3
+            Q   4
+      Q         5
+              Q 6
+    Q           7
+
+
+Solution #89 is:
+0 1 2 3 4 5 6 7  
+        Q       0
+            Q   1
+  Q             2
+          Q     3
+    Q           4
+Q               5
+      Q         6
+              Q 7
+
+
+Solution #90 is:
+0 1 2 3 4 5 6 7  
+      Q         0
+            Q   1
+        Q       2
+  Q             3
+          Q     4
+Q               5
+    Q           6
+              Q 7
+
+
+Solution #91 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+      Q         1
+            Q   2
+Q               3
+    Q           4
+        Q       5
+  Q             6
+              Q 7
+
+
+Solution #92 is:
+0 1 2 3 4 5 6 7  
+          Q     0
+    Q           1
+        Q       2
+            Q   3
+Q               4
+      Q         5
+  Q             6
+              Q 7
+
+

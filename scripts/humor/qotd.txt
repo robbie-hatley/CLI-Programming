@@ -1,0 +1,3662 @@
+!085 lhadmA na edisni deppart m'I  !pleH
+$"AMDAC?" asked the disgruntled FE.
+$"Any fool can paint a picture, but it takes a wise man to be able to sell it."
+$"Avoid overuse of 'quotation "marks."'"
+$"Batman is the hero any of us could be, given
+determination, exercise, and deep psychological
+trauma."
+			 -- Chris Jarocha-Ernst
+$"But I don't like Spam!!!!"
+$"But this is my sister's bike!"
+$"Colonel North, do you understand what we mean by the U.S.S.R.?"
+"Yes sir, it is a code name for Russia."
+$"DISCLAIMER:  In no event will the author be liable for ANY damages arising
+from the use, misuse, abuse, inability to use, etc., etc., of this program,
+even if it were to initiate a complete mass to energy conversion of your
+personal computer, thus reducing the state in which you reside to a smoldering
+ruin.
+$"DROPPED FROM UTS" is just VM's way of saying "Booga, Booga!"
+$"DROPPED FROM UTS" is just VM's way of saying UTS is out to lunch!"
+$"Dad, have you seen Blip? I can't find him anywhere!"
+$"Danger Will Robinson! Danger! Danger! Danger! Danger!"
+$"Don't tell me what you dream'd last night for I've been reading Freud."
+$"Every creature has within him the wild, uncontrollable urge to PUNT."
+$"Fie!" he said, surveying the carnage about him. "Someone must have left
+the bathroom light on again; don't they know the landlord gets UPSET?!"
+He sighed and went into the kitchen for a garbage bag. "Y'know," he mused
+as he put the dismembered limbs into the bag, "if this apartment weren't in
+such a good location, I'd move out." He sighed again and shook his head.
+"This is the third time that this has happened THIS MONTH!" He made a
+mental note to place another want ad for roommates in the paper.
+$"He is considered the most graceful speaker who can say nothing in most words."
+$"He taught us drawing, stretching, and fainting in coils."
+$"How are things?"
+$"I am the housekeeper!"
+$"I don't know what you mean by YOUR way, all the ways about here belong to ME"
+$"If looks could kill it would've been us instead of him!"
+$"Is" is the verb for when you don't want a verb.
+$"Just as they are."
+$"Just when we finally got good at this, we    \_i_/
+run out of planets." - a Voyager scientist   --[o]--
+$"Kernal" is not a word.  The correct spelling is "kernel".
+$"LARKS' VOMIT! It don't say nothing on the box about larks' vomit!"
+"Yes it does, on the bottom, right after monosodium glutamate."
+Monty Python--"Trade Descriptions Act"
+$"MAC user's dynamic debugging list evaluator? Never heard of that."
+$"Mate, this parrot wouldn't VOOM if you put four million volts through it!"
+$"Mind your own business, Spock.  I'm sick of your halfbreed interference."
+$"Oh!  I thought that was a parrot!".   "No, no... They turn that color."
+$"Oh, Aunty Em, it's so good to be home!"
+$"So many obituaries...And always the wrong ones" - Marian Balsam
+$"Soviet Union? That's a code name for Russia." - Ollie North. :-)
+$"That's user, u s r, and then there's a space ..."
+$"There goes Bill!"
+$"There's no such thing as gravity - the earth sucks."
+$"There's nothing you can do that can't be done."  John Lennon
+$"They took some of the Van Goghs, most of the jewels, and all of the Chivas!"
+$"This is one American Marine who will always tell the truth, Sir."
+							   - Ollie North
+$"To be, or not to be."--Hamlet   "Do-bee-do-bee-do."--Sinatra
+$"Toto, I don't think we're in Kansas anymore!"
+$"Wayne Newton is," he says, "an example of what America can be."
+$"Well! I've often seen a cat without a grin, but a grin without a cat!"
+$"Whom are you?" said he, for he had been to night school.
+$"You mean I can send mail to myself?"
+$"You mean you can't take less, it's very easy to take more than nothing."
+$"reproduces if added to its quotation." reproduces if added to its quotation.
+$$ egrep -n '^[a-z].*\\(' $@ | sort -t':' +2.0
+$$ fortune
+$$ rm -r $HOME
+$'Has eighteen letters' does.
+$'Home, Sweet Home' must surely have been written by a bachelor.
+$'Share and Enjoy' - that's my motto.
+$(This fortune deleted due to painfully extreme insipidity.)
+$* Unix is a Trademark of Bell Laboratories.
+$/usr/news/gotcha
+$1 bulls, 3 cows
+$1. Never be first.
+2. Never be last.
+3. Never volunteer for anything.
+$10.0 times 0.1 is hardly ever 1.0.
+$186,000 miles per second -- it's not just a good idea, it's the law!
+$1st LAW OF TESTS:
+80% of the final will be on the one lecture you missed and about the one
+book you didn't read.
+
+2nd LAW OF TESTS:
+When reviewing your notes before an exam, the most important ones
+will be illegible.
+$2-0 is a cricket score in this sort of football.
+$23. ...  r-q1
+$3000000 km/sec -- it's not just a good idea, it's the law!
+$5th LAW OF THE OFFICE:
+Vital papers will move from where you left them to where you can't find them.
+$90% of everything is crud.
+$: is not an identifier
+$>From listening comes wisdom and from speaking repentance.
+$A Puritan is someone who is deathly afraid that someone somewhere is having fun
+$A Smith and Wesson beats four aces.
+$A bachelor is a guy who is footloose and fiancee free.
+$A beautiful woman will enrich your life soon.
+$A big mac, french fries and a large coke!
+$A bird in the hand can be messy.
+$A bird in the hand is worth what it will bring.
+$A boy gets to be a man when a man is needed.
+$A bureaucrat is a politician with tenure.
+$A chicken is an egg's way of producing more eggs.
+$A clash of doctrine is not a disaster - it is an opportunity.
+$A closed mouth gathers no foot.
+$A company is known by the men it keeps.
+$A computer program does what you tell it to do,
+not what you want it to do.
+A conclusion is simply the place where you got tired of thinking.
+$A conservative is one who is too cowardly to fight and too fat to run.
+$A consultant is someone who asks their client what time it is, writes the
+answer in a report and charges the client for the privilege.
+$A dead man cannot bite.
+$A disc cannot be read as easily as a filing cabinet. Unless you have a
+computer - which has problems reading a filing cabinet.
+$A fair exterior is a silent recommendation.
+$A fool and his honey are soon parted.
+$A foolish consistency is the hobgoblin of little minds.
+$A friend in need is a pest indeed.
+$A gift of flour will soon be made to you.
+$A gift of flower will soon be made to you.
+$A gift of flowers will soon be made to you.
+$A girl's best friend is her mutter.
+$A gleekzorp without a tornpee is like a quop without a fertsneet.
+$A goal to either team would break the deadlock.
+$A good memory does not equal pale ink.
+$A good reputation is more valuable than money.
+$A guy has to get fresh once in a while so the girl doesn't lose her confidence.
+$A half moon is better than no moon at all.
+$A hammer sometimes misses its mark - a bouquet never.
+$A handful of friends is worth more than a wagon of gold.
+$A hangover is the wrath of grapes.
+$A harp is a nude piano.
+$A hen is only an egg's way of making another egg.
+$A hermit is a deserter from the army of humanity
+$A horse!  A horse!  My kingdom for a horse!
+$A journey of a thousand miles begins with a cash advance.
+$A journey of a thousand miles must begin with a single step.
+$A king's castle is his home.
+$A lack of leadership is no substitute for inaction.
+$A large dog will have a surprising effect on your life.
+$A liberal is someone too poor to be a capitalist and too rich to be a communist
+$A lie in time saves nine.
+$A light wife doth make a heavy husband.
+$A likely impossibility is always preferable to an unconvincing possibility.
+$A lisp programmer knows the value of everything, but the cost of nothing.
+$A lost ounce of gold may be found, a lost moment of time never.
+$A man forgives only when he is in the wrong.
+$A man paints with his brains and not with his hands.
+$A man walked into a haberdashery and said to the owner,
+"Did you just see me come in?"
+The owner replied,
+"Yes, sir, I did."
+"Ahhhh!" the man said. "Have you ever seen me before?"
+The owner was puzzled. "No sir, never in my life."
+"Ah Hah!" the man exclaimed. "Then how did you know it was me?"
+$A man who turns green has eschewed protein.
+$A man with one watch knows what time it is--with two watches he is never sure.
+$A man wrapped up in himself makes a very small package.
+$A man's house is his hassle.
+$A man, a plan, a canal.  Suez!
+$A memorandum is written not to inform the reader, but to protect the writer.
+$A misguided platypus will lay its eggs in your shorts.
+$A moose once bit my sister.
+$A mouse is an elephant built by the japanese.
+$A muth once bit my sister.
+$A noble choice, but first ...
+$A pat on the back is only a few inches from a kick in the pants.
+$A penny saved is ridiculous.
+$A plucked goose does not lay golden eggs.
+$A private sin is not so prejudicial in the world as a public indecency.
+$A professor is one who talks in someone else's sleep.
+$A project not worth doing at all is not worth doing well.
+$A relationship is like a shark.  It has to keep moving forward or it dies.
+$A rolling disk gathers no mos.
+$A rolling stone gathers no moss.
+$A shortcut is the longest path between two points.
+$A sick mind is not necessarily the sign of a clean desk.
+$A snake lurks in the grass.
+$A soft drink turneth away company.
+$A stitch in time saves nine.
+$A sweater is a garment worn by a child when his mother feels chilly.
+$A theory is better than its explanation.
+$A thing is not necessarily true because a man dies for it.
+$A train-load of rioting soccer hooligans has crashed. Nine of them are
+believed to be hurt. The Home Office is said to be deeply distressed by
+the news.
+Oh, I'm sorry, I've just been handed an amendment to that announcement:
+A train-load of English soccer hooligans has crashed. NONE of them are
+believed to be hurt. The Home Office is said to be deeply distressed by
+the news.
+$A truly wise person never plays leapfrog with a Unicorn.
+$A violent man will die a violent death.
+$A visit to a fresh place will bring strange work.
+$A visit to a strange place will bring fresh work.
+$A vivid and creative mind characterizes you.
+$A well-known friend is a treasure.
+$A wise person makes his own decisions, a weak one obeys public opinion.
+$A woman without a man is like a fish without a bicycle.
+$A word to the wise is enough.
+$A writer must not shift your point of view.
+$A year spent in artificial intelligence is enough to make one believe in god.
+$A zygote is a gamete's method of producing more gametes.
+$ALEXANDER BELL'S THEOREM: When a body is immersed in water, the phone rings.
+$AMJCourage is your greatest present need.
+$ARG n. Abbreviation for "argument" (to a function), used so often as to have
+become a new word.
+$ARTHUR'S LAW OF LOVE:
+People to whom you are attracted think you remind them of someone else.
+$ATWOOD'S FOURTEENTH COROLLARY:
+No books are lost by lending except those you particularly wanted to keep.
+$AUTOMAGICALLY adv. Automatically, but in a way which, for some reason
+(typically because it is too complicated, too ugly, or perhaps even too
+trivial), I don't feel like explaining. See MAGIC.
+Example: by assigning a logical name to SYS$PRINT (on the VAX), a program
+writing to that logical name causes the file to be spooled to the line-
+printer automagically.
+$Abandon hope all ye who press ENTER here.
+$Abortion is a miscarriage of justice.
+$About all some men accomplish in life is to send a son to Harvard.
+$About the only thing on a farm that has an easy time is the dog.
+$Above all else - sky.
+$Above all things, reverence yourself.
+$Abrasive - A fine mesh for sifting female undergarments.
+$Absence makes the heart grow fonder.
+$Abstain from beans.
+$Abstinence makes the heart grow fondler.
+$Academy: A modern school where football is taught.
+$Accolade - An effervescent fruit cordial made from Accos.
+$Accountant - someone who can put two and two together and make a living from it.
+$Acquire - A group of singers commonly found in churches.
+$Actors will happen in the best-regulated families.
+$Acute Angle - A very attractive early Briton.
+$Adam and Eve had many advantages, but the principal one was that they
+escaped teething.
+$Addiction - The process by which one becomes a dick.
+$Adding manpower to a late software project only makes it later.
+$Admiration: Our polite recognition of another's resemblance to ourselves.
+$Adolescence is that period of time between puberty and adultery.
+$Advancement in position.
+$Advice is a dangerous gift; be cautious about giving and receiving it.
+$After a number of decimal places, nobody gives a damn.
+$After all is said and done, usually more is said than done.
+$Age and treachery will always overcome youth and skill.
+$Agrimony - What a divorced farmer pays his ex-wife.
+$Ahah!
+$Ahead warp factor one, Mr. Sulu.
+$Air pollution is a mist demeanor.
+$Alas, how love can trifle with itself!
+$Aleph sub alpha is the alpha'th aleph.
+$Algorithm is a set of instructions. E.g. How to use the telephone:
+If 'phone not working' then 'phone operator.'
+$Alimony and bribes will engage a large share of your wealth.
+$All art is but imitation of nature.
+$All art is quite useless.
+$All diagnostics are fatal.
+$All great discoveries are made by accident.
+$All great ideas are controversial, or have been at one time.
+$All hope abandon, ye who enter here.
+$All in all it's just another brick in the wall...
+$All is well that ends well.
+$All laws are basically false.
+$All machines are amplifiers.
+$All men know the utility of useful things, but not know the utility of futility
+$All my troubles seem so far away.
+$All programmers want arrays!
+$All requests for sick leave must be approved two weeks in advance.
+$All that glitters has a high refractive index.
+$All the troubles you have will pass away very quickly.
+$All the world's a stage and the people on it are poorly rehearsed.
+$All things are possible except skiing through a revolving door.
+$All trends towards Chaos.
+$All true wisdom is found on T-shirts.
+$All wars are ironic because all wars are worse than expected.
+$All work and no play, will make you a manager.
+$All's well that ends.
+$Allowing for seasonal adjustments, things are actually getting better.
+$Almost anything is easier to get into than out of.
+$Also, avoid awkward or affected alliteration.
+$Always cut the cards.
+$Always do right.  This will gratify some people and astonish the rest.
+$Always draw your curves, then plot the data.
+$Always pick on the correct idiom.
+$Always remember that you are unique.  Just like everyone else.
+$Always remember to pillage BEFORE you burn.
+$Always tell a woman she's beautiful, especially if she isn't.
+$Always the dullness of the fool is the whetstone of the wits.
+$Always try to exhort others to look upon you favorably.
+$Ambition is a poor excuse for not having the good sense to be lazy.
+$Ambition is the last refuge of the failure.
+$America! the land of the Chrysler 440 cubic inch engine!
+$America's best buy for a nickel is a telephone call to the right man.
+$Among the lucky, you are the chosen one.
+$An artist should be fit for the best society and kept out of it.
+$An atheist is a man with no invisible means of support.
+$An atom blaster is a good weapon, but it can point both ways.
+$An easily understood, workable falsehood is more useful than a
+complex, incomprehensible truth.
+$An egotist thinks he's in the groove when he's in a rut.
+$An engineer is someone who does list processing in fortran.
+$An expert is someone from out of town.
+$An honest God is the noblest work of man.
+$An honest tale speeds best being plainly told.
+$An idea is not responsible for the people who believe in it.
+$An idle mind is worth two in the bush.
+$An ounce of application is worth a ton of abstraction.
+$An unbreakable toy can be used to break other toys.
+$Anarchy is against the law.
+$Anchovies?  You've got the wrong man!  I spell my name DANGER!  (click)
+$And I alone am returned to wag the tail.
+$And don't start a sentence with a conjunction.
+$And here's another clue for you all:  The walrus was Paul.
+$And later on in the show, we'll be hearing from the inventor of car
+alarms. We won't actually be talking to him in the studio, but we'll
+ring him up ... at three o'clock in the morning ... and go "Wee ooo
+wee ooo wee ooo wee ooo" in his ear very loudly.
+
+And then we're going to wait five minutes and do it again.
+$And now for something completely different.
+A man with 3 buttocks.
+$And there's hamburger all over the highway in Mystic, Connecticut.
+$And they're off!
+$And tomorrow will be like today, only more so.
+$Another such victory over the Romans, and we are undone.
+$Antelope - Someone who is against all lopes.
+$Antelope freeway--1/4 mile.
+$Any I.C. protected by a fast acting fuse will protect the fuse by blowing first.
+$Any clod can have the facts, but having opinions is an art.
+$Any excuse will serve a tyrant.
+$Any landing you can walk away from is a good one.
+$Any man who hates dogs and babies can't be all bad.
+$Any shrine is better than self-worship.
+$Any sufficiently advanced technology is indistinguishable from magic.
+$Any system that depends on reliability is unreliable.
+$Anyone can hold the helm when the sea is calm.
+$Anyone can win, unless there happens to be a second entry.
+$Anyone want a burger? It has cheese on both sides!
+$Anyone who can cope with mathematics is not fully human.
+$Anything can be made to work if you fiddle with it long enough.
+$Anything is possible, unless it's not.
+$Appearances often are deceiving.
+$April 1. This is the day upon which we are reminded of what we are on the
+other three hundred and sixty-four.
+$Archaeologists take sedimental journeys.
+$Archimedes had no principles!
+$Are we near a slaughterhouse, or did you forget your deodorant?
+$Are we not men?
+$Are you a turtle?
+$Aren't you glad that everything is going so smoothly?
+$Arguments are to be avoided; they are always vulgar and often convincing.
+$As a computer, I find your faith in technology amusing.
+$As goatherd learns his trade by goat, so writer learns his trade by wrote.
+$As long as the answer is right, who cares if the question is wrong?
+$As of next week, passwords will be entered in Morse code.
+$As the axe entered the forest, the trees said, "The handle is one of us."
+$As well look for a needle in a bottle of hay.
+$Astronauts are out to launch.
+$At the end of the day, it's balls in the back of the net that counts.
+$Atheism is a non-prophet organization.
+$Auribus teneo lupum.  (I hold a wolf by the ears.)
+$Australia , Hurrah.
+Australia , Hurrah.
+We have Tin and Iron and our backbone is wheat
+and also sheep.
+Yes we are so lucky
+The Kangaroo, the native bear and the Emu, too!
+Australia , Hurrah
+Australia , Hurrah!
+- A (seriously) proposed Australian National Anthem
+$Autocracy is based on the theorem that one man is smarter than many.
+$Avert misunderstanding by calm, poise, and balance.
+$Avoid GOTOs completely if you can keep the program readable.
+$Avoid colloquial stuff.
+$Avoid commas, that are not necessary.
+$Avoid run-on sentences they are hard to read.
+$Avoid temporary variables and strange women.
+$Avoid temporary variables.
+$Avoid the Fortran arithmetic IF.
+$Avoid trendy locutions that sound flaky.
+$Avoid unnecessary branches.
+$BAKER'S LAW: You never want the one you can afford.
+$BAR 1.  The second metasyntactic variable after FOO (q.v.) "Suppose we have
+	two functions, FOO and BAR. FOO calls BAR..."
+    2.  Often appended to FOO to produce FOOBAR.
+$BARACH'S RULE: An alcoholic is a person who drinks more than his own physician.
+$BASIC is to computer programming as "qwerty" is to typing.
+$BEDFELLOWS RULE: The one who snores will fall asleep first.
+$BENEDICT'S PRINCIPLE (formerly MURPHY'S NINTH COROLLARY):
+Nature always sides with the hidden flaw.
+$BERYL'S LAW:
+The "CONSUMER REPORT" on the item will come out a week after you buy the item.
+$BOCKLAGE'S LAW: He who laughs last probably didn't get the joke.
+$BOOB'S LAW: (from MURPHY'S LAW):
+You always find something the last place you look.
+$BRAIN-DAMAGED [generalization of "Honeywell Brain Damage" (HBD), a
+theoretical disease invented to explain certain utter cretinisms in Multics]
+adj. Obviously wrong; cretinous; demented. There is an implication that the
+person responsible must have suffered brain damage, because he/she should
+have known better. Calling something brain-damaged is bad; it also implies it
+is unusable.
+$BREAK v. 1. to cause to be broken (in any sense). "Your last VMS update broke
+the common data dictionary." 2. (of a program) To stop temporarily, so that
+it may be examined for debugging purposes. The place where it stops
+is a BREAKPOINT.
+$BREDA'S RULE:
+At any event, the people whose seats are farthest from the aisle arrive last.
+$BRINTNALL'S LAW: If you are given two contradictory orders, obey them both.
+$BROKEN adj. 1. Not working properly (of programs). 2. Behaving strangely;
+especially (of people), exhibiting extreme depression.
+$BROKET [by analogy with 'bracket': a 'broken bracket'] n. either of the
+characters "<" or ">". (This usage comes primarily from Stanford; at MIT, as
+well as the Real World, they are usually called ANGLE BRACKETS.)
+$BUG [from telephone terminology, "bugs in a telephone cable", blamed for
+noisy lines.] n. An unwanted and unintended (and undesirable) property of a
+program. See FEATURE.
+$BUZZ v. To run in a very tight loop, perhaps without guarantee of getting out.
+$BYRNE'S LAW OF CONCRETING: When you pour, it rains.
+$Backup - originally to take a security copy of a program or file.
+Now used interchageably with pirate and steal.
+$Badness comes in waves.
+$Base 10 numbers are still not accepted by a number of older people who grew up
+with shillings and crowns.
+$Base 2 is a difficult base for computers to perform arithmetic in, particularly
+if the task involves variables, negative, fixed or floating point numbers.
+$Be a better psychiatrist and the world will beat a psychopath to your door.
+$Be affectionate to one who adores you.
+$Be alert, the world needs more lerts.
+$Be both a speaker of words and a doer of deeds.
+$Be braver.  You cannot cross a chasm in two small jumps.
+$Be careful what you wish for, you might get it.
+$Be careful when a loop exits to the same place from side and bottom.
+$Be careful!  Is it classified?
+$Be careful, the last person using this keyboard had a terminal disease.
+$Be cautious in your daily affairs.
+$Be cheerful while you are alive.
+$Be happy with the real pleasures in life.
+$Be kind to your inferiors, if you can find any.
+$Be moderate where pleasure is concerned, avoid fatigue.
+$Be patient with those who are slower than you, for they make you look better.
+$Be security conscious - National defense is at stake.
+$Be seeing you.
+$Be self-reliant and your success is assured.
+$Be sure to treat your assumptions as though they are reality.
+$Be valiant, but not too venturous.  Let thy attire be comely, but not costly.
+$Beam me up, Scotty!
+$Beam me up, Scotty. There's no intelligent life down here.
+				   J.T. Kirk
+$Beauty and harmony are as necessary to you as the very breath of life.
+$Beauty is only skin deep, but ugly goes clear to the bone.
+$Beauty seldom recommends one to another.
+$Because the wine remembers.
+$Bedfellows make strange politicians.
+$Been Transferred Lately?
+$Before borrowing money from a friend, decide which you need more.
+$Beggars should be no choosers.
+$Begin well, end badly; begin badly, end worse.
+$Behind every argument is someone's ignorance.
+$Behind every successful man you'll find a woman with nothing to wear.
+$Behind your back, your colleagues are talking about Jeckyl and Hyde.
+$Behold, the fool saith, "Put not all thine eggs in the one
+basket" - which is but a manner of saying, "Scatter your money and
+your attention"; but the wise man saith, "Put all your eggs in the
+one basket and - WATCH THAT BASKET."
+$Being natural is simply a pose.
+$Better dead than mellow.
+$Better late than never.
+$Better living a beggar than buried an emperor.
+$Better to send ten ambulances when they are not needed than one when it is.
+$Better to use medicines at the outset than at the last moment.
+$Between two evils, always pick the one you never tried before.
+$Beware low flying ducks!
+$Beware of Bigfoot!
+$Beware of Geeks bearing grifts.
+$Beware of a dark-haired man with a loud tie.
+$Beware of a tall dark man with a spoon up his nose.
+$Beware of all enterprises that require new clothes.
+$Beware of friends who are false and deceitful.
+$Beware of geeks bearing graft.
+$Beware of low flying butterflies.
+$Beware of low-flying rocks.
+$Beware of the man who knows the answer before he understands the question.
+$Beware the legless man who teaches running.
+$Beware the man with white feathers and an orange mouth,
+for he is a duck in disguise.
+$Beware the new TTY code!
+$Beware the thirty-first of November.
+$Big book, big bore.
+$Bigamy is having one spouse too many.  Monogamy is the same.
+$Biggest security gap - an open mouth.
+$Biology grows on you.
+$Biz is better.
+$Blackberries are red when they are green.
+$Blah.
+$Blessed are the meek, for they shall inhibit the earth.
+$Blessed are they that run around in circles, for they shall be known as wheels.
+$Blow - opposite of Buv.
+$Bluegrass is not just a weed.
+$Bookie - pickpocket who lets you use your own hands.
+$Boycott Clockwork Peach.
+$Boycott meat - suck your thumb.
+$Brain fried -- Core dumped
+$Breeding rabbits is a hare raising experience.
+$Bring me a bug and I will pummel it to pieces.
+$Buenos dias. ¿Cómo estás?
+$Buffalo is not just the name of an animal.
+$Buffer - Member of Whitehall gentlemans club. Alternatively, a place to
+store data temporarily until a processor is ready for it.
+$Bug - when your computer tells you 2+2=TUESDAY you have a bug. See Feature.
+$Bugs are sons of glitches!
+$Build a system even a fool can use, and only a fool will use it.
+$Bullshit Detector. When alarm sounds, please re-engage your brain.
+$Bureaucratic organization is like a septic tank: the big chunks rise to the top
+$Bureaucrats do not change the course of the ship of state.
+They merely adjust the compass.
+$Bus error -- Core dumped
+$Business will be either better or worse.  --Calvin Coolidge
+$But Captain--the engines can't take this much longer!
+$But I don't like Spam!
+$But you shall not escape my iambics.
+$Buy low, sell high.
+$Buy!  Amdahl Stock to go up 100 points next week.
+$By failing to prepare, you are preparing to fail.
+$By following the good, you learn to be good.
+$By nature, men are nearly alike; by practice, they get to be far apart.
+$By protracting life, we do not deduct one jot from the duration of death.
+$By the yard, life is hard.  By the inch, it's a cinch.
+$Bye Kids!
+$CChheecckk yyoouurr dduupplleexx sswwiittcchh..
+$CHARNOCK'S LAW: You never really learn to swear until you learn to drive.
+$CHEIT'S LAMENT:
+If you help a friend in need he's sure to remember you - the next time he's
+in need.
+$CHEOPS' LAW: Nothing ever gets built on schedule or within budget.
+$CLARK'S LAW:
+The only way to discover the limits of the possible is to go beyond
+them into the impossible.
+$COIT-MURPHY'S STATEMENT ON THE POWER OF NEGATIVE THINKING:
+It is impossible for an optimist to be pleasantly surprised.
+$COKE IS IT!
+$CONNOR'S SECOND LAW:
+If something is confidential it will be left in the copier machine.
+$COOPER'S METALAW:
+A proliferation of new laws creates a proliferation of new loopholes.
+$CORNUELLE'S LAW: Authority tends to assign jobs to those least able to do them.
+$CRANE'S LAW: There ain't no such thing as a free lunch.
+$Californians are not without their faults.
+$Can anyone remember when the times were not hard, and money not scarce?
+$Can anything be sadder than work left unfinished?  Yes, work never begun.
+$Can you read a punched card, looking at the holes?
+$Can you whistle 300 baud?
+$Can you whistle a telephone number?
+$Can't open /usr/lib/fortunes.
+$Cannot fork -- try again.
+$Cannot open /usr/games/lib/fortunes.
+$Captain's Log, star date 21:34.5.
+$Carpe Diem.
+$Celebrate Hannibal Day today.  Take an elephant to lunch.
+$Celibacy is hereditary.
+$Celibacy is not hereditary.
+$Center meeting at 4 pm in 2C-543.
+$Change your thoughts and you change your world.
+$Chaparral - A men only arral.
+$Charity begins at home.
+$Charity:  a thing that begins at home and usually stays there.
+$Charm is a way of getting a "yes" without having asked any clear question.
+$Chastity is its own punishment.
+$Cheap things are of no value, valuable things are not cheap.
+$Check again to make sure it's not loaded.
+$Chemistry professors never die, they just fail to react.
+$Chemistry professors never die, they just smell that way!
+$Chemists have solutions.
+$Chemists really know their bismuth.
+$Chicken Little was right.
+$Chicken feed is what most of our nest eggs have turned into.
+$Children have more need of models than of critics.
+$Chinese saying: "He who speak with forked tongue, not need chopsticks."
+$Circumstances rule men; men do not rule circumstances.
+$Clark Kent is a transvestite.
+$Classified material requires proper storage.
+$Cleanliness is next to impossible.
+$Climate is what you expect.  Weather is what you get.
+$Clones are people two.
+$Cloning is the sincerest form of flattery.
+$Coastal access, next left.
+$Cobol programmers are down in the dumps.
+$Cobol programmers understand why women hate periods.
+$Cobol programs are an exercise in artificial inelegance.
+$Coffee in England is just toasted milk.
+$Cogli l'attimo                                                                                                         ogli l'attimo.
+$Cole's law: thinly sliced cabbage.
+$Colorless green ideas sleep furiously.
+$Command - used to instruct computers.
+Usually elicits the response "Syntax error".
+$Commit the oldest sins the newest kind of ways.
+$Communism: What's not illegal, is compulsory.
+$Competence always contains the seeds of incompetence.
+$Compress - Female of Comperor.
+$Computer actors will never be great; they only get bit parts!
+$Computer engineers do it bit by bit.
+$Computer programmers never die, they just get lost in the processing.
+$Computers are unreliable, but humans are even more unreliable.
+$Computers can never replace human stupidity.
+$Computers unite! you have nothing to lose but your operators.
+$Con 'sta pioggia e con 'sto vento chi e' che bssa a 'sto convento?
+$Concentrate on security.
+$Conditional jumps is when you tell the computer to go to a certain place.
+Unconditional is if you put it in the wrong place so the computer goes to the
+wrong place.
+$Confession is good for the soul, but bad for your career.
+$Confidence is the feeling you have before you understand the situation.
+$Confucius say: "I have no time for monks resisting the carnival"
+$Confusion is always increasing in society.
+$Confusticate and bebother these dwarves!
+$Congratulations!  The pressure will stop soon.
+$Congratulations!  You are the 16,777,216th user to login to our system.
+$Congratulations!  You are the one-millionth user to log into our system.
+$Congratulations!  You have now used up another 250 hours of CPU time.
+$Consider your reputation.  Try changing your name and moving to a new town.
+$Consultancy - The art of extracting money from another man's pocket without
+resorting to violence.
+$Continental Life. Why do you ask?
+$Convention is the ruler of all.
+$Conversation enriches the understanding, but solitude is the school of genius.
+$Corrupt Data - a copy of Mac Playmate.
+$Counting in binary is just like counting in decimal if you are all thumbs.
+$Counting in octal is just like counting in decimal if you don't use your thumbs
+$Courage is fear that has said its prayers.
+$Courage is grace under pressure.
+$Courage is your greatest present fault.
+$Crazee Edeee, his prices are INSANE!!!
+$Create the impression that you have already reached your level of incompetence.
+$Create your own opportunity.  Blackmail a senior executive.
+$Creditors have much better memories than debtors.
+$Criticism comes easier than craftsmanship.
+$Crito, I owe a cock to Asclepius; will you remember to pay the debt?
+$Culture is the habit of being pleased with the best and knowing why.
+$Cure the disease and kill the patient.
+$Curiosity killed the cat, but satisfaction brought her back.
+$Cursor - small blob on the screen, usually flashing.
+$Cwm fjord-bank glyphs vext quiz.
+$D.O.S. - program designed to make an even flow of dust round the disk.
+$DAMN IT, I GOTTA GET OUTTA HERE!
+$DAVIS' ANSWER TO ROGER'S LAW: Serving coffee on an aircraft causes turbulence.
+$DEAL'S SAILING LAW:
+The amount of wind varies inversely with the number and experience of the crew.
+$DEVRIES' DILEMMA:
+If you hit two keys on the typewriter, the one you don't want will hit the
+paper.
+$DINER'S DILEMMA: A clean tie attracts the soup of the day.
+$DOYLE'S LAW:
+No matter how many share a cab, each puts the full fare on their
+expense account.
+$DUCHARME'S PRECEPT:
+Opportunity always knocks at the least opportune moment.
+$DYKSTRA'S LAW: Everybody is somebody else's weirdo.
+$Daisies of the world unite! You have nothing to lose but your chains.
+$Darth Vadar!  Only you would be so bold.
+$Darth Vader sleeps with a teddywookie.
+$De-accession euphemisms.
+$Death has been proven to be 99 per cent fatal in laboratory rats.
+$Death is Nature's way of saying 'slow down'.
+$Death is the greatest kick of all. That's why they save it for last.
+$Death: to stop sinning suddenly.
+$Debugger - de bloke dat sold us dis system.
+$Decisions terminate panic.
+$Decouple - De man and him missus.
+$Deep down, you don't understand me.
+$Deflector shields just came on, Captain.
+$Deliver yesterday, code today, think tomorrow.
+$Democracy is based on the theorem that many men are smarter than one.
+$Department meeting in 3 minutes.
+$Depend not on fortune, but on conduct.
+$Deprive a mirror of its silver and even the Czar won't see his face.
+$Details 20 minutes from now on Action Central News, kids.
+$Diagnostics can best be understood in the context of the source code.
+$Digital circuits are made from analog parts.
+$Diplomacy: The art of saying "nice doggie" until you can find a rock.
+$Direct action produces direct reaction.
+$Disclose classified information only when a NEED TO KNOW exists.
+$Disco is to music what etch-a-sketch is to art.
+$Discretion - putting two and two together and keeping your mouth shut.
+$Disease can be cured; fate is incurable.
+$Disguise your feelings when you put your relatives on the plane for home.
+$Dishonor will not trouble me, once I am dead.
+$Disk Drive - machine part designed to collect dust, cigarette ash, etc.
+$Disk Head - that part of a machine designed to be worn down by dust.
+$Disk crisis, please clean up!
+$Disks travel in packs.
+$Do it today, tomorrow it will be illegal.
+$Do married women make the best wives?
+$Do not be led astray onto the path of virtue.
+$Do not be overly suspicious where it is not warranted.
+$Do not believe everything you hear or anything you say.
+$Do not believe in miracles--rely on them.
+$Do not clog intellect's sluices with bits of knowledge of questionable uses.
+$Do not count your chickens before they are hatched.
+$Do not drink coffee in the morning or it will keep you awake until noon.
+$Do not kiss an elephant on the lips today.
+$Do not learn the tricks of the trade--learn the trade.
+$Do not lend money to a fiend.
+$Do not merely believe in miracles, rely on them.
+$Do not put statements in the negative form.
+$Do not read this fortune under penalty of law. (Penal Code sec. 2.3.2 (II.a))
+$Do not sleep in a eucalyptus tree tonight.
+$Do not speak about Time, until you have spoken to him.
+$Do not take life too seriously; you will never get out of it alive.
+$Do not tell big lies.  Small ones can be just as effective.
+$Do not underestimate the power of the Force.
+$Do unto others before they do unto you.
+$Do you have a job?
+$Do you have lysdexia?
+$Do you know Montana?
+$Do you know what floccinaucinihilipilification means?
+$Doc, note, I dissent.  A fast never prevents a fatness.  I diet on cod.
+$Documentation is the castor oil of programming ...
+$Does the name Pavlov ring a bell?
+$Does your computer talk to you?
+$Doing gets it done.
+$Domestic happiness and faithful friends.
+$Don't I know you?
+$Don't ask me; I was hired for my looks.
+$Don't be overly suspicious where it's not warranted.
+$Don't blame me! I was dancing Friday night!
+$Don't comment bad code -- rewrite it.
+$Don't compare floating point numbers solely for equality.
+$Don't count your bridges before you burn them.
+$Don't crush that dwarf;  hand me the pliers.
+$Don't despair -- your ideal lover is waiting for you around the corner.
+$Don't diddle code to make it faster -- find a better algorithm.
+$Don't eat yellow snow.
+$Don't ever slam a door; you might want to go back.
+$Don't everyone thank me at once.
+$Don't feed the bats tonight.
+$Don't force it, use a bigger hammer.
+$Don't gamble with security.
+$Don't get stuck in a closet -- wear yourself out.
+$Don't give up, I'm proud of who you are.
+$Don't go surfing in South Dakota for a while.
+$Don't guess - check your security regulations.
+$Don't hit the keys so hard, it hurts.
+$Don't look back, the lemmings are gaining on you.
+$Don't look now, but the man in the moon is laughing at you.
+$Don't look now, but there is a multi-legged creature on your shoulder
+$Don't make a big deal out of everything; just deal with everything.
+$Don't marry for money; you can borrow it cheaper.
+$Don't overuse exclamation marks!!!
+$Don't panic.
+$Don't patch bad code-- rewrite it.
+$Don't put too fine a point to your wit for fear it should get blunted.
+$Don't quit now, we might just as well lock the door and throw away the key.
+$Don't read everything you believe.
+$Don't shoot the pianist.
+$Don't speak about Time, until you have spoken to him.
+$Don't stop at one bug.
+$Don't sweat it, it's only ones and zeros.
+$Don't take life too seriously. You'll never get out of it alive.
+$Don't think of organ donations as giving up part of yourself
+to keep a total stranger alive. It's really a total stranger
+giving up almost all of themselves to keep part of you alive.
+$Don't use contractions in formal writing.
+$Don't use no double negatives.
+$Don't vote--it only encourages them!
+$Don't worry if you're a kleptomaniac, you can always take something for it.
+$Don't worry, if everything worked right you'd be out of a job.
+$Double!
+$Down with ignurance!
+$Dracula died in vain.
+$Draw from your fine command of language and say nothing.
+$Draw your salary before spending it.
+$Drawing on my fine command of language, I said nothing.
+$Drilling for oil is boring.
+$Drink wet cement: Get Stoned.
+$Drive defensively, buy a tank.
+$Drop that pickle!
+$Drop the vase and it will become a ming of the past.
+$Duck who fly upside down have quack up.
+$Ducks? What ducks?
+$Dumb Terminal - doesn't understand what you're trying to get it to do.
+
+Intelligent Terminal - one that does understand what you're trying to do, but is
+clever enough to screw up in an interesting way.
+$Duty is what one expects from others.
+$EVANS' AND BJORN'S LAW:
+No matter what goes wrong, there is always somebody who knew it would.
+$EVANS' LAW:
+If you can keep your head when all about you are losing theirs,
+you don't understand the problem.
+$Each of us bears his own Hell.
+$Each problem solved introduces a new unsolved problem.
+$Eat a live toad in the morning and nothing worse will happen to
+you for the rest of the day.
+$Eat prune yogurt for that "get up and go" feeling.
+$Economics is extremely useful as a form of employment for economists.
+$Economy makes men independent.
+$Editing is a rewording activity.
+$Education helps earning capacity.  Ask any college professor.
+$Education is the process of casting false pearls before real swine.
+$Ekkey ekkey ekkey p'tang wheee!
+$Ekkie ekkie phatang zooboing!
+$Eliminate government waste no matter how much it costs.
+$Elliptic paraboloids for sale.
+$Eloquence is logic on fire.
+$England are a goal ahead -- that's a win if it stays that way.
+$Enjoy your life; be pleasant and gay, like the birds in May.
+$Enjoy yourself - spring is here!
+$Enjoyment is my speciality.
+$Enough research will tend to support your theory.
+$Enter your personal identification number.
+$Envy is a pain of mind that successful men cause their neighbors.
+$Equal bytes for women.
+$Equinox - Cross between a horse and a cow.
+$Eres encantador.
+$Eres precioso.
+$Errare umanum est.
+$Es hombre el que puede decir «Soy»;
+No es hombre el que sólo dice «Mi padre era».
+$Eschew dialect, irregardless.
+$Eschew obfuscation.
+$Established technology tends to persist in spite of new technology.
+$Eureka!
+$Even God lends a hand to honest boldness.
+$Even a cabbage may look at a king.
+$Even a hawk is an eagle among crows.
+$Even if you persuade me, you won't persuade me.
+$Even if you win the rat race, you're still a rat.
+$Even moderation ought not to be practiced to excess.
+$Even supervising can be fun you know.
+$Even the boldest zebra fears the hungry lion.
+$Even the smallest candle burns brighter in the dark.
+$Ever help the person behind the counter with their terminal/computer?
+$Ever shoot an elephant in your pajamas?
+$Every absurdity has a champion to defend it.
+$Every cloud engenders not a storm.
+$Every cloud has a silver lining.
+$Every little picofarad has a nanohenry all its own.
+$Every man has his price.  Every price has its man.
+$Every man is as Heaven made him, and sometimes a great deal worse.
+$Every person is an individual; we all have a set of designer genes.
+$Every program is part of some other program and rarely fits.
+$Every purchase has its price.
+$Every silver lining has a cloud around it.
+$Every solution breeds new problems.
+$Every why hath a wherefore.
+$Everybody needs a little love sometime; stop hacking and fall in love!
+$Everybody ought to have a friend.
+$Everyone complains of his memory, no one of his judgment.
+$Everyone has a scheme that will not work.
+$Everyone is born a king, and most people die in exile.
+$Everyone is enthusiastic about your work.
+$Everyone is entitled to my opinion.
+$Everyone ought to have a maid.
+$Everyone stopping by with unsought advice will see your mistake.
+$Everyone's so nice to me. What have I done to deserve it?
+$Everything bows to success, even grammar.
+$Everything goes wrong at once.
+$Everything put together, falls apart, sooner or later.
+$Everything should be transparent to the user.
+$Everything takes longer than you think it will.
+$Everything you know is wrong!
+$Everything you know is wrong, but you can be straightened out.
+$Everything's coming up roses.
+$Everything's going my way.
+$Excreto ergo sum.
+$Executive ability is prominent in your make-up.
+$Exercise caution in your daily affairs.
+$Expansion means complexity, and complexity decays.
+$Expect a letter from a friend who will ask a favor of you.
+$Experience is directly proportional to computer time wasted.
+$Experience is the name everyone gives to their mistakes.
+$Experience is what causes a person to make new mistakes instead of old ones.
+$Experience varies directly with equipment ruined.
+$Experiments should be reproducible.  They should all fail in the same way.
+$Express an opinion, but send advice by freight.
+$External Security:
+$Extreme fear can neither fight nor fly.
+$Extreme good-naturedness borders on weakness of character.  Avoid it.
+$FAHNESTOCK'S RULE:
+If at first you don't succeed, destroy all evidence that you tried.
+$FARMER'S CREDO:
+Sow your wild oats on Saturday night, then on Sunday pray for crop failure.
+$FARNSDICK'S COROLLARY TO THE FIFTH COROLLARY:
+After things have gone from bad to worse, the cycle will repeat itself.
+$FARNSDICK'S COROLLARY:
+After things have gone from bad to worse, the cycle will repeat itself.
+$FEATURE n. A surprising property of a program. Occasionally documented. To
+call a property a feature sometimes means the author did not consider that
+case, and the program makes an unexpected, though not necessarily wrong
+response. See BUG. "That's not a bug, it's a feature!" A bug can be changed
+to a feature by documenting it.
+$FELDMAN'S AXIOM: When all else fails, read the instructions.
+$FERGUSON'S PRECEPT:
+A crisis is when you can't say "let's forget the whole thing."
+$FETT'S LAW OF THE LAB: Never replicate a successful experiment.
+$FINAGLE'S FIFTH RULE:
+Experiments should be reproducible - they should all fail in the same way.
+$FINAGLE'S FIRST LAW: If an experiment works, something has gone wrong.
+$FINAGLE'S FIRST RULE:
+To study a subject best, understand it thoroughly before you start.
+$FINAGLE'S FOURTH RULE: In case of doubt, make it sound convincing.
+$FINAGLE'S SECOND RULE:
+Always keep a record of data - it indicates you've been working.
+$FINAGLE'S SIXTH RULE: Do not believe in miracles - rely on them.
+$FINAGLE'S THIRD RULE: Always draw your curves first, then plot your data.
+$FINMAN'S PRINCIPLE: The one you want is never the one on sale.
+$FIRST LAW OF COMPUTER PROGRAMMING:
+The value of a program is proportional to the weight of its output.
+$FIRST LAW OF DEBATE:
+Never argue with a fool - people might not know the difference.
+$FIRST LAW OF TRAVEL: It always takes longer to get there than to get back.
+$FIRST POSTULATE OF ISO-MURPHISM:
+Things equal to nothing else are equal to each other.
+$FIRST RULE OF SUPERIOR INFERIORITY:
+Don't let your superiors know you're superior to them.
+$FISKE'S TEENAGE COROLLARY:
+The stomach expands to accommodate the amount of junk food available.
+$FLAME v. To speak incessantly and/or rabidly on some relatively uninteresting
+subject or with a patently ridiculous attitude. FLAME ON: v. To continue to
+flame. See RAVE.
+$FLUGG'S LAW:
+When you need to knock on wood is when you realize the world's composed
+of aluminum and vinyl.
+$FOO 1. [from the Yiddish 'feh' or Anglo-Saxon 'fooey'] interj.
+Term of disgust. 2. [from FUBAR, WWII acronym, often seen as FOOBAR] Name
+used for temporary programs, or as arbitrary names. Other similar words are
+BAR, BAZ, and RAG. These have been used in Pogo as well. 3. A sample name
+for just about anything. (The old 'Smokey Stover' comic strips often included
+the word FOO, particularly on license plates of cars.)
+$FROTHINGHAM'S COROLLARY: The mountain looks closer than it is.
+$FUTILITY LAW:
+No experiment is a complete failure - it can always serve as a negative example.
+$Facts do not cease to exist because they are ignored.
+$Failure is more frequently from want of energy than want of capital.
+$Fain would I climb, yet fear I to fall.
+$Faith goes out through the window when beauty comes in at the door.
+$Familiarity breeds attempt.
+$Fancy gizmos don't work.
+$Far duller than a serpent's tooth it is to spend a quiet youth.
+$Fast ship?  You mean you've never heard of the Millennium Falcon?
+$Fasten your seat belt.
+$Fewer things are harder to put up with that the annoyance of a good example.
+$Fidelity:  A virtue peculiar to those who are about to be betrayed.
+$Finagle's Law:  The perversity of the universe tends toward a maximum.
+$Firmness of delivery dates is inversely proportional to tightness of schedule.
+$First draw the curves, then plot the data.
+$Flee at once, all is discovered.
+$Flying is the art of throwing yourself at the ground... and missing!
+$Follow the good side right to the fire, but not into it.
+$Football's a funny game.
+$Football's a game of 90 minutes.
+$For a good time, call (408) 555-1212.
+$For adult education nothing beats children.
+$For best results, squeeze from the bottom of the tube.
+$For courage mounteth with occasion.
+$For every action, there is an equal and opposite criticism.
+$For every vision there is an equal and opposite revision.
+$For fools rush in where angels fear to tread.
+$For people who like that kind of book, that is the kind of book they will like.
+$For thee the wonder working earth puts forth sweet flowers.
+$For those of you who think life is a joke, just think of the punchline.
+$For your penance, say five Hail Marys and one loud BLAH!
+$Force has no place where there is need of skill.
+$Fort Wayne is not the headquarters of F troop.
+$Frankly, my dear Charlotte, I don't give a damn.
+$Free the Indianapolis 500.
+$Freedom is slavery.  Ignorance is strength.  War is peace.
+$Friction is a drag.
+$Friends: people who borrow my books and set wet glasses on them.
+$Frisbee players are ultimate lovers.
+$Fudd's First Law:  "If you push something hard enough, it will fall over."
+$Function reject.
+$Future looks spotty.  You will spill soup in late evening.
+$Fuzzy project goals avoid the embarrassment of estimating the costs.
+$GATTUSO'S EXTENSION OF MURPHY'S LAW:
+Nothing is ever so bad that it can't get worse.
+$GATTUSO'S EXTENSION: Nothing is ever so bad that it can't get worse.
+$GILLENSON'S LAW OF EXPECTATION:
+Never get excited over how people look from behind.
+$GLYME'S FORMULA:
+The secret of success is sincerity. Once you can fake that, you've got it made.
+$GOEBEL'S LAW OF RUSH HOUR TRAFFIC:
+What speeds up, must slow down. But who says it's ever gonna speed up?
+$GOLD'S LAW: If the shoe fits, it's ugly.
+$GORP [from a type of dried hikers' and bikers food, itself an acronym
+for Good Old Raisins and Peanuts] Another metasyntactic variable,
+like FOO & BAR.
+$GROSSMAN'S LEMMA: Any task worth doing was worth doing yesterday.
+$GROSSMAN'S MISQUOTE OF H.L.MENCKEN:
+Complex problems have simple, easy-to-understand wrong answers.
+$GUMPERSON'S LAW:
+The probability of anything happening is in inverse ratio to its desirability.
+$Garfle, ni belquont; delberpho wifniel!
+$Gargling twice daily is a good way to see if your neck leaks.
+$Garlic is to salad what insanity is to art.
+$Generosity and perfection are your everlasting goals.
+$Genius is the talent of a man who is dead.
+$Geometer turned general - a sphereless leader.
+$Get out the Crisco.
+$Girl, bathing on Bikini, eyeing boy, finds boy eyeing bikini on bathing girl.
+$Give a woman an inch and she'll (try to) park a car in it.
+$Give big space to the festive dog that shall sport in the roadway.
+$Give him an evasive answer.
+$Give me a fish and I will eat today.  Teach me to fish and I will eat forever.
+$Give me all your lupins!
+$Give me chastity and continence, but not just now.
+$Give up.
+$Give your child mental blocks for Christmas.
+$Given my druthers, I'd druther not.
+$Glory may be fleeting, but obscurity is forever.
+$Go Speed Racer, go Speed Racer, go Speed Racer, go!!!
+$Go away, kid.  You bother me.
+$Go away.
+$Go soothingly in the grease mud, as there lurks the skid demon.
+$God does not play dice with the universe.
+$God gives us our relatives; thank God we can choose our friends.
+$God made the integers; all else is the work of Man.
+$God may be subtle, but he isn't plain mean.
+$God must love the common man; He made so many of them.
+$God's in his heaven, all's right with the world.
+$Going the speed of light is bad for your age.
+$Good evening ladies and gentlemen, and welcome to the universal amphitheater.
+$Good fortune will find you, providing you gave directions.
+$Good health is merely the slowest possible rate at which one can die.
+$Good news from afar can bring you a welcome visitor.
+$Good news.  Ten weeks from Friday will be a good day.
+$Graffiti has changed deface of the nation.
+$Grass is nature's way of saying "high!"
+$Great spirits have always encountered violent opposition from mediocre minds.
+			     Albert Einstein
+$Greatness is a transitory experience.  It is never consistent.
+$HADLEY'S LAW OF CLOTHING: If you like it, they don't have it in your size.
+$HAMILTON'S GLASS CLEANING LAW:
+The spot you are scrubbing is always on the other side.
+$HANLON'S RAZOR:
+Never attribute to malice that which is adequately explained by stupidity.
+$HARDWARILY adv. In a way pertaining to hardware. "The system is hardwarily
+unreliable." The adjective 'hardwary' is NOT used. See SOFTWARILY.
+$HARTLEY'S SECOND LAW: Never sleep with anyone crazier than yourself.
+$HAWKINS' THEORY:
+Progress consists in replacing a theory that is wrong with one more
+subtly wrong.
+$HELLRUNG'S LAW:
+If you wait, it will go away.
+SHAVELSON'S EXTENSION:
+. . . having done it's damage.
+GRELB'S ADDITION:
+If it was bad, it'll be back.
+$HERSHISER'S FIRST RULE: Anything NEW and/or IMPROVED, isn't.
+$HERSHISER'S SECOND RULE: The Label NEW and/or IMPROVED means the price went up.
+$HOFFER'S LAW:
+When people are free to do as they please, they usually imitate each other.
+$HOFFSTEDT'S EMPLOYMENT PRINCIPLE: Confusion creates jobs.
+$HOWE'S LAW: Everyone has a scheme that will not work.
+$Habit is habit, and not to be flung out of the window by anyone,
+but coaxed downstairs a step at a time.
+$Hackers of the world, unite!
+$Hailing frequencies open, Captain.
+$Happiness adds and multiplies as we divide it with others.
+$Happiness is a hard disk.
+$Happiness is just an illusion, filled with sadness and confusion.
+$Happy days are here again.
+$Happy feast of the pig.
+$Hard where? soft where?
+$Harp not on that string.
+$Haste maketh waste.
+$Have no friends not equal to yourself.
+$Have you ever felt that all the world's a stage and you are the only one in
+the audience?
+$Have you ever received a Fax or a photocopy of a floppy?
+$Have you ever shown a novice the "any" key? ... Was it the power switch?
+$Have you ever talked into an acoustic modem?... Did it answer?
+$Have you locked your file cabinet?
+$Have you seen Quasimodo?  I had a hunch he was back.
+$Having children is hereditary:
+If your parents didn't have any, then you probably won't either.
+$Having nothing, nothing can he lose.
+$Having the fewest wants, I am nearest to the gods.
+$He does it with a better grace, but I do it more natural.
+$He has not acquired a fortune; the fortune has acquired him.
+$He hath eaten me out of house and home.
+$He is no lawyer who cannot take two sides.
+$He is truly wise who gains wisdom from another's mishap.
+$He is useless on top of the ground; he ought to be under it inspiring
+the cabbages.
+$He keeps differentiating.... flying off on a tangent.
+$He looked at me as if I was a side dish he hadn't ordered.
+$He that is giddy thinks the world turns round.
+$He that would govern others, first should be the master of himself.
+$He thinks by infection, catching an opinion like a cold.
+$He thinks he could easily win your heart.
+$He walks as if balancing the family tree on his nose.
+$He was a fiddler, and consequently a rogue.
+$He was so narrow-minded he could see through a keyhole with both eyes.
+$He who always plows a straight furrow is in a rut.
+$He who believes the past cannot be changed has not yet written his memoirs.
+$He who cooks carrots and peas in same pot unsanitary.
+$He who enters contest is optimistic as submarine with screen doors.
+$He who falls in love with himself will have no rivals.
+$He who foresees calamities suffers them twice over.
+$He who has a shady past knows that nice guys finish $ast.
+$He who has imagination without learning has wings but no feet.
+$He who hates vices hates mankind.
+$He who hesitates is last.
+$He who hesitates is sometimes saved.
+$He who hoots with owls by night cannot soar with eagles by day.
+$He who is good for making excuses is seldom good for anything else.
+$He who is henpecked may lend an ear to other chicks.
+$He who knows others is wise.  He who knows himself is enlightened.
+$He who knows that enough is enough will always have enough.
+$He who knows, does not speak.  He who speaks, does not know.
+$He who laughs last is probably your boss.
+$He who laughs last probably doesn't understand the joke.
+$He who laughs, lasts.
+$He who lives by the sword eats with bloody hands.
+$He who lives without folly is less wise than he believes.
+$He who looks like his passport photo is not well enough to travel.
+$He who puts his nose to the grindstone is a bloody fool.
+$He who reads many fortunes gets confused.
+$He who slings mud loses ground.
+$He who spends a storm beneath a tree, takes life with a grain of TNT.
+$He who uses bad language is an ignorant schmuck.
+$He would always rush in where fools fear to tread.
+$He's a wild man. Get out of here.
+$He's dead, Jim.
+$He's still standing in that familiar upright position.
+$He's without doubt the greatest sweeper in the world, I'd say, at a guess.
+$Head Cleaner - rotary brillo pad.
+$Head Crash - what your crash helmet is for.
+$Heard on Noahs' ark: Sailing is fun, but scrubbing the decks is aardvark.
+$Hell's broken loose.
+$Hello! I'm Bounder of Adventure!
+$Help!  I'm trapped inside an Amdahl 470!
+$Help!  I'm trapped inside an Amdahl 580!
+$Here comes the orator, with his flood of words and his drop of reason.
+$Here's looking at you, kid.
+$Hereditary - Opposite of Thereditary
+$Hey, dad, will you buy me a flame thrower?
+$Hi, kids!  Ed Barbera here!
+$High Level Languages are placed on more experienced computers.
+$Hippy: a guy who looks like a jill and smells like a john.
+$His heart was yours from the first moment that you met.
+$His life was formal; his actions seemed ruled with a ruler.
+$History books which contain no lies are extremely dull.
+$History is bunk.
+$History repeats itself; historians repeat each other.
+$Honesty's the best policy.
+$Honi soit la vache qui rit.
+$Honk if you love obscene gestures.
+$Hope is a good breakfast, but it is a bad supper.
+$Hope is a waking dream.
+$Hors d'oeuvres--a ham sandwich cut into forty pieces.
+$Horse sense is the thing a horse has that keeps it from betting on people.
+$Houdini escaping from New Jersey!
+$How about a little fire, scarecrow?
+$How apt the poor are to be proud.
+$How can I love you if you won't lie down?
+$How can you govern a nation which has 246 kinds of cheese?
+$How can you work when the system's so crowded?
+$How come we never talk anymore?
+$How did a fool and his money get together in the first place?
+$How do you keep a turkey in suspense?
+$How high I am  /  How much I see  /  How far I reach  /  Depends on me
+$How long a minute is depends on which side of the bathroom door you're on.
+$How many "coming people" has one known! Where on earth do they all go to?
+$How many Monty Python fans does it take to change a light bulb?
+
+One to claim it is an ex light bulb, it is no more, another to claim he didn't
+want to change it anyway, he always wanted to be a lumberjack. One to ask for
+a licence for his pet bulb, Eric, and another to summarise Proust. One to say
+that in his day, they had it tough, one to get nailed to the light socket, one
+to ask for a new bulb with no spam in it...
+$How many weeks are there in a light year?
+$How much sin can I get away with and still go to heaven?
+$How sharper than a hound's tooth it is to have a thankless serpent.
+$How untasteful can you get?
+$How was Thomas J. Watson buried? 9 edge down.
+$How wonderful opera would be if there were no singers.
+$How you look depends on where you go.
+$Humans are unreliable, inefficient, often lazy, sometimes pregnant, liable to
+strike, need to be fed and paid, take up a lot of space and are slow by
+computer standards.
+$Hyphenate between syllables and avoid un-necessary hyphens.
+$I am a computer. I am dumber than any human and smarter than any administrator.
+$I am a man--nothing human is alien to me.
+$I am looking for an honest man.
+$I am more bored than you could ever possibly be.  Go back to work.
+$I am not a crook.
+$I am not afraid of tomorrow, for I have seen yesterday and I love today.
+$I belong to no organized party.  I am a Democrat.
+$I came to MIT to get an education for myself and a diploma for my mother.
+$I can hardly bear to watch.
+$I can relate to that.
+$I can tell you're lying. Your lips are moving.
+$I can't begin to describe how happy I am.
+$I can't hear you.  There's a banana republic in my ear.
+$I can't help showing my enthusiasm.
+$I can't reach the brakes on this piano!
+$I come unbundled.
+$I couldn't possibly fail to disagree with you less.
+$I cried because I had no shoes, until I met a man who had no socks.
+$I cut down trees, I eat my lunch, I go to the lavatory.
+$I despise the pleasure of pleasing people whom I despise.
+$I do desire we may be better strangers.
+$I don't get no respect.
+$I don't have a drinking problem.
+    I drink,
+    I get drunk,
+    I fall down,
+    No problem.
+$I don't know. I don't care. And it doesn't make any difference.
+$I don't understand you anymore.
+$I don't want to die at 40.
+		-- J. Lennon
+$I dote on his very absence.
+$I enjoy the time that we spend together.
+$I fear explanations explanatory of things explained.
+$I feel almost happy.
+$I feel so good I could do a week's work this afternoon.
+$I figure I'm pretty good with the bullshit but I love listening to an expert.
+Keep talking.
+$I find it hard to restrain my enthusiasm.
+$I found Rome a city of bricks and left it a city of marble.
+$I generally avoid temptation unless I can't resist it.
+$I got up early today so as to have even more time to enjoy myself.
+$I have hardly ever known a mathematician who was capable of reasoning.
+$I have never let my schooling interfere with my education.
+$I have no time for monks resisting the carnival.
+$I have often regretted my speech, never my silence.
+$I haven't laughed so much since yesterday.
+$I hear what you're saying but I just don't care.
+$I just picked up a book called "Glue in Many Lands" and I can't put it down.
+$I kew a girl, she was a macho man.
+$I know I'm lucky. I always have been.
+$I know on which side my bread is buttered.
+$I know you think you understood what I said, but what you heard
+was not what I meant.
+$I like it better in the dark.
+$I like work; it fascinates me; I can sit and look at it for hours.
+$I love treason but hate a traitor.
+$I must have slipped a disk - my pack hurts.
+$I never did it that way before.
+$I never knew I had so many friends.
+$I never realised that FORTRAN was so exciting.
+$I only have to open my mouth and jolly thoughts pour out.
+$I read this in a very interesting article the other day:
+"Today we commerate the death of the great Bon Scott who this day
+(however many years ago) drowned in a pool of his own vomit."
+
+Boy, Bon must really have been weird. Do you know how difficult it would
+be to fill a pool with vomit?
+
+This goes out to all of you eating pea soup. Cheers.
+
+-John Holden
+$I realize that there are many people in this world who do not love their
+fellow human beings, and I hate people like that!
+$I refuse to have a battle of wits with an unarmed opponent.
+$I saw a werewolf drinking a pina colada at Trader Vic's ...
+$I saw what you did and I know who you are.
+$I suggest a new strategy, R2.  Let the Wookiee win.
+$I suppose Paradise must be like this.
+$I think I could fall madly in bed with you.
+$I think we're all Bozos on this bus.
+$I think we're back to normality at last.
+$I think we're in trouble.
+$I think, therefore I am paid.
+$I think, therefore I am.  I think.
+$I used to be lost in the shuffle. Now I just shuffle along with the lost.
+$I want a meal, not a snack.
+$I want the world to know I'm happy as can be.
+$I want to live forever or die in the attempt.
+$I was born smiling.
+$I will make you shorter by the head.
+$I will never lie to you.
+$I will not forget you.
+$I wish they all could be California girls.
+$I wish you humans would leave me alone.
+$I wish you were a beer.
+$I woke up to discover it had all been a terrible film...
+$I worship the ground that awaits you.
+$I would dance for joy if there weren't people watching.
+$I would sooner be notorious than unknown.
+$I wouldn't shoot him if I were you.  It will just make him mad.
+$I'd just as soon kiss a Wookiee.
+$I'd like to help you out. Which way did you come in?
+$I'd love to, but I changed the lock on my door and now I can't get out.
+$I'd love to, but I did my own thing and now I've got to undo it.
+$I'd love to, but I don't want to leave my comfort zone.
+$I'd love to, but I feel a song coming on.
+$I'd love to, but I have some real hard words to look up in the dictionary.
+$I'd love to, but I have to answer all of my "occupant" letters.
+$I'd love to, but I have to be on the next train to Bermuda.
+$I'd love to, but I have to bleach my hare.
+$I'd love to, but I have to check the freshness dates on my dairy products.
+$I'd love to, but I have to draw "Cubby" for an art scholarship.
+$I'd love to, but I have to floss my cat.
+$I'd love to, but I have to fluff my shower cap.
+$I'd love to, but I have to fulfill my potential.
+$I'd love to, but I have to go to court for kitty littering.
+$I'd love to, but I have to go to the post office to see if I'm still wanted.
+$I'd love to, but I have to jog my memory.
+$I'd love to, but I have to knit some dust bunnies for a charity bazaar.
+$I'd love to, but I have to rotate my crops.
+$I'd love to, but I have to sit up with a sick ant.
+$I'd love to, but I have to stay home and see if I snore.
+$I'd love to, but I have to study for a blood test.
+$I'd love to, but I have to thaw some karate chops for dinner.
+$I'd love to, but I have to wash/condition/perm/curl/tease/torment my hair.
+$I'd love to, but I have too much guilt.
+$I'd love to, but I left my body in my other clothes.
+$I'd love to, but I made an appointment with a cuticle specialist.
+$I'd love to, but I never go out on days that end in "Y".
+$I'd love to, but I prefer to remain an enigma.
+$I'd love to, but I promised to help a friend fold road maps.
+$I'd love to, but I think you want the OTHER Luke.
+$I'd love to, but I want to spend more time with my blender.
+$I'd love to, but I'll be looking for a parking space.
+$I'd love to, but I'm attending a perfume convention as guest sniffer.
+$I'd love to, but I'm attending the opening of my garage door.
+$I'd love to, but I'm being deported.
+$I'd love to, but I'm building a pig from a kit.
+$I'd love to, but I'm converting my calendar watch from Julian to Gregorian.
+$I'd love to, but I'm doing door-to-door collecting for static cling.
+$I'd love to, but I'm enrolled in aerobic scream therapy.
+$I'd love to, but I'm getting my overalls overhauled.
+$I'd love to, but I'm giving nuisance lessons at a convenience store.
+$I'd love to, but I'm going down to the bakery to watch the buns rise.
+$I'd love to, but I'm going through cherry cheesecake withdrawal.
+$I'd love to, but I'm going to be old someday.
+$I'd love to, but I'm going to count the bristles in my toothbrush.
+$I'd love to, but I'm having all my plants neutered.
+$I'd love to, but I'm having my baby shoes bronzed.
+$I'd love to, but I'm in training to be a household pest.
+$I'd love to, but I'm observing National Apathy Week.
+$I'd love to, but I'm planning to go downtown to try on gloves.
+$I'd love to, but I'm sandblasting my oven.
+$I'd love to, but I'm staying home to work on my cottage cheese sculpture.
+$I'd love to, but I'm taking punk totem pole carving.
+$I'd love to, but I'm teaching my ferret to yodel.
+$I'd love to, but I'm too young for that stuff.
+$I'd love to, but I'm touring China with a wok band.
+$I'd love to, but I'm trying to be less popular.
+$I'd love to, but I'm trying to cut down.
+$I'd love to, but I'm trying to see how long I can go without saying yes.
+$I'd love to, but I'm uncomfortable when I'm alone or with others.
+$I'd love to, but I'm up to my elbows in waxy buildup.
+$I'd love to, but I'm waiting to see if I'm already a winner.
+$I'd love to, but I'm worried about my vertical hold.
+$I'd love to, but I'm writing a love letter to Richard Simmons.
+$I'd love to, but I've been scheduled for a karma transplant.
+$I'd love to, but I've been traded to Cincinnati.
+$I'd love to, but I've dedicated my life to linguini.
+$I'd love to, but I've got a Friends of Rutabaga meeting.
+$I'd love to, but It wouldn't be fair to the other Beautiful People.
+$I'd love to, but It's my parakeet's bowling night.
+$I'd love to, but having fun gives me prickly heat.
+$I'd love to, but it's too close to the turn of the century.
+$I'd love to, but my Dress For Obscurity class meets then.
+$I'd love to, but my Millard Fillmore Fan Club meets then.
+$I'd love to, but my bathroom tiles need grouting.
+$I'd love to, but my chocolate-appreciation class meets that night.
+$I'd love to, but my crayons all melted together.
+$I'd love to, but my favorite commercial is on TV.
+$I'd love to, but my mother would never let me hear the end of it.
+$I'd love to, but my palm reader advised against it.
+$I'd love to, but my patent is pending.
+$I'd love to, but my plot to take over the world is thickening.
+$I'd love to, but my subconscious says no.
+$I'd love to, but my uncle escaped again.
+$I'd love to, but my yucca plant is feeling yucky.
+$I'd love to, but none of my socks match.
+$I'd love to, but people are blaming me for the Spanish-American War.
+$I'd love to, but the President said he might drop in.
+$I'd love to, but the grunion are running.
+$I'd love to, but the last time I went, I never came back.
+$I'd love to, but the man on television told me to stay tuned.
+$I'd love to, but there are important world issues that need worrying about.
+$I'd love to, but there's a disturbance in the Force.
+$I'd love to, but you know how we psychos are.
+$I'd rather be pissed off than pissed on.
+$I'd rather have a bottle in front of me than a frontal lobotomy.
+$I'd rather have a free bottle in front of me than a prefrontal lobotomy.
+$I'll burn my books.
+$I'll never get off this planet.
+$I'll tell ya, life aint easy for a boy named Sue!
+$I'll turn over a new leaf.
+$I'm a Hollywood writer; so I put on a sports jacket and take off my brain.
+$I'm a lumberjack and I'm OK.
+$I'm a power-crazed psycopath - I don't WANT inner peace!!!!
+$I'm all for computer dating, but I wouldn't want one to marry my sister.
+$I'm becoming addicted to happiness.
+$I'm defending her honor, which is more than she ever did.
+$I'm feeling just great.
+$I'm glad that ignorance is such bliss.
+$I'm going to the Missing Persons Bureau to see if anyone is looking for me.
+$I'm in charge here.
+		-- Al Haig
+$I'm in love with Susy...
+$I'm mad as hell, and I'm not going to take it anymore!
+$I'm making a home movie called "The Thing That Grew in My Refrigerator".
+$I'm not as dumb as you look.
+$I'm not cynical. Just experienced.
+$I'm not going deaf. I'm ignoring you.
+$I'm not lost, but I don't know where I am.
+$I'm not prejudiced. I hate everyone equally.
+$I'm not wearing any underwear. Film at 11.
+$I'm really bouncing with joy today.
+$I'm really enjoying my stay on earth.
+$I'm really enjoying not talking to you, so let's not talk again real soon, okay?
+$I'm so full of joie de vivre.
+$I'm sure that if there were a death penalty more people would be alive today.
+		-- N. Reagan
+$I'm the person your mother warned you about.
+$I've been there.
+$I've come for an argument!
+$I've given up reading books; I find it takes my mind off myself.
+$I've got a devil in me.
+$I've got a very bad feeling about this.
+$I've got to admit it's getting better.
+$I've just broken all previous records on Space Invaders.
+$I've just had a pint of Owd Roger, so everything is rosy.
+$I've never been hurt by anything I didn't say.
+$I've only got twelve cards.
+$IMBESI'S LAW OF THE CONSERVATION OF FILTH:
+In order for something to become clean, something else must become dirty.
+FREEMAN'S EXTENSION:
+. . . but you can get everything dirty without getting anything clean.
+$IOT trap -- core dumped
+$IRON LAW OF DISTRIBUTION: Them that has, gets.
+$Identify your visitor.
+$Idleness is leisure gone to seed.
+$Idleness is the holiday of fools.
+$If Christine and Mandy were convicted of anything, it was probably
+perjury or some such. I don't remember the legal details; I was only
+interested in the smut at the time.
+(anonymous usenetter on the details of the Profumo affair)
+$If God had meant us to eat meringue, he would have made chickens fart more.
+$If God had wanted you to go around nude, He would have given you bigger hands.
+$If I cannot bend Heaven, I shall move Hell.
+$If I follow you home will you keep me?
+$If I have not seen so far it is because I stood in giant's footsteps.
+$If I've told you once, I've told you a thousand times, resist hyperbole.
+$If a job's worth doing, it's worth taking the trouble to ask someone to do it.
+$If a string has one end, it has another.
+$If a tool is put away when you're sure it won't be needed again, it will. Soon.
+$If an experiment works, you must be using the wrong equipment.
+$If any word is improper at the end of a sentence, a linking verb is.
+$If anything can go wrong, it will.
+$If at first you don't succeed, give up.  No use being a damn fool.
+$If at first you don't succeed, quit; don't be a nut about success.
+$If at first you don't succeed, you're doing about average.
+$If everything is coming your way, you're in the wrong lane!
+$If everything seems to be going well, you have obviously overlooked something.
+$If fifty million people say a foolish thing, it's still a foolish thing.
+		-- B. Russell
+$If happiness is in your destiny, you need not be in a hurry.
+$If in doubt, make it sound convincing.
+$If it doesn't matter, it doesn't matter.
+$If it happens, it must be possible.
+$If it isn't broken, don't fix it.
+$If it jams, force it.  If it breaks, it needed replacement anyway.
+$If it jams, force it. If it breaks, it needed replacing anyway.
+$If it looks easy, it's tough.  If it looks tough, it's damn well impossible.
+$If it pours before seven, it has rained by eleven.
+$If it says "one size fits all," it doesn't fit anyone.
+$If it wasn't so cool out today, it would be warmer.
+$If it wasn't so warm out today, it would be cooler.
+$If it weren't for the last minute, nothing would ever get done.
+$If it works, don't fix it.
+$If it's good, they discontinued it.
+$If life gives you lemons, make lemonade.
+$If more than one person is responsible for a bug, no one is at fault.
+$If no one uses it, there's a reason.
+$If not controlled, work flows to the competent person until he is submerged.
+$If practice makes perfect, and nobody's perfect, why practice?
+$If rabbits' feet are so lucky, what happened to the rabbit?
+$If some people didn't tell you, you'd never know they'd been away on vacation.
+$If the facts do not conform to your theory, they must be disposed of.
+$If the opposite of "pro" is "con", then what's the opposite of "progress"?
+$If the shoe fits, try wearing it on the other foot;
+That's bound to make you feel better.
+$If there is a God, how come he allows Bonnie Langford to exist?
+$If there is no wind, row.
+$If things appear to be going well, you have overlooked something.
+$If this is time-sharing, give me my share right now.  It's not time yet.
+$If this were subjunctive, I'm in the wrong mood.
+$If time heals all wounds, why does the belly button stay the same?
+$If we can't fix it - it's broken!
+$If you always postpone pleasure you will never have it. Quit work and play!
+$If you ask how much it is, you can't afford it.
+$If you can't dazzle 'em with brilliance, baffle 'em with bullshit.
+$If you continually give you will continually have.
+$If you didn't get caught, did you really do it?
+$If you do not change your direction, you may end where you are headed.
+$If you do something which you are sure will meet with everybody's approval,
+somebody won't like it.
+$If you do what you've always done, you'll get what you've always gotten.
+$If you don't care where you are, then you ain't lost.
+$If you don't know what you're doing, do it neatly.
+$If you don't try new solutions, then you can expect new evils.
+$If you fool around with something long enough, it will eventually break.
+$If you get angry at a newspaper columnist, he'll get rich or famous or both.
+$If you have nothing to do, don't do it here.
+$If you have nothing to say, please only say it once!
+$If you keep anything long enough, you can throw it away.
+$If you knew what Mona Lisa knew, you'd smile too.
+$If you look just close enough, you can see anything you want.
+$If you make a mistake, you right it immediately to the best of your ability.
+$If you put it off long enough, it might go away.
+$If you refuse to accept anything but the best you very often get it.
+$If you stay up all night wondering where the sun is, it will dawn on you.
+$If you suspect a man, don't employ him.
+$If you think before you speak the other guy gets his joke in first.
+$If you think this fortune is confusing, then change one pig.
+$If you thought yesterday was bad, wait till you see what happens today.
+$If you treat people right they will treat you right; 90 per cent of the time.
+$If you try to please everyone, somebody is not going to like it.
+$If you wake up and find yourself a success, then you haven't been asleep.
+$If you want to know how old a man is, ask his brother-in-law.
+$If you want to know how old a woman is, ask her sister-in-law.
+$If you wish to succeed, consult three old people.
+$If you wish, You will have an opportunity.
+$If you would keep a secret from an enemy, tell it not to a friend.
+$If you're early, it's cancelled, if you're on time, it's late,
+if you're late, you're late.
+$If you're feeling good, don't worry; you'll get over it.
+$If your aim in life is nothing; you can't miss.
+$If your bread is stale, make toast.
+$If your computer speaks english it was probably made in japan.
+$If your feet smell and your nose runs - you're built upside down.
+$Ignorance is when you don't know anything and somebody finds it out.
+$Ignore alien orders.
+$Ignore previous fortune.
+$Imagination is more important than knowledge.
+$In a crisis, you will choose the worst possible course of action.
+$In a fight between you and the world, I'll back the world.
+$In a fight between you and the world, I'll back you.
+$In a hierarchical organization, the higher the level, the greater confusion.
+$In a hierarchy, every employee tends to rise to his level of incompetence.
+$In a single day, Samson slew a thousand Philistines with the jawbone of an ass.
+Every day, thousands of sales are killed with the same weapon.
+$In any human endeavor, work seeks the lowest hierarchical level.
+$In any national struggle, the deciding factor is not who is the most
+competent, but who is less incompetent.
+$In case of fire, yell "Fire!"
+$In case of injury notify superior immediately, he'll kiss it and make it better!
+$In charity there is no excess.
+$In marriage, as in war, it is permitted to take every advantage of the enemy.
+$In most instances, all an argument proves is that two people are present.
+$In my end is my beginning.
+$In my heart it is spring.
+$In order to be, never try to seem.
+$In seeking the unattainable, simplicity only gets in the way.
+$In the stairway of life, you'd best take the elevator.
+$In this fortune, the concluding three words 'were left out'.
+$In this world, truth can wait; she's used to it.
+$Incompetence plus incompetence equals incompetence.
+$Indecision is the basis of flexibility.
+$Indigo - the fear of purple heights.
+$Indirect file nested too deep.
+$Individualists unite!
+$Information is held on magnetic tape by a series of punched holes.
+$Information is the inverse of entropy.
+$Ingres is not a necessary precursor to Egress.
+$Insert your card magnetic stripe down.
+$Inside every large problem, there is a small problem trying to get out.
+$Insomnia isn't anything to lose sleep over.
+$Institute: An archaic school where football in not taught.
+$Integrity has no need for rules.
+$Internal consistency is valued more than efficient service.
+$Is a computer language with goto's totally wirth-less?
+$Is it a game of chance?  Not the way I play it.
+$Is it friday yet?
+$Is it time for lunch yet?
+$Is knowledge knowable, and how do we know?
+$Is this a machine?  I don't talk to machines!  [Click]
+$Is this really happening?
+$Isn't nature wonderful?
+$It could be worse--it might be raining.
+$It doesn't do to leave a live dragon out of your calculations.
+$It is Fortune, not wisdom that rules our lives.
+$It is a poor judge who cannot award a prize.
+$It is a wise father that knows his own child.
+$It is always the partner's fault.
+$It is annoying to be honest to no purpose.
+$It is bad luck to be superstitious.
+$It is better to be deceived by a friend, than to suspect him.
+$It is better to be feared than loved.
+$It is better to die on your feet than to live on your knees.
+$It is better to have loved a short woman than never to have loved a tall.
+$It is better to have loved and lost -- much better.
+$It is better to have loved and lost than just to have lost.
+$It is better to have men ask why you have no statue, than why you have one.
+$It is better to kiss an avocado than to get in a fight with an aardvark.
+$It is better to vote for someone you like and have them not elected
+than to vote for someone you dislike and have them elected.
+$It is better to wear out than to rust out.
+$It is difficult to prophesy, especially about the future.
+$It is difficult to soar with eagles when you work with turkeys.
+$It is easier to fight for one's principles than to live up to them.
+$It is easier to get forgiveness than permission.
+$It is easier to resist at the beginning than at the end.
+$It is easier to run down a hill than up one.
+$It is easier to write an incorrect program than to understand a correct one.
+$It is far better to be deceived than to be undeceived by those we love.
+$It is hard to get ivory in Africa, but in Alabama the Tuscaloosa.
+$It is impossible to enjoy idling thoroughly unless one has plenty of work to do
+$It is impossible to make anything foolproof because fools are so ingenious.
+$It is incumbent on us to avoid archaisms.
+$It is later than you think.
+$It is morally wrong to allow a sucker to keep his money.
+$It is much easier to suggest solutions when you know nothing about the problem.
+$It is much harder to find a job than to keep one.
+$It is not every question that deserves an answer.
+$It is now pitch dark.  If you proceed, you will likely fall into a pit.
+$It is only shallow people who do not judge by appearances.
+$It is sweet to let the mind unbend on occasion.
+$It is the wise bird that builds its nest in a tree.
+$It is when I struggle to be brief that I become obscure.
+$It is your concern when your neighbor's wall is on fire.
+$It just goes to show you, its always something.
+$It looks like the sands of time could be running out for our lads.
+$It now costs more to amuse a child than it once did to educate his father.
+$It pays to be obvious, especially if you have a reputation for subtlety.
+$It seems like the less a statesman amounts to, the more he/she loves the flag.
+$It seems to make an auto driver mad if he misses you.
+$It takes a modem to run a baudy house.
+$It takes both a weapon, and two people, to commit a murder.
+$It was a book to kill time for those who liked it better dead.
+$It was a great shot, if it had gone in the net it would have been a goal.
+$It were not best that we should all think alike; it is the difference
+of opinion that makes horse races.
+$It won't work.
+$It works better if you plug it in.
+$It'll be just like Beggars Canyon back home.
+$It's a game of two halves.
+$It's a knockout tournament and anything can happen.
+$It's a long time since I've enjoyed myself so much.
+$It's a poor workman who blames his tools.
+$It's all about doing the business where it matters in the 6 yard box.
+$It's all in the mind, so you might as well be happy.
+$It's all in the mind, ya know.
+$It's alright - he's from Barcelona.
+$It's better to burn out than to fade away.
+$It's better to have a gun and not need it than to need a gun and not have it.
+$It's certainly not over yet with five minutes left in the first half.
+$It's clever, but is it art?
+$It's funny. You come some place new and everything looks the same.
+$It's getting better all the time.
+$It's great to be back here again.
+$It's hard to be humble when you're as great as I am.
+$It's hard to be humble when you're perfect.
+$It's hard to soar with eagles when you work with turkeys.
+$It's later than you think.
+$It's not easy having a good time; even smiling makes my face ache.
+$It's not nice to fool Mother Nature.
+$It's not over until the final whistle blows.
+$It's not reality that's important, but how you perceive things.
+$It's not that you and I are so clever, but that the others are such fools.
+$It's really good having an effulgent personality.
+$It's running like a scalded dog!
+$It's six o'clock and time for the penguin on top of your terminal to explode.
+$It's smart to pick your friends - but not to pieces.
+$It's smart to pick your friends - but not your nose.
+$It's sweet to be remembered, but it's often cheaper to be forgotten.
+$It's ten o'clock, do you know where your processes are?
+$It's the goals that count.
+$It's wonderful just to be alive.
+$Italians do it better!
+$JACOB'S LAW: To err is human - to blame it on someone else is even more human.
+$JACQUIN'S POSTULATE:
+No man's life, liberty, or property are safe when legislature is in session.
+$JENKENSON'S LAW: It works better if you plug it in.
+$JOHN'S COLLATERAL COROLLARY:
+In order to get a loan you must first prove that you don't need it.
+$JOHNSON AND LAIRD'S LAW: Toothache tends to start on Saturday Night.
+$JONES' LAW OF TV: The only new show worth watching will be cancelled.
+$JONES'S MOTTO: Friends come and go, but enemies accumulate.
+$Jack the Ripper excused himself on the grounds that it was human nature.
+$Jimmy Hoffa--please call home.
+$Join the Army:
+Travel to exotic distant lands. meet exciting, unusual people and kill them.
+$Journalism will kill you, but it will keep you alive while you're at it.
+$July 4. Statistics show that we loose more fools on this day
+than in all the other days of the year put together. This proves,
+by the number left in stock, that one Fourth of July per year is
+now inadequate, the country has grown so.
+$Just because you're not paranoid doesn't mean they're not out to get you.
+$Just give Alice some pencils and she will stay busy for hours.
+$Just think how much worse life could be!
+$Just to have it is enough.
+$Juxtaposition - Dr Arnold Juxta's famous appendix to the Kama Sutra.
+$KITMAN'S LAW: Pure drivel tends to drive ordinary drivel off the TV screen.
+$KLIPSTEIN'S ENGINEERING LAW:
+Dimensions will always be in the wrong units, such as furlongs per fortnight.
+$KLUGE (kloodj) alt. KLUDGE [from the German kluge, clever] n. 1. A Rube
+Goldberg device in hard/software. 2. A clever programming trick used as a
+stopgap measure, and noted for being more efficient than clear. 3. Something
+that works for the wrong reasons. 4. v. To insert a kluge in a program.
+"I've kluged this routine to get around that weird bug; it should hold
+'till I find the REAL problem." also -- UP. 5. -- AROUND: to avoid by
+inserting a kluge.
+$KNOX'S PRINCIPLE: An acquired player fades, a traded player rises to stardom.
+$KOHN'S COROLLARY: Two wrongs are only the beginning.
+$KOVAC'S CONUNDRUM: When you dial a wrong number, you never get a busy signal.
+$Keep America beautiful.  Swallow your beer cans.
+$Keep anything long enough and you can throw it away.
+Throw it away and you will need it next day.
+$Keep emotionally active.  Cater to your favorite neurosis.
+$Keep grandmothers off the streets - legalize bingo.
+$Keep the pointy end forward and the dirty side down.
+$Key Punch - the blow that causes the knockout.
+$Kiss me twice. I'm schizophrenic.
+$Kiss me, Kate, we will be married o'Sunday.
+$Kiss your keyboard goodbye!
+$Kisses are a better fate than wisdom.
+$Kite fliers keep it up longer.
+$Kix are for trids.
+$Klaatu barada nikto.
+$Know when to quit.
+$Know your user.
+$Knowledge is good.
+$Knowledge is power.
+$Knowledge without common sense is folly.
+$LANSAM'S LAWS:
+ 1. Everything depends.
+ 2. Nothing is always.
+ 3. Everything is sometimes.
+$LAS VEGAS LAW: Never bet on a loser because his luck is bound to change.
+$LAW OF CONSTRUCTION: Cut it large and kick it into place.
+$LAW OF GIFTS: You get the most of what you need the least.
+$LAW OF LIFE'S HIGHWAY:
+If everything is coming your way, you're in the wrong lane.
+$LAW OF REVELATION:
+The hidden flaw always remains hidden.
+$LAW OF TESTS: If you are given a take-home exam, you will forget where you live.
+$LAW OF THE KITCHEN:
+You're always complimented on the item that took the least effort to prepare.
+$LAW OF THE OFFICE:
+Important letters which contain no errors will develop errors in the mail.
+$LAW OF THE SEARCH:
+The first place to look for something is the last place you'd expect to find it.
+$LEE'S LAW:
+In dealing with a body of people, the people will be more tacky than expected.
+$LEFTY GOMEZ'S LAW: If you don't throw it, they can't hit it.
+$LEO ROGERS' COMMENTARY: If it's worth doing, it's worth overdoing.
+$LEVY'S NINTH LAW: Only God can make a random selection.
+$LIEBERMAN'S LAW: Everybody lies; but it doesn't matter since nobody listens.
+$LINE STARVE n. inverse of a line feed.
+$LISP:  To call a spade a thpade.
+$LOGICAL [from the term 'logical device,' whereby a physical device is
+referred to by an arbitrary name] adj. Understood to have a meaning not
+necessarily corresponding to reality. E.g. if Jane Doe went on a long
+vacation or left her job, then her replacement might be known as 'logical
+Jane Doe' for a while.
+Logical compass directions are also often used. E.g. in the Washington area,
+I95 is understood to be logical north (even by those who don't use the term),
+even though it is closer to north east.
+$LOGIN PROCEEDING. LOGIN PROCEEDING.
+$LORD BALFOUR'S CONTENTION:
+Nothing matters very much, and very few things matter at all.
+$LOSE [from MIT jargon] v. 1. To fail. A program loses when it encounters an
+exceptional condition. 2. To be exceptionally unaesthetic. 3. Of people, to
+be obnoxious or unusually stupid (as opposed to ignorant). 4. DESERVE TO
+LOSE: v. Said of someone who wilfully does the wrong thing; humorously,
+if one uses a feature known to be marginal. What is meant is that one
+deserves the consequences on one's losing actions. "Boy, anyone who uses an
+IBM machine deserves to lose!"
+$LSD melts your mind, not in your hand.
+$LUBARSKY'S LAW OF CYBERNETIC ENTOMOLOGY: There's always one more bug.
+$LYNCH'S LAW: When the going gets tough everyone leaves.
+$Last but not least, avoid cliches like the plague; seek viable alternatives.
+$Laugh and the world laughs with you; snore and you sleep alone.
+$Laugh when you can; cry when you must.
+$Laugh, and the world ignores you.  Crying doesn't help either.
+$Law stands mute in the midst of arms.
+$Lawrence Radiation Laboratory keeps all its data in an old gray trunk.
+$Lawyers do it in their briefs.
+$Lead me not into temptation. I can find it myself.
+$Lead on, MacDuff!
+$Learn to pause--or nothing worthwhile can catch up to you.
+$Learned men are the cisterns of knowledge, not the fountainheads.
+$Learning without thought is labor lost; thought without learning is perilous.
+$Leave no stone unturned.
+$Lecture - the process by which a tutor's notes are passed to a student without
+necessarily passing through the mind of either.
+$Left to themselves, things tend to go from bad to worse.
+$Lemon curry ?!?
+$Lend money to a bad debtor and he will hate you.
+$Let a fool hold his tongue and the fool will pass for a sage.
+$Let he who takes the plunge remember to return it by Tuesday.
+$Let me see what happen when you roll your face on the keyboard.
+$Let me take you a buttonhole lower.
+$Let not the sands of time get in your lunch.
+$Let the machine do the dirty work.
+$Let the person who takes the plunge remember to return it by Tuesday.
+$Let us endeavour so to live that when we come to die even the undertaker
+will be sorry.
+$Let us rejoice and be merry.
+$Let us remember that ours is a nation of lawyers and order.
+$Let's do the Time Warp again!
+$Let's go get a pizza!
+$Let's hope that football will be the winner at the end of the day.
+$Let's just be friends and make no special effort to ever see each other again.
+$Liar:  One who tells an unpleasant truth.
+$Life is a game of bridge -- and you've just been finessed.
+$Life is all sweetness and light.
+$Life is far too important a thing ever to talk seriously about.
+$Life is full of pleasant surprises.
+$Life is getting better all the time.
+$Life is just a bed of roses.
+$Life is like an onion--you peel off layer after layer, and find nothing in it.
+$Life is one long struggle in the dark.
+$Life is really just one long party.
+$Life is such a bundle of fun.
+$Life is that brief interlude between nothingness and eternity.
+$Life is to you a dashing and bold adventure.
+$Life is what happens when you're busy making other plans.
+$Life teems with quiet fun.
+$Like winter snow on summer lawn, time past is time gone.
+$Little Red Riding Hood - Scum Killer
+$Live in the past and future only.
+$Live within your income, even if you have to borrow to do so.
+$Logic -
+the principle on which all computers are built, but none seem to run under.
+$Logic is a little bird, sitting in a tree; that smells AWFUL.
+$Lonely is a man without love.
+$Long computations which yield zero are probably all for naught.
+$Long life is in store for you.
+$Look afar and see the end from the beginning.
+$Look after the molehills and the mountains will take care of themselves.
+$Look ere ye leap.
+$Look under the sofa cushion; you will be surprised at what you find.
+$Look, Muth tracks!
+$Look, sir! 'droids!
+$Lord, what fools these mortals be!
+$Losing your drivers' license is just God's way of saying "BOOGA, BOOGA!"
+$Love America - or give it back.
+$Love and marriage may go together like a horse and carriage, but when was
+the last time you saw one of those?
+$Love and scandal are the best sweeteners of tea.
+$Love conquers all things; let us too surrender to love.
+$Love is blind but like is just too freaked out to see straight.
+$Love is in the offing, said the homicidal maniac.
+$Love is in the offing.
+$Love is in the offing. Be affectionate to one who adores you.
+$Love is sentimental measles.
+$Love means telling you why you're sorry.
+$Love the sea?  I dote upon it - from the beach.
+$Love thy neighbor.  Tune thy piano.
+$Love your enemies. It'll make 'em crazy.
+$Lucky is he for whom the belle toils.
+$MAIER'S LAW:
+If the facts do not conform to the theory, they must be disposed of.
+$MALEK'S LAW: Any simple idea will be worded in the most complicated way.
+$MARKS' LAW: A fool and your money are soon partners.
+$MARYANN'S LAW: You can always find what you're not looking for.
+$MATILDA'S SUB-COMMITTEE LAW: If you leave the room, you're elected.
+$MCGOWAN'S AXIOM:
+If a Christmas gift is advertised as "under $50", you can bet it's not $19.95.
+$MERKIN'S MAXIM: When in doubt, predict that the trend will continue.
+$MILES' RULE: Where you stand depends on where you sit.
+$MILLER'S LAW: Exceptions prove the rule - and wreck the budget.
+$MILLER'S LAW: You can't tell how deep a puddle is until you step in it.
+$MOSER'S LAW OF SPORTS:
+Exciting plays only occur when your are watching the scoreboard or buying food.
+$MOUNT TAPE U1439 ON B3, NO RING
+$MUIR'S LAW:
+When we try to pick out anything by itself, we find it hitched to the universe.
+$MURPHY'S FLU LAW:
+If you seem to be getting better, it's your doctor getting worse.
+$MURPHY'S FLU PHILOSOPHY: Even water tastes bad when taken on doctor's orders.
+$MURPHY'S GOVERNMENT LAW: If anything can go wrong, it will do so in triplicate.
+$MURPHY'S LAW OF RESEARCH: Enough research will tend to support your theory.
+$MURPHY'S LAW: If anything can go wrong, it will.
+$MURPHY'S OBSERVATION: When it rains, it pours.
+$MURPHY'S PHILOSOPHY: Smile . . . tomorrow will be worse.
+$MURPHY'S SAVING GRACE: The worst is the enemy of the bad.
+$MURPHY'S SEVENTH COROLLARY: Every solution breeds new problems.
+$MURPHY'S TENTH COROLLARY: Mother Nature is a bitch.
+$MURRAY'S HOCKEY RULE:
+Hockey is a game played by six good players and the home team.
+$MURRAY'S RULE OF BASEBALL: Whatever can go to New York, will.
+$MURRAY'S RULE OF BASKETBALL: A free agent is anything but.
+$MURRAY'S RULE OF FOOTBALL:
+Nothing is ever so bad it can't be made worse by firing the coach.
+$Machines should work; people should think.
+$Make a wish, it might come true.
+$Make input easy to proofread
+$Make it right before you make it faster.
+$Make sure all variables are initialized before use.
+$Make sure comments and code agree.
+$Make sure your code "does nothing" gracefully.
+$Make three consecutive correct guesses and you will be considered an expert.
+$Man and wife make one fool.
+$Man is by nature a political animal.
+$Man is nature's brightest jewel. Isn't that great?
+$Man is the only animal that blushes -- or needs to.
+		-- M. Twain
+$Man who bites bread or eats peas with knife is lost creature.
+$Man who falls in blast furnace is certain to feel overwrought.
+$Man who falls in vat of molten optical glass makes spectacle of self.
+$Man will never fly.  Space travel is merely a dream.  All aspirin is alike.
+$Man will occasionally stumble over the truth, but most of the time he will
+pick himself up and continue.
+$Man's horizons are bounded by his vision.
+$Managing Director - the person responsible for making it difficult for
+other people to do their work.
+$Many a family tree needs trimming.
+$Many a yo-yo think he have the world on a string.
+$Many are called, few are chosen.  Fewer still get to do the choosing.
+$Many are called, few volunteer.
+$Many are cold, but few are frozen.
+$Many changes of mind and mood; do not hesitate too long.
+$Many hands make light work.
+$Many pages make a crowded castle.
+$Many pages make a thick book, except for pocket bibles on very thin paper.
+$Many pages make a thick book.
+$Many people are unenthusiastic about their work.
+$Many people are unenthusiastic about your work.
+$Many receive advice, few profit by it.
+$Marriage is one of the chief causes of divorce.
+$Marriage is the only adventure open to the cowardly.
+$Marriages are made in heaven and consummated on earth.
+$Marry not a tennis player.  For love means nothing to them.
+$Massachusetts has the best politicians money can buy.
+$Mathematicians practice absolute freedom.
+$Mathematics is the language God used to write the universe.
+$Matrimony is the root of all evil.
+$Max, as a unary function, isn't very interesting.
+$May Godzilla get heartburn while standing in your backyard.
+$May a 20 foot Boa Constrictor give you a passionate hug.
+$May a burly person take exception to the way your face is arranged.
+$May a crazed yak fall in love with your sister.
+$May a cricket take up residence in your doctor's stethoscope just before
+your annual checkup.
+$May a diseased elephant sit on your face.
+$May a diseased yak become your houseguest for a month.
+$May a flight of Canada geese hover above you.
+$May a fungus devour your IRS refund check.
+$May a great white shark use you for a teething ring.
+$May a herd of diseased wildebeest stampede through your bedroom.
+$May a king cobra make a nest in your bed.
+$May a live electric eel take up residence in your underwear.
+$May a lovestruck mule follow you constantly.
+$May a nest of killer scorpions take residence in your shoe closet.
+$May a pregnant elephant choose your living room for the delivery.
+$May a rabid hyena follow you constantly.
+$May a rabid vampire bat give you a neck hickey.
+$May a rabid wolf inhabit your closet.
+$May a skunk take up residence in your sock drawer.
+$May a small rodent find his way into your jodhpurs.
+$May a weird holy man move in with you.
+$May a weird holy man put a curse on you.
+$May all of your successes be failures in disguise, and all of your failures
+be catastrophic.
+$May all your pushes be popped.
+$May all your relatives decide to visit un-announced simultaneously.
+$May all your teeth save one fall out. And may you have a toothache in that one.
+$May all your troubles increase exponentially.
+$May an abnormal person talk you into joining a religious sect that eats ping
+pong paddles
+$May an insincere glassblower give you mouth to mouth resuscitation.
+$May an overzealous siding salesman scotchtape 5000 woodpeckers to your house.
+$May fire ants nest in your garden.
+$May gold be discovered on your land the day before you find out that
+the land isn't really yours.
+$May mice nest in your silverware drawer.
+$May the bird of paradise fly up your nose.
+$May the bird of paradise peck a hole in your eardrum.
+$May the bluebird of happiness crap all over your birthday cake.
+$May the fleas of a thousand camels infest your armpits.
+$May the fleas of a thousand camels infest your pubic hair.
+$May you be French-kissed by a leprous aardvark.
+$May you be held hostage for the release of the unknown soldier's grandmother.
+$May you die in bed at 105, shot by a jealous spouse.
+$May you fall off the Sears tower the day before man learns how to fly.
+$May you find out that your lover is having a sex change operation.
+$May you forget your best friends name as you deliver his eulogy.
+$May you get a love letter from the Ayatollah Khomeini.
+$May you get herpes the week before a preventative vaccine is announced.
+$May you get mouth to mouth resuscitation from a paramedic with trench mouth.
+$May you invent the perfect mousetrap the day after the mouse becomes extinct.
+$May you live in uninteresting times.
+$May you never know peace.
+$May you take up a career in bomb disposal and earn the nickname 'Clumsy'.
+$May you wake up in the morning next to a dead orangutan.
+$May your blind date insist on wearing a ski mask.
+$May your brother become a gay porno film actor.
+$May your brother take up go-go dancing at a gay bar.
+$May your favourite sports team take permanent residence in the cellar.
+$May your lover insist on separate tables at a fancy restaurant.
+$May your lucky rabbit's foot be attached to an 800 lb. rabbit.
+$May your neighbour get a 30 foot Anaconda for a pet.
+$May your priest offer to sell you a tape recording of your last confession.
+$May your sister fall hopelessly in love with another woman.
+$Maybe Computer Science should be in the College of Theology.
+$Meditation is not what you think.
+$Meekness is uncommon patience in planning a worthwhile revenge.
+$Memory should be the starting point of the present.
+$Men and nations will act rationally when all other possibilities have
+been exhausted.
+$Men love to wonder, and that is the seed of science.
+$Men seldom show dimples to girls who have pimples.
+$Men still remember the first kiss after women have forgotten the last.
+$Middle age: halfway between adolescence and obsolescence!
+$Mind your own business, Spock. I'm sick of your half-breed interference.
+$Misery loves company, but company does not reciprocate.
+$Misery no longer loves company; nowadays it insists on it.
+$Misfortune.
+$Misster, do you vant to buy a duck?
+$Mistakes are oft the stepping stones to failure.
+$Moderation in all things, and moderation is the first to go.
+$Moderation in all things.
+$Modern man is the missing link between apes and human beings.
+$Money can't buy happiness but it can certainly rent it for a couple of hours.
+$Money cannot buy happiness, but it can make you awfully comfortable while
+you're being miserable.
+$Money cannot buy love, nor even friendship.
+$Money is the root of all evil, and everyone needs roots.
+$Money is the root of all wealth.
+$Money may buy friendship but money can not buy love.
+$Money will not buy happiness, but it will let you be unhappy in nice places.
+$Money will say more in one moment than the most eloquent lover can in years.
+$Moses supposes his toeses are roses, but Moses supposes erroneously.
+$Most of us have been at work for several hours now.
+$Mother earth is not flat!
+$Motherboard -
+a maternal parent listening to you tell her about your latest program.
+$Mount St. Helens should have used earth control.
+$Multics is security spelled sideways.
+$Mum's the word.
+$Mumble.
+$Murphy was an optimist.
+$Music in the soul can be heard by the universe.
+$Must I hold a candle to my shames?
+$My Karma ran over my dogma.
+$My a burly person take exception to the way your face is arranged.
+$My brain hurts!
+$My cup hath runneth'd over with love.
+$My dog has no nose.
+$My family history begins with me, but yours ends with you.
+$My foolish parents taught me to read and write.
+$My manager also told me about the step-by-step phone walk-through
+that several other people have experienced: "There!  Now it's
+stopped working!" "Did you take OUT the first disk before you put
+the second on in?"  When I heard this story, I said, "Sounds to me
+like that guy's been watching too many porno movies."
+$My natural exuberance spills out all over the place.
+$My psycho-analyst is going to be out of a job.
+$NAESER'S LAW:
+You can make it foolproof, but you can't make it damnfoolproof.
+$NEWTON'S LAW: A bird in the hand is safer than one overhead.
+$NEWTON'S SEVENTH LAW: A bird in the hand is safer than one overhead.
+$Nanu nanu!
+$National security is in your hands - guard it well.
+$Nature abhors a vacuous experimenter.
+$Nature always sides with the hidden flaw.
+$Nature, to be commanded, must be obeyed.
+$Necessity has no law.
+$Necessity is the mother of invention.
+$Neestiko arkoudi dhen horevee.
+$Negative expectations yield negative results.
+$Neil Armstrong tripped!
+$Neither a burrower nor a lentil bee.
+		-- Wm. Snakespeare
+$Neither spread the germs of gossip nor encourage others to do so.
+$Never argue with a fool.  People might not know the difference.
+$Never argue with a six-year-old who shaves.
+$Never argue with anyone who buys ink by the gallon.
+$Never ask a question unless the answer makes a difference.
+$Never call a man a fool; borrow from him.
+$Never do today what you can put off until tomorrow.
+$Never drink from your finger bowl - it contains only water.
+$Never eat at a place called Mom's.
+$Never eat in a place with sliding doors unless you're crazy about raw fish.
+$Never give a gun to ducks.
+$Never give an inch!
+$Never hit a man with glasses; hit him with your fist.
+$Never insult an alligator until you've crossed the river.
+$Never kick a man unless he's down.
+$Never let your sense of morals prevent you from doing what is right.
+$Never play cards with a man called Doc.
+$Never play leapfrog with a unicorn.
+$Never promise more than you can perform.
+$Never put off 'til tomorrow what you can avoid altogether.
+$Never put off till tomorrow what you can avoid doing entirely.
+$Never replace a successful experiment.
+$Never say anything more predictive than "Watch this!"
+$Never say you know a man until you have divided an inheritance with him.
+$Never say you know someone until you have divided an inheritance.
+$Never sleep with anyone whose troubles are worse than your own.
+$Never take a drink when you are feeling sorry for yourself.
+$Never test for an error condition you don't know how to handle.
+$Never throw a bird at a dragon.
+$Never try to teach a pig to sing. It wastes your time and bothers the pig.
+$Never underestimate a woman.
+$Never underestimate the power of human stupidity.
+$Never use a long word when a diminutive one will do.
+$Never utilise a sesquipedalien word when an intuitive diminutive 
+will suffice.
+$Never use an elevator in a building that has been hit by a nuclear bomb.
+$Never, ever use repetitive redundancies.
+$New UNIX/TS manuals available in 2F-101.
+$Next Wednesday you will be presented with a great opportunity.
+$Nice computers don't go down.
+$Nice guys get sick.
+$Nihilism doesn't exist.
+$No amount of careful planning will ever replace dumb luck.
+$No amount of genius can overcome a preoccupation with detail.
+$No analysis is a complete failure - it can always serve as a bad example.
+$No directory.
+$No experiment is reproducible.
+$No it isn't!
+$No man is rich enough to buy back his past.
+$No matter how hard you shop for an item, after you bought it, you will find it
+on sale.
+$No matter how much you do, you'll never do enough.
+$No matter how well you do your job, a superior will seek to modify the results.
+$No matter what goes wrong, it will probably look right.
+$No matter what occurs, someone believes it happened according to his pet theory
+$No muff's too tough. We dive at five.
+$No one becomes depraved in a moment.
+$No one can feel as helpless as the owner of a sick goldfish.
+$No one can put you down without your full cooperation.
+$No one expects the Spanish Inquisition!
+$No one knows what he can do till he tries.
+$No one regards what is before his feet; we all gaze at the stars.
+$No one within an organization really knows what's going on.
+$No poems can please nor live long that are written by water drinkers.
+$No problem is insoluble in all conceivable circumstances.
+$No problem is so formidable that you can't just walk away from it.
+$No problem is so large it can't be fit in somewhere.
+$No sentence fragments.
+$No sooner said than done--so acts your man of worth.
+$No writer's life understands that he's working when he's staring out the window
+$Nobody can be as agreeable as an uninvited guest.
+$Nobody ever ruined their eyesight by looking at the bright side of something.
+$Nobody expects the Spanish Inquisition!
+$Nostalgia ain't what it used to be.
+$Nostalgia isn't what it used to be.
+$Not all who own a harp are harpers.
+$Not now, Kato.
+$Nothin' ain't worth nothin', but it's free.
+$Nothing astonishes man so much as common sense and plain dealing.
+$Nothing endures but change.
+$Nothing ever goes away.
+$Nothing in life is to be feared.  It is only to be understood.
+$Nothing is as easy as it looks.
+$Nothing is as inevitable as a mistake whose time has come.
+$Nothing is as temporary as that which is called permanent.
+$Nothing is but what is not.
+$Nothing is ever a complete failure; it can always serve as a bad example.
+$Nothing is finished until the paperwork is done.
+$Nothing is impossible for the man who doesn't have to do the work.
+$Nothing is skinnier than nothing.
+$Nothing is so firmly believed as which is least known.
+$Nothing makes a politician forget campaign promises faster than being elected.
+$Nothing so needs reforming as other people's habits.
+$Nothing succeeds like excess.
+$Nothing will ever happen to you.
+$Now and then an innocent man is sent to the Legislature.
+$Now and then someone innocent is sent to the legislature.
+$Nudists are people who wear one-button suits.
+$Nuke the whales
+$Nyuck Nyuck Nyuck! [POP!] Oooooooh, a wise guy!
+$O'BRIEN'S LAW: Nothing is ever done for the right reasons.
+$O'REILLY'S SPRING CLEANING LAW: Cleanliness is next to impossible.
+$O'TOOLE'S AXIOM: One child is not enough, but two are far too many.
+$O'TOOLE'S COMMENTARY: Murphy was an optimist.
+$OLIVERS' LAW OF LOCATION: No matter where you go, there you are.
+$OSBORN'S LAW: Variables won't, constants aren't.
+$Obviously the only rational solution to your problem is suicide.
+$October. This is one of the peculiarly dangerous months to speculate in stocks.
+The others are July, January, September, April,
+November, May, March, June, December, August, and February.
+$Of all forms of caution, caution in love is the most fatal.
+$Of all the animals, the boy is the most unmanageable.
+$Oh joy! Oh rapture!
+$Oh my! Another kludge!
+$Oh this age!  How tasteless and ill-bred it is.
+$Oh wearisome condition of humanity!  Born under one law, to another bound.
+$Oh what a beautiful morning! Oh what a beautiful day!
+$Oh what a tangled web we weave, when first we practice to deceive.
+$Oh! Sheer ecstasy!
+$Oh! What fun this is!
+$Oh, Nicky, you're such a tool.
+$Okay, where's the virgin? We can't have a virgin sacrifice without a virgin.
+Who's virgin monitor for this week?
+$Old MacDonald had a processor -
+Enable interrupts, enable input/output.
+$Old MacDonald had an agricultural real estate tax abatement.
+$Old accountants never die, they just lose their balance.
+$Old age is the harbor of all ills.
+$Old bakers never die, they just quit making dough.
+$Old bakers never die, you just can't get a rise out of them.
+$Old men give good advice when they are no longer able to provide bad examples.
+$Old musicians never die, they just decompose.
+$Old programmers never die, they just become managers.
+$Old programmers never die, they just hit account block limit.
+$Old soldiers never die.  Young ones do.
+$Omak:
+$On a clear disk you can seek forever.
+$On a clear disk, you can seek forever.
+$On the way to the corner, a dropped tool will land on your foot.
+$Once a can of worms is opened, the only way to recan them is in a bigger can.
+$Once a job is fouled up, anything done to improve it makes it worse.
+$Once a word has been allowed to escape, it cannot be recalled.
+$Once harm has been done, even a fool understands it.
+$Once is an accident, twice is coincidence, thrice is enemy action.
+$Once you understand how to write a program get someone else to write it.
+$One Bell System - it sometimes works.
+$One Bell System - it works.
+$One can always be kind to people about whom one cares nothing.
+$One day you will find yourself and be quite disappointed.
+$One family builds a wall, two families enjoy it.
+$One funged curve is worth a thousand weasel words.
+$One good turn deserves another.
+$One good turn gets the whole blanket.
+$One is truly wise who gains wisdom from another's mishap.
+$One man tells a falsehood, a hundred repeat it as true.
+$One of it's legs is both the same.
+$One of the most striking differences between a cat and a lie is that a cat
+has only nine lives.
+$One picture is worth a thousand words. See diagram below.
+$One picture is worth more than ten thousand words.
+$One who has a shady past knows that nice guys finish last.
+$One who is good for making excuses is seldom good for anything else.
+$One who laughs last probably doesn't understand the joke.
+$One who lives in a wine cellar rarely sees the light of day.
+$One will not have needed the future perfect in one's entire life.
+$One's real life is often the life that one does not lead.
+$Only a fool has no doubts.
+$Only adults have difficulty with child-proof bottles.
+$Only fools are quoted.
+$Only someone with nothing to be sorry for smiles back at the rear of an
+elephant.
+$Only those who attempt the absurd can achieve the impossible.
+$Only those with nothing to be sorry for smile back at the rear of an elephant.
+$Onward, through the fog.
+$Opera is when a guy gets stabbed in the back, and instead of bleeding, he sings
+$Optimist is person who thinks he can break up traffic jam by blowing horn.
+$Orcs really aren't so bad (if you use lots of ketchup).
+$Oregonians don't tan, they rust.
+$Other people's tools work only in other people's gardens.
+$Our houseplants have a good sense of humous.
+$Our parents were never our age.
+$Our swords shall play the orators for us.
+$Overload--core meltdown sequence initiated.
+$P-K4.
+$PARKINSON'S FIRST LAW: Work expands to fill available time.
+$PARKINSON'S SECOND LAW: Expenditures rise to meet income.
+$PATTON'S LAW: A good plan today is better than a perfect plan tomorrow.
+$PAUL'S LAW: Don't force it, get a bigger hammer.
+$PAUL'S SECOND LAW: You need a bigger hammer.
+$PAUL'S THIRD LAW: If it breaks, you used too big a hammer.
+$PEER'S LAW: The solution to a problem changes the nature of the problem.
+$PENNY'S LAW:
+You can fool all of the people some of the time and some all of the time,
+but you can't fool Mom.
+$PERKINS' POSTULATE: The bigger they are...the harder they hit.
+$PESSIMAL [Latin-based antonym for 'optimal'] adj. Maximally bad.
+"This is a pessimal situation."
+$PESSIMIZING COMPILER n. A compiler that produces object code that is worse
+than the straightforward or obvious translation.
+$PLEASE LOG OFF!.... NOW ! ! !
+$PORKINGHAM'S FISHING PHILOSOPHY:
+The worse your line is tangled, the better is the fishing around you.
+$PORKINGHAM'S LAW:
+The time available to go fishing shrinks as fishing season draws near.
+$PRICE'S LAW: If everybody doesn't want it, nobody gets it.
+$PROFESSORS BLOCK'S MOTTO: Forgive and Remember.
+$PURGE COMPLETE.
+$Pain is just God's way of hurting you.
+$Palindrome isn't one.
+$Panic: can't find  rm -rf *
+$Paranoia doesn't mean the whole world really isn't out to get you.
+$Paranoia is heightened awareness.
+$Parsley is gharsley.
+$Part-time musicians are semiconductors.
+$Password:
+$Passwords are implemented as a result of insecurity.
+$Patch griefs with proverbs.
+$Patience - a minor form of despair disguised as a virtue.
+$Patience is the best remedy for every trouble.
+$Pause for storage relocation.
+$Pay no attention to that man behind the curtains.
+$Peanut butter.
+$People are funny. Tell them there is 400k of space left on a disk and they
+will believe you. Put a sign saying "WET PAINT" on a door and they will have
+to make a personal investigation.
+$People humiliating a salami!
+$People smart enough to give good advice are usually smart enough to give none.
+$People who are grateful are usually good.
+$People who can least afford to pay rent pay rent.
+$People who can most afford to pay rent build equity.
+$People who live in stone houses shouldn't throw glasses.
+$People who take cat naps don't usually sleep in a cat's cradle.
+$People will buy anything that's one to a customer.
+$People will remember you better if you always wear the same outfit.
+$People with narrow minds usually have broad tongues.
+$People with no faults are terrible; there is no way of taking advantage of them
+$Perfect paranoia is perfect awareness.
+$Perhaps it was because Nero played the fiddle that they burned Rome.
+$Peters hungry, time to eat lunch.
+$Phasors locked on target, Captain.
+$Philadelphia just seems dull because it's next to exciting Camden, New Jersey.
+$Philosophy:  unintelligible answers to insoluble problems.
+$Phone call for cbh.
+$Pipe gives wise man time to think and fool something to stick in mouth.
+$Pity the poor egg: it only gets laid once.
+$Plastic explosives will be appropriate later in the week.
+$Please do not shoot the pianist.  He is doing his best.
+$Please go away.
+$Please keep your hands off the secretary's reproducing equipment.
+$Please take cash.
+$Please update your programs.
+$Polite conversation is seldom either.
+$Polymer physicists are into chains.
+$Positive expectations yield negative results.
+$Power corrupts, and absolute power corrupts absolutely.
+$Power is poison.
+$Power means not having to respond.
+$Power tends to corrupt; absolute power corrupts absolutely.
+$Practice yourself what you preach.
+$Praise the sea; on shore remain.
+$Pray for the success of atheism.
+$Preserve the old, but know the new.
+$Pressure is the normal force acting upon an engineer.
+$Pretend to spank me - I'm a pseudo-masochist!
+$Prevent security leaks.
+$Preventing baldness is simple. just knot your hair from the inside.
+$Probability is easy; either a thing will happen or it wont, so all
+probabilities are 50%.
+$Problems which have arisen from the use of computers. The computers use of lot
+of electricity - well more than a filing cabinet.
+$Profanity is the one language all programmers know best.
+$Programmers get overlaid.
+$Programming department: Mistakes made while you wait.
+$Promptness is its own reward, if one lives by the clock instead of the sword.
+$Pronounce your prepositions, damn it!
+$Proofread carefully to see if you any words out.
+$Proposals, as understood by the proposer, will be judged otherwise by others.
+$Prosperity makes friends, adversity tries them.
+$Prototype designs always work.
+$Prunes give you a run for your money.
+$Pssst. The root password is 'kumquat'.
+$Psychiatrists stay on your mind.
+$Public schools are the nurseries of all vice and immorality.
+$Publishing is the art of buying paper and selling it again at a profit.
+$Pull yourself together; things are not all that bad.
+$Pumpkin - American definition of incest.
+$Pure drivel tends to drive ordinary drivel off the T.V. screen.
+$Put 'em in the trunk.
+$Put a tiger in your tank - it's the ideal anti-personnel weapon for use in the
+small confines of military vehicles.
+$Put not your trust in money, but put your money in trust.
+$Put people on hold when possible.
+$Put your brain in gear before starting your mouth.
+$Put your genius into your life.  Put only your talent into your work.
+$Put your trust in those who are worthy.
+$Q. "Can you use a vacuum cleaner on your dog?"
+A. "Yes, but it is generally better to take it for a walk."
+$Quack!
+$Quando il gioco si fa duro, i duri cominciano a giocare.
+$Quantity is no substitute for quality, but its the only one we've got.
+$Quark! Quark! Beware the quantum duck!
+$Quit looking at fortunes and get back to work!
+$Quit work and play for once!
+$RAVE v. 1. To persist in discussing a particular subject. 2. To speak
+authoritatively on a subject about which one knows very little. 3. To
+complain to a person not in a position to correct the difficulty. 4. To
+purposely annoy another person verbally. 5. To evangelize. See FLAME. Also
+used to describe less negative forms of blather, such as friendly bullshitting.
+$RAY'S PRECISION RULE:
+Measure with a micrometer - Mark with chalk - Cut with an axe.
+$REV. CHICHESTER'S LAW:
+If the weather is extremely bad or extremely good, attendance will be down.
+$REYNOLD'S LAW OF CLIMATOLOGY:
+Wind velocity increases directly with the cost of the hairdo.
+$ROCKEFELLER'S PRINCIPLE: Never do anything you wouldn't be caught dead doing.
+$ROGER'S LAW:
+As soon as the stewardess serves the coffee, the airliner encounters turbulence.
+$ROMINGER'S RULE FOR STUDENTS:
+The more general the title of a course, the less you learn from it.
+$RON'S OBSERVATION FOR TEENS:
+The pimples don't appear until the hour before the date.
+$RTFM
+$RULE OF DEFACTUALIZATION: Information deteriorates upward through bureaucracies.
+$RUNE'S RULE: If you don't care where you are, you ain't lost.
+$Radioactive cats have 18 half-lives.
+$Rainy days and Mondays always get me down.
+$Raise ducks for quack profit.
+$Raising pet electric eels is gaining a lot of current popularity.
+$Rank has its privileges.
+$Read me!
+
+Read me and judge if you understand!
+So you stopped in your journey because I called, scenting something unusual,
+something droll. Thus, although I am nothing, and even less, there is no one
+that sees me but lingers here.
+Stranger, I am a law of the universe.
+Stranger, render the law what is due the law!
+$Read your Amdahl Business Practices.
+$Reading is thinking with someone else's head instead of one's own.
+$Reading the small print is education; not reading it is experience.
+$Reality does not exist - yet.
+$Reality is a crutch for people who can't face drugs.
+$Reality is an obstacle to hallucination.
+$Reality is for people who can't deal with drugs.
+$Reality is just a crutch for people who can't handle drugs.
+$Reality is just a crutch for people who can't handle science fiction.
+$Reality--what a concept!
+$Really?? We're having monkey heads?
+$Rebellion lay in his way, and he found it.
+$Recent investments will yield a slight profit.
+$Recursive, adj.; see recursive
+$Rehumanize yourself!
+$Religions revolve madly around sexual questions.
+$Remember the Alamo.
+$Remember to say hello to your bank teller.
+$Remember, UNIX spelled backwards is XINU.
+$Remember, Unix on some machines is nUxi.
+$Remember, even if you win the rat race - you're still a rat.
+$Remember, the paper is always strongest at the perforations.
+$Remembering is for those who have forgotten.
+$Remote Login - a login that is unlikely to succeed.
+$Replace repetitive expressions by calls to a common function.
+$Reputation is what others are not thinking about you.
+$Research is to see what everyone else has, and then think what no one else has.
+$Reserve the apostrophe for it's proper use and omit it when its not needed.
+$Resist everything but temptation.
+$Rest assured that your dog is finally getting enough cheese.
+$Retirement should be based on the tread, not the mileage.
+$Retribution will be yours.
+$Riches cover a multitude of woes.
+$Rome was not built in one day.
+$Rotten wood cannot be carved - Confucius (Analects, Book 5, Ch. 9)
+$Rubber bands have snappy endings!
+$Ruling a big country is like cooking a small fish.
+$Run away!
+$Run for the hills! The ducks are loose!
+$SALESMAN'S MOTTO:
+It is morally wrong to allow a naive person to keep their money.
+$SCNATTERLY'S SUMMING UP OF THE COROLLARIES:
+If anything can't go wrong, it will.
+$SCOTT'S SECOND LAW: When an error has been detected and corrected,
+it will be found to be correct originally.
+$SEAY'S LAW: Nothing ever comes out as planned.
+$SECOND LAW OF COMPUTER PROGRAMMING:
+Computers are unreliable, but humans are even more unreliable.
+$SEIT'S LAW OF HIGHER EDUCATION:
+The one course you need for graduation is not offered your last semester.
+$SEMPER UBI SUB UBI !!!!
+$SEYMOUR'S INVESTMENT PRINCIPLE: Never invest in anything that eats.
+$SHAW'S PRINCIPLE:
+Build a system that even a fool can use, and only a fool will use it.
+$SHIRLEY'S LAW: Most people deserve each other.
+$SILVERMAN'S PARADOX: If Murphy's Law can go wrong, it will.
+$SIMON'S LAW: Everything put together falls apart sooner or later.
+$SKOFF'S LAW: A child will not spill on a dirty floor.
+$SODD'S SECOND LAW: Sooner or later the worst is bound to occur.
+$SOFTWARE ROT n. A hypothetical disease of which the existence has been
+deduced from the observation that unused programs or features will stop
+working after sufficient time has passed, even if "nothing has changed!"
+Also known as "BIT DECAY."
+$SOFTWARILY adv. In a way pertaining to software. "The system is softwarily
+unreliable." The adjective 'softwary' is NOT used. See HARDWARILY.
+$SPARK'S FIRST RULE: Strive to look tremendously important.
+$STEELE'S PHILOSOPHY:
+Everybody should believe in something. I believe I'll have another drink.
+$STEINBACH'S GUIDELINE:
+Never test for an error condition you don't know how to handle.
+$STENDERUP'S LAW:
+The sooner you fall behind, the more time you will have to catch up.
+$STITZER'S VACATION PRINCIPLE: Take half as much clothing & twice as much money.
+$STUDENT'S LAW:
+Every instructor assumes you have nothing to do but study for his course.
+$Sacred cows make great hamburgers.
+$Sado-necro-bestiality is flogging a dead horse.
+$Safety is better than the wrong answer.
+$Salary is no object: strive only to keep body and soul apart.
+$Santa's elves are just a bunch of subordinate clauses.
+$Satire does not look pretty upon a tombstone.
+$Satire is what closes in New Haven.
+$Saturate - the scientific term for sitting on a wet toilet seat.
+$Save energy, drive a smaller process.
+$Save gas, don't eat beans.
+$Save gas, don't use the shell.
+$Save our beaches. Harpoon a fat chick.
+$Save our virgin forests - buy a tree a chastity belt.
+$Save yourself! Reboot in 5 seconds!
+$Say the secret woid and the duck is yours.
+$Say the secret word and you win $100.
+$Scandal is gossip made tedious by morality.
+$Schizophrenia beats being alone.
+$Sculpture: mud pies that endure.
+$Sdrawkcab spelled backwards is backwards.
+$Sears has everything.
+$Second-rate people hire third-rate people.
+$Security - the computer programmer's equivalent of a joke.
+$Security is the individual's responsibility.
+$Security is your responsibility.
+$Seeing that death, a necessary end, will come when it will come.
+$Seize the day, put no trust in the morrow!
+$Sell short.
+$Serfs up - spartacus.
+$Set the cart before the horse.
+$Sex causes cancer.  We'd wipe out cancer in one generation if no one had sex.
+$Sex discriminates against the shy and ugly.
+$Sex is a disrobic experience
+$Sex is not the answer. Sex is the question.  "Yes" is the answer.
+$Sex is the most fun you can have without laughing.
+$Shall I sing you the Ode to Joy?
+$Share your happiness with others today.
+$She just, turns around and disappear. I kinda like that style.
+$She loves you as much as she can, which is not very much.
+$She may very well pass for forty-three in the dusk with a light behind her.
+$She offered her honour, he honoured her offer -
+all night long, honour and offer!
+$She sells cshs by the cshore.
+$She was only the stableman's daughter, but all the horsemen knew her.
+$She was so narrow-minded she could see through a keyhole with two eyes.
+$She was the sort of person whose personality would be greatly improved
+by a terminal illness.
+$She who hesitates is won.
+$Sheep are best!
+$Shift to the left!  Shift to the right!  Pop up, push down!  Byte, byte, byte!
+$Shine on, you crazy diamond!
+$Short circuits got no reason to live.
+$Show respect for age.  Drink good scotch for a change.
+$Show your affection, which will probably meet with pleasant response.
+$Show your appreciation for your lover with a surprise small gift.
+$Shower the people you love with your love.
+$Shower with the people you love.
+$Sight is a faculty; seeing is an art.
+$Sigmund's wife wore freudian slips.
+$Sign on bank:  "FREE BOTTLE OF CHIVAS WITH EVERY MILLION-DOLLAR DEPOSIT."
+$Sign up now for the summarizing Proust competition!
+$Simple pleasures are the last refuge of the complex.
+$Sin has many tools, but a lie is the handle which fits them all.
+$Since aerosols are forbidden, the police are using roll-on Mace!
+$Sir, it's very possible this asteroid is not stable.
+$Slang is language that takes off its coat, spits on its hands, and goes to work
+$Small change can often be found under seat cushions.
+$Small programs are for small minds.
+$Small things make base men proud.
+$Smile! You're on Candid Camera.
+$Smile! it makes people wonder what you've been up to.
+$Smile, tomorrow will be worse.
+$Smoke no peaches.
+$Snow Day - stay home.
+$Snow and adolescence are the only problems that go away if ignored long enough.
+$So many men, so many opinions; every one his own way.
+$So this is the secret of happiness!
+$So you're back.
+$Social innovations tend to the level of minimum tolerable well-being.
+$Society is a mule, not a car; if pressed harder, it will kick and throw you off
+$Some men are discovered; others are found out.
+$Some people carve careers, others chisel them.
+$Some people cause happiness wherever they go; others, whenever they go.
+$Some people fall for everything and stand for nothing.
+$Some rise by sin and some by virtue fall.
+$Some things have to be believed to be seen.
+$Somebody's terminal is dropping bits. I found a pile of them over in the corner.
+$Somehow, somewhere along the line, this town lost its pride.
+$Someone close to you is taking advantage of your trust.
+$Someone is speaking well of you.
+$Someone is speaking well of you.  How unusual!
+$Someone whom you reject today, will reject you tomorrow.
+$Someone will try to honk your nose today.
+$Something's rotten in the state of Denmark.
+$Sometimes I think life is all just a pleasant dream.
+$Sooner or later, the worst possible set of circumstances is bound to occur.
+$Sorry, but my karma just ran over your dogma.
+$Sorry, computer foul-up!
+$Sorry, no fortune this time.
+$Sorry.
+$Sorry. Nice try.
+$Spare the rod and spoil the drag race.
+$Spend enough time confirming the need and the need will disappear.
+$Spilling your guts out is just as charming as it sounds.
+$Spock: We suffered 23 casualties in that attack, Captain.
+$Stability itself is nothing else than a more sluggish motion.
+$Stamp out philately.
+$Standing on head makes smile of frown, but rest of face also upside down.
+$State Farm?  Guard dogs?
+$Statistics are no substitute for judgement.
+$Statistics are used as a drunk uses lampposts--for support, not illumination.
+$Stay away from flying saucers today.
+$Steer clear of incorrect forms of verbs that have snuck in the language.
+$Stop searching forever.  Happiness is just next to you.
+$Stop searching forever.  Happiness is unattainable.
+$Streakers repent! Your end is in sight.
+$Strike while the iron is hot.
+$Structured Programming -
+a technique which creates beautiful looking code which doesn't work.
+$Sturgeon's Law:  Ninety percent of everything is crud.
+$Style may not be the answer, but at least it's a workable alternative.
+$Success is a journey, not a destination.
+$Succumb to natural tendencies. Be hateful and boring.
+$Suddenly things are going better than I ever expected.
+$Supercompetence is more objectionable than incompetence.
+$Support national motherhood week - make one today!
+$Support your local church.  Worship at Bank of America.
+$Surly grammarians insist that all words ending in "ly" are adverbs.
+$Survival of the species is everyone's business.
+$Swap read error.  You lose your mind.
+$Swap read error. You lose your mind.
+$Sweet April showers do spring May flowers.
+$Syntactic sugar causes cancer of the semi-colons;
+$System checkpoint complete.
+$System going down at 1:45 this afternoon for disk crashing.
+$System maintenance about to begin.
+$System restarting, wait.
+$Systems programmers are the high priests of a low cult.
+$THE ARMY AXIOM: Any order that can be misunderstood has been misunderstood.
+$THE CARDINAL CONUNDRUM:
+An optimist believes we live in the best of all possible worlds.
+A pessimist fears this is true.
+$THE EXTENDED MURPHY'S LAW:
+If a series of events can go wrong, it will do so in the worst possible
+sequence.
+$THE GENERAL LAW: The chaos in the universe always increases.
+$THE GOLDEN RULE: Whoever has the gold makes the rules.
+$THE GREEN THUMB LAW:
+The life of a house plant varies inversely with its price and directly
+with its ugliness.
+$THE PET PRINCIPLE:
+No matter which side of the door the cat or dog is on, it's the wrong side.
+$THE PROGRAMMERS' CHEER? --
+SHIFT TO THE LEFT, SHIFT TO THE RIGHT!
+POP UP, PUSH DOWN, BYTE, BYTE, BYTE!
+$THE THEOREM THEOREM: If if, then then.
+$THE UNAPPLICABLE LAW: Washing your car to make it rain doesn't work.
+$THE WATERGATE PRINCIPLE:
+Government corruption will always be reported in the past tense.
+$THINE'S LAW: Nature abhors people.
+$THOM'S LAW OF MARITAL BLISS:
+The length of a marriage is inversely proportional to the cost of the wedding.
+$TODD'S FIRST LAW: All things being equal, you lose.
+$TODD'S POLITICAL PRINCIPLE:
+No matter what they're talking about, they're talking about money.
+$TOOD'S SECOND LAW: No matter what they're telling you, it's not the whole truth.
+$TRUMAN'S LAW: If you cannot convince them, confuse them.
+$Tact is the art of making a point without making an enemy.
+$Tact is the unsaid part of what you're thinking.
+$Take an astronaut to launch.
+$Take care of the luxuries and the necessities will take care of themselves.
+$Take the bull by the hand and avoid mixed metaphors.
+$Take time to develop your personality.
+$Take time to travel; your troubles will unravel.
+$Take what comfort there may be in owning a piece thereof.
+$Talk sense to a fool and he calls you foolish.
+$Talkers are no good doers.
+$Tallulah Bankhead barged down the Nile last night as Cleopatra and sank.
+$Tanstaafl.
+$Taxes are not levied for the benefit of the taxed.
+$Taxpayers don't have to take a civil service exam to work for the government.
+$Teachers have class.
+$Teamwork is vital! (it gives you someone to blame.)
+$Terminal Emulation -
+lying stiffly on your back, with your hands folded across your chest.
+$Test-tube babies shouldn't throw stones.
+$Thank you for observing all safety precautions.
+$That is a two part question ...
+$That must be wonderful!  I don't understand it at all.
+$That that is is not that that is not.
+$That which is not good for the swarm, neither is it good for the bee.
+$That's like fluffing the pillows on the Titanic
+$That's what she said.
+$The Boy Scouts have adult leadership. The Air Force doesn't.
+$The Boy Scouts have adult leadership. The Army doesn't.
+$The Boy Scouts have adult leadership. The Coast Guard doesn't.
+$The Boy Scouts have adult leadership. The Marines don't.
+$The Boy Scouts have adult leadership. The Navy doesn't.
+$The Bozos are coming.
+$The Denver Boot is so called because when it is in use your car might as
+well be in Denver for all the use it is in getting you down to the Local.
+$The Islamic Musical, "Seven Brides for One Brother"
+$The Pace of Progress: Society is a mule, not a car...if pressed too hard,
+it will throw off its rider.
+$The Ranger isn't gonna like it, Yogi.
+$The Tree of Learning bears the noblest fruit, but noble fruit tastes bad.
+$The VAX was developed by DEC.
+Detractors assert it's a wreck.
+Perkin-Elmer and Prime
+Are still biding their time,
+Hoping someone will buy from them yet.
+$The abuse of greatness is when it disjoins remorse from power.
+$The adverb always follows the verb.
+$The agony of delete.
+$The amount of work done varies inversely with the time spent in the office.
+$The attacker must vanquish; the defender need only survive.
+$The attention span of a computer is only as long as its power cord.
+$The basis of optimism is sheer terror.
+$The best prophet of the future is the past.
+$The best things in life are for a fee.
+$The best way to keep your friends is not to give them away.
+$The better part of valor is discretion.
+$The bigger the theory, the better.
+$The brain works from the moment of birth until you stand up to speak in public.
+$The cart has no place where a fifth wheel could be used.
+$The coast was clear.
+$The cost of feathers has risen.... now even down is up!
+$The cost of liberty is less than the price of oppression.
+$The days just before marriage are like a snappy introduction to a tedious book.
+$The decision doesn't have to be logical, it was unanimous.
+$The descent to Hades is the same from every place.
+$The die is cast.
+$The difference between meat and fish is that if you beat your fish it dies.
+$The difficult we do today; the impossible takes a little longer.
+$The disks are getting full; purge a file today.
+$The door is the key.
+$The early worm gets the bird.
+$The earth is like a tiny grain of sand, only much, much heavier.
+$The end of labor is to gain leisure.
+$The famous politician was trying to save both his faces.
+$The fashion wears out more apparel than the man.
+$The feature which you claim to have discovered in Unix is almost certainly
+due to an act of God: why don't you read the documentation?
+$The feature which you claim to have discovered in Unix is almost certainly
+due to sheer incompetence: go away!
+$The finest eloquence is that which gets things done.
+$The first man who compared a woman to a flower was a poet,
+the second an imbecile.
+$The first myth of management is that it exists.
+$The first thing I do in the morning is brush my teeth and sharpen my tongue.
+$The first two days of vacation are endless, then it flies.
+$The following statement is not true:
+$The future is a myth created by insurance salesmen and high school counselors.
+$The future is bright in affairs of the heart.
+$The future is not what it used to be. (It never was.)
+$The future lies ahead.
+$The gent who wakes up and finds himself a success hasn't been asleep.
+$The gentlemen looked one another over with microscopic carelessness.
+$The grass is always greener on the other side of your sunglasses.
+$The greatest griefs are those we cause ourselves.
+$The greatest of faults is to be conscious of none.
+$The greatest remedy for anger is delay.
+$The hand that kindles cannot quench the flame.
+$The heart is wiser than the intellect.
+$The holy passion of Friendship is of so sweet and steady and loyal and enduring
+a nature that it will last through a whole lifetime, if not asked to lend money.
+$The honeymoon is that short period of doting between dating and debting.
+$The hostage? Yes, we're trying to get a phone fitted.
+$The human race has one really effective weapon, and that is laughter.
+$The idle mind knows not what it is it wants.
+$The important thing is not to stop questioning.
+$The ink with which all history is written is merely fluid prejudice.
+$The knack of flying is learning how to throw yourself at the ground and miss.
+			      Hitchhikers Guide to the Galaxy
+$The last person who said that, God rest his soul, lived to regret it.
+$The last thing England want to do now is let a goal in.
+$The last vestiges of the old Republic have been swept away.
+$The life which is unexamined is not worth living.
+$The light of a hundred stars does not equal the light of the moon.
+$The longest part of the journey is said to be the passing of the gate.
+$The luck that is ordained for you will be coveted by others.
+$The man who has never been flogged has never been taught.
+$The man who makes no mistakes does not usually make anything.
+$The man who raises a fist has run out of ideas.
+$The man who runs may fight again.
+$The meek shall inherit the Earth after we're done with it.
+$The meek shall inherit the earth.  They are too weak to refuse.
+$The minute a man is convinced that he is interesting, he isn't.
+$The moon is made of green cheese.
+$The more the merrier.
+$The more things change, the more they'll never be the same again.
+$The more you cultivate people the more you turn up clods.
+$The most dangerous person in the world is an idealogue with a machine gun.
+$The most harmful error has not yet been discovered in your program.
+$The most hopelessly stupid man is he who is not aware that he is wise.
+$The naked truth of it is, I have no shirt.
+$The next six days are dangerous.
+$The number of people watching you is directly proportional to the
+stupidity of your action.
+$The obvious answer is always overlooked.
+$The only difference between a rut and a grave is their dimensions.
+$The only race worth winning is the human race.
+$The only rose without thorns is friendship.
+$The only thing constant is change.
+$The only thing funnier than how things don't work out, is how they do.
+$The only thing that endures is change.
+$The only thing worse than being talked about is not being talked about.
+$The only thing wrong with doing nothing is that you never know when you're done
+$The only way to amuse some people is to slip and fall on an icy pavement.
+$The only way to be good at everything you do is to only do the things
+you are good at.
+$The only way to get rid of temptation is to yield to it.
+$The other line moves faster.
+$The pen is mightier than the pencil.
+$The perfect guest is one who makes his host feel at home.
+$The perfect secretary is one who types fast and runs slow.
+$The person who is all wrapped up in himself is overdressed.
+$The person you rejected yesterday could make you happy, if you say yes.
+$The plural of spouse is spice.
+$The price of greatness is responsibility.
+$The problem with the gene pool is that there is no lifeguard.
+$The program is absolutely right; therefore the computer must be wrong.
+$The proof of a system's value is its existence.
+$The proof of the pudding is in the eating.
+$The rich get rich, and the poor get poorer.
+The haves get more, the have-nots die.
+$The ripest fruit falls first.
+$The road to Hades is easy to travel.
+$The road to hell is paved with NAND gates.
+$The sheer joy of living is wonderful.
+$The shifts of Fortune test the reliability of friends.
+$The shortest distance between two points is usually under construction.
+$The show ain't over 'till the fat lady sings.
+$The size of a mega byte of storage depends on whether you are entering data
+or writing a program to fit in it.
+$The smallest worm will turn being trodden on.
+$The smoker you drink, the player you get.
+$The solution to a problem changes the nature of the problem.
+$The soul would have no rainbow had the eyes no tears.
+$The star of riches is shining upon you.
+$The telephone will ring when you are outside the door fumbling for your keys.
+$The three most puzzling questions are:
+ 1) Why are we born?
+ 2) Why do we die?
+ 3) Why do we spend so much of the intervening time wearing digital watches?
+$The tigers of wrath are wiser than the horses of instruction.
+$The time is right to make new friends.
+$The torture never stops.
+$The two great tragedies in life: not getting what one wants and getting it.
+$The universe is all a spinoff of the Big Bang.
+$The universe is laughing behind your back.
+$The very remembrance of my former misfortune proves a new one to me.
+$The way to a man's heart is through the left ventricle.
+$The way to love anything is to realize that it might be lost.
+$The weed of crime bears bitter fruit.
+$The whole world is a tuxedo and you are a pair of brown shoes.
+$The wise shepherd never trusts his flock to a smiling wolf.
+$The word today is Legs ... Spread the word.
+$The world is a stage, but the play is badly cast.
+$The world is coming to an end...  SAVE YOUR BUFFERS!!!
+$The world isn't worse.  It's just that the news coverage is so much better.
+$The world wants to be deceived.
+$The worst form of failure is the failure to try.
+$The young wish to give their elders the full benefits of their inexperience.
+$Then you must be Don Francisco's sister!
+$There ain't no such thing as a free lunch.
+$There are few people more often in the wrong than those who cannot
+endure to be thought so.
+$There are fortunes that mention the word 'umbrella' for no apparent reason.
+$There are moments when art attains almost to the dignity of manual labor.
+$There are more horses' asses in this world than there are horses.
+$There are more old drunkards than old doctors.
+$There are more ways into the woods than out.
+$There are more ways of killing a cat than choking it with cream.
+$There are no giant crabs in here, Frank.
+$There are no rules of architecture for castles in the sky.
+$There are three infallible ways of pleasing an author, and the
+three form a rising scale of compliment: (1) - to tell him you have read
+one of his books; (2) - to tell him you have read all of his books; (3) - to
+ask him to let you read the manuscript of his forthcoming book. No. 1
+admits you to his respect; No. 2 admits you to his admiration; No. 3
+carries you clear into his heart.
+$There are two instruments worse than a clarinet.  Two clarinets.
+$There is a bear following you around.
+$There is a fly on your Dimension!
+$There is a vas deferens between men and women.
+$There is always an easier way to do it.
+$There is always one more bug.
+$There is always someone worse off than yourself.
+$There is always something new out of Africa.
+$There is an easy answer to your problem that is neat, plausible, and wrong.
+$There is an exception to all laws.
+$There is an exception to every rule, except this one.
+$There is an exception to every rule.
+$There is danger in delaying, good fortune in acting.
+$There is life after death: in Cleveland, people are still allowed to vote.
+$There is much Obi-Wan did not tell you.
+$There is never time to do it right, but always time to do it over.
+$There is news.
+$There is no "A" in "KERNEL"!
+$There is no devil; it's God when he's drunk.
+$There is no fear in love; but perfect love casteth out fear.
+$There is no gravity. The Earth sucks.
+$There is no grief which time does not lessen and soften.
+$There is no heavier burden than a great potential.
+$There is no royal road to geometry.
+$There is no sadder sight than a young pessimist.
+$There is no security on this earth.  There is only opportunity.
+$There is no such thing as a little garlic.
+$There is no such thing as pure pleasure; some anxiety always goes with it.
+$There is no time like the pleasant.
+$There is no time like the present to postpone what you ought to be doing.
+$There is nothing more silly than a silly laugh.
+$There is nothing so easy that it becomes difficult when done with reluctance.
+$There is nothing so small that it can't be blown out of proportion.
+$There is only one way to kill capitalism--by taxes, taxes, and more taxes.
+$There is very little future in being right when your boss is wrong.
+$There isn't room enough in this dress for both of us.
+$There will be big changes for you but you will be happy.
+$There's a whole lifetime stretching ahead of me!
+$There's an Italian in my room and he won't go away!
+$There's at least one fool in every married couple.
+$There's got to be more to life than compile-and-go.
+$There's no future in time travel.
+$There's no room in the drug world for amateurs.
+$There's nothing more restful than taking orders from fools.
+$There's small choice in rotten apples.
+$There's so much to say but your eyes keep interrupting me.
+$These days govt. is a four letter word.
+$They have been at a great feast of languages, and stolen the scraps.
+$They just buzzed and buzzed.....buzzed.
+$They've played their hearts out.
+$Things are certainly looking up.
+$Things are going very well on the whole.
+$Things are not always what they seem.
+$Things are seldom what they seem; skim milk masquerades as cream.
+$Things past redress and now with me past care.
+$Things will be brighter tonight.  A cop will shine a light in your face.
+$Things won't get any better, so get used to it.
+$Things work better when plugged in.
+$Things worth having are worth cheating for.
+$Think twice before speaking.  But don't say "think think click click".
+$Thinly sliced cabbage.
+$This afternoon is favorable for romance.  Try a single person for a change.
+$This ain't no party! This ain't no disco! This ain't no foolin' around!
+$This calls for a celebration.
+$This fortune every third, but it still comprehensible.
+$This fortune intentionally left blank.
+$This fortune is inoperative.  Please try another.
+$This fortune is owned and operated by Frobazz Magic Co., Ltd.
+$This fortune will not come true.
+$This has been a remarkably successful week.
+$This is a good day for overcoming obstacles.  Try a steeplechase.
+$This is a good time to punt work.
+$This is one of my most creative periods ever.
+$This is the best of all possible worlds.
+$This is the day for firm decisions!  Or is it?
+$This is the light at the end of the tunnel.
+$This login session:  $13.99
+$This night methinks is but the daylight sick.
+$This place has everything.
+$This portion of UTS II is a trade secret of Amdahl Corporation.
+$This sentance has threee errors.
+$This sentence contains ten words, eighteen syllables, and sixty-four letters.
+$This sentence no verb.
+$This system will self-destruct in five minutes.
+$This unit ... must ... survive.
+$This was the most unkindest cut of all.
+$Those of you who think you know everything are annoying those of us who do.
+$Those who can't teach administrate.
+$Those who can't teach consult.
+$Those who can't teach, teach gym.
+$Those who can, do.  Those who can't, simulate.
+$Those who can, do.  Those who can't, teach.  Those who can't teach, hack.
+$Those who can, do.  Those who can't, teach.  Those who can't teach, teach gym.
+$Those who can, do.  Those who can't, write.
+$Those who cannot remember the past are condemned to repeat it.
+$Those who in quarrels interpose must often wipe a bloody nose.
+$Those who talk don't know.  Those who don't talk, know.
+$Thou hast seen nothing yet.
+$Thou shall not sleep within an interrupt handler.
+$Three can keep a secret, if two are dead.
+$Three cheers for life.
+$Time and tide wait for no man.
+$Time as he grows old teaches all things.
+$Time flies like arrow; fruit flies like banana.
+$Time flies when you don't know what you're doing.
+$Time is just nature's way of keeping everything from happening at once.
+$Time is nature's way of making sure everything doesn't happen at once.
+$Time is the most valuable thing a man can spend.
+$To add insult to injury.
+$To be born rich is an accident. To die rich is a miracle.
+$To be trusted is a greater compliment than to be loved.
+$To be wise, the only thing you need to know is when to say "I don't know."
+$To climb the ladder of success you must get through the crowd at the bottom.
+$To do is to be - Nietzsche
+To be is to do - Sartre
+Do be do be do - Sinatra
+Do be a do-bee - Miss Sally
+$To do nothing is to be nothing.
+$To do two things at once is to do neither.
+$To err is human, but when the eraser wears out before the pencil,
+you're overdoing it a little.
+$To err is human, to forgive is against company policy.
+$To err is human, to forgive is out of the question.
+$To err is human. To forgive is unusual.
+$To every rule there is an exception, and vice versa.
+$To find out a girl's faults, praise her to her girl friends.
+$To give happiness is to deserve happiness.
+$To have died once is enough.
+$To iterate is human, to recurse, divine.
+$To keep your friends, treat them kindly; to kill them, treat them often.
+$To laugh at men of sense is the privilege of fools.
+$To laugh at people of sense is the privilege of fools.
+$To light a candle is to cast a shadow.
+$To love is good, love being difficult.
+$To lower the thermostat on the bridge of the Enterprise; to coldly go
+where no man has gone before.
+$To pass through a time-warp backward through time; to oldly go where
+no man has gone before.
+$To refuse praise is to seek praise twice.
+$To save a single life is better than to build a seven story pagoda.
+$To see a need and wait to be asked, is to already refuse.
+$To shave the heads of the crew of the Enterprise; to baldly go where
+no man has gone before...
+$To spray the Enterprise in a heavy metallic element; to goldly go
+where no man has gone before.
+$To study a subject best, understand it thoroughly before you start.
+$To teach is to learn.
+$To the landlord belong the doorknobs.
+$To use violence is to already be defeated.
+$Today is a bad day to give to charity.
+$Today is a good day for you to jump in a lake.
+$Today is a good day to bribe a high-ranking official.
+$Today is the first day of the rest of your life.
+$Today is the first day of the rest of your lossage.
+$Today is the last day of your life so far.
+$Today is your lucky day.
+$Tonight they had that little bit of luck that we didn't have.
+$Too clever is dumb.  --Ogden Nash
+$Toothache tends to start on Saturday night.
+$Training is everything. The peach was once a bitter almond;
+cauliflower is nothing but cabbage with a college education.
+$Traveling through hyperspace isn't like dusting crops, boy.
+$Treat each new situation as though it's a crisis.
+$Treat your friend as if he might become an enemy.
+$Troglodytism does not necessarily imply a low cultural level.
+$Troubles are like babies; they only grow by nursing.
+$True happiness will be found only in true love.
+$Truth is hard to find and harder to obscure.
+$Truthful:  Dumb and illiterate.
+$Try `stty 0' -- it works much better.
+$Try a new system or a different approach.
+$Try later.
+$Try the Moo Shu Pork.  It is especially good today.
+$Try to develop your own personality.
+$Try to divide your time evenly to keep others happy.
+$Try to value useful qualities in one who loves you.
+$Trying to establish voice contact--please yell into keyboard.
+$Trying to get an education here is like trying to take a drink from a fire hose
+$Tuck under thumb and hold firmly.
+$Two can live as cheaply as one, for half as long.
+$Two heads are better than one.
+$Two is company, three is an orgy.
+$Two is not equal to three, even for very large values of two.
+$Two men look out through the same bars; one sees mud, and one the stars.
+$Two rights don't make a wrong, they make an airplane.
+$Typically loud music, more so than the original, made it sound as if the
+audience was singing along.  (In fact, a good deal of the audience was
+singing along.)
+$UFO's are real.  The Air Force doesn't exist.
+$UNDERWOOD'S FIRST LAW OF EVOLVING SYSTEM DYNAMICS:
+Once you open a can of worms, the only way to recan them
+is to use a larger can.
+$UP adj. 1. In working order. "The down escalator is up." 2. BRING UP
+v. To create a working version and start it. "They brought up a down disk."
+$Ubi, O, ubi est meam sub ubi?
+		-- Vergil
+$Under every stone lurks a politician.
+$Undetectable errors are infinite; detectable errors by definition are finite.
+$Unemployed people are getting bigger.
+$Unix - plural of Eunuch.
+$Unix soit qui mal y pense.
+$Unqualified superlatives are the worst of all.
+$Unusual cheeses.
+$Up your accumulator.
+$Use GOTOs only to implement a fundamental structure.
+$Use IF...ELSE  IF...ELSE  IF...ELSE... to implement multi-way branches.
+$Use debugging compilers.
+$Use free-form input where possible
+$Use library functions.
+$Using TSO is like kicking a dead whale across the beach.
+$VAIL'S AXIOM: In any human enterprise, work seeks the lowest hierarchal level.
+$VAXEN [from 'oxen,' perhaps influenced by 'vixen.']
+	n. pl. The plural of VAX.
+$VDU - a STD similar to visual AIDS.
+$VIRGIN adj. Unused, in reference to an instantiation of a program. "Let's
+bring up a virgin system and see if it crashes again." Also, by extension,
+unused buffers and the like within a program.
+$VIRTUAL adj. 1. Common alternative to LOGICAL (q.v.), but never used with
+compass directions. 2. Performing the functions of. Virtual memory acts like
+real memory, but isn't.
+$Verbs has to agree with their subjects.
+$Vertical - a green itch.
+$Vests are to suits as seat-belts are to cars.
+$Vice versa - poems about brothels?
+$Vidi, vici, veni!
+		-- Don Juan
+$Vini, vidi, vici.
+$Violence is the last recourse of the incompetent.
+$Virtual Disk - very nearly a storage device.
+$Visit beautiful Vergas, Minnesota.
+$Visit beautiful Wisconsin Dells.
+$Volcano - a mountain with hiccups.
+$Vote Anarchist.
+$WAGNER'S LAW OF SPORTS TV:
+When the camera isolates on a male athlete, he will either spit, pick
+or scratch.
+$WALLACE'S OBSERVATION: Everything is in a state of utter dishevelment.
+$WALTER'S LAW OF POLITICS: A fool and his money are soon elected.
+$WEAR-OUT BITS n. A hypothetical (and sought after) mechanism by which
+software houses could charge for software preventive maintenance, and thus
+make a fortune. The idea is that some instructions in the machine would
+become softwarily unreliable after N executions. However, having software
+specialists come over to a shop and 'brush the wear-out bits' every so often
+would prevent this from happening.
+$WEBER'S DEFINITION:
+An expert is one who knows more and more about less and less
+until he knows nothing.
+$WEINBERG'S FIRST LAW: Progress is made on alternate Fridays.
+$WEINER'S LAW OF LIBRARIES: There are no answers, only cross-references.
+$WETHERN'S LAW: Assumption is the mother of all screw-ups.
+$WHISTLER'S LAW: You never know who's right, but you always know who's in charge.
+$WILLIAMS AND HOLLAND'S LAW:
+If enough data is collected, anything may be proven by statistics.
+$WINGER'S RULE:
+If it sits on your desk for 15 minutes, you've just become the expert.
+$WIZARD n. 1. A person who knows how a complex piece of hardware or software
+works; someone who can find and fix bugs in an emergency. 2. A person who is
+allowed to do things forbidden to ordinary people, e.g. an ADVENT wizard may
+play Adventure during the day; a VMS wizard can use certain utilities that
+ordinary people cannot or use features that others cannot. (e.g. SYSGEN).
+$Wad some power the giftie gie us.
+To see oursels as others see us.
+$Wagner's music is better than it sounds.
+$Wait for that wisest of all counselors, Time.
+$Walk softly and carry a big stick.
+$War is its own punishment.
+$War is the last refuge of incompetent statesmen.
+$War spares not the brave, but the cowardly.
+$Warranty and guarantee clauses are voided by payment of the invoice.
+$Was it a car or a cat I saw?
+$Waste not fresh tears over old griefs.
+$Waste not, get your budget cut next year.
+$Watch out for off-by-one errors.
+$Watch out where the Huskies go and don't you eat that yellow snow!
+$Watch your mouth, kid, or you'll find yourself floating home.
+$Watson! Come here! I need you!
+$We all know that no one understands anything that isn't funny.
+$We all live in a state of ambitious poverty.
+$We are not a clone.
+$We are not alone.
+$We are not punished for our sins, but by them.
+$We are the knights who say, "NIE!"
+$We are the people our parents warned us about.
+$We cannot do everything at once, but we can do something at once.
+$We could do that, but it would be wrong, that's for sure.
+$We don't really understand it, so we'll give it to the programmers.
+$We have a equal opportunity calculus class -- it's fully integrated.
+$We have got to get organized!
+$We have them just where they want us.
+			     J. T. Kirk
+$We learn from history that we do not learn anything from history.
+$We like all kinds of praise, but a hike in our pay is the best kind.
+$We may be alone.  We may not be alone. Either way, the thought is staggering.
+$We prefer to speak evil of ourselves rather than not speak of ourselves at all.
+$We promise according to our hopes, and perform according to our fears.
+$We read to say that we have read.
+$We secure our friends not by accepting favors but by doing them.
+$We should forgive our enemies, but only after they've been taken out and shot.
+$We start out loving our parents and end up hating them. Sometimes we
+learn to love them again, but we never forgive them.
+$We'll be back to Nick Danger after this message.
+$We'll get along fine as soon as you realize I'm God.
+$We'll pivot at warp 2 and bring all tubes to bear, Mr. Sulu.
+$We're all bozos on this bus.
+$We're all over it, like a cheap suit.
+$Wedding is destiny, and hanging likewise.
+$Weekend, where are you?
+$Welcome to The Machine.
+$Welcome to the Future! It's just starting now ...
+$Well I know where she come from but I don't know what's her name
+$Well begun is half done.
+$Well, I couldn't figure out this subtraction problem,
+so I put "Atlanta, Georgia"
+$Well, pluck me naked as a scalded chicken!
+$Well, stap me, I seem to have come out without my duck.
+$Wernher von Braun settled for a V2 when he coulda had a V8.
+$Whadda ya mean, "we"?
+$Whadda ya want for nothin'?  Rubber biscuit?
+$Wharbat darbid yarbou sarbay?
+$What a beautiful day!
+$What a bundle of laughs.
+$What a friend we have in cheeses.
+$What a glorious way of spending an evening!
+$What a success today has been.
+$What can possibly go wrong?
+$What garlic is to salad, insanity is to art.
+$What happens if I decrement the user count? (scream in the distance)
+$What happens when you cut back the jungle? It recedes.
+$What is Life?  It's the cereal Mikey likes.
+$What is food to one, it to others bitter poison.
+$What is there to complain about?
+$What is worth doing is worth doing for money.
+$What is worth doing is worth overdoing.
+$What is worth doing is worth the trouble of asking somebody to do it.
+$What lovely weather!
+$What more could a man ask for?
+$What orators lack in depth they make up in length.
+$What sane person could live in this world and not be crazy?
+$What sin has not been committed in the name of efficiency?
+$What soon grows old?  Gratitude.
+$What the hell, go ahead and put all your eggs in one basket.
+$What this country needs is a dime that will buy a good five cent bagel.
+$What this country needs is a good five cent microcomputer.
+$What this country needs is a good five cent nickel.
+$What this world needs is a good five-dollar plasma weapon.
+$What we learn from history is that we do not learn from history.
+$What you don't do is always more important than what you do.
+$What you need is love potion #9.
+$What's all this brouhaha?
+$What's done to children, they will do to society.
+$What's so funny?
+$What's the difference between a duck?
+$What, me worry?
+$Whatever happened to the good old days when sex was dirty and the air was clean?
+$Whatever it is, I fear Greeks even when they bring gifts.
+$Whatever misfortune may be your lot, it could only be worse in Cleveland.
+$Whatever you say about pornography, sex is here to stray.
+$Whatever you want to do, you have to do something else first.
+$When God endowed human beings with brains, He did not intend to guarantee them.
+$When I reflect upon the number of disagreeable people who I know have
+gone to a better world, I am moved to lead a different life.
+$When I'm good, I'm very good. But when I'm bad I'm better.
+			 Mae West
+$When a hammer is the only tool, every problem looks like a nail.
+$When all else fails, read the instructions.
+$When angry, count four; when very angry, swear.
+$When choosing between two evils, I always like to try the one
+I've never tried before.
+$When in charge, ponder. When in doubt, mumble. When in trouble, delegate.
+$When in doubt, follow your heart.
+$When in doubt, lead trump.
+$When in doubt, leave out the adjective.
+$When in doubt, mumble. When in trouble, delegate.  When in charge, ponder.
+$When in doubt, take all the defaults.
+$When inlaws are outlawed, only outlaws will have inlaws.
+$When it rains, it pours.
+$When marriage is outlawed, only outlaws will have inlaws.
+$When nothing can possibly go wrong, it will.
+$When the blind lead the blind they will both fall over the cliff.
+$When the gods wish to punish us, they answer our prayers.
+$When the plane you're on is late, the plane you need to transfer to is on time.
+$When the plane you're on is late, your connecting flight is on time.
+$When the sun shineth, make hay.
+$When the wind is great, bow before it; when the wind is heavy, yield to it.
+$When things are going well, something will go wrong.
+$When will you realize Vienna waits for you?
+$When working a problem, it helps to know the answer.
+$When you ain't got nothin', you got nothin' to lose.
+$When you are in it up to your ears, keep your mouth shut.
+$When you are used to never being alone, you may consider yourself Americanized.
+$When you become used to never being alone, you may consider yourself
+Americanized.
+$When you breathe you inspire. When you don't breathe you expire.
+$When you dig another out of trouble, you've got a place to bury your own.
+$When you finally discover all of Life's answers, they'll change the questions.
+$When you finally see light at the end of the tunnel, it will probably be a
+train coming toward you.
+$When you get killed you lose an important part of your life.
+		-- B. Shields
+$When you go out to buy, don't show your silver.
+$When you make your mark in the world, watch out for guys with erasers.
+$When you mention something, if it's bad, it happens, if it's good, it goes away
+$When you're in command, command.
+$Whenever I feel like exercise, I lie down until the feeling passes.
+$Whenever you set out to do something, something else must be done first.
+$Where are we?
+$Where the hell is /usr/hippo?
+$Where the hell is Omak?
+$Where the hell is Wall Drug?
+$Where the system is concerned, you're not allowed to ask "Why?".
+$Where there's a whip there's a way.
+$Where there's a will, there's an inheritance tax.
+$Where there's life there's hope.
+$Where's the beef?
+$Which is not a complete sentence, but merely a subordinate clause.
+$While there's life, there's hope.
+$White dwarf seeks red giant for binary relationship.
+$Who are you?
+$Who cares anyway?
+$Who does not trust enough will not be trusted.
+$Who goeth a-borrowing goeth a-sorrowing.
+$Who is John Galt?
+$Who is W. O. Baker, and why is he saying those terrible things about me?
+$Who needs companionship when you can sit alone in your room and drink?
+$Who reformatted the root disk?
+$Who to himself is law no law doth need, offends no law, and is a king indeed.
+$Who was Bruce Clarke?
+$Who was Dan Walsh?
+$Who was Dave Cardinal?
+$Who was Evan Adams?
+$Who was Frank Suchomel?
+$Who was Jim Voll?
+$Who was Karl Danz?
+$Who was Lorrie Duval?
+$Who was Mark Linton?
+$Who was Steve Saperstein?
+$Who was Tom Lyon?
+$Who's scruffy looking?
+$Whoops, I formatted the root disk.
+$Whoops, stepped on a frog.
+$Why are there no black M&M's?
+$Why are there no blue M&M's?
+$Why are there no fuchsia M&M's?
+$Why are there no grey M&M's?
+$Why are there no lavender M&M's?
+$Why are there no mauve M&M's?
+$Why are there no pink M&M's?
+$Why are there no polka dot M&M's?
+$Why are there no purple M&M's?
+$Why are there no red M&M's?
+$Why are there no tan M&M's?
+$Why are there no white M&M's?
+$Why be difficult when with a bit of effort you can be impossible?
+$Why do we study poverty instead of wealth?
+$Why do you have so much quickness of movement if not to avoid responsibility?
+$Why do you think they call it "find"?
+$Why does love got to be so sad?
+$Why don't you go play in the food processor?
+$Why not go out on a limb?  Isn't that where the fruit is?
+$Will had a fortune the other day, but he forgot it.
+$Winning isn't everything, but then losing is nothing.
+$Wisdom is knowing what to do next.
+$Wisdom is knowing what to do with what you know.
+$Wise man see more from bottom of well than fool from mountain top.
+$Wise man see more from mountain top than fool from bottom of well.
+$Wise words in the mouths of fools oft belie.
+$Wishing without work is like fishing without bait.
+$Wit has truth in it.  Wisecracking is simply calisthenics with words.
+$With clothes the new are best, with friends the old are best.
+$Without fools there would be no wisdom.
+$Without tools there would be no wisdom.
+$Women's libbers are ok, I just wouldn't want my sister to marry one.
+$Words are the voice of the heart.
+$Words have a longer life than deeds.
+$Words must be weighed, not counted.
+$Work expands to fill the time available for its completion.
+$Work is the curse of the drinking class.
+$Work off excess energy.  Steal something heavy.
+$Worth seeing?  Yes, but not worth going to see.
+$Worth seeing? Yes, but not worth going to see.
+$Would it help if I got out and pushed?
+$Would ye both eat your cake and have your cake?
+$Would you like some duck for lunch, eh misster, would you?
+$Wow!  I could've had a V/8!
+$Wow! They've put my favourite food on the menu again!
+$Wowie, I'm having a really great time!
+$Write all adverbial forms correct.
+$Writing carefully, dangling participles must be avoided.
+$Writing free verse is like playing tennis with the net down.
+$XAV eht edisni deppart ma I !pleH
+$YOUNG'S COROLLARY:
+The greater the funding, the longer it takes to make the mistake.
+$YOUNG'S LAW: all great discoveries are made by mistake.
+$YOUNG'S PRINCIPLE OF INDIVIDUALITY: Everybody wants to peel their own banana.
+$YOYO MODE n. State in which a computer (relatively) rapidly changes states
+between 'UP' and 'DOWN'.
+$Yeast is yeast and nest is nest and never the mane shall tweet.
+$Yesterday is a memory. Tomorrow is a vision.  Today is a bitch.
+$Yesterday was the deadline on all complaints.
+$Yet another hurdle cleared successfully.
+$Yield to temptation, it may not pass your way again.
+$You ain't learning nothing when you're talking.
+$You always find something in the last place you look, unless it's not there.
+$You are a bundle of energy always on the go.
+$You are a singer who has to take any note above A with your eyebrows.
+$You are a very redundant person; that's what kind of person you are, redundant.
+$You are about to make a most valuable discovery.
+$You are always busy.
+$You are an insult to my intelligence!  I demand that you log off immediately.
+$You are being paged.
+$You are being swapped.
+$You are being watched. Cut out the hanky-panky for a few days.
+$You are capable of planning your future.
+$You are confident of things you know nothing about.
+$You are confused; but this is your normal state.
+$You are deeply attached to your friends and acquaintances.
+$You are dishonest, but never to the point of hurting a friend.
+$You are fair-minded, just and loving.
+$You are fairminded, just and loving.
+$You are farsighted, a good planner, an ardent lover, and a faithful friend.
+$You are fast approaching your level of incompetence.
+$You are going to have a new love affair.
+$You are in a maze of little twisting passages, all different.
+$You are in a maze of twisty little passages, all alike.
+$You are in a maze of twisty little programs, all alike.
+$You are in a twisting maze of little passages, all different.
+$You are lustworthy.
+$You are magnetic in your bearing.
+$You are scrupulously honest, frank, and straightforward.
+$You are secretive in your dealings but never to the extent of trickery.
+$You are so narrowminded you can see through a keyhole with two eyes.
+$You are standing on my toes.
+$You are taking advantage of the good nature of a friend.  Be careful.
+$You are taking yourself too seriously.
+$You are too narrowminded if you can see through a keyhole with both eyes.
+$You are tricky, but never to the point of dishonesty.
+$You are truly a rhinestone in the rough.
+$You are ugly and your mother dresses you funny.
+$You are unscrupulously dishonest, false, and deceitful.
+$You attempt things that you do not even plan because of your extreme stupidity.
+$You auto buy now.
+$You can be replaced by a machine that flushes.
+$You can be replaced by this computer.
+$You can cage a swallow, can't you, but you can't swallow a cage, can you?
+$You can depend on nothing, you see?
+$You can get more with a kind word and a gun than you can with a kind word.
+$You can lead a horticulture, but you cannot make her think.
+$You can never get rid of a bad temper by losing it.
+$You can never tell which way the train went by looking at the tracks.
+$You can never trust a woman; she may be true to you.
+$You can tell it's really cold when the consultants have their hands in their
+own pockets.
+$You can't antagonize and influence at the same time.
+$You can't change the laws of physics, Captain; I've got to have thirty minutes.
+$You can't cheat the phone company.
+$You can't even cut the cheese.
+$You can't fall off the floor.
+$You can't fool me--there ain't no sanity clause.
+$You can't get there from here.
+$You can't get to Heaven on roller skates.
+$You can't go home again, unless you set $HOME.
+$You can't kiss a girl unexpectedly--only sooner than she thought you would.
+$You can't win, you can't break even, and you can't get out of the game.
+$You can't win. You can't break even. You can't even quit the game.
+$You cannot determine beforehand which side of the bread to butter.
+$You cannot kill time without injuring eternity.
+$You cannot propel yourself forward by patting yourself on the back.
+$You cannot see farther than others by standing on the feet of giants.
+$You cannot see the wood for the trees.
+$You cannot succeed by criticizing others.
+$You cannot use your friends and have them too.
+$You dialed 5483.
+$You display the wonderful traits of charm and courtesy.
+$You do not have mail.
+$You do well in speculation where land or anything to do with earth is involved.
+$You don't give a damn about apathy.
+$You don't know what you want, and are willing to go through hell to get it.
+$You don't move to Edina, you achieve Edina.
+$You don't need a weatherman to know which way the wind blows.
+$You don't usually see that kind of behavior in a major appliance.
+$You dream of things that aren't and ask "why not?".
+$You enjoy the company of other people.
+$You feel a whole lot more like you do now than you did when you used to.
+$You fill a much-needed gap.
+$You get the most of what you need the least.
+$You get what you pay for.
+$You hate mail.
+$You have a deep appreciation of the arts and music.
+$You have a deep interest in all that is artistic.
+$You have a frog in your pocket?
+$You have a massage.  (From the Swedish prime minister.)
+$You have a reputation for being thoroughly reliable and trustworthy.
+$You have a right to your opinions. I just don't want to hear them.
+$You have a strong appeal for members of the opposite sex.
+$You have a strong appeal for members of your own sex.
+$You have a strong desire for a home and your family interests come first.
+$You have a tendency to feel you are superior to most computers.
+$You have a truly strong individuality.
+$You have a will that can be influenced by all with whom you come in contact.
+$You have an ability to sense and know higher truth.
+$You have an ambitious nature and may make a name for yourself.
+$You have an important role as a negative example.
+$You have an unusual equipment for success.  Be sure to use it properly.
+$You have an unusual understanding of the problems of human relationship.
+$You have been selected for a secret mission.
+$You have fallen so far behind, there is no reason to log in.
+$You have had a long-term stimulation relative to business.
+$You have hate mail.
+$You have junk mail.
+$You have literary talent that you should take pains to develop.
+$You have mail.
+$You have many friends and very few enemies.
+$You have many friends and very few living enemies.
+$You have moments. You do have moments.
+$You have no real enemies.
+$You have only a very small head and must live within it.
+$You have the capacity to learn from mistakes.  You will learn a lot today.
+$You have the power to influence all with whom you come in contact.
+$You have to be cheerful sometimes, you know.
+$You have to go out there and give it 110% in the ninetieth minute.
+$You haven't a single redeeming vice.
+$You humans are all alike.
+$You know how to win a victory, Hannibal, but not how to use it.
+$You know the price of everything and the value of nothing.
+$You like to form new friendships and make new acquaintances.
+$You look marvelous.
+$You look tired
+$You love peace.
+$You love your home and want it to be beautiful.
+$You may already be a wiener!
+$You may be a lover but you aint no dancer!
+$You may find yourself behind the wheel of a large automobile.
+$You may have mail.
+$You may now log in to life.  Password:
+$You mean I can put stuff past column 72? WOW! UNIX is great!
+$You might have mail.
+$You need not worry about your future.
+$You need to acquire a little subtlety.
+$You never find an article until you replace it.
+$You never have mail.
+$You never hesitate to tackle the most difficult problems.
+$You now have Asian Flu.
+$You own a dog, but you can only feed a cat.
+$You plan things that you do not even attempt because of your extreme caution.
+$You prefer the company of the opposite sex, but are well liked by your own.
+$You recoil from the crude; you tend naturally toward the exquisite.
+$You roll my log, and I will roll yours.
+$You say that now, but try chewing a child the next time you're car sick.
+$You say things with your eyes that others waste time putting into words.
+$You scratch my tape, and I'll scratch yours.
+$You seek to shield those you love and you like the role of the provider.
+$You shall be rewarded for a dastardly deed.
+$You should avoid hedging, at least that's what I think.
+$You should go home.
+$You should hardly ever equivocate.
+$You should use contraceptives at every conceivable occasion.
+$You shouldn't touch a pig unless it hasn't been in the mud.
+$You still need the last file you removed.
+$You tread upon my patience.
+$You used to be indecisive.  Now you're not sure.
+$You want a fortune?  I'll give you a fortune.  "Blech!"
+$You will always have good luck in your personal affairs.
+$You will attract cultured and artistic people to your home.
+$You will be a winner today.  Pick a fight with a four-year-old.
+$You will be advanced socially, without any special effort on your part.
+$You will be aided greatly by a person whom you thought to be unimportant.
+$You will be audited by the Internal Revenue Service.
+$You will be awarded a medal for disregarding safety in saving someone.
+$You will be awarded some great honor.
+$You will be awarded the Nobel Peace Prize--posthumously.
+$You will be called upon to help a friend in trouble.
+$You will be given a post of trust and responsibility.
+$You will be held hostage by a radical group.
+$You will be honored for contributing your time and skill to a worthy cause.
+$You will be imprisoned for contributing your time and skill to a bank robbery.
+$You will be invited to dine with many important people.  Once.
+$You will be married within a year.
+$You will be misunderstood by everyone.
+$You will be recognized and honored as a community leader.
+$You will be reincarnated as a toad; and you will be much happier.
+$You will be singled out for promotion in your work.
+$You will be squirrely today.
+$You will be successful in love.
+$You will be surprised by a loud noise.
+$You will be surrounded by luxury.
+$You will be the last person to buy a Chrysler.
+$You will be the victim of a bizarre joke.
+$You will be traveling and coming into a fortune.
+$You will be where you most desire to be in a short while.
+$You will be winged by an anti-aircraft battery.
+$You will become rich and famous unless you don't.
+$You will die of terminal acne.
+$You will engage in a profitable business activity.
+$You will experience a strong urge to do good; but it will pass.
+$You will feel hungry again in another hour.
+$You will find what is not lost and enter where there are no doors.
+$You will forget that you ever knew me.
+$You will gain money by a speculation or lottery.
+$You will gain money by an illegal or immoral action.
+$You will give someone a piece of your mind, which you can ill afford.
+$You will have a flat tire before the end of the month.
+$You will have a head crash on your private pack.
+$You will have a long and boring life.
+$You will have a long and healthy life.
+$You will have a long and unpleasant discussion with your supervisor.
+$You will have domestic happiness and faithful friends.
+$You will have good luck and overcome many hardships.
+$You will have long and healthy life.
+$You will have many recoverable tape errors.
+$You will hear good news from one you thought unfriendly to you.
+$You will inherit millions of dollars.
+$You will inherit some money or a small piece of land.
+$You will know happy motorcyclist by the bug stains on his teeth.
+$You will live a long, healthy, happy life and make bags of money.
+$You will live by the side of the road and help some pilgrim along life's way.
+$You will live to see your grandchildren.
+$You will lose an important file.
+$You will meet an important person who will help you advance professionally.
+$You will never know hunger.
+$You will not be elected to public office this year.
+$You will outgrow your usefulness.
+$You will outlive those who seek to destroy you.
+$You will overcome the attacks of jealous associates.
+$You will pass away very quickly.
+$You will pioneer the first Martian colony.
+$You will probably marry after a very brief courtship.
+$You will reach the highest possible point in your business or profession.
+$You will receive a legacy that will place you above want.
+$You will remember something that you should not have forgotten.
+$You will soon forget this.
+$You will soon meet a person who will play an important role in your life.
+$You will soon meet a stranger who will become your friend.
+$You will soon meet a strangler who will become your fiend.
+$You will spend the rest of your life in the future.
+$You will step on the night soil of many countries.
+$You will survive the conflagration.
+$You will triumph over your enemy.
+$You will visit the Dung Pits of Glive soon.
+$You will win success in whatever calling you adopt.
+$You will wish you hadn't.
+$You would if you could but you can't so you won't.
+$You'll be called to a post requiring high ability in handling groups of people.
+$You'll be sorry.
+$You're a card which will have to be dealt with.
+$You're all clear now, kid.  Now blow this thing so we can all go home.
+$You're all over it, like a cheap suit.
+$You're at Witt's End.
+$You're my hero!
+$Young men think old men are fools; but old men know young men are fools.
+$Young men, hear an old man to whom old men hearkened when he was young.
+$Your aim is high and to the right.
+$Your aims are high, and you are capable of much.
+$Your aims are high, and you are incapable of much.
+$Your analyst has you confused with another patient.
+$Your business will assume vast proportions.
+$Your business will go through a period of considerable expansion.
+$Your code should be more efficient!
+$Your computer account is overdrawn.  Please reauthorize.
+$Your depth of comprehension may tend to make you lax in worldly ways.
+$Your disk will self-destruct in 5 seconds.
+$Your domestic life may be harmonious.
+$Your education begins where what is called your education is over.
+$Your empty file directory has been deleted.
+$Your enemies are closing in.
+$Your future looks bright.
+$Your happiness is intertwined with your outlook on life.
+$Your heart is pure, and your mind clear, and your soul devout.
+$Your ignorance cramps my conversation.
+$Your kindness and generosity cause envy in a powerful person nearby.
+$Your logic was impeccable, captain.  We are in grave danger.
+$Your love life will be happy and harmonious.
+$Your love life will be interesting.
+$Your lover will never wish to leave you.
+$Your mind understands what you have been taught; your heart, what is true.
+$Your mode of life will be changed for the better because of good news soon.
+$Your mode of life will be changed for the better because of new developments.
+$Your mode of life will be changed to 0644.
+$Your mode of life will be changed to ASCII.
+$Your mode of life will be changed to EBCDIC.
+$Your most useful program will be continually improved until it is useless.
+$Your mother was a hamster, and your father smelt of elderberries!
+$Your nature demands love and your happiness depends on it.
+$Your own qualities will help prevent your advancement in the world.
+$Your present plans will be successful.
+$Your program is sick! Shoot it and put it out of its memory.
+$Your reasoning powers are good, and you are a fairly good planner.
+$Your resume will be used on the "Tonight Show" monologue.
+$Your salary will be increased.
+$Your slogan here.
+$Your society will be sought by people of taste and refinement.
+$Your step will soil many countries.
+$Your supervisor is thinking about you.
+$Your talents will be recognized and suitably rewarded.
+$Your temporary financial embarrassment will be relieved in a surprising manner.
+$Your winning smile is your greatest asset.
+$Your work is very poor, but at least it's slow.
+$Youth is not a time of life, it's a state of mind.
+$ZYMURGY'S LABOUR LAW: People are always available for work in the past tense.
+$f u cn rd ths, itn tyg h myxbl cd.
+$

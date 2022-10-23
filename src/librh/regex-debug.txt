@@ -1,0 +1,936 @@
+
+Aragorn@Ketch
+/rhe/src/util
+%renamefiles 'and' 'or' '*.c*'
+Just entered ns_RNF::ProcessCurDirFunctor::operator().
+
+
+Directory #1:
+/rhe/src/util
+
+Just entered function LoadFileList() with parameters:
+Wildcard   = *.c*
+EntityCode = 1
+ClrCode    = 1
+struct dirent has d_type
+No slant found in Wildcard; getting Dir from getcwd.
+Got Dir and Wild.
+Dir  = /rhe/src/util
+Wild = *.c*
+Ran opendir(). DirPtr = 0x600022d90
+At top of LoadFileList() while loop.
+EntPtr->d_name = .
+About to run lstat() for file .
+DirCode is 1.
+Continuing because current object is not a regular file.
+At top of LoadFileList() while loop.
+EntPtr->d_name = ..
+About to run lstat() for file ..
+DirCode is 1.
+Continuing because current object is not a regular file.
+At top of LoadFileList() while loop.
+EntPtr->d_name = celsfahr.c
+About to run lstat() for file celsfahr.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = celsfahrtable.c
+About to run lstat() for file celsfahrtable.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = clock.cpp
+About to run lstat() for file clock.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = clock2.cpp
+About to run lstat() for file clock2.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = clock3.cpp
+About to run lstat() for file clock3.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = cpp-template.cpp
+About to run lstat() for file cpp-template.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = dennis.c
+About to run lstat() for file dennis.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = encode-pad.cpp
+About to run lstat() for file encode-pad.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = encode.cpp
+About to run lstat() for file encode.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = fahrcels.c
+About to run lstat() for file fahrcels.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = fahrcelstable.c
+About to run lstat() for file fahrcelstable.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = keyclean.c
+About to run lstat() for file keyclean.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = lollygag.c
+About to run lstat() for file lollygag.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = longest-line.c
+About to run lstat() for file longest-line.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = makefile
+About to run lstat() for file makefile
+DirCode is 1.
+Staying because current object is a regular file.
+Continuing because file makefile doesn't match wildcard *.c*
+At top of LoadFileList() while loop.
+EntPtr->d_name = myenv.c
+About to run lstat() for file myenv.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = numeric-limits-c.c
+About to run lstat() for file numeric-limits-c.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = numeric-limits-cpp.cpp
+About to run lstat() for file numeric-limits-cpp.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = problematic
+About to run lstat() for file problematic
+DirCode is 1.
+Continuing because current object is not a regular file.
+At top of LoadFileList() while loop.
+EntPtr->d_name = randip.c
+About to run lstat() for file randip.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = randmac.c
+About to run lstat() for file randmac.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = randname.c
+About to run lstat() for file randname.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = randnames.c
+About to run lstat() for file randnames.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = recomb.c
+About to run lstat() for file recomb.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = renamefiles.cpp
+About to run lstat() for file renamefiles.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = rhdir-cpp.cpp
+About to run lstat() for file rhdir-cpp.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = roman.cpp
+About to run lstat() for file roman.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = rot13.cpp
+About to run lstat() for file rot13.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = sizeofc.c
+About to run lstat() for file sizeofc.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = sizeofcpp.cpp
+About to run lstat() for file sizeofcpp.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = time1970.c
+About to run lstat() for file time1970.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = timedelay.c
+About to run lstat() for file timedelay.c
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = tokenize.cpp
+About to run lstat() for file tokenize.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+At top of LoadFileList() while loop.
+EntPtr->d_name = zero-one.cpp
+About to run lstat() for file zero-one.cpp
+DirCode is 1.
+Staying because current object is a regular file.
+About to construct a file record object.
+At bottom of LoadFileList() for loop. Pushed file onto end of container.
+About to return from LoadFileList().  Size of list = 32
+
+
+The matching Files in the current directory are:
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       1877  celsfahr.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       2550  celsfahrtable.c
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       3900  clock.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       4366  clock2.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       1275  clock3.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM      18525  cpp-template.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM        342  dennis.c
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       8465  encode-pad.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM      20497  encode.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       1660  fahrcels.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       2565  fahrcelstable.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       1147  keyclean.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM        523  lollygag.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       1420  longest-line.c
+Frwxr-xr-x+        2016-03-22 01:18:21AM        235  myenv.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       3004  numeric-limits-c.c
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       3764  numeric-limits-cpp.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM        312  randip.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM        338  randmac.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       1492  randname.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       2232  randnames.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       2939  recomb.c
+Frwxr-xr-x+     A  2016-04-10 04:08:04PM      35735  renamefiles.cpp
+Frwxr-xr-x+     A  2016-03-29 10:41:58AM      11670  rhdir-cpp.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       3122  roman.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       4764  rot13.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       2054  sizeofc.c
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       2255  sizeofcpp.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM        185  time1970.c
+Frwxr-xr-x+     A  2016-03-22 01:18:21AM       2044  timedelay.c
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       3232  tokenize.cpp
+Frwxr-xr-x+     A  2016-03-22 01:18:23AM       3609  zero-one.cpp
+In ns_RNF::ProcessCurDirFunctor::operator().  About to process files.
+Just entered ns_RNF::ProcessCurrentFile(). Current file = celsfahr.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = celsfahr.c
+Flag        = g
+
+Francis = celsfahr.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = celsfahr.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = celsfahrtable.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = celsfahrtable.c
+Flag        = g
+
+Francis = celsfahrtable.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = celsfahrtable.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = clock.cpp
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = clock.cpp
+Flag        = g
+
+Francis = clock.cpp
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = clock.cpp
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = clock2.cpp
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = clock2.cpp
+Flag        = g
+
+Francis = clock2.cpp
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = clock2.cpp
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = clock3.cpp
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = clock3.cpp
+Flag        = g
+
+Francis = clock3.cpp
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = clock3.cpp
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = cpp-template.cpp
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = cpp-template.cpp
+Flag        = g
+
+Francis = cpp-template.cpp
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = cpp-template.cpp
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = dennis.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = dennis.c
+Flag        = g
+
+Francis = dennis.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = dennis.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = encode-pad.cpp
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = encode-pad.cpp
+Flag        = g
+
+Francis = encode-pad.cpp
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = encode-pad.cpp
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = encode.cpp
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = encode.cpp
+Flag        = g
+
+Francis = encode.cpp
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = encode.cpp
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = fahrcels.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = fahrcels.c
+Flag        = g
+
+Francis = fahrcels.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = fahrcels.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = fahrcelstable.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = fahrcelstable.c
+Flag        = g
+
+Francis = fahrcelstable.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = fahrcelstable.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = keyclean.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = keyclean.c
+Flag        = g
+
+Francis = keyclean.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = keyclean.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = lollygag.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = lollygag.c
+Flag        = g
+
+Francis = lollygag.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = lollygag.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = longest-line.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = longest-line.c
+Flag        = g
+
+Francis = longest-line.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = longest-line.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = myenv.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = myenv.c
+Flag        = g
+
+Francis = myenv.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = myenv.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = numeric-limits-c.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = numeric-limits-c.c
+Flag        = g
+
+Francis = numeric-limits-c.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = numeric-limits-c.c
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = numeric-limits-cpp.cpp
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = numeric-limits-cpp.cpp
+Flag        = g
+
+Francis = numeric-limits-cpp.cpp
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a94f0
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 1
+and RegEx.re_nsub = 0
+
+
+In rhregex::Substitute(), no-match, about to regfree(&RegEx).
+
+
+In rhregex::Substitute(), ran regfree(&RegEx), about to free(Matches).
+
+
+In rhregex::Substitute(), ran free(Matches), about to return Text:
+Text = numeric-limits-cpp.cpp
+In ns_RNF::ProcessCurrentFile().  Returned from rhregex::Substitute().
+Just entered ns_RNF::ProcessCurrentFile(). Current file = randip.c
+In ns_RNF::ProcessCurrentFile(). About to call rhregex::Substitute().
+
+Just entered rhregex::Substitute() with following parameters:
+Pattern     = and
+Replacement = or
+Text        = randip.c
+Flag        = g
+
+Francis = randip.c
+Francis = Camillia
+Francis = Four score and seven minutes ago, I farted.
+
+In rhregex::Substitute(), about to call regcomp().
+In rhregex::Substitute(), just returned from regcomp().
+
+
+In rhregex::Substitute(), about to allocate Matches.
+In rhregex::Substitute(), just allocated Matches; Matches = 0x6000a9750
+
+
+In rhregex::Substitute(), about to call regexec().
+In rhregex::Substitute(), called regexec(), Result = 0
+and RegEx.re_nsub = 0
+
+In rhregex::Substitute(), after "if (0 != Result) throw exception" section.
+In rhregex::Substitute(), just under submatches for loop.
+
+In rhregex::Substitute(), about to copy Text to new string Text2.
+In rhregex::Substitute(), finished copying Text to Text2.
+
+
+In rhregex::Substitute(), about to set Text2 equal to aardvark
+      0 [main] renamefiles 6040 C:\cygwin64\rhe\bin\util\renamefiles.exe: *** fatal error - Internal error: TP_NUM_C_BUFS too small: 50
+Hangup
+
+Aragorn@Ketch
+/rhe/src/util
+%

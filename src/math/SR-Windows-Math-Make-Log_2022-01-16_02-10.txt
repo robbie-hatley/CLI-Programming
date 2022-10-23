@@ -1,0 +1,299 @@
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  2:06:20 AM
+/d/rhe/src/math
+%make
+$PLATFORM is Win64
+$INCDIR   is /d/rhe/include
+$EXEDIR   is /d/rhe/bin/math
+$LIBDIR   is /d/rhe/lib
+Using pattern rule %.exe:%.c to compile ackermann.c to ackermann.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   ackermann.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/ackermann.exe
+ackermann.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile add.c to add.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   add.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/add.exe
+add.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile average.cpp to average.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 average.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/average.exe
+average.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile bearings.cpp to bearings.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 bearings.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/bearings.exe
+bearings.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile binary.cpp to binary.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 binary.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/binary.exe
+binary.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile circle-area.c to circle-area.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   circle-area.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/circle-area.exe
+circle-area.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile collatz.c to collatz.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   collatz.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/collatz.exe
+collatz.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile collatz-minus-length.c to collatz-minus-length.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   collatz-minus-length.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/collatz-minus-length.exe
+collatz-minus-length.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile collatz-plus-length.c to collatz-plus-length.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   collatz-plus-length.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/collatz-plus-length.exe
+collatz-plus-length.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile comb.c to comb.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   comb.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/comb.exe
+comb.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile comb-iter.c to comb-iter.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   comb-iter.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/comb-iter.exe
+comb-iter.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile comb-recu.c to comb-recu.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   comb-recu.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/comb-recu.exe
+comb-recu.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile complex.cpp to complex.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 complex.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/complex.exe
+complex.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile convert-base.c to convert-base.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   convert-base.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/convert-base.exe
+convert-base.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile convert-base-zeros.c to convert-base-zeros.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   convert-base-zeros.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/convert-base-zeros.exe
+convert-base-zeros.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile c-template.c to c-template.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   c-template.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/c-template.exe
+c-template.c:4: warning: macro "MY_HEADER_NAME" is not used [-Wunused-macros]
+    4 | #define MY_HEADER_NAME  // For headers only
+      | 
+c-template.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile divisors.c to divisors.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   divisors.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/divisors.exe
+divisors.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile factor-count.c to factor-count.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   factor-count.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/factor-count.exe
+factor-count.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile factorial.c to factorial.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   factorial.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/factorial.exe
+factorial.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile factors.cpp to factors.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 factors.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/factors.exe
+factors.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile factor-unlimited.c to factor-unlimited.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   factor-unlimited.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/factor-unlimited.exe
+factor-unlimited.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile fast-pi-series.c to fast-pi-series.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fast-pi-series.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/fast-pi-series.exe
+fast-pi-series.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile fast-pi-series-2.c to fast-pi-series-2.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fast-pi-series-2.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/fast-pi-series-2.exe
+fast-pi-series-2.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile fib-gmp-500.c to fib-gmp-500.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fib-gmp-500.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/fib-gmp-500.exe
+fib-gmp-500.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile fib-index-for-digits.cpp to fib-index-for-digits.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 fib-index-for-digits.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/fib-index-for-digits.exe
+fib-index-for-digits.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile fib-index-n.c to fib-index-n.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fib-index-n.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/fib-index-n.exe
+fib-index-n.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile fib-rhm.cpp to fib-rhm.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 fib-rhm.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/fib-rhm.exe
+fib-rhm.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile fib-sum-even-4million.c to fib-sum-even-4million.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fib-sum-even-4million.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/fib-sum-even-4million.exe
+fib-sum-even-4million.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile first-n-composites.c to first-n-composites.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-composites.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/first-n-composites.exe
+first-n-composites.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile first-n-primes.c to first-n-primes.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/first-n-primes.exe
+first-n-primes.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile first-n-primes-fewer-comments.c to first-n-primes-fewer-comments.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-fewer-comments.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/first-n-primes-fewer-comments.exe
+first-n-primes-fewer-comments.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile first-n-primes-reel.c to first-n-primes-reel.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-reel.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/first-n-primes-reel.exe
+first-n-primes-reel.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile first-n-primes-table-1.c to first-n-primes-table-1.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-table-1.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/first-n-primes-table-1.exe
+first-n-primes-table-1.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile first-n-primes-table-2.c to first-n-primes-table-2.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-table-2.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/first-n-primes-table-2.exe
+first-n-primes-table-2.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile first-n-primes-wheel.c to first-n-primes-wheel.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   first-n-primes-wheel.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/first-n-primes-wheel.exe
+first-n-primes-wheel.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile fract.c to fract.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fract.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/fract.exe
+fract.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile generalized-collatz.c to generalized-collatz.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   generalized-collatz.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/generalized-collatz.exe
+generalized-collatz.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile goldbach.c to goldbach.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   goldbach.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/goldbach.exe
+goldbach.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile harmonic.c to harmonic.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   harmonic.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/harmonic.exe
+harmonic.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile hatley-primes.c to hatley-primes.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   hatley-primes.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/hatley-primes.exe
+hatley-primes.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile isprime.cpp to isprime.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 isprime.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/isprime.exe
+isprime.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile makechange.cpp to makechange.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 makechange.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/makechange.exe
+makechange.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile mult35.c to mult35.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   mult35.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/mult35.exe
+mult35.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile number-of-digits.c to number-of-digits.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   number-of-digits.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/number-of-digits.exe
+number-of-digits.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile number-of-divisors.c to number-of-divisors.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   number-of-divisors.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/number-of-divisors.exe
+number-of-divisors.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile odometer.c to odometer.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   odometer.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/odometer.exe
+odometer.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile part.c to part.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   part.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/part.exe
+part.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute.c to permute.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/permute.exe
+permute.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute-0.c to permute-0.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute-0.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/permute-0.exe
+permute-0.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute-1.c to permute-1.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute-1.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/permute-1.exe
+permute-1.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile permute-cpp.cpp to permute-cpp.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 permute-cpp.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/permute-cpp.exe
+permute-cpp.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute-cryptic.c to permute-cryptic.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute-cryptic.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/permute-cryptic.exe
+permute-cryptic.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute-no-comments.c to permute-no-comments.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   permute-no-comments.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/permute-no-comments.exe
+permute-no-comments.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile pi.c to pi.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   pi.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/pi.exe
+pi.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile primes.cpp to primes.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 primes.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/primes.exe
+primes.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile primes-in-range.c to primes-in-range.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   primes-in-range.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/primes-in-range.exe
+primes-in-range.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile primes-in-range-debug.c to primes-in-range-debug.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   primes-in-range-debug.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/primes-in-range-debug.exe
+primes-in-range-debug.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile primes-in-range-unlimited.c to primes-in-range-unlimited.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   primes-in-range-unlimited.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/primes-in-range-unlimited.exe
+primes-in-range-unlimited.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile print-even-digits.c to print-even-digits.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   print-even-digits.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/print-even-digits.exe
+print-even-digits.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile reverse.c to reverse.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   reverse.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/reverse.exe
+reverse.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile reverse_recursive.cpp to reverse_recursive.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 reverse_recursive.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/reverse_recursive.exe
+reverse_recursive.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile rhcalc.cpp to rhcalc.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 rhcalc.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/rhcalc.exe
+rhcalc.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile series.c to series.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   series.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/series.exe
+series.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile sizeof-gmp.c to sizeof-gmp.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   sizeof-gmp.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/sizeof-gmp.exe
+sizeof-gmp.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile sqrt.cpp to sqrt.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 sqrt.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/sqrt.exe
+sqrt.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile strand.c to strand.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   strand.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/strand.exe
+strand.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile test-series.c to test-series.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   test-series.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/test-series.exe
+test-series.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile treadmill-power.c to treadmill-power.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   treadmill-power.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/treadmill-power.exe
+treadmill-power.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile two-dice.c to two-dice.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   two-dice.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/two-dice.exe
+two-dice.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile weird.cpp to weird.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 weird.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/weird.exe
+weird.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile zeta.c to zeta.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   zeta.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/math/zeta.exe
+zeta.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Math Program Collection is up to date.
+
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  2:08:24 AM
+/d/rhe/src/math
+%

@@ -1,0 +1,235 @@
+
+g++ -I /rhe/include -pedantic -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Winline -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -std=gnu++14 -Os -c /rhe/src/librh/rhbitmap.cpp -o /rhe/lib/rhbitmap.o
+
+/rhe/src/librh/rhbitmap.cpp: In constructor ‘rhbitmap::Color::Color(const int&, const int&, const int&)’:
+/rhe/src/librh/rhbitmap.cpp:59:11: warning: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may alter its value [-Wconversion]
+       blue=b;
+           ^
+/rhe/src/librh/rhbitmap.cpp:60:12: warning: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may alter its value [-Wconversion]
+       green=g;
+            ^
+/rhe/src/librh/rhbitmap.cpp:61:10: warning: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may alter its value [-Wconversion]
+       red=r;
+          ^
+/rhe/src/librh/rhbitmap.cpp: In member function ‘void rhbitmap::Color::set(const int&, const int&, const int&)’:
+/rhe/src/librh/rhbitmap.cpp:77:11: warning: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may alter its value [-Wconversion]
+       blue=b;
+           ^
+/rhe/src/librh/rhbitmap.cpp:78:12: warning: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may alter its value [-Wconversion]
+       green=g;
+            ^
+/rhe/src/librh/rhbitmap.cpp:79:10: warning: conversion to ‘uint8_t {aka unsigned char}’ from ‘int’ may alter its value [-Wconversion]
+       red=r;
+          ^
+/rhe/src/librh/rhbitmap.cpp: In constructor ‘rhbitmap::Bitmap::Bitmap(uint16_t, uint16_t, uint16_t, bool)’:
+/rhe/src/librh/rhbitmap.cpp:130:43: warning: use of old-style cast [-Wold-style-cast]
+          bytelength = (short)ceil((double)width/8.0);
+                                           ^
+/rhe/src/librh/rhbitmap.cpp:130:52: warning: use of old-style cast [-Wold-style-cast]
+          bytelength = (short)ceil((double)width/8.0);
+                                                    ^
+/rhe/src/librh/rhbitmap.cpp:150:43: warning: use of old-style cast [-Wold-style-cast]
+          bytelength = (short)ceil((double)width/2.0);
+                                           ^
+/rhe/src/librh/rhbitmap.cpp:150:52: warning: use of old-style cast [-Wold-style-cast]
+          bytelength = (short)ceil((double)width/2.0);
+                                                    ^
+/rhe/src/librh/rhbitmap.cpp:193:15: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+    pad        = (4 - overrun) % 4;    // pad with enough bytes to bring row length to 4-byte boundary
+               ^
+/rhe/src/librh/rhbitmap.cpp:196:65: warning: use of old-style cast [-Wold-style-cast]
+    filesize   = (uint32_t)(14 + 40 + colortablesize + matrixsize);
+                                                                 ^
+/rhe/src/librh/rhbitmap.cpp:233:13: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘uint32_t {aka unsigned int}’ may alter its value [-Wconversion]
+       for (i=bytelength; i<rowlength; ++i)
+             ^
+/rhe/src/librh/rhbitmap.cpp: In member function ‘void rhbitmap::Bitmap::setcolor(uint16_t, uint16_t, uint16_t)’:
+/rhe/src/librh/rhbitmap.cpp:347:31: warning: use of old-style cast [-Wold-style-cast]
+          mask1=(unsigned char)0x01;     // 00000001
+                               ^
+/rhe/src/librh/rhbitmap.cpp:348:15: warning: conversion to ‘unsigned char’ from ‘int’ may alter its value [-Wconversion]
+          mask1=mask1 << (7-bitindex);   // eg: 00000001 -> 00010000
+               ^
+/rhe/src/librh/rhbitmap.cpp:349:15: warning: conversion to ‘unsigned char’ from ‘int’ may alter its value [-Wconversion]
+          mask1=~mask1;                  // eg: 00010000 -> 11101111
+               ^
+/rhe/src/librh/rhbitmap.cpp:351:31: warning: use of old-style cast [-Wold-style-cast]
+          mask2=(unsigned char)k;        // eg: 00000000 or 00000001
+                               ^
+/rhe/src/librh/rhbitmap.cpp:352:15: warning: conversion to ‘unsigned char’ from ‘int’ may alter its value [-Wconversion]
+          mask2=mask2 << (7-bitindex);   // eg: 00000000 or 00010000
+               ^
+/rhe/src/librh/rhbitmap.cpp:362:18: warning: conversion to ‘unsigned char’ from ‘int’ may alter its value [-Wconversion]
+             mask2=k<<4;                 // mask2=kkkk0000
+                  ^
+/rhe/src/librh/rhbitmap.cpp:366:18: warning: conversion to ‘unsigned char’ from ‘uint16_t {aka short unsigned int}’ may alter its value [-Wconversion]
+             mask2=k;                    // mask2=0000kkkk
+                  ^
+/rhe/src/librh/rhbitmap.cpp:373:26: warning: conversion to ‘uint8_t {aka unsigned char}’ from ‘uint16_t {aka short unsigned int}’ may alter its value [-Wconversion]
+          bytematrix[j][i]=k;
+                          ^
+/rhe/src/librh/rhbitmap.cpp: In member function ‘rhbitmap::Color rhbitmap::Bitmap::getcolor(uint16_t, uint16_t)’:
+/rhe/src/librh/rhbitmap.cpp:445:33: warning: use of old-style cast [-Wold-style-cast]
+          color.dummy = (uint8_t)0;
+                                 ^
+/rhe/src/librh/rhbitmap.cpp: In member function ‘void rhbitmap::Bitmap::filewrite(const char*)’:
+/rhe/src/librh/rhbitmap.cpp:556:37: warning: use of old-style cast [-Wold-style-cast]
+    bmfh.filetype        = (uint16_t)19778; // (ascii "BM")
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:557:37: warning: use of old-style cast [-Wold-style-cast]
+    bmfh.filesize        = (uint32_t)filesize;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:558:37: warning: use of old-style cast [-Wold-style-cast]
+    bmfh.reserved1       = (uint16_t)0;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:559:37: warning: use of old-style cast [-Wold-style-cast]
+    bmfh.reserved2       = (uint16_t)0;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:560:62: warning: use of old-style cast [-Wold-style-cast]
+    bmfh.offset          = (uint32_t)(14 + 40 + colortablesize);
+                                                              ^
+/rhe/src/librh/rhbitmap.cpp:563:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.bmihsize        = (uint32_t)40;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:564:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.imagewidth      = (uint32_t)width;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:565:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.imageheight     = (uint32_t)height;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:566:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.planes          = (uint16_t)1;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:567:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.bitcount        = (uint16_t)bitcount;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:568:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.compression     = (uint32_t)compression;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:569:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.matrixsize      = (uint32_t)matrixsize;
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:570:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.xpixelspermeter = (uint32_t)3937;            // 100 pixels per inch horizontal
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:571:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.ypixelspermeter = (uint32_t)3937;            // 100 pixels per inch vertical
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:572:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.colorsused      = (uint32_t)0;               // always use maximum available colors
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:573:37: warning: use of old-style cast [-Wold-style-cast]
+    bmih.colorsimportant = (uint32_t)0;               // always use maximum available colors
+                                     ^
+/rhe/src/librh/rhbitmap.cpp:607:29: warning: use of old-style cast [-Wold-style-cast]
+    out.write((char*)(&(bmfh)), 14);
+                             ^
+/rhe/src/librh/rhbitmap.cpp:609:29: warning: use of old-style cast [-Wold-style-cast]
+    out.write((char*)(&(bmih)), 40);
+                             ^
+/rhe/src/librh/rhbitmap.cpp:624:44: warning: use of old-style cast [-Wold-style-cast]
+          out.write((char*)(&(colortable[j])), 4);
+                                            ^
+/rhe/src/librh/rhbitmap.cpp:642:42: warning: use of old-style cast [-Wold-style-cast]
+             out.put((char)bytematrix[j][i]);
+                                          ^
+/rhe/src/librh/rhbitmap.cpp:670:41: warning: use of old-style cast [-Wold-style-cast]
+             out.put((char)rlematrix[j][i]);
+                                         ^
+/rhe/src/librh/rhbitmap.cpp: In member function ‘void rhbitmap::Bitmap::RLE8()’:
+/rhe/src/librh/rhbitmap.cpp:848:42: warning: use of old-style cast [-Wold-style-cast]
+                Buffer.push_back((uint8_t)0);
+                                          ^
+/rhe/src/librh/rhbitmap.cpp:850:42: warning: use of old-style cast [-Wold-style-cast]
+                Buffer.push_back((uint8_t)SegmentLength);
+                                          ^
+/rhe/src/librh/rhbitmap.cpp:852:41: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+                for (register uint16_t i=SegmentBegin; i<SegmentEnd; ++i)
+                                         ^
+/rhe/src/librh/rhbitmap.cpp:893:42: warning: use of old-style cast [-Wold-style-cast]
+                Buffer.push_back((uint8_t)SegmentLength);
+                                          ^
+/rhe/src/librh/rhbitmap.cpp:895:68: warning: use of old-style cast [-Wold-style-cast]
+                Buffer.push_back((uint8_t)bytematrix[j][SegmentBegin]);
+                                                                    ^
+/rhe/src/librh/rhbitmap.cpp:918:33: warning: use of old-style cast [-Wold-style-cast]
+       Buffer.push_back((uint8_t)0);
+                                 ^
+/rhe/src/librh/rhbitmap.cpp:920:33: warning: use of old-style cast [-Wold-style-cast]
+       Buffer.push_back((uint8_t)SegmentLength);
+                                 ^
+/rhe/src/librh/rhbitmap.cpp:922:31: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+       for(register uint16_t i=SegmentBegin; i<SegmentEnd; ++i)
+                               ^
+/rhe/src/librh/rhbitmap.cpp:924:51: warning: use of old-style cast [-Wold-style-cast]
+          Buffer.push_back((uint8_t)bytematrix[j][i]);
+                                                   ^
+/rhe/src/librh/rhbitmap.cpp:934:36: warning: use of old-style cast [-Wold-style-cast]
+          Buffer.push_back((uint8_t)0);
+                                    ^
+/rhe/src/librh/rhbitmap.cpp:939:33: warning: use of old-style cast [-Wold-style-cast]
+       Buffer.push_back((uint8_t)0);
+                                 ^
+/rhe/src/librh/rhbitmap.cpp:941:33: warning: use of old-style cast [-Wold-style-cast]
+       Buffer.push_back((uint8_t)0);
+                                 ^
+/rhe/src/librh/rhbitmap.cpp:951:43: warning: use of old-style cast [-Wold-style-cast]
+    rlematrix[height-1].push_back((uint8_t)0);
+                                           ^
+/rhe/src/librh/rhbitmap.cpp:953:43: warning: use of old-style cast [-Wold-style-cast]
+    rlematrix[height-1].push_back((uint8_t)1);
+                                           ^
+/rhe/src/librh/rhbitmap.cpp:960:22: warning: conversion to ‘uint32_t {aka unsigned int}’ from ‘std::vector<unsigned char>::size_type {aka long unsigned int}’ may alter its value [-Wconversion]
+       RowSizeCounter += rlematrix[j].size();
+                      ^
+/rhe/src/librh/rhbitmap.cpp: In member function ‘void rhbitmap::Graph::plotpixel(const int&, const int&, const rhbitmap::Color&)’:
+/rhe/src/librh/rhbitmap.cpp:1183:27: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+       setcolor(i, j, color);
+                           ^
+/rhe/src/librh/rhbitmap.cpp:1183:27: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+/rhe/src/librh/rhbitmap.cpp: In member function ‘void rhbitmap::Graph::plotpixel(const int&, const int&, const int&)’:
+/rhe/src/librh/rhbitmap.cpp:1199:33: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+       setcolor(i, j, colorselect);
+                                 ^
+/rhe/src/librh/rhbitmap.cpp:1199:33: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+/rhe/src/librh/rhbitmap.cpp:1199:33: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+/rhe/src/librh/rhbitmap.cpp: In member function ‘void rhbitmap::Graph::plotpoint(const double&, const double&, const int&)’:
+/rhe/src/librh/rhbitmap.cpp:1244:33: warning: conversion to ‘uint16_t {aka short unsigned int}’ from ‘int’ may alter its value [-Wconversion]
+       setcolor(i, j, colorselect);
+                                 ^
+ar -r /rhe/lib/librh.a /rhe/lib/rhbitmap.o
+rm /rhe/lib/rhbitmap.o
+rhbitmap.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+g++ -I /rhe/include -pedantic -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Winline -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -std=gnu++14 -Os -c /rhe/src/librh/rhregex.cpp -o /rhe/lib/rhregex.o
+/rhe/src/librh/rhregex.cpp: In function ‘std::string rhregex::Substitute(const string&, const string&, const string&, char)’:
+/rhe/src/librh/rhregex.cpp:87:64: warning: conversion to ‘int’ from ‘size_t {aka long unsigned int}’ may alter its value [-Wconversion]
+       int ErrorSize = regerror(Result, &RegEx, ErrorBuffer, 500);
+                                                                ^
+/rhe/src/librh/rhregex.cpp:101:85: warning: use of old-style cast [-Wold-style-cast]
+    regmatch_t * Matches = (regmatch_t*)malloc((RegEx.re_nsub + 1)*sizeof(regmatch_t)) ;
+                                                                                     ^
+/rhe/src/librh/rhregex.cpp:118:64: warning: conversion to ‘int’ from ‘size_t {aka long unsigned int}’ may alter its value [-Wconversion]
+       int ErrorSize = regerror(Result, &RegEx, ErrorBuffer, 500);
+                                                                ^
+/rhe/src/librh/rhregex.cpp:138:24: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+    for ( int i = 1 ; i <= RegEx.re_nsub ; ++i )
+                        ^
+In file included from /rhe/src/librh/rhregex.cpp:24:0:
+/rhe/include/rhutil.h: At global scope:
+/rhe/include/rhutil.h:221:1: warning: inline function ‘bool rhutil::NCS_Equal(const string&, const string&)’ used but never defined
+ NCS_Equal
+ ^
+/rhe/src/librh/rhregex.cpp:274:1: warning: macro "BLAT_ENABLE" is not used [-Wunused-macros]
+ } // end function rhregex::Substitute()
+ ^
+ar -r /rhe/lib/librh.a /rhe/lib/rhregex.o
+rm /rhe/lib/rhregex.o
+rhregex.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Library Program Collection is up to date.
+make[1]: Leaving directory '/rhe/src/librh'
+
+Aragorn@Ketch
+/rhe/src/librh
+%

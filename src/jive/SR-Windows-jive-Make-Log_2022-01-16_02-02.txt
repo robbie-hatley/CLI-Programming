@@ -1,0 +1,65 @@
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:59:41 AM
+/d/rhe/src/jive
+%make
+$PLATFORM is Win64
+$EXEDIR   is /d/rhe/bin/jive
+gcc -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wnested-externs -s -O2 -std=gnu17 piglatin.c -L/usr/lib      -o /d/rhe/bin/jive/piglatin.exe
+piglatin.c: In function ‘main’:
+piglatin.c:76:38: warning: conversion from ‘int’ to ‘char’ may change value [-Wconversion]
+   76 |                         buf[len++] = ch;
+      |                                      ^~
+At top level:
+piglatin.c:41:13: warning: ‘sccsid’ defined but not used [-Wunused-variable]
+   41 | static char sccsid[] = "@(#)pig.c       8.1 (Berkeley) 5/31/93";
+      |             ^~~~~~
+piglatin.c:35:13: warning: ‘copyright’ defined but not used [-Wunused-variable]
+   35 | static char copyright[] =
+      |             ^~~~~~~~~
+flex chef.l
+mv lex.yy.c chef.c
+gcc -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wnested-externs -s -O2 -std=gnu17 chef.c -L/usr/lib -lfl -o /d/rhe/bin/jive/chef.exe
+lex.yy.c:1372:16: warning: ‘input’ defined but not used [-Wunused-function]
+lex.yy.c:1329:17: warning: ‘yyunput’ defined but not used [-Wunused-function]
+flex jive.l
+mv lex.yy.c jive.c
+gcc -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wnested-externs -s -O2 -std=gnu17 jive.c -L/usr/lib -lfl -o /d/rhe/bin/jive/jive.exe
+lex.yy.c: In function ‘yy_scan_bytes’:
+lex.yy.c:2959:8: warning: declaration of ‘buf’ shadows a global declaration [-Wshadow]
+jive.l:11:14: note: shadowed declaration is here
+   11 |         char buf[128];
+      |              ^~~
+jive.l: At top level:
+jive.l:224:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+  224 | main()
+      | ^~~~
+lex.yy.c:2567:16: warning: ‘input’ defined but not used [-Wunused-function]
+lex.yy.c:2524:17: warning: ‘yyunput’ defined but not used [-Wunused-function]
+flex valspeak.l
+mv lex.yy.c valspeak.c
+gcc -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wnested-externs -s -O2 -std=gnu17 valspeak.c -L/usr/lib -lfl -o /d/rhe/bin/jive/valspeak.exe
+valspeak.l: In function ‘yylex’:
+valspeak.l:41:40: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+   41 |                                 printf(""); break;
+      |                                        ^~
+valspeak.l:47:40: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+   47 |                                 printf(""); break;
+      |                                        ^~
+valspeak.l:49:40: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+   49 |                                 printf(""); break;
+      |                                        ^~
+valspeak.l: At top level:
+valspeak.l:131:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+  131 | main()
+      | ^~~~
+valspeak.l: In function ‘main’:
+valspeak.l:133:15: warning: conversion to ‘unsigned int’ from ‘pid_t’ {aka ‘int’} may change the sign of the result [-Wsign-conversion]
+  133 |         srand(getpid());
+      |               ^~~~~~~~
+At top level:
+lex.yy.c:1604:16: warning: ‘input’ defined but not used [-Wunused-function]
+lex.yy.c:1561:17: warning: ‘yyunput’ defined but not used [-Wunused-function]
+Jive Program Collection is up to date.
+
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:59:50 AM
+/d/rhe/src/jive
+%

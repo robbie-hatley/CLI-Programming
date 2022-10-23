@@ -1,0 +1,18 @@
+# Set PLATFORM:
+ifeq ($(HOSTNAME),Ketch)
+   ifeq ($(OSTYPE),cygwin)
+      PLATFORM := "Win64"
+   else
+      $(error Error: Unknown OSTYPE on Ketch)
+   endif
+else ifeq ($(HOSTNAME),galleon)
+   ifeq ($(OSTYPE), linux-gnu)
+      PLATFORM := "Linux"
+   else ifeq ($(OSTYPE), cygwin)
+      PLATFORM := "Win32"
+   else
+      $(error Error: Unknown OSTYPE on Galleon)
+   endif
+else
+   $(error Error: Unknown Host)
+endif

@@ -1,0 +1,58 @@
+BASH on Mate Terminal on Manjaro Linux aragorn@Square-Rigger Sun 2022-01-16, 12:56:27 AM
+/d/rhe/src/humor
+%make
+$PLATFORM is Linux
+$INCDIR   is /d/rhe/include
+$EXEDIR   is /home/aragorn/bin/humor
+$LIBDIR   is /home/aragorn/lib
+Using pattern rule %:%.c to compile cenesis.c to cenesis:
+gcc -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   cenesis.c -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/humor/cenesis
+cenesis is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile christmas.c to christmas:
+gcc -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   christmas.c -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/humor/christmas
+christmas.c:2:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+    2 | main(t,_,a)char *a;{return!0<t?t<3?main(-79,-13,a+main(-87,1-_,
+      | ^~~~
+christmas.c: In function ‘main’:
+christmas.c:2:1: warning: old-style function definition [-Wold-style-definition]
+christmas.c:2:1: warning: type of ‘t’ defaults to ‘int’ [-Wimplicit-int]
+christmas.c:2:1: warning: type of ‘_’ defaults to ‘int’ [-Wimplicit-int]
+christmas.c:2:29: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+    2 | main(t,_,a)char *a;{return!0<t?t<3?main(-79,-13,a+main(-87,1-_,
+      |                             ^
+christmas is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile fizzbuzz.c to fizzbuzz:
+gcc -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fizzbuzz.c -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/humor/fizzbuzz
+fizzbuzz is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile print-yourself.c to print-yourself:
+gcc -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   print-yourself.c -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/humor/print-yourself
+print-yourself.c:1:53: warning: return type defaults to ‘int’ [-Wimplicit-int]
+    1 | char *p="char *p=%c%s%c;main(){printf(p,34,p,34);}";main(){printf(p,34,p,34);}
+      |                                                     ^~~~
+print-yourself.c: In function ‘main’:
+print-yourself.c:1:53: warning: old-style function definition [-Wold-style-definition]
+print-yourself.c:1:60: warning: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+    1 | char *p="char *p=%c%s%c;main(){printf(p,34,p,34);}";main(){printf(p,34,p,34);}
+      |                                                            ^~~~~~
+print-yourself.c:1:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+  +++ |+#include <stdio.h>
+    1 | char *p="char *p=%c%s%c;main(){printf(p,34,p,34);}";main(){printf(p,34,p,34);}
+print-yourself.c:1:60: warning: incompatible implicit declaration of built-in function ‘printf’ [-Wbuiltin-declaration-mismatch]
+    1 | char *p="char *p=%c%s%c;main(){printf(p,34,p,34);}";main(){printf(p,34,p,34);}
+      |                                                            ^~~~~~
+print-yourself.c:1:60: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+print-yourself is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile response.cpp to response:
+g++ -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 response.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/humor/response
+response is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Humor Program Collection is up to date.
+
+BASH on Mate Terminal on Manjaro Linux aragorn@Square-Rigger Sun 2022-01-16, 12:56:30 AM
+/d/rhe/src/humor
+%
+

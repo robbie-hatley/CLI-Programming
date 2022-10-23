@@ -1,0 +1,30 @@
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:48:20 AM
+/d/rhe/src/fractals
+%make
+$PLATFORM is Win64
+$INCDIR   is /d/rhe/include
+$EXEDIR   is /d/rhe/bin/fractals
+$LIBDIR   is /d/rhe/lib
+make: Warning: File '/rhe/src/maketail' has modification time 28226 s in the future
+Using pattern rule %.exe:%.cpp to compile hennon.cpp to hennon.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 hennon.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/fractals/hennon.exe
+hennon.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile julia.cpp to julia.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 julia.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/fractals/julia.exe
+julia.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile mandelbrot.cpp to mandelbrot.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 mandelbrot.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/fractals/mandelbrot.exe
+mandelbrot.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile sierpinski.cpp to sierpinski.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 sierpinski.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/fractals/sierpinski.exe
+sierpinski.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Fractals Program Collection is up to date.
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:48:42 AM
+/d/rhe/src/fractals
+%

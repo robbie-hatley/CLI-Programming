@@ -1,0 +1,230 @@
+
+Aragorn@Ketch ~
+$ cd /rhe/src/math
+
+Aragorn@Ketch /rhe/src/math
+$ make rebuild
+$PLATFORM is Win64
+$EXEDIR   is /rhe/bin64/math
+$LIBDIR   is /rhe/lib64
+make all Elessar=Telcontar
+make[1]: Entering directory '/cygdrive/d/rhe/src/math'
+$PLATFORM is Win64
+$EXEDIR   is /rhe/bin64/math
+$LIBDIR   is /rhe/lib64
+Elessar, Elessar, why do thy kinfolk wander afar?
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -c -O2 /rhe/src/librh/rhmathc.c -o /rhe/lib64/rhmathc.o
+ar -r /rhe/lib64/librh.a /rhe/lib64/rhmathc.o
+rm /rhe/lib64/rhmathc.o
+rhmathc.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -c -O2 /rhe/src/librh/rhutilc.c -o /rhe/lib64/rhutilc.o
+ar -r /rhe/lib64/librh.a /rhe/lib64/rhutilc.o
+rm /rhe/lib64/rhutilc.o
+rhutilc.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -c -O2 /rhe/src/librh/rhncgraphics.c -o /rhe/lib64/rhncgraphics.o
+ar -r /rhe/lib64/librh.a /rhe/lib64/rhncgraphics.o
+rm /rhe/lib64/rhncgraphics.o
+rhncgraphics.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile add.c to add.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 add.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/add.exe
+add.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -c -O2 /rhe/src/librh/rhmath.cpp -o /rhe/lib64/rhmath.o
+ar -r /rhe/lib64/librh.a /rhe/lib64/rhmath.o
+rm /rhe/lib64/rhmath.o
+rhmath.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -c -O2 /rhe/src/librh/rhutil.cpp -o /rhe/lib64/rhutil.o
+ar -r /rhe/lib64/librh.a /rhe/lib64/rhutil.o
+rm /rhe/lib64/rhutil.o
+rhutil.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -c -O2 /rhe/src/librh/rhdir.cpp -o /rhe/lib64/rhdir.o
+ar -r /rhe/lib64/librh.a /rhe/lib64/rhdir.o
+rm /rhe/lib64/rhdir.o
+rhdir.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -c -O2 /rhe/src/librh/rhbitmap.cpp -o /rhe/lib64/rhbitmap.o
+ar -r /rhe/lib64/librh.a /rhe/lib64/rhbitmap.o
+rm /rhe/lib64/rhbitmap.o
+rhbitmap.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -c -O2 /rhe/src/librh/rhregex.cpp -o /rhe/lib64/rhregex.o
+ar -r /rhe/lib64/librh.a /rhe/lib64/rhregex.o
+rm /rhe/lib64/rhregex.o
+rhregex.o is now updated and archived.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile base.cpp to base.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 base.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/base.exe
+base.cpp: In function ‘int main(int, char**)’:
+base.cpp:62:17: error: ‘Base’ is not a member of ‘rhmath’
+    std::cout << rhmath::Base(base, number, leading, digits) << std::endl;
+                 ^~~~~~
+make[1]: [/rhe/src/maketail:260: base.exe] Error 1 (ignored)
+base.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile binary.cpp to binary.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 binary.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/binary.exe
+binary.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile comb.c to comb.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 comb.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/comb.exe
+comb.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile comb-iter.c to comb-iter.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 comb-iter.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/comb-iter.exe
+comb-iter.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile comb-recu.c to comb-recu.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 comb-recu.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/comb-recu.exe
+comb-recu.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile complex.cpp to complex.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 complex.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/complex.exe
+complex.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile convert-base.c to convert-base.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 convert-base.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/convert-base.exe
+convert-base.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile c-template.c to c-template.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 c-template.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/c-template.exe
+c-template.c: In function ‘main’:
+c-template.c:33:14: warning: unused parameter ‘argc’ [-Wunused-parameter]
+ int main(int argc, char *argv[])
+              ^~~~
+c-template.c:33:26: warning: unused parameter ‘argv’ [-Wunused-parameter]
+ int main(int argc, char *argv[])
+                          ^~~~
+c-template.c: At top level:
+c-template.c:4:0: warning: macro "MY_HEADER_NAME" is not used [-Wunused-macros]
+ #define MY_HEADER_NAME  /* For headers only */
+
+c-template.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile divisors.c to divisors.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 divisors.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/divisors.exe
+divisors.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile factor.cpp to factor.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 factor.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/factor.exe
+factor.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile factors.cpp to factors.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 factors.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/factors.exe
+factors.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile fib4mill.c to fib4mill.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 fib4mill.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/fib4mill.exe
+fib4mill.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile fibonacci.cpp to fibonacci.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 fibonacci.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/fibonacci.exe
+fibonacci.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile fibonacci-index-for-digits.cpp to fibonacci-index-for-digits.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 fibonacci-index-for-digits.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/fibonacci-index-for-digits.exe
+fibonacci-index-for-digits.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile goldbach.c to goldbach.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 goldbach.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/goldbach.exe
+/rhe/lib64/librh.a(rhmathc.o):rhmathc.c:(.text+0x34d): undefined reference to `Cat'
+/rhe/lib64/librh.a(rhmathc.o):rhmathc.c:(.text+0x34d): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `Cat'
+/rhe/lib64/librh.a(rhmathc.o):rhmathc.c:(.text+0x364): undefined reference to `Cat'
+/rhe/lib64/librh.a(rhmathc.o):rhmathc.c:(.text+0x364): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `Cat'
+collect2: error: ld returned 1 exit status
+make[1]: [/rhe/src/maketail:254: goldbach.exe] Error 1 (ignored)
+goldbach.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile harmonic.c to harmonic.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 harmonic.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/harmonic.exe
+harmonic.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile isprime.cpp to isprime.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 isprime.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/isprime.exe
+isprime.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile makechange.cpp to makechange.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 makechange.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/makechange.exe
+makechange.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile mult35.c to mult35.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 mult35.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/mult35.exe
+mult35.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile number-of-divisors.c to number-of-divisors.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 number-of-divisors.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/number-of-divisors.exe
+number-of-divisors.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile part.c to part.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 part.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/part.exe
+part.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute.c to permute.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 permute.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/permute.exe
+permute.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute-0.c to permute-0.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 permute-0.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/permute-0.exe
+permute-0.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute-1.c to permute-1.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 permute-1.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/permute-1.exe
+permute-1.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile permute-cpp.cpp to permute-cpp.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 permute-cpp.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/permute-cpp.exe
+permute-cpp.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute-cryptic.c to permute-cryptic.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 permute-cryptic.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/permute-cryptic.exe
+permute-cryptic.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile permute-no-comments.c to permute-no-comments.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 permute-no-comments.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/permute-no-comments.exe
+permute-no-comments.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile pi.c to pi.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 pi.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/pi.exe
+pi.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile primes.cpp to primes.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 primes.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/primes.exe
+primes.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile primes-in-range.cpp to primes-in-range.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 primes-in-range.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/primes-in-range.exe
+primes-in-range.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile rhcalc.cpp to rhcalc.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 rhcalc.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/rhcalc.exe
+rhcalc.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile series.c to series.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 series.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/series.exe
+series.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile sqrt.cpp to sqrt.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 sqrt.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/sqrt.exe
+sqrt.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile two-dice.c to two-dice.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 two-dice.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/two-dice.exe
+two-dice.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile unknown-series.c to unknown-series.exe:
+gcc -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu11   -s -O2 unknown-series.c -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/unknown-series.exe
+unknown-series.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile weird.cpp to weird.exe:
+g++ -I /rhe/include -D PLATFORM_IS_WIN64 -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -std=gnu++14 -s -O2 weird.cpp -L/rhe/lib64 -L/lib -L/usr/lib -lrh -lfl -ly -lm -lname -lncurses -lgmp -o /rhe/bin64/math/weird.exe
+weird.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Math Program Collection is up to date.
+make[1]: Leaving directory '/cygdrive/d/rhe/src/math'
+
+Aragorn@Ketch /rhe/src/math
+$

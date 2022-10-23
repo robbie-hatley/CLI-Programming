@@ -1,0 +1,41 @@
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:51:25 AM
+/d/rhe/src/games
+%make
+$PLATFORM is Win64
+$INCDIR   is /d/rhe/include
+$EXEDIR   is /d/rhe/bin/games
+$LIBDIR   is /d/rhe/lib
+make: Warning: File '/rhe/src/maketail' has modification time 28042 s in the future
+Using pattern rule %.exe:%.cpp to compile eight-queens.cpp to eight-queens.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 eight-queens.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/games/eight-queens.exe
+eight-queens.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile life.c to life.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   life.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/games/life.exe
+life.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile life-standalone.c to life-standalone.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   life-standalone.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/games/life-standalone.exe
+life-standalone.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile poker-odds.cpp to poker-odds.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 poker-odds.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/games/poker-odds.exe
+poker-odds.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Games Program Collection is up to date.
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:51:37 AM
+/d/rhe/src/games
+%ll /d/rhe/bin/games
+total 200
+drwxrwx---+ 1 Administrators None     0 Jan 16 01:51 ./
+drwxrwx---+ 1 Administrators None     0 Jan 15 13:54 ../
+-rwxrwxr-x+ 1 Aragorn        None 10752 Jan 16 01:51 eight-queens.exe*
+-rwxrwxr-x+ 1 Aragorn        None 17408 Jan 16 01:51 life.exe*
+-rwxrwxr-x+ 1 Aragorn        None 17408 Jan 16 01:51 life-standalone.exe*
+-rwxrwxr-x+ 1 Aragorn        None 39936 Jan 16 01:51 poker-odds.exe*
+
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:52:04 AM
+/d/rhe/src/games
+%

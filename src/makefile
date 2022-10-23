@@ -1,0 +1,10 @@
+.PHONY: a b
+a : b
+	$(MAKE) -C librh
+	$(MAKE) -C fractals
+	$(MAKE) -C games
+	$(MAKE) -C graphics
+	$(MAKE) -C humor
+	$(MAKE) -C math
+	$(MAKE) -C problematic
+	$(MAKE) -C util

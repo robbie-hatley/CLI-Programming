@@ -1,0 +1,12 @@
+SUB KEYOUT
+   LET K$ = INKEY$
+   BREAKOUT
+END SUB
+
+SUB BREAKOUT
+   IF NOT K$ = "" THEN
+      IF K$ = "R" OR K$ = "r" THEN RUN
+      IF K$ = "E" OR K$ = "e" THEN END
+   END IF
+END SUB
+

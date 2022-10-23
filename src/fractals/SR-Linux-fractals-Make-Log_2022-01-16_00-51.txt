@@ -1,0 +1,28 @@
+BASH on Mate Terminal on Manjaro Linux aragorn@Square-Rigger Sun 2022-01-16, 12:50:02 AM
+/d/rhe/src/fractals
+%make
+$PLATFORM is Linux
+$INCDIR   is /d/rhe/include
+$EXEDIR   is /home/aragorn/bin/fractals
+$LIBDIR   is /home/aragorn/lib
+Using pattern rule %:%.cpp to compile hennon.cpp to hennon:
+g++ -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 hennon.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/fractals/hennon
+hennon is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile julia.cpp to julia:
+g++ -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 julia.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/fractals/julia
+julia is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile mandelbrot.cpp to mandelbrot:
+g++ -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 mandelbrot.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/fractals/mandelbrot
+mandelbrot is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile sierpinski.cpp to sierpinski:
+g++ -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 sierpinski.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/fractals/sierpinski
+sierpinski is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Fractals Program Collection is up to date.
+
+BASH on Mate Terminal on Manjaro Linux aragorn@Square-Rigger Sun 2022-01-16, 12:50:10 AM
+/d/rhe/src/fractals
+%

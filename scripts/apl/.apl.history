@@ -1,0 +1,4 @@
+)load diamond.apl
+)load ../diamond.apl
+)load ./diamond.apl
+)off

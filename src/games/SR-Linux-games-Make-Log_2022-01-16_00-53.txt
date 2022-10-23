@@ -1,0 +1,28 @@
+BASH on Mate Terminal on Manjaro Linux aragorn@Square-Rigger Sun 2022-01-16, 12:52:09 AM
+/d/rhe/src/games
+%make
+$PLATFORM is Linux
+$INCDIR   is /d/rhe/include
+$EXEDIR   is /home/aragorn/bin/games
+$LIBDIR   is /home/aragorn/lib
+Using pattern rule %:%.cpp to compile eight-queens.cpp to eight-queens:
+g++ -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 eight-queens.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/games/eight-queens
+eight-queens is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile life.c to life:
+gcc -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   life.c -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/games/life
+life is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.c to compile life-standalone.c to life-standalone:
+gcc -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   life-standalone.c -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/games/life-standalone
+life-standalone is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %:%.cpp to compile poker-odds.cpp to poker-odds:
+g++ -I /d/rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 poker-odds.cpp -L/home/aragorn/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly -lasan  -o /home/aragorn/bin/games/poker-odds
+poker-odds is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Games Program Collection is up to date.
+
+BASH on Mate Terminal on Manjaro Linux aragorn@Square-Rigger Sun 2022-01-16, 12:52:14 AM
+/d/rhe/src/games
+%

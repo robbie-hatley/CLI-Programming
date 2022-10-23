@@ -1,0 +1,58 @@
+
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:56:55 AM
+/d/rhe/src/humor
+%make
+$PLATFORM is Win64
+$INCDIR   is /d/rhe/include
+$EXEDIR   is /d/rhe/bin/humor
+$LIBDIR   is /d/rhe/lib
+Using pattern rule %.exe:%.c to compile cenesis.c to cenesis.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   cenesis.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/humor/cenesis.exe
+cenesis.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile christmas.c to christmas.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   christmas.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/humor/christmas.exe
+christmas.c:2:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+    2 | main(t,_,a)char *a;{return!0<t?t<3?main(-79,-13,a+main(-87,1-_,
+      | ^~~~
+christmas.c: In function ‘main’:
+christmas.c:2:1: warning: old-style function definition [-Wold-style-definition]
+christmas.c:2:1: warning: type of ‘t’ defaults to ‘int’ [-Wimplicit-int]
+christmas.c:2:1: warning: type of ‘_’ defaults to ‘int’ [-Wimplicit-int]
+christmas.c:2:29: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+    2 | main(t,_,a)char *a;{return!0<t?t<3?main(-79,-13,a+main(-87,1-_,
+      |                             ^
+christmas.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile fizzbuzz.c to fizzbuzz.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   fizzbuzz.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/humor/fizzbuzz.exe
+fizzbuzz.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.c to compile print-yourself.c to print-yourself.exe:
+gcc -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17   print-yourself.c -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/humor/print-yourself.exe
+print-yourself.c:1:53: warning: return type defaults to ‘int’ [-Wimplicit-int]
+    1 | char *p="char *p=%c%s%c;main(){printf(p,34,p,34);}";main(){printf(p,34,p,34);}
+      |                                                     ^~~~
+print-yourself.c: In function ‘main’:
+print-yourself.c:1:53: warning: old-style function definition [-Wold-style-definition]
+print-yourself.c:1:60: warning: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+    1 | char *p="char *p=%c%s%c;main(){printf(p,34,p,34);}";main(){printf(p,34,p,34);}
+      |                                                            ^~~~~~
+print-yourself.c:1:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+  +++ |+#include <stdio.h>
+    1 | char *p="char *p=%c%s%c;main(){printf(p,34,p,34);}";main(){printf(p,34,p,34);}
+print-yourself.c:1:60: warning: incompatible implicit declaration of built-in function ‘printf’ [-Wbuiltin-declaration-mismatch]
+    1 | char *p="char *p=%c%s%c;main(){printf(p,34,p,34);}";main(){printf(p,34,p,34);}
+      |                                                            ^~~~~~
+print-yourself.c:1:60: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+print-yourself.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using pattern rule %.exe:%.cpp to compile response.cpp to response.exe:
+g++ -I /d/rhe/include -DPLATFORM_IS_WIN64 -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-cast -Woverloaded-virtual -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17 response.cpp -L/d/rhe/lib -L/lib -L/usr/lib -lrh -lncurses -lname -lgmp -lm -ly  -o /d/rhe/bin/humor/response.exe
+response.exe is up to date.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Humor Program Collection is up to date.
+
+BASH on MinTTY on Cygwin on Windows 10 Aragorn@Square-Rigger Sun 2022-01-16,  1:57:09 AM
+/d/rhe/src/humor
+%

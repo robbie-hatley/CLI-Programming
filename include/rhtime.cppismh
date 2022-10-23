@@ -1,0 +1,29 @@
+/// This is a 110-character-wide ASCII-encoded includable c++ source header.
+#ifndef RHTIME_CPPISMH_ALREADY_INCLUDED
+#define RHTIME_CPPISMH_ALREADY_INCLUDED
+/************************************************************************************************************\
+ * file name:  "rhtime.cppismh"
+ * header for: "rhtime.cppism"
+ * This header contains prototypes for functions pertaining to time.
+ * #include this header inside of headers for modules which #include the related includable source module
+ * "rhtime.cppism". This code will be imbued with whatever namespace it is #include'ed into.
+ * Author: Robbie Hatley
+ * Date written: Wednesday March 23, 2016.
+\************************************************************************************************************/
+
+// Get local date from time_t time:
+std::string GetDate
+   (
+      time_t Seconds1970,  // seconds since 00:00:00UTC on Jan 1, 1970
+      int    Format        // date format: 0=micro, 1=short, 2=long
+   );
+
+// Get local time from time_t time:
+std::string GetTime
+   (
+      time_t Seconds1970,  // seconds since 00:00:00UTC on Jan 1, 1970
+      int    Format        // time format: 0=leading zero, 1=NO leading zero
+   );
+
+// End include guard:
+#endif

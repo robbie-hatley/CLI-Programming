@@ -1,0 +1,127 @@
+// Experimental file and directory classes:
+
+   /*********************************************************************************************************\
+    * Experimental Classes                                                                                  *
+   \*********************************************************************************************************/
+
+   #undef DIRECTORY_CLASS
+   #ifdef DIRECTORY_CLASS
+   // class Directory (gathers all data from the listings of all files in the
+   // current directory):
+   class Directory
+   {
+      public:
+         Directory(void);
+         typedef vector<FileRecord>::iterator iterator;
+         typedef vector<FileRecord>::const_iterator const_iterator;
+         typedef vector<FileRecord>::size_type size_type;
+         iterator  begin (void) {return Files.begin();}  
+         iterator  end   (void) {return Files.end();}
+         size_type count (void) {return Count;}
+         FileRecord operator[](size_type i);
+      private:
+         vector<FileRecord> Files;
+         vector<FileRecord>::size_type Count;
+   };
+   #endif
+   
+   #undef TREE_CLASS
+   #ifdef TREE_CLASS
+   // class Tree (gathers all data from the listings of all subdirectories of the
+   // current directory):
+   class Tree
+   {
+      public:
+         typedef vector<DirRecord>::iterator iterator;
+         typedef vector<DirRecord>::const_iterator const_iterator;
+         Tree(void);
+         iterator begin (void) {return Subdirs.begin();}  
+         iterator end   (void) {return Subdirs.end();  }
+         int      count (void) {return Count;}
+      private:
+         vector<DirRecord> Subdirs;
+         int Count;
+   };
+   #endif
+   
+/************************************************************************************************************\
+ * Member functions for class Directory:                                                                    *
+\************************************************************************************************************/
+#undef DIRECTORY_CLASS
+#ifdef DIRECTORY_CLASS
+rhdir::Directory::Directory(void)
+{
+   string Buffer;
+   GetFileList();
+   Count = 0;
+   ifstream ifs ("C:\\Temp\\FileList.tmp");
+   while (getline(ifs, Buffer))
+   {
+      if (Buffer.size() < 45 ) continue;
+      if (Buffer[0] == ' ') continue;
+      Files.push_back(FileRecord(Buffer));
+      ++Count;
+   }
+   if (ifs.bad() || !ifs.eof())
+   {
+      cerr
+         << "Error in rhdir::Directory constructor: "
+         << "unable to open file "
+         << "C:\\Temp\\Filelist.tmp ."
+         << endl;
+   }
+   ifs.close();
+   DelFileList();
+   return;
+}
+
+// (Inline Inserter is defined in header file.)
+
+rhdir::FileRecord rhdir::Directory::operator[](size_type i)
+{
+   if (i >= 0 && i < Count) 
+   {
+      return Files[i];
+   }
+   else
+   {
+      cout << "Directory subscript out of bounds; returning last record." << endl;
+      return Files[Count - 1];
+   }
+}
+#endif
+
+
+/************************************************************************************************************\
+ * Member functions for class Tree:                                                                         *
+\************************************************************************************************************/
+#undef TREE_CLASS
+#ifdef TREE_CLASS
+rhdir::Tree::Tree(void)
+{
+   string Buffer;
+   GetSubdirList();
+   ifstream ifs ("C:\\Temp\\SubdirList.tmp");
+   Count = 0;
+   while (getline(ifs, Buffer))
+   {
+      if (Buffer.size() < 45 ) continue;
+      if (Buffer[0] == ' ')    continue;
+      if (Buffer[0] == '.')    continue;
+      Subdirs.push_back(DirRecord(Buffer));
+      ++Count;
+   }
+   if (!ifs.good())
+   {
+      cerr
+         << "Error in rhdir::Tree constructor: "
+         << "unable to open file "
+         << "C:\\Temp\\SubdirList.tmp ." << endl;
+   }
+   ifs.close();
+   DelSubdirList();
+   return;
+}
+#endif
+
+
