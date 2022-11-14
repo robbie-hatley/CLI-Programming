@@ -17,14 +17,6 @@
 using std::cout;
 using std::endl;
 
-std::string GetTimeString();
-
-int main(void)
-{
-  cout << GetTimeString() << endl;
-  return 0;
-}
-
 std::string GetTimeString()
 {
   // Get calendar time:
@@ -36,8 +28,7 @@ std::string GetTimeString()
   StructuredTime = *localtime(&caltime);  // Load structure.
   
   // Make C-string and load with formatted time:
-  static char FormattedTime[51];
-  for (int i=0;i<51;++i) FormattedTime[i]='\0';
+  static char FormattedTime[51] = {'\0'};
   strftime(FormattedTime, 50, "%I:%M%p, %A %B %d, %Y\n", &StructuredTime);
   
   // Convert to C++ style string and return this string:
@@ -45,3 +36,8 @@ std::string GetTimeString()
   return Time;
 }
 
+int main(void)
+{
+  cout << GetTimeString() << endl;
+  return 0;
+}
