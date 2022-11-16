@@ -54,6 +54,7 @@ my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 #Program Settings:             Meaning:                 Range:     Default:
 my $Recurse   = 0          ; # Recurse subdirectories?  (bool)     0
 my $Verbose   = 0          ; # Verbose                  (bool)     0
+my $Quiet     = 0          ; # Quiet                    (bool)     0
 my $Regexp    = qr/^.+$/   ; # Regular expression.      (regexp)   qr/^.+$/
 my $Predicate = '-f || -d' ; # File-test boolean.       (boolean expresion using Perl file-test operators)
 
@@ -104,6 +105,7 @@ sub argv ()
             if (/^-h$/ || /^--help$/   ) {help; exit 777 ; }
          elsif (/^-r$/ || /^--recurse$/) {$Recurse = 1   ; } 
          elsif (/^-v$/ || /^--verbose$/) {$Verbose = 1   ; }
+         elsif (/^-q$/ || /^--quiet$/  ) {$Quiet   = 1   ; }
       }
       else {push @CLArgs, $_;}
    }
@@ -124,7 +126,7 @@ sub curdire ()
 {
    ++$direcount;
    my $curdir = cwd_utf8;
-   say "\nDir # $direcount: $curdir\n";
+   say "\nDir # $direcount: $curdir\n" unless $Quiet;
    my $curdirfiles = GetFiles($curdir, 'A', $Regexp);
    if ($Verbose)
    {
@@ -225,6 +227,7 @@ sub help ()
    -h or --help         Print help and exit.
    -r or --recurse      Recurse subdirectories.
    -v or --verbose      Be verbose.
+   -q or --quiet        Be quiet (don't print directories being processed).
 
    (Note that a "target" option is NOT provided, as that would conflict with the
    whole idea of this program, which is to specify what types of files to look for
