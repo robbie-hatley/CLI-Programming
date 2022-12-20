@@ -10,18 +10,22 @@ sub permutations (@array)
    while (@stack)
    {
       my $old_pair = shift @stack;
-      my $raw_size = scalar(@{$old_pair->[0]});
+      my $old_raw  = $old_pair->[0];
+      my $old_ckd  = $old_pair->[1];
+      my $raw_size = scalar(@{$old_raw});
       if ( 0 == $raw_size )
       {
-         push @permutations, $old_pair->[1];
+         push @permutations, $old_ckd;
       }
       else
       {
          for ( my $idx = 0 ; $idx < $raw_size ; ++$idx )
          {
-            my $new_pair = [[@{$old_pair->[0]}],[@{$old_pair->[1]}]];
-            my $cut = splice @{$new_pair->[0]}, $idx, 1;
-            push @{$new_pair->[1]}, $cut;
+            my @new_raw = @$old_raw;
+            my @new_ckd = @$old_ckd;
+            my $cut = splice @new_raw, $idx, 1;
+            push @new_ckd, $cut;
+            my $new_pair = [\@new_raw, \@new_ckd];
             push @stack, $new_pair;
          }
       }

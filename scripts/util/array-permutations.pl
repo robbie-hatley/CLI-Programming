@@ -1,6 +1,7 @@
 #! /usr/bin/env perl
 #  array-permutations.pl
 use v5.36;
+use Time::HiRes 'time';
 $,=' ';
 sub permutations (@array)
 {
@@ -23,8 +24,15 @@ sub permutations (@array)
    }
    return @permutations;
 }
-my @array = (@ARGV);
-say "array = (@array)";
-my @permutations = permutations(@array);
-say "number of permutations = ", scalar(@permutations);
-say @$_ for @permutations;
+
+{ # begin main
+   my $t0 = time;
+   my @array = (@ARGV);
+   say "array = (@array)";
+   my @permutations = permutations(@array);
+   say "number of permutations = ", scalar(@permutations);
+   #say @$_ for @permutations;
+   my $t1 = time; my $te = $t1 - $t0;
+   say "\nExecution time was $te seconds.";
+   exit 0;
+} # end main

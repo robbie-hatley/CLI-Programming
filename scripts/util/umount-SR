@@ -1,0 +1,5 @@
+#! /usr/bin/bash
+   sudo umount /home/aragorn/net/SR/Aragorn
+   sudo umount /home/aragorn/net/SR/Imladris
+   sudo umount /home/aragorn/net/SR/Lothlorien
+   sudo umount /home/aragorn/net/SR/Gondor
