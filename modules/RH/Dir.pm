@@ -25,7 +25,7 @@
 # Tue Oct 27, 2020: Added subs random_name and find_available_random.
 # Thu Dec 31, 2020: Increased width of this file to 110 characters. Got rid of subs "copy_wide_jpgs",
 #                   "directory_exists", "aggregate_file", "clone_file", and "merge_file". Added subs
-#                   "copy_large_images_verbatim", "copy_large_images_sha1", "is_large_image", "copy_file", 
+#                   "copy_large_images_verbatim", "copy_large_images_sha1", "is_large_image", "copy_file",
 #                   "copy_file_unique", "move_file", "move_file_unique".
 # Fri Jan 01, 2021: Got rid of subs "copy_file_unique" and "move_file_unique". Instead, I changed subs
 #                   "copy_file" and "move_file" to have prototype ($$;@) so that they can take unlimited
@@ -149,35 +149,35 @@ sub is_data_file           ($)    ; # Return 1 if a given string is a path to a 
 # ======= VARIABLES: ===================================================================================================
 
 # Symbols exported by default:
-our @EXPORT = 
+our @EXPORT =
    qw
    (
-      GetFiles                GetRegularFilesBySize   FilesAreIdentical       
-      RecurseDirs             copy_file               move_file               
-      copy_files              move_files              
+      GetFiles                GetRegularFilesBySize   FilesAreIdentical
+      RecurseDirs             copy_file               move_file
+      copy_files              move_files
 
-      d                       e                       chdir_utf8              
-      cwd_utf8                glob_utf8               link_utf8               
-      mkdir_utf8              open_utf8               opendir_utf8            
-      readdir_utf8            readlink_utf8           rmdir_utf8              
-      symlink_utf8            unlink_utf8             glob_regexp_utf8         
+      d                       e                       chdir_utf8
+      cwd_utf8                glob_utf8               link_utf8
+      mkdir_utf8              open_utf8               opendir_utf8
+      readdir_utf8            readlink_utf8           rmdir_utf8
+      symlink_utf8            unlink_utf8             glob_regexp_utf8
 
-      rename_file             time_from_mtime         date_from_mtime         
-      get_prefix              get_suffix              get_dir_from_path       
-      get_name_from_path      path                    denumerate_file_name    
-      enumerate_file_name     annotate_file_name      find_avail_enum_name    
-      find_avail_rand_name    is_large_image          get_suffix_from_type    
-      cyg2win                 win2cyg                 hash                    
-      shorten_sl_names        is_data_file            
+      rename_file             time_from_mtime         date_from_mtime
+      get_prefix              get_suffix              get_dir_from_path
+      get_name_from_path      path                    denumerate_file_name
+      enumerate_file_name     annotate_file_name      find_avail_enum_name
+      find_avail_rand_name    is_large_image          get_suffix_from_type
+      cyg2win                 win2cyg                 hash
+      shorten_sl_names        is_data_file
    );
 
-# Symbols which it is OK to export by request: 
-our @EXPORT_OK = 
+# Symbols which it is OK to export by request:
+our @EXPORT_OK =
    qw
    (
-      $totfcount $noexcount $ottycount $cspccount $bspccount 
-      $sockcount $pipecount $slkdcount $linkcount $multcount 
-      $sdircount $hlnkcount $regfcount $unkncount 
+      $totfcount $noexcount $ottycount $cspccount $bspccount
+      $sockcount $pipecount $slkdcount $linkcount $multcount
+      $sdircount $hlnkcount $regfcount $unkncount
    );
 
 # Turn on debugging?
@@ -186,7 +186,7 @@ my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 # Global counters in namespace "RH", used by subs GetFiles and
 # GetRegularFilesBySize. NOTE: These are all reset to 0 EVERY time one of those
 # two subs runs, so if you want to accumulate counts of events over multiple
-# entries to those subs, you need to store those accumulations in separate 
+# entries to those subs, you need to store those accumulations in separate
 # variables.
 our $totfcount = 0; # Count of all directory entities seen, of all types.
 our $noexcount = 0; # Count of all errors encountered.
@@ -216,13 +216,13 @@ my $FileType  = '';                # File type.
 # First argument is mandatory and must be a fully-qualified directory, starting with a '/' character.
 #
 # Second argument, if present, must be a Perl-Compliant Regular Expression to match directory entries against.
-# 
+#
 # Third argument, if present, must be one of the following letters:
 # F = regular Files only
 # D = Directories only (but not SYMLINKDs).
 # B = Both regular files and directories (but not SYMLINKDs).
 # A = All files (regular, directories, links, SYMLINKDs, pipes, etc, etc, etc)
-sub GetFiles (;$$$) 
+sub GetFiles (;$$$)
 {
    my $dir    = @_ ? shift(@_) : cwd_utf8; # What directory does user want a list of file-info packets for?
    my $target = @_ ? shift(@_) : 'A';      # 'F' = 'Files'; 'D' = 'Directories'; 'B' = 'Both'; 'A' = 'All'.
@@ -281,13 +281,13 @@ sub GetFiles (;$$$)
       # Get the name of this directory entry from its path:
       my $name = get_name_from_path($path);
 
-      # What type of thing is at $path? Categorize as exactly 1 type, to reduce complexity and confusion. 
+      # What type of thing is at $path? Categorize as exactly 1 type, to reduce complexity and confusion.
       # Start by determinnig if $path is non-existent. If existent, try to ascertain if it's one of the
       # more rare and dangerous types. Then work down to commonplace objects such as "directories" and
-      # "regular files". If all tests fail, mark it 'U' for "unknown". 
-      # 
+      # "regular files". If all tests fail, mark it 'U' for "unknown".
+      #
       # NOTE: the -t test differs from all the others in that its argument defaults to STDIN instead of $_.
-      # 
+      #
       # NOTE: The only way I've been able to find to detect "files with multiple hard links" is to use
       # the "nlinks" returned by stat; if it's >1 then the file is a hard link to an inode which has multiple
       # hard links pointing to it.
@@ -382,7 +382,7 @@ sub GetFiles (;$$$)
       };
    }; # end foreach (@filepaths)
    return \@filerecords;
-} # end sub GetFiles (;$$) 
+} # end sub GetFiles (;$$)
 
 # GetRegularFilesBySize returns a reference to a hash of arrays of same-size file records for all regular files in the
 # current directory, with the outer hash keyed by file size. This sub can take one optional argument which, if present,
@@ -390,7 +390,7 @@ sub GetFiles (;$$$)
 # programs which compare regular files for identicalness, preperatory to making decisions regarding copying or deleting
 # of files. To make such comparisons FAST, this sub stores files records in same-file-size arrays and does not collect
 # any stats other than $totfcount and $regfcount (which will be equal).
-sub GetRegularFilesBySize (;$) 
+sub GetRegularFilesBySize (;$)
 {
    my $cwd    = cwd_utf8                                   ; # Current Working Directory.
    my $target = 'F'                                        ; # Target is "regular files only".
@@ -409,7 +409,7 @@ sub GetRegularFilesBySize (;$)
    }
 
    @filepaths = glob_regexp_utf8($cwd, $target, $regexp);
-   # ZEBRA : The following line is wrong! It's not an error to receive not files! Some directories are empty!
+   # ZEBRA : The following line is wrong! It's not an error to receive no files! Some directories are empty!
    # or die "Can't read  directory \"$cwd\"\n$!\n";
 
    # Zero all RH::Dir counters here. You should save a copy in main:: if you want to keep this info, because it gets
@@ -477,10 +477,10 @@ sub GetRegularFilesBySize (;$)
    return \%filerecords;
 } # end sub GetRegularFilesBySize ()
 
-# Compare the contents of two files; 
+# Compare the contents of two files;
 # return 1 if files are identical;
-# return 0 if files are different. 
-sub FilesAreIdentical ($$) 
+# return 0 if files are different.
+sub FilesAreIdentical ($$)
 {
    # Get path of first file, make sure it exists, get its stats, make sure it's a regular file, and get its size:
    my $filepath1 = shift;
@@ -503,7 +503,7 @@ sub FilesAreIdentical ($$)
       warn "Error in FilesAreIdentical: \"$filepath2\" does not exist.\n";
       return 0;
    }
-   if ( ! -f e $filepath2 ) 
+   if ( ! -f e $filepath2 )
    {
       warn "Error in FilesAreIdentical: \"$filepath2\" is not regular file.\n";
       return 0;
@@ -519,11 +519,11 @@ sub FilesAreIdentical ($$)
    # Try to open both files here, shortly before entering buffer loop.
    # They will both be closed immediately after exiting buffer loop.
 
-   open (my $filehandle1, "< :raw", e($filepath1)) 
+   open (my $filehandle1, "< :raw", e($filepath1))
    or warn "Error in FilesAreIdentical: Couldn't open \"$filepath1\".\n"
    and return 0;
 
-   open (my $filehandle2, "< :raw", e($filepath2)) 
+   open (my $filehandle2, "< :raw", e($filepath2))
    or warn "Error in FilesAreIdentical: Couldn't open \"$filepath2\".\n"
    and return 0;
 
@@ -537,7 +537,7 @@ sub FilesAreIdentical ($$)
    # Create a difference flag and set it to 0:
    my $different = 0;
 
-   # BUFFER LOOP: Read data from first and second files, in buffers of 
+   # BUFFER LOOP: Read data from first and second files, in buffers of
    # 1 MiB, and compare first buffer to second buffer. If a difference is
    # found, mark files as "different" and exit loop; else continue
    # reading the files until out of data:
@@ -569,13 +569,13 @@ sub FilesAreIdentical ($$)
          return 0;
       }
 
-      # If the two read results are defined but not equal, print sync-failure 
-      # message and abort program execution, because these two files are *supposed* to be 
+      # If the two read results are defined but not equal, print sync-failure
+      # message and abort program execution, because these two files are *supposed* to be
       # of equal size according to the directory, so if they don't reach EOF
       # simultaneously, the directory may be corrupt:
       if ($read_result1 != $read_result2)
       {
-         die 
+         die
          "Fatal Error in FilesAreIdentical: ".
          "Size difference found between these two files,\n".
          "which are supposedly the same size:\n".
@@ -594,7 +594,7 @@ sub FilesAreIdentical ($$)
       next BUFFER if $buffer1 eq $buffer2;
 
       # Otherwise, set difference flag and exit buffer loop:
-      $different = 1; 
+      $different = 1;
       last BUFFER;
    } # End BUFFER loop.
 
@@ -608,13 +608,13 @@ sub FilesAreIdentical ($$)
 } # end sub FilesAreIdentical
 
 # Navigate a directory tree recursively, applying code at each node on the tree:
-sub RecurseDirs (&) 
+sub RecurseDirs (&)
 {
    # Store incoming code reference in variable $f:
    my $f = \&{shift @_};
 
    # Die if f is not a ref to some code (block or sub):
-   if ('CODE' ne ref $f) 
+   if ('CODE' ne ref $f)
    {
       die '\nError: RecurseDirs takes 1 argument which must be\n'.
           'a {code block} or a reference to a subroutine.\n\n';
@@ -643,7 +643,7 @@ sub RecurseDirs (&)
    closedir $dh                or die "Error in RecurseDirs: Couldn't close directory \"$curdir\".\n$!\n";
 
    # Navigate immediate subdirs (if any) of this instance's current directory:
-   SUBDIR: foreach my $subdir (@subdirs) 
+   SUBDIR: foreach my $subdir (@subdirs)
    {
       # Don't try to navigate certain troublesome subdirectories:
       next SUBDIR if $subdir eq '.';                            # Link to self.
@@ -669,7 +669,7 @@ sub RecurseDirs (&)
          chdir e $curdir or die "Error in RecurseDirs: Couldn't cd back to curdir \"$curdir\"!\n";
          next SUBDIR;
       }
-     
+
       # Try to recurse:
       RecurseDirs(\&{$f}) or die "Error in RecurseDirs: Couldn't recurse!\n";
 
@@ -679,14 +679,14 @@ sub RecurseDirs (&)
    } # end foreach my $subdir (@subdirs)
 
    # Execute f only at the tail end of SubDirs; that way if f renames immediate subdirectories of the
-   # current directory (for example, f is RenameFiles running in directories mode), that's no problem, 
-   # because all navigation of subdirectories of the current directory is complete before f is executed. 
+   # current directory (for example, f is RenameFiles running in directories mode), that's no problem,
+   # because all navigation of subdirectories of the current directory is complete before f is executed.
    # In other words, each instance of RecurseDirs is only allowed to fulfill its primary task after its
    # children have all died of old age, having fulfilled their tasks.
    $f->() or die "Error in RecurseDirs: Couldn't apply function!\n";
    --$recursion;
    return 1;
-} # end sub RecurseDirs (&) 
+} # end sub RecurseDirs (&)
 
 # Copy a file from a given path to a given directory.
 # Mandatory arguments:
@@ -759,7 +759,7 @@ sub copy_file ($$;@)
       {
          $mode   = 'sha';        # set $mode to 'sha' (SHA-1 Mode)
       }
-      elsif ( m/^rename=(.+)$/ ) # elsif renaming file, 
+      elsif ( m/^rename=(.+)$/ ) # elsif renaming file,
       {
          $mode   = 'ren';        # set $mode to 'ren' (Rename Mode)
       }
@@ -830,7 +830,7 @@ sub copy_file ($$;@)
       );
    }
 
-   # Regardless of what Naming Mode we just used, if $dname already exists in $dst, 
+   # Regardless of what Naming Mode we just used, if $dname already exists in $dst,
    # we'll have to come up with a new name! Let's try enumerating:
    if ( -e e "$dst/$dname" )
    {
@@ -965,7 +965,7 @@ sub move_file ($$;@)
       {
          $mode   = 'sha';        # set $mode to 'sha' (SHA-1 Mode)
       }
-      elsif ( m/^rename=(.+)$/ ) # elsif renaming file, 
+      elsif ( m/^rename=(.+)$/ ) # elsif renaming file,
       {
          $mode   = 'ren';        # set $mode to 'ren' (Rename Mode)
       }
@@ -1037,7 +1037,7 @@ sub move_file ($$;@)
       );
    }
 
-   # Regardless of what Naming Mode we just used, if $dname already exists in $dst, 
+   # Regardless of what Naming Mode we just used, if $dname already exists in $dst,
    # we'll have to come up with a new name! Let's try enumerating:
    if ( -e e "$dst/$dname" )
    {
@@ -1230,7 +1230,7 @@ sub copy_files ($$;@)
             # Reset the "files of this size exist in both directories" flag:
             $both = 0;
          }
-            
+
          # Iterate through the source file records for this size:
          SFILE: foreach my $sfile (@sfiles)
          {
@@ -1423,7 +1423,7 @@ sub move_files ($$;@)
             # Reset the "files of this size exist in both directories" flag:
             $both = 0;
          }
-            
+
          # Iterate through the source file records for this size:
          SFILE: foreach my $sfile (@sfiles)
          {
@@ -1542,7 +1542,7 @@ sub is_ascii ($)
       next if ( 11 == $ord ); # VT
       next if ( 13 == $ord ); # CR
       next if ( 32 == $ord ); # SP
-      next if ( $ord >=  33 
+      next if ( $ord >=  33
              && $ord <= 126); # ASCII glyph
       # If we get to here, all of the above tests failed, which means that
       # our current character is neither commonly-used ASCII whitespace
@@ -1560,7 +1560,7 @@ sub is_ascii ($)
 use constant EFLAGS => RETURN_ON_ERR | WARN_ON_ERR | LEAVE_SRC;
 
 # Decode from UTF-8 to Unicode:
-sub d 
+sub d
 {
       if (0 == scalar @_) {return Encode::decode('UTF-8', $_,    EFLAGS);}
    elsif (1 == scalar @_) {return Encode::decode('UTF-8', $_[0], EFLAGS);}
@@ -1695,7 +1695,7 @@ sub glob_regexp_utf8 (;$$$)
    or die "Fatal error in glob_regexp_utf8: Couldn't read directory \"$dir\".\n$!\n";
    closedir $dh
    or die "Fatal error in glob_regexp_utf8: Couldn't close directory \"$dir\".\n$!\n";
-   # @names should contain at least 2 entries ('.' and '..'), else something went very wrong!!! 
+   # @names should contain at least 2 entries ('.' and '..'), else something went very wrong!!!
    scalar(@names) >= 2
    or die "Fatal error in glob_regexp_utf8: < 2 entries in directory \"$dir\".\n$!\n";
 
@@ -1738,7 +1738,7 @@ sub glob_regexp_utf8 (;$$$)
 # ======= SECTION 4, MINOR SUBROUTINES: ================================================================================
 
 # Rename a file, with more error-checking than unwrapped rename() :
-sub rename_file ($$) 
+sub rename_file ($$)
 {
    my $OldPath = shift;
    my $NewPath = shift;
@@ -1767,7 +1767,7 @@ sub rename_file ($$)
          "new name: $NewPath\n"
       );
       return 0;
-   }      
+   }
 
    # Disallow renaming to a name that already exists, but allow case changes.
    # This is tricky, because file systems can be:
@@ -1797,14 +1797,14 @@ sub rename_file ($$)
    return rename(e($OldPath), e($NewPath));
 } # end sub rename_file
 
-sub time_from_mtime ($) 
+sub time_from_mtime ($)
 {
    my $TimeDate = scalar localtime shift;
    my $Time = substr ($TimeDate, 11, 8);
    return $Time;
 } # end sub time_from_mtime
 
-sub date_from_mtime ($) 
+sub date_from_mtime ($)
 {
    my $TimeDate = scalar localtime shift;
    my $Date = substr ($TimeDate, 0, 10) . ', ' . substr ($TimeDate, 20, 4);
@@ -1812,7 +1812,7 @@ sub date_from_mtime ($)
 } # end sub date_from_mtime
 
 # Given any string, return all characters before last dot:
-sub get_prefix ($) 
+sub get_prefix ($)
 {
    my $string = shift;
    my $dotindex = rindex($string, '.');
@@ -1822,7 +1822,7 @@ sub get_prefix ($)
 } # end sub get_prefix
 
 # Given any string, return last dot and following characters:
-sub get_suffix ($) 
+sub get_suffix ($)
 {
    my $string = shift;
    my $dotindex = rindex($string, '.');
@@ -1850,14 +1850,14 @@ sub get_dir_from_path ($)
    }
 
    # Otherwise return the part of $path to the left of the right-most "/", whether it starts with '/' or not:
-   else 
+   else
    {
       return substr($path, 0, rindex($path,'/'));
    }
 } # end sub get_dir_from_path
 
 # Return the name part of a file path:
-sub get_name_from_path ($) 
+sub get_name_from_path ($)
 {
    my $path = shift;
 
@@ -1875,9 +1875,9 @@ sub get_name_from_path ($)
       return substr($path, rindex($path,'/') + 1);
    }
 
-   # Else "/" is the final character of $path, so this $path contains no 
+   # Else "/" is the final character of $path, so this $path contains no
    # file name, so return an empty string:
-   else 
+   else
    {
       return '';
    }
@@ -2195,7 +2195,7 @@ sub hash($$;$)
          {
             $FileType = $FileTyper->checktype_filename($path);        # get mime type of original file,
             $suff = get_suffix_from_type($FileType);                  # then get suffix from type.
-         }     
+         }
          return $hash . $suff;                                        # Return hash with suffix tacked on.
       }
       default

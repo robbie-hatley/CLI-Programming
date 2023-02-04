@@ -5,8 +5,8 @@
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ########################################################################################################################
-# erase-images-smaller-than-175px.pl
-# Erases all images in current directory only which have height or width less than 175px.
+# erase-small-images.pl
+# Erases all images in current directory only which have height or width less than 201px.
 # (Ignores all files that aren't pictures.)
 #
 # Written by Robbie Hatley.
@@ -15,9 +15,10 @@
 # Fri Nov 19, 2021: Refreshed shebang, colophon, titlecard, and boilerplate. Corrected Unicode issues.
 # Sat Nov 20, 2021: Now using "common::sense" and "Sys::Binmode".
 # Thu Nov 25, 2021: Added help, and put main body of program in a block.
+# Sun Dec 25, 2022: Corrected comments and changed min size from 175x175 to 201x201.
 ########################################################################################################################
 
-use v5.32;
+use v5.36;
 use common::sense;
 use Sys::Binmode;
 
@@ -41,8 +42,8 @@ sub help ();
       # Get image width and height:
       my ($x, $y) = imgsize($path);                          # NO need to encode here
 
-      # Erase if width or height is under 175 pixels:
-      if ($x < 175 || $y < 175)
+      # Erase if width or height is under 201 pixels (seeing as how, in 2022, many thumbnails are 200x200):
+      if ($x < 201 || $y < 201)
       {
          say "Erasing \"$path\" ($x x $y)";
          unlink_utf8 $path;                                  # MUST encode here
@@ -55,7 +56,7 @@ sub help ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "erase-small-images.pl". This program erases all image files in the
-   current directory which have width or height less than 175 pixels.
+   current directory which have width or height less than 201 pixels.
    Other than "-h" or "--help" (which cause this program to print this help then
    exit), all options and arguments are ignored.
 

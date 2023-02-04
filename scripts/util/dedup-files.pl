@@ -9,7 +9,7 @@
 # This program finds and unlinks duplicate files in the current directory (and all of its subdirectories if
 # a -r or --recurse option is used).
 #
-# This program works by making a list of all files encountered in each subdirectory, ordered by size. 
+# This program works by making a list of all files encountered in each subdirectory, ordered by size.
 # Within each size group, it compares each file to all the files to its right. For each pair of duplicate
 # files it finds, it gives the user these choices:
 #
@@ -77,9 +77,11 @@
 #                   "double quotes" around names of files presented to user for possible unlinking.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "Sys::Binmode".
 # Fri Aug 19, 2022: Clarified comments in spotlight() regarding file-name preferences.
+# Fri Jan 06, 2023: Added ability for user to specify WHICH files to dedup via regular expressions.
+#                   Also, added lots more comments. (Some parts of this program were sorely lacking documentation.)
 ########################################################################################################################
 
-use v5.32;
+use v5.32; # WOMBAT : Eventually update this to v5.36, but first I must rewrite the prototypes; research this.
 use common::sense;
 use Sys::Binmode;
 use Time::HiRes 'time';
@@ -89,36 +91,43 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub argv            ()   ;
-sub print_two_files ($$) ;
-sub process_curdir  ()   ;
-sub dup_prompt      ($$) ;
-sub spotlight       ($$) ;
-sub no_prompt       ($$) ;
-sub erase_newer     ($$) ;
-sub erase_older     ($$) ;
-sub unlink_file     ($)  ;
-sub stats           ()   ;
-sub help            ()   ;
+sub argv            ()   ; # Use contents of @ARGV to set settings.
+sub process_curdir  ()   ; # Process the files of the current directory.
+sub dup_prompt      ($$) ; # DupPrompt Mode (asks user what to do).
+sub spotlight       ($$) ; # Spotlight Mode (for processing Microsoft Windows Spotlight scenic photographs).
+sub no_prompt       ($$) ; # NoPromt   Mode (does whatever it damn well pleases, fuck you very much).
+sub erase_newer     ($$) ; # Erases the newer of a pair of identical files by calling unlink_file().
+sub erase_older     ($$) ; # Erases the older of a pair of identical files by calling unlink_file().
+sub unlink_file     ($)  ; # Unlink a file.
+sub print_two_files ($$) ; # Print two file names, with times and dates, aligned.
+sub stats           ()   ; # Print statistics for a run of this program.
+sub help            ()   ; # Print help for this program.
 
 # ======= VARIABLES: ===================================================================================================
 
-# Debug?
-my $db = 0; # Set this to 0 for no-debug, 1 for debug
+# Settings:                 # Meaning of setting:      Meanings of values:
+my $db = 0;                 # Debug?                   0 => don't debug
+                            #                          1 => debug
+my $RegExp     = qr/^.+$/o; # Regular Expression.      Specifies which files to process.
+my $Recurse    =    0 ;     # Recurse subdirectories?  0 => Local     (don't traverse subdirs)
+                            #                          1 => Recurse   (do    traverse subdirs)
+my $PromptMode =    0 ;     # Prompting Mode.          0 => DupPrompt (ask user what to do)
+                            #                          1 => Spotlight (process Spotlight files)
+                            #                          2 => NoPrompt  (act without prompting user)
+my $PrejudMode =    0 ;     # Prejudice Mode.          0 => Newer     (prejudice against newer files)
+                            #                          1 => Older     (prejudice against older files)
 
-# Settings:          # Meaning of setting:                  Possible values:
-my $Recurse    = 0;  # Recurse subdirectories?              0 => Local     (don't traverse subdirs)
-                     #                                      1 => Recurse   (do    traverse subdirs)
-my $PromptMode = 0;  # Prompting Mode.                      0 => DupPrompt (ask user what to do)
-                     #                                      1 => Spotlight (process Spotlight files)
-                     #                                      2 => NoPrompt  (act without prompting user)
-my $PrejudMode = 0;  # Prejudice Mode.                      0 => Newer     (prejudice against newer files)
-                     #                                      1 => Older     (prejudice against older files)
+# Note regarding settings:
 
-# Note: The "0" value for each of the above settings is the "default" setting, which may be overridden by
-# command-line options or by this program itself.
+# Default values:
+# The "0" value for each of the above settings is the "default" setting, which may be overridden by command-line
+# options or by this program itself. (Well, except for $RegExp, which has default qr/^.+$/o which means
+# "process all file names".)
 
-# Note regarding settings: 
+# File selection:
+# The target type is set to 'F' for "regular files only" and this never changes. The file-name specification is
+# initially set to "all file names", but this can be over-ridden by using an argument, which must be a Perl-compliant
+# regular expression describing which file names to process.
 
 # Prompting Modes:
 # This program is always in 1 of 3 prompting modes: DupPrompt, Spotlight, or NoPrompt.
@@ -168,9 +177,10 @@ my $errocount = 0; # Count of errors.
 
 sub argv ()
 {
-   foreach (@ARGV)
+   for ( my $i = 0 ; $i < @ARGV ; ++$i )
    {
-      if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
+      $_ = $ARGV[$i];
+      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
             if ('-h' eq $_ || '--help'      eq $_) {help;   exit 777;                  }
          elsif ('-l' eq $_ || '--local'     eq $_) {$Recurse    = 0 ;                  } # DEFAULT
@@ -179,46 +189,28 @@ sub argv ()
          elsif ('-s' eq $_ || '--spotlight' eq $_) {$PromptMode = 1 ;                  }
          elsif ('-n' eq $_ || '--newer'     eq $_) {$PromptMode = 2 ; $PrejudMode = 0 ;}
          elsif ('-o' eq $_ || '--older'     eq $_) {$PromptMode = 2 ; $PrejudMode = 1 ;}
+
+         # Remove option from @ARGV:
+         splice @ARGV, $i, 1;
+
+         # Move the index 1-left, so that the "++$i" above
+         # moves the index back to the current @ARGV element,
+         # but with the new content which slid-in from the right
+         # due to deletion of previous element contents:
+         --$i;
       }
+   }
+   my $NA = scalar(@ARGV);
+   given ($NA)
+   {
+      when (0) {                       ;} # Do nothing.
+      when (1) {$RegExp = qr/$ARGV[0]/o;} # Set $RegExp.
+      default  {error($NA)             ;} # Print error and help messages then exit 666.
    }
    return 1;
 } # end sub process_argv ()
 
-# Print two files, with times and dates, aligned:
-sub print_two_files ($$)
-{
-   my $file1 = shift;
-   my $file2 = shift;
-
-   # Get time and date strings for both files:
-   my $time1 = time_from_mtime $file1->{Mtime};
-   my $time2 = time_from_mtime $file2->{Mtime};
-   my $date1 = date_from_mtime $file1->{Mtime};
-   my $date2 = date_from_mtime $file2->{Mtime};
-
-   # Set file name field width to max file name length + 2:
-   my $nl1 = length($file1->{Name});             # nl1 = Name Length 1.
-   my $nl2 = length($file2->{Name});             # nl2 = Name Length 2.
-   my $fnw = $nl2 > $nl1 ? $nl2 + 2 : $nl1 + 2 ; # fnw = File-Name Width.
-
-   # Print first file:
-   printf
-   (
-      "%-${fnw}s%-18s%-10s%d bytes\n", 
-      $file1->{Name}, $date1, $time1, $file1->{Size}
-   );
-
-   # Print second file:
-   printf
-   (
-      "%-${fnw}s%-18s%-10s%d bytes\n", 
-      $file2->{Name}, $date2, $time2, $file2->{Size}
-   );
-
-   # We successfully completed executing this function, so return 1:
-   return 1;
-} # end sub print_two_files ($$)
-
+# Process current directory:
 sub process_curdir ()
 {
    # We just entered a new directory, so increment directory counter:
@@ -240,9 +232,9 @@ sub process_curdir ()
 
    # Get hash of arrays of file records for for all regular files
    # in current directory, keyed by size:
-   my $curdirfiles = GetRegularFilesBySize;
+   my $curdirfiles = GetRegularFilesBySize($RegExp);
 
-   # Append regular-files count from RH::Dir:: to main:: and to local: 
+   # Append regular-files count from RH::Dir:: to main:: and to local:
    $regfcount += $RH::Dir::regfcount;
    $regfdirec += $RH::Dir::regfcount;
 
@@ -264,7 +256,7 @@ sub process_curdir ()
 
          say("FIRST file name = ", $file1->{Name}) if $db;
 
-         # "SECOND" LOOP: Iterate through all files of current size which are 
+         # "SECOND" LOOP: Iterate through all files of current size which are
          # to the right of file "$i":
          SECOND: foreach my $j ($i+1..$count-1)
          {
@@ -327,9 +319,9 @@ sub process_curdir ()
             ++$compdirec;
             ++$compcount;
 
-            # If we found no difference between these two files, 
+            # If we found no difference between these two files,
             # then they're duplicates. If in no-prompt mode, erase
-            # the newer file without prompting; otherwise, present 
+            # the newer file without prompting; otherwise, present
             # options to user:
             if ($identical)
             {
@@ -445,7 +437,7 @@ sub process_curdir ()
    return 1;
 } # end sub process_curdir ()
 
-# Mode 0 (DupPrompt):
+# Mode 0 (DupPrompt = "Ask user what to do."):
 sub dup_prompt ($$)
 {
    my ($file1, $file2) = @_;
@@ -521,7 +513,7 @@ sub dup_prompt ($$)
    } # end while (42) {get keystroke from user}
 } # end sub dup_prompt ($$) (MODE 0)
 
-# Mode 1 (Spotlight):
+# Mode 1 (Spotlight = "Process Microsoft Windows Spotlight scenic photographs."):
 sub spotlight ($$)
 {
    my ($file1, $file2) = @_;
@@ -535,7 +527,7 @@ sub spotlight ($$)
    # then the next-least-desirable,
    # then the next-next-least-desirable,
    # and if all else fails, ask user what to do:
-   
+
    # WSL + NON-WSL:
    if ($file1->{Name} =~ $wslpat && $file2->{Name} !~ $wslpat)
    {
@@ -580,7 +572,7 @@ sub spotlight ($$)
    }
 } # end sub spotlight ($$) (MODE 1)
 
-# Mode 2 (NoPrompt):
+# Mode 2 (NoPrompt = "Do whatever the fuck you like and don't ask the fucking user a god-damned thing."):
 sub no_prompt ($$)
 {
    my ($file1, $file2) = @_;
@@ -594,7 +586,7 @@ sub no_prompt ($$)
    }
 } # end sub no_prompt ($$) (MODE 2)
 
-# Erase newer file:
+# Erase the newer of a pair of duplicate files (by calling unlink_file()):
 sub erase_newer ($$)
 {
    my ($file1, $file2) = @_;
@@ -608,7 +600,7 @@ sub erase_newer ($$)
    }
 } # end sub erase_newer ($$)
 
-# Erase older file:
+# Erase the older of a pair of duplicate files (by calling unlink_file()):
 sub erase_older ($$)
 {
    my ($file1, $file2) = @_;
@@ -622,7 +614,7 @@ sub erase_older ($$)
    }
 } # end sub erase_older ($$)
 
-# Unlink (erase) a file:
+# Unlink a file (leave the data in-situ, but remove this hard link from this directory):
 sub unlink_file ($)
 {
    my $file = shift;
@@ -641,6 +633,42 @@ sub unlink_file ($)
    }
 } # end sub unlink_file ($)
 
+# Print two file names, with times and dates, aligned:
+sub print_two_files ($$)
+{
+   my $file1 = shift;
+   my $file2 = shift;
+
+   # Get time and date strings for both files:
+   my $time1 = time_from_mtime $file1->{Mtime};
+   my $time2 = time_from_mtime $file2->{Mtime};
+   my $date1 = date_from_mtime $file1->{Mtime};
+   my $date2 = date_from_mtime $file2->{Mtime};
+
+   # Set file name field width to max file name length + 2:
+   my $nl1 = length($file1->{Name});             # nl1 = Name Length 1.
+   my $nl2 = length($file2->{Name});             # nl2 = Name Length 2.
+   my $fnw = $nl2 > $nl1 ? $nl2 + 2 : $nl1 + 2 ; # fnw = File-Name Width.
+
+   # Print first file:
+   printf
+   (
+      "%-${fnw}s%-18s%-10s%d bytes\n",
+      $file1->{Name}, $date1, $time1, $file1->{Size}
+   );
+
+   # Print second file:
+   printf
+   (
+      "%-${fnw}s%-18s%-10s%d bytes\n",
+      $file2->{Name}, $date2, $time2, $file2->{Size}
+   );
+
+   # We successfully completed executing this function, so return 1:
+   return 1;
+} # end sub print_two_files ($$)
+
+# Print statistics for a run of this program:
 sub stats ()
 {
    say '';
@@ -658,6 +686,7 @@ sub stats ()
    return 1;
 } # end sub stats ()
 
+# Print help for this program:
 sub help ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
@@ -680,10 +709,8 @@ sub help ()
    "-o" or "--older"     Enter NoPrompt  mode (don't prompt user)
                          and be prejudiced against older duplicates.
 
-   All other options are ignored. If contradictory options are given, 
+   All other options are ignored. If contradictory options are given,
    the right-most prevails (eg, "-n -o" is the same as "-o").
-
-   All non-option arguments are ignored.
 
    By default, dedup-files is in "DupPrompt" (interactive) mode and does not
    automatically unlink any file without first asking you what to do.
@@ -702,7 +729,7 @@ sub help ()
    5. Enter no-prompt mode and unlink all older duplicates.
    6. End program and return to BASH.
 
-   So, using dedup-files you can trim duplicates from your file collection with 
+   So, using dedup-files you can trim duplicates from your file collection with
    surgical precision, if that's what you want to do. (Or, you can bludgeon them
    to death with a fucking sledgehammer if THAT'S what you want to do. Read on.)
 
@@ -716,17 +743,30 @@ sub help ()
 
    if you use a "-n", or "--newer" option, dedup-files will erase all newer
    duplicate files in the current directory (and all subdirectories as well
-   if a "-r" or "--recurse" option was also used) without prompting. So be 
-   careful, because if you say "dedup-files.pl -r -n", this program may erase 
+   if a "-r" or "--recurse" option was also used) without prompting. So be
+   careful, because if you say "dedup-files.pl -r -n", this program may erase
    a large number of files without stopping to ask for your permission. If that's
    not what you want to do, it's better to run dedup-files in interactive mode.
 
    if you use a "-o", or "--older" option, dedup-files will erase all older
    duplicate files in the current directory (and all subdirectories as well
-   if a "-r" or "--recurse" option was also used) without prompting. So be 
-   careful, because if you say "dedup-files.pl -r -o", this program may erase 
+   if a "-r" or "--recurse" option was also used) without prompting. So be
+   careful, because if you say "dedup-files.pl -r -o", this program may erase
    a large number of files without stopping to ask for your permission. If that's
    not what you want to do, it's better to run dedup-files in interactive mode.
+
+   Description of arguments:
+
+   In addition to options, this program can take one optional argument which, if
+   present, must be a Perl-Compliant Regular Expression specifying which items to
+   process. To specify multiple patterns, use the | alternation operator.
+   To apply pattern modifier letters, use an Extended RegExp Sequence.
+   For example, if you want to search for items with names containing "cat",
+   "dog", or "horse", title-cased or not, you could use this regexp:
+   '(?i:c)at|(?i:d)og|(?i:h)orse'
+   Be sure to enclose your regexp in 'single quotes', else BASH may replace it
+   with matching names of entities in the current directory and send THOSE to
+   this program, whereas this program needs the raw regexp instead.
 
    Happy duplicate file removing!
    Cheers,
