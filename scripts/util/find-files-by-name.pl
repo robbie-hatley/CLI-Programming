@@ -10,6 +10,9 @@
 # which match a given target ("files", "directories", "both", or "all") and which have names which match a
 # given Perl-Compliant Regular Expression and flags, and prints their full paths. Default recursion is "on",
 # default target is "All", default regex is qr(^.+$), and default flags are ''.
+#
+# Written by Robbie Hatley.
+#
 # Edit history:
 # Sun Sep 06, 2020: Wrote first draft;
 # Mon Feb 01, 2021: Now using both regular expression and optional wildcard.
@@ -29,10 +32,15 @@
 # Tue Nov 16, 2021: Now using extended regexp sequences ('(?i:dog)') instead of regexp delimiters ('/dog/i') for args.
 # Wed Nov 17, 2021: Now using "if/elsif" instead of "and" in "sub argv ()".
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Mon Feb 20, 2023: Upgraded to 5.36. Got rid of all prototypes (they were all empty anyway). Fixed help and argv.
+#                   Put 'use feature "signatures";' after 'use common::sense;" to fix conflict between
+#                   common::sense and signatures.
 ########################################################################################################################
 
-use v5.32;
+use v5.36;
 use common::sense;
+use feature "signatures";
+
 use Sys::Binmode;
 use Time::HiRes 'time';
 
@@ -41,11 +49,11 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub argv    ()  ; # Process @ARGV.
-sub curdire ()  ; # Process current directory.
-
-sub stats   ()  ; # Print statistics.
-sub help    ()  ; # Print help.
+sub argv     ; # Process @ARGV.
+sub curdire  ; # Process current directory.
+sub stats    ; # Print statistics.
+sub error    ; # Print error message, print help message, and exit 666.
+sub help     ; # Print help.
 
 # ======= VARIABLES: ===================================================================================================
 
@@ -55,8 +63,8 @@ my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 # Settings:                    Meaning:                  Range:    Default:
 my $Recurse   = 1          ; # Recurse subdirectories?   bool      1
 my $Verbose   = 0          ; # Be wordy?                 bool      0
-my $Target    = 'A'        ; # Files, dirs, both, all?   F|D|B|A   'A'
 my $RegExp    = qr/^.+$/o  ; # Regular expression.       regexps   qr/^.+$/o (matches all files)
+my $Target    = 'A'        ; # Files, dirs, both, all?   F|D|B|A   'A'
 
 # Counters:
 my $direcount = 0          ; # Count of directories processed.
@@ -67,22 +75,23 @@ my $pathcount = 0          ; # Count of paths found matching given target and re
 { # begin main
    my $t0 = time;
    argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\"."                                 if $Verbose;
-   print STDERR "Now entering program \"find-files-by-name.pl\".\n"                                 if $Verbose;
-   print STDERR "Verbose = $Verbose\n"                                                              if $Verbose;
-   print STDERR "Recurse = $Recurse\n"                                                              if $Verbose;
-   print STDERR "Target  = $Target\n"                                                               if $Verbose;
-   print STDERR "RegExp  = $RegExp\n"                                                               if $Verbose;
+   print STDERR "\nNow entering program \"" . get_name_from_path($0) . "\".\n"  if $Verbose;
+   print STDERR "Verbose   = $Verbose\n"                                        if $Verbose;
+   print STDERR "Recurse   = $Recurse\n"                                        if $Verbose;
+   print STDERR "RegExp    = $RegExp\n"                                         if $Verbose;
+   print STDERR "Target    = $Target\n"                                         if $Verbose;
    $Recurse and RecurseDirs {curdire} or curdire;
-   stats                                                                                            if $Verbose;
+   stats                                                                        if $Verbose;
    my $t1 = time; my $te = $t1 - $t0;
-   say("\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.") if $Verbose;
+   print STDERR "\nNow exiting program \"" . get_name_from_path($0) . "\".\n"   if $Verbose;
+   print STDERR "Execution time was $te seconds.\n"                             if $Verbose;
    exit 0;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
-sub argv ()
+# Process @ARGV:
+sub argv
 {
    for ( my $i = 0 ; $i < @ARGV ; ++$i )
    {
@@ -109,11 +118,19 @@ sub argv ()
          --$i;
       }
    }
-   if (scalar(@ARGV) > 0) {$RegExp = qr/$ARGV[0]/o;}
-   return 1;
-} # end sub argv ()
 
-sub curdire ()
+   # Get number of arguments and take action accordingly:
+   my $NA = scalar @ARGV;
+   if    ( 0 == $NA ) {}                                               # Do nothing. (Use default settings.)
+   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/;}                        # Set RegExp.
+   else               {error($NA);}                                    # Error.
+
+
+   return 1;                                                           # Redi ad munus vocationis.
+} # end sub argv
+
+# Process current directory:
+sub curdire
 {
    # Increment directory counter:
    ++$direcount;
@@ -121,37 +138,12 @@ sub curdire ()
    # Get current working directory:
    my $cwd = cwd_utf8;
 
-   # If being verbose, announce $curdir:
+   # If being verbose, announce $cwd:
    print STDERR "\nDir # $direcount: $cwd\n\n" if $Verbose;
 
-   # Return without doing anything further if $cwd is undefined, an empty string, has length < 1, or 
-   # the first character isn't "/":
-   my $flag;
-   if ( !defined($cwd) )
-   {
-      print STDERR "\n\$cwd is not defined.\n";
-      $flag = 1;
-   }
-   elsif ( $cwd eq '' )
-   {
-      print STDERR "\n\$cwd is an empty string.\n";
-      $flag = 1;
-   }
-   elsif ( length($cwd) < 1 )
-   {
-      print STDERR "\n\$cwd is has length less than one.\n";
-      $flag = 1;
-   }
-   elsif ( substr($cwd,0,1) ne '/' )
-   {
-      print STDERR "\n\$cwd does not start with a slash: $cwd\n";
-      $flag = 1;
-   }
-   else
-   {
-      $flag = 0;
-   }
-   if ($flag)
+   # Return without doing anything further if $cwd is not a fully-qualified path to an existing directory:
+   my $valid = is_valid_qual_dir($cwd);
+   if ( ! $valid )
    {
       print STDERR "Warning in \"find-files-by-name.pl\":\n" . 
                    "cwd_utf8 returned an invalid directory name.\n" . 
@@ -174,9 +166,10 @@ sub curdire ()
       }
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-sub stats ()
+# Print stats:
+sub stats
 {
    warn "\n";
    warn "Stats for \"find-files-by-name.pl\":\n";
@@ -185,9 +178,22 @@ sub stats ()
    warn "Navigated $direcount directories.\n";
    warn "Found $pathcount paths matching given target and regexp.\n";
    return 1;
-} # end sub stats ()
+} # end sub stats
 
-sub help ()
+# Print error and help messages and exit 666:
+sub error ($NA)
+{
+   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+   Error: you typed $NA arguments, but \"find-files-by-name.pl\"
+   requires either 0 or 1 arguments. Help follows:
+
+   END_OF_ERROR
+   help;
+   exit 666;
+} # end error ($NA)
+
+# Print help message:
+sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "find-files-by-name.pl". This program finds directory entries in
@@ -216,16 +222,30 @@ sub help ()
    All other options are ignored.
 
    Description of arguments:
-   In addition to options, this program can take one optional argument which, if
-   present, must be a Perl-Compliant Regular Expression specifying which items to
-   process. To specify multiple patterns, use the | alternation operator.
-   To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to search for items with names containing "cat",
-   "dog", or "horse", title-cased or not, you could use this regexp:
+   In addition to options, this program takes 0 or 1 arguments.
+   
+   Argument 1 (optional), if present, must be a Perl-Compliant Regular Expression
+   specifying which items to process. To specify multiple patterns, use the "|"
+   alternation operator. To apply pattern modifier letters, use an Extended RegExp
+   Sequence. For example, if you want to search for items with names containing
+   "cat", "dog", or "horse", title-cased or not, you could use this regexp:
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
+
+   A number of arguments other than 0 or 1 will result in this program printing
+   an error message and this help message and terminating.
+
+   (A number of arguments less than 0 will likely rupture our spacetime manifold
+   and destroy everything. But if you DO somehow manage to use a negative number
+   of arguments without destroying the universe, please send me an email at
+   "Hatley.Software@gmail.com", because I'd like to know how you did that!)
+
+   (But if you somehow manage to use a number of arguments which is an irrational
+   or complex number, please keep THAT to yourself. Some things would be better
+   for my sanity for me not to know. I don't want to find myself enthralled to
+   Cthulhu.)
 
    Happy file finding!
    Cheers,
@@ -233,4 +253,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help

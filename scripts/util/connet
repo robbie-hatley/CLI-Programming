@@ -1,12 +1,18 @@
 #! /usr/bin/bash
-if test "Ketch" = $HOSTNAME ; then
-   echo "Ketch doesn't use cifs mounts."
-elif test "Square-Rigger" = $HOSTNAME ; then
-   mount-KE
-   mount-EX
-elif test "Excalibur" = $HOSTNAME ; then
-   mount-KE
+if test "Excalibur" = $HOSTNAME ; then
    mount-SR
+   mount-KE
+   mount-AV
+elif test "Square-Rigger" = $HOSTNAME ; then
+   mount-EX
+   mount-KE
+   mount-AV
+elif test "Ketch" = $HOSTNAME ; then
+   echo "Ketch doesn't use cifs mounts."
+elif test "Avalon" = $HOSTNAME ; then
+   mount-EX
+   mount-SR
+   mount-KE
 else
    echo "Can't mount anything because this is an unknown computer."
 fi

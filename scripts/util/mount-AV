@@ -1,0 +1,5 @@
+#! /usr/bin/bash
+sudo mount /home/aragorn/net/AV/Aragorn
+sudo mount /home/aragorn/net/AV/Avalon
+sudo mount /home/aragorn/net/AV/Jungle
+sudo mount /home/aragorn/net/AV/Skyport

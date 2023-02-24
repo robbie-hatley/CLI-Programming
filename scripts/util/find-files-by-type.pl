@@ -6,9 +6,13 @@
 
 ########################################################################################################################
 # find-files-by-type.pl
-# Finds directory entries by type (eg: "regular file", "directory", "symbolic link", 
-# "socket", "pipe", "block special file", "character special file", etc, etc, etc).
+# Finds directory entries in current directory (and all subdirectories, unless a -l or --local option is used)
+# by type, such as "regular file", "directory", "symbolic link", "socket", "pipe", "block special file", 
+# "character special file", or any boolean expression based on Perl file-type operators.
+# Also allows specifying files by a RegExp to be matched against file names.
+#
 # Written by Robbie Hatley.
+#
 # Edit history:
 # Thu May 07, 2015: Wrote first draft.
 # Mon May 11, 2015: Tidied some things up a bit, including using a
@@ -27,10 +31,16 @@
 #                   previously hidden due to a compensating bug in Perl itself which is removed by Sys::Binmode.)
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate, and now using "common::sense".
 # Sat Nov 27, 2021: Shortened sub names. Tested: Works.
+# Mon Feb 20, 2023: Upgraded to "v5.36". Got rid of prototypes. Put signatures on "curfile" and "error".
+#                   Fixed the "$Quiet" vs "$Verbose" variable conflict. Improved "argv". Improved "help".
+#                   Put 'use feature "signatures";' after 'use common::sense;" to fix conflict between
+#                   common::sense and signatures.
 ########################################################################################################################
 
-use v5.32;
+use v5.36;
 use common::sense;
+use feature "signatures";
+
 use Sys::Binmode;
 use Time::HiRes 'time';
 
@@ -39,24 +49,23 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub argv    ()  ; # Process @ARGV.
-sub curdire ()  ; # Process current directory.
-sub curfile ($) ; # Process current file.
-sub stats   ()  ; # Print statistics.
-sub error   ($) ; # Handle errors.
-sub help    ()  ; # Print help and exit.
+sub argv     ; # Process @ARGV.
+sub curdire  ; # Process current directory.
+sub curfile  ; # Process current file.
+sub stats    ; # Print statistics.
+sub error    ; # Handle errors.
+sub help     ; # Print help and exit.
 
 # ======= VARIABLES: ===================================================================================================
 
 # Turn on debugging?
 my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 
-#Program Settings:             Meaning:                 Range:     Default:
-my $Recurse   = 0          ; # Recurse subdirectories?  (bool)     0
-my $Verbose   = 0          ; # Verbose                  (bool)     0
-my $Quiet     = 0          ; # Quiet                    (bool)     0
-my $Regexp    = qr/^.+$/   ; # Regular expression.      (regexp)   qr/^.+$/
-my $Predicate = '-f || -d' ; # File-test boolean.       (boolean expresion using Perl file-test operators)
+# Settings:                    Meaning:                  Range:    Default:
+my $Recurse   = 1          ; # Recurse subdirectories?   bool      1
+my $Verbose   = 0          ; # Be wordy?                 bool      0
+my $RegExp    = qr/^.+$/o  ; # Regular expression.       regexp    qr/^.+$/
+my $Predicate = '-f || -d' ; # File-test boolean.        bool      regular files and directories
 
 # Counters:
 my $direcount = 0; # Count of directories processed by curdire().
@@ -84,50 +93,82 @@ our $unkncount = 0; # Count of all unknown files.
 { # begin main
    my $t0 = time;
    argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\".";
+   print STDERR "\nNow entering program \"" . get_name_from_path($0) . "\".\n"  if $Verbose;
+   print STDERR "Verbose   = $Verbose\n"                                        if $Verbose;
+   print STDERR "Recurse   = $Recurse\n"                                        if $Verbose;
+   print STDERR "RegExp    = $RegExp\n"                                         if $Verbose;
+   print STDERR "Predicate = $Predicate\n"                                      if $Verbose;
    $Recurse and RecurseDirs {curdire} or curdire;
-   stats;
+   stats                                                                        if $Verbose;
    my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   print STDERR "\nNow exiting program \"" . get_name_from_path($0) . "\".\n"   if $Verbose;
+   print STDERR "Execution time was $te seconds.\n"                             if $Verbose;
    exit 0;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
-sub argv ()
+# Process @ARGV:
+sub argv
 {
-   my $help   = 0;  # Just print help and exit?
-   my @CLArgs = (); # Command-Line Arguments (not including options).
-   foreach (@ARGV)
+   for ( my $i = 0 ; $i < @ARGV ; ++$i )
    {
-      if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
+      $_ = $ARGV[$i];
+      if (/^-[\pL]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
-            if (/^-h$/ || /^--help$/   ) {help; exit 777 ; }
-         elsif (/^-r$/ || /^--recurse$/) {$Recurse = 1   ; } 
-         elsif (/^-v$/ || /^--verbose$/) {$Verbose = 1   ; }
-         elsif (/^-q$/ || /^--quiet$/  ) {$Quiet   = 1   ; }
-      }
-      else {push @CLArgs, $_;}
-   }
-   if ($help) {}           # If user wants help, print help and exit 777.
-   my $NA = scalar @CLArgs;               # Get number of arguments.
-   given ($NA)                            # Given the number of arguments,
-   {
-      when (0) {error($NA)                 ;} # if $NA == 0, print error & help messages and exit 666;
-      when (1) {$Predicate = $CLArgs[0]    ;} # if $NA == 1, set $Predicate;
-      when (2) {$Predicate = $CLArgs[0]    ;
-                $Regexp    = qr/$CLArgs[1]/;} # if $NA == 2, set $Predicate and $Regexp;
-      default  {error($NA)                 ;} # if $NA  > 2, print error & help messages and exit 666.
-   }
-   return 1;
-} # end sub argv ()
+            if (/^-h$/ || /^--help$/        ) {help; exit 777;}
+         elsif (/^-l$/ || /^--local$/       ) {$Recurse =  0 ;}
+         elsif (/^-r$/ || /^--recurse$/     ) {$Recurse =  1 ;} # DEFAULT
+         elsif (/^-q$/ || /^--quiet$/       ) {$Verbose =  0 ;} # DEFAULT
+         elsif (/^-v$/ || /^--verbose$/     ) {$Verbose =  1 ;}
 
-sub curdire ()
+         # Remove option from @ARGV:
+         splice @ARGV, $i, 1;
+
+         # Move the index 1-left, so that the "++$i" above
+         # moves the index back to the current @ARGV element,
+         # but with the new content which slid-in from the right
+         # due to deletion of previous element contents:
+         --$i;
+      }
+   }
+
+   # Get number of arguments and take action accordingly:
+   my $NA = scalar @ARGV;
+   if    ( 0 == $NA ) {}                                               # Do nothing. (Use default settings.)
+   elsif ( 1 == $NA ) {$Predicate = $ARGV[0];}                         # Set predicate.
+   elsif ( 2 == $NA ) {$Predicate = $ARGV[0]; $RegExp = qr/$ARGV[1]/;} # Set predicate and RegExp.
+   else               {error($NA);}                                    # Error.
+
+   return 1;                                                           # Redi ad munus vocationis.
+} # end sub argv
+
+# Process current directory:
+sub curdire
 {
+   # Increment directory counter:
    ++$direcount;
-   my $curdir = cwd_utf8;
-   say "\nDir # $direcount: $curdir\n" unless $Quiet;
-   my $curdirfiles = GetFiles($curdir, 'A', $Regexp);
+
+   # Get current working directory:
+   my $cwd = cwd_utf8;
+
+   # Announce $cwd if being verbose:
+   print STDERR "\nDir # $direcount: $cwd\n\n" if $Verbose;
+
+   # Return without doing anything further if $cwd is not a fully-qualified path to an existing directory:
+   my $valid = is_valid_qual_dir($cwd);
+   if ( ! $valid )
+   {
+      print STDERR "Warning in \"find-files-by-type.pl\":\n" . 
+                   "cwd_utf8 returned an invalid directory name.\n" . 
+                   "Skipping this directory and moving on to next.\n\n";
+      return 1;
+   }
+
+   # Get ref to array of file-info packets for all entries in current directory matching $RegExp:
+   my $curdirfiles = GetFiles($cwd, 'A', $RegExp);
+
+   # If being verbose, append various partial counts to various counters:
    if ($Verbose)
    {
       $totfcount += $RH::Dir::totfcount; # all directory entries found
@@ -145,32 +186,35 @@ sub curdire ()
       $regfcount += $RH::Dir::regfcount; # regular files
       $unkncount += $RH::Dir::unkncount; # unknown files
    }
+
+   # Process every file in @{$curdirfiles}:
    foreach my $file (@{$curdirfiles})
    {
       curfile($file);
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-sub curfile ($)
+# Process current file:
+sub curfile ($file)
 {
    ++$filecount;
-   my $file = shift;
    local $_ = e $file->{Path};
    if (eval($Predicate))
    {
-      say "MATCH: $file->{Path}";
+      say "$file->{Path}";
       ++$findcount;
    }
    return 1;
-} # end sub curfile ()
+} # end sub curfile ($file)
 
-sub stats ()
+# Print stats:
+sub stats
 {
    say '';
    say 'Statistics for this directory tree:';
    say "Navigated $direcount directories.";
-   say "Found $filecount items matching regexp \"$Regexp\".";
+   say "Found $filecount items matching regexp \"$RegExp\".";
    say "Found $findcount items also matching predicate \"$Predicate\".";
    if ($Verbose)
    {
@@ -192,21 +236,22 @@ sub stats ()
       printf("%7u files of unknown type\n",                  $unkncount);
    }
    return 1;
-} # end sub stats ()
+} # end sub stats
 
-sub error ($)
+# Print error and help messages and exit 666:
+sub error ($NA)
 {
-   my $NA = shift;
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
    Error: you typed $NA arguments, but \"find-files-by-type.pl\"
-   requires either 1 or 2 two arguments. Help follows:
+   requires 0, 1, or 2 arguments. Help follows:
 
    END_OF_ERROR
    help;
    exit 666;
-} # end error ($)
+} # end error ($NA)
 
-sub help ()
+# Print help message:
+sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "find-files-by-type.pl", Robbie Hatley's nifty file finding
@@ -223,11 +268,12 @@ sub help ()
    find-files-by-type.pl [options] Arg1 [Arg2]
 
    Description of options:
-   Option:              Meaning:
-   -h or --help         Print help and exit.
-   -r or --recurse      Recurse subdirectories.
-   -v or --verbose      Be verbose.
-   -q or --quiet        Be quiet (don't print directories being processed).
+   Option:                      Meaning:
+   "-h" or "--help"             Print help and exit.
+   "-l" or "--local"            Be local.
+   "-r" or "--recurse"          Recurse subdirectories. (DEFAULT)
+   "-q" or "--quiet"            Be quiet. (DEFAULT)
+   "-v" or "--verbose"          Be verbose.
 
    (Note that a "target" option is NOT provided, as that would conflict with the
    whole idea of this program, which is to specify what types of files to look for
@@ -235,13 +281,16 @@ sub help ()
 
    Description of arguments:
 
-   "find-files-by-type.pl" takes either 1 or 2 arguments:
+   "find-files-by-type.pl" takes either 0, 1, or 2 arguments. 
+   
+   Providing no arguments will result in this program returning the paths of all
+   regular files and directories, which probably not what you want.
 
-   Argument 1 is a boolean exression using Perl file-test operators. The
-   expression must be enclosed in parentheses (else this program will confuse
-   your file-test operators for options), and then enclosed in single quotes
-   (else the shell won't pass your expression to this program intact).
-   Here are some examples of valid and invalid first arguments:
+   Argument 1 (optional), if present, must be a boolean exression using Perl
+   file-test operators. The expression must be enclosed in parentheses (else
+   this program will confuse your file-test operators for options), and then
+   enclosed in single quotes (else the shell won't pass your expression to this
+   program intact). Here are some examples of valid and invalid first arguments:
 
    '(-d && -l)'  # VALID:   Finds symbolic links to directories
    '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
@@ -264,6 +313,9 @@ sub help ()
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead. 
 
+   If the number of arguments is not 0, 1, or 2, this program will print an
+   error message and abort.
+
    Description of Operation:
 
    "find-files-by-type.pl" will first obtain a list of file records for all
@@ -273,12 +325,9 @@ sub help ()
    given by Argument 1 is then evaluated. If it is true, the file's path is
    printed; otherwise, the file is skipped.
 
-   If the number of arguments is not 1 or 2, this program will print an
-   error message and abort.
-
    Cheers,
    Robbie Hatley,
    programmer.
    END_OF_HELP
    return 1;
-} # end help ()
+} # end help

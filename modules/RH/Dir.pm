@@ -54,6 +54,7 @@
 #                   Massively refactored multiple subs. Fixed many errors which I'd introduced in the process.
 # Fri Nov 26, 2021: Clarified some comments.
 # Fri Aug 19, 2022: Got rid of "#use Win32API::File;" as my scripts are all now dual-OS (Linux+Windows).
+# Sun Feb 19, 2023: Added "is_valid_qual_dir".
 ########################################################################################################################
 
 # ======= PACKAGE: =====================================================================================================
@@ -145,6 +146,7 @@ sub win2cyg                ($)    ; # Convert Windows path to Cygwin  path.
 sub hash                   ($$;$) ; # Return hash or hash-based file-name of a file.
 sub shorten_sl_names       ($$$$) ; # Shorten directory and file names for Spotlight.
 sub is_data_file           ($)    ; # Return 1 if a given string is a path to a non-link non-directory regular file.
+sub is_valid_qual_dir      ($)    ; # Is a given string a fully-qualified path to an existing directory?
 
 # ======= VARIABLES: ===================================================================================================
 
@@ -168,7 +170,7 @@ our @EXPORT =
       enumerate_file_name     annotate_file_name      find_avail_enum_name
       find_avail_rand_name    is_large_image          get_suffix_from_type
       cyg2win                 win2cyg                 hash
-      shorten_sl_names        is_data_file
+      shorten_sl_names        is_data_file            is_valid_qual_dir
    );
 
 # Symbols which it is OK to export by request:
@@ -2257,6 +2259,39 @@ sub is_data_file ($)
    return 0 if   -l _ ;
    return 0 if   -d _ ;
    return 1;
-} # end sub is_regular_file ($)
+} # end sub is_data_file ($)
+
+# Return 1 if-and-only-if a given string is a fully-qualified path to a valid directory.
+sub is_valid_qual_dir ($)
+{
+   my $path  = shift;
+   my $valid = 1;
+   if ( !defined($path) )
+   {
+      print STDERR "\nWarning from \"is_valid_qual_dir\": path is not defined.\n";
+      $valid = 0;
+   }
+   elsif ( length($path) < 1 )
+   {
+      print STDERR "\nWarning from \"is_valid_qual_dir\": path is zero-length.\n";
+      $valid = 0;
+   }
+   elsif ( substr($path,0,1) ne '/' )
+   {
+      print STDERR "\nWarning from \"is_valid_qual_dir\": path does not start with a slash:\n$path\n";
+      $valid = 0;
+   }
+   elsif ( ! -e e $path )
+   {
+      print STDERR "\nWarning from \"is_valid_qual_dir\": path does not exist:\n$path\n";
+      $valid = 0;
+   }
+   elsif ( ! -d e $path )
+   {
+      print STDERR "\nWarning from \"is_valid_qual_dir\": path is not a directory:\n$path\n";
+      $valid = 0;
+   }
+   return $valid;
+} # end sub is_valid_qual_dir ($)
 
 1;

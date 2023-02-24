@@ -15,6 +15,7 @@
 # Sat Feb 13, 2021: Changed encoding of this file to ASCII. Changed width to 110. Dramatically simplified method of
 #                   passing code ref to RecurseDirs.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Thu Feb 09, 2023: Can now print dir-tree of any directory, not just curdir.
 ########################################################################################################################
 
 use v5.32;
@@ -22,5 +23,17 @@ use common::sense;
 use Sys::Binmode;
 
 use RH::Dir;
+
+if (@ARGV && ('-h' eq $ARGV[0] || '--help' eq $ARGV[0]))
+{
+   say "This program prints the directory structure of the current working directory,";
+   say "or of the directory given as its first argument.";
+   exit;
+}
+
+if (@ARGV)
+{
+   chdir e $ARGV[0] or die "Couldn't chdir to directory '$ARGV[0]'."
+}
 
 RecurseDirs {say cwd_utf8};
