@@ -22,7 +22,7 @@ Example 3:  Input: ("10:10", "09:30", "09:00", "09:55")  Output: 15
 # NOTE: Output is to STDOUT and will be the shortest time duration.
 
 # PRELIMINARIES:
-use v5.32;
+use v5.36;
 $"=", ";
 
 # DEFAULT INPUTS:

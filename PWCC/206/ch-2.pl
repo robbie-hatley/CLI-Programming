@@ -35,27 +35,75 @@ So the maximum sum is 2.
 =cut
 
 # IO NOTES:
-# NOTE: Input is by either built-in array-of-arrays, or @ARGV. If using @ARGV,the args should be a space-separated
-#       sequence of integers, which will be interpreted as being a single array.
-# NOTE: Output is to STDOUT and will be the third-highest unique value if the number of unique values is at least 3;
-#       otherwise, the output will be the maximum unique value.
+# NOTE: Input is by either built-in array-of-arrays, or @ARGV. If using @ARGV,
+# the args should be a space-separated sequence of an even number of real numbers,
+# which will be interpreted as being a single array.
+# NOTE: Output is to STDOUT and will be the maximum sum of pair minimums.
 
 # PRELIMINARIES:
 use v5.36;
-use List::Util 'uniqint';
+use List::Util 'sum0', 'max';
 $"=", ";
 
 # DEFAULT INPUTS:
-my @arrays = ([5,4,3], [5,6], [5,4,4,3]);
+my @arrays = ([1,2,3,4], [0,2,1,3]);
 
 # NON-DEFAULT INPUTS:
 if (@ARGV) {@arrays = ([@ARGV]);}
 
+# SUBROUTINES:
+
+sub MaxSumMinEasy($array=[]){
+   return 0 if 0 == scalar @{$array};
+   my @sorted = sort {$a<=>$b} @{$array};
+   my $asize  = scalar(@sorted);
+   die "Error in MaxSumMin(): array size not even.\n$!\n" if 0 != $asize % 2;
+   my @even_indices; push @even_indices, 2*$_ for 0..($asize/2-1);
+   return sum0(@sorted[@even_indices])}
+
+sub Pairings ($array=[], $pairs=[]){
+   state $recurse = 0;
+   die "Error in Pairings(): Over 50 levels of recursion!\n$!\n" if $recurse > 50;
+   state @pairings;
+   # Clear @pairings on first entry, else @pairings accumulates garbage:
+   @pairings = () if 0 == $recurse;
+   my $asize = scalar(@{$array});
+   die "Error in Pairings(): array size not even.\n$!\n" if 0 != $asize % 2;
+   if (0 == $asize){
+      push @pairings, $pairs;}
+   else{
+      for    ( my $i =    0   ; $i <= $asize - 2 ; ++$i ){
+         for ( my $j = $i + 1 ; $j <= $asize - 1 ; ++$j ){
+            my @recurse_array = @{$array};
+            my @recurse_pairs = @{$pairs};
+            my $p2 = splice @recurse_array, $j, 1; # $j MUST come first!!!
+            my $p1 = splice @recurse_array, $i, 1; # Can you see why?
+            push @recurse_pairs, [$p1, $p2];
+            ++$recurse;
+            Pairings(\@recurse_array, \@recurse_pairs);
+            --$recurse}}}
+   return \@pairings}
+
+sub SumMin($pairing=[]){
+   return sum0 map {(sort {$a<=>$b} @{$_})[0]} @{$pairing}}
+
+sub MaxSumMinHard($pairings=[]){
+   return max map {SumMin $_} @{$pairings};}
+
 # MAIN BODY OF SCRIPT:
 for (@arrays){
+   my $array = $_;
+   my $msme = MaxSumMinEasy($array);
+   my $pairings = Pairings($array);
+   my $numpai = scalar @{$pairings};
+   my $msmh = MaxSumMinHard($pairings);
    say '';
-   my @array = @{$_};
-   say "array: (@array)";
-   my @unique = uniqint reverse sort @array;
-   if (@unique >= 3) {say "Third-highest unique value = $unique[2]"}
-   else              {say "Maximum unique value = $unique[0]"}}
+   say "array: (@{$array})";
+   say 'Pairings:';
+   for (@{$pairings}){        # For each pairing
+      for (@{$_}){            # For each pair
+         print " [$_->[0],$_->[1]]";}
+      print "  ", SumMin($_), "\n";}
+   say "$numpai pairings";
+   say "max-sum-min-easy = $msme";
+   say "max-sum-min-hard = $msmh"}
