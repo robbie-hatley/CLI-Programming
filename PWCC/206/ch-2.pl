@@ -1,5 +1,5 @@
 #! /usr/bin/perl
-# Robbie Hatley's Solution to PWCC 206-2
+# Robbie Hatley's Perl Solution to PWCC 206-2
 
 =pod
 
@@ -8,28 +8,18 @@ Submitted by: Mohammad S Anwar
 Given an array of integers having even number of elements, find the
 maximum sum of the minimum of each pair.
 
-Example 1: 
+Example 1:  Input: (1,2,3,4)  Output: 4
+Pairings:
+(1,2) and (3,4). So min(1,2) + min(3,4) => 1 + 3 => 4
+(1,3) and (2,4). So min(1,3) + min(2,4) => 1 + 2 => 3
+(1,4) and (2,3). So min(1,4) + min(2,3) => 2 + 1 => 3
+So the maximum sum is 4.
 
-Input: @array = (1,2,3,4)
-Output: 4
-
-Possible Pairings are as below:
-a) (1,2) and (3,4). So min(1,2) + min(3,4) => 1 + 3 => 4
-b) (1,3) and (2,4). So min(1,3) + min(2,4) => 1 + 2 => 3
-c) (1,4) and (2,3). So min(1,4) + min(2,3) => 2 + 1 => 3
-
-So the maxium sum is 4.
-
-Example 2:
-
-Input: @array = (0,2,1,3)
-Output: 2
-
-Possible Pairings are as below:
-a) (0,2) and (1,3). So min(0,2) + min(1,3) => 0 + 1 => 1
-b) (0,1) and (2,3). So min(0,1) + min(2,3) => 0 + 2 => 2
-c) (0,3) and (2,1). So min(0,3) + min(2,1) => 0 + 1 => 1
-
+Example 2:  Input: (0,2,1,3)  Output: 2
+Pairings:
+(0,2) and (1,3). So min(0,2) + min(1,3) => 0 + 1 => 1
+(0,1) and (2,3). So min(0,1) + min(2,3) => 0 + 2 => 2
+(0,3) and (2,1). So min(0,3) + min(2,1) => 0 + 1 => 1
 So the maximum sum is 2.
 
 =cut

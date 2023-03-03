@@ -1,9 +1,9 @@
 #! /usr/bin/perl
-# Robbie Hatley's Solution to PWCC 206-1
+# Robbie Hatley's Perl Solution to PWCC 206-1
 
 =pod
 
-Task 1: Shortest time.
+Task 1: Shortest Time
 Submitted by: Mohammad S Anwar
 Write a program to find the shortest time between any two times in a given
 list of times, at least 2, in the 24-hour clock format HH:MM.
@@ -43,7 +43,7 @@ for (@arrays){
    my @diffs; # elapsed times
    for    ( my $i =    0   ; $i <= $#times - 1 ; ++$i ){
       for ( my $j = $i + 1 ; $j <= $#times - 0 ; ++$j ){
-         my ($t1, $t2) = sort ($times[$i], $times[$j]);
+         my ($t1, $t2) = sort {$a<=>$b} ($times[$i], $times[$j]);
          my $te = $t2 - $t1;
          if ($te > 720) {$te = 1440 - $te} 
          push @diffs, $te}}
