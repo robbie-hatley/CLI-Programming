@@ -1,15 +1,15 @@
-/************************************************************************************\
+/**************************************************************************************\
  * Program:        eratosthenes
  * source file:    eratosthenes.c
  * exe file (lin): eratosthenes
  * exe file (win): eratosthenes.exe
- * Description:    Prints all prime numbers in range [a,b].
+ * Description:    Prints count of prime numbers found in interval [0,n] for given n.
  * Author:         Robbie Hatley
  * Edit History:
  * Wed Mar 08, 2023: Wrote it.
  * Thu Mar 09, 2023: Changed to using "MonoTime" to time.
  * Fri Mar 10, 2023: Changed to using bitmap and achieved MASSIVE speed increase!!!
-\************************************************************************************/
+\**************************************************************************************/
 
 #include <stdlib.h>
 #include <stdio.h>
