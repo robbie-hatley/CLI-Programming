@@ -172,7 +172,7 @@ ifdef DEBUG
   CCE := -finput-charset=UTF-8 -fextended-identifiers -g -Og -std=gnu17   -fsanitize=address
   CXE := -finput-charset=UTF-8 -fextended-identifiers -g -Og -std=gnu++17 -fsanitize=address
 else
-  CCE := -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu17  
+  CCE := -finput-charset=UTF-8 -fextended-identifiers -s -Ofast -std=gnu17  
   CXE := -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17
 endif
 
@@ -181,7 +181,7 @@ ifdef DEBUG
   CCL := -finput-charset=UTF-8 -std=gnu17   -c -g -Og
   CXL := -finput-charset=UTF-8 -std=gnu++17 -c -g -Og
 else
-  CCL := -finput-charset=UTF-8 -std=gnu17   -c -O2
+  CCL := -finput-charset=UTF-8 -std=gnu17   -c -Ofast
   CXL := -finput-charset=UTF-8 -std=gnu++17 -c -O2
 endif
 

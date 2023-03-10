@@ -5,47 +5,11 @@
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ########################################################################################################################
-# Template.pl
-# "Template" serves as a template for making new file and directory maintenance scripts.
-#
-# Edit history:
-# Mon May 04, 2015: Wrote first draft.
-# Wed May 13, 2015: Updated and changed Help to "Here Document" format.
-# Thu Jun 11, 2015: Corrected a few minor issues.
-# Tue Jul 07, 2015: Now fully utf8 compliant.
-# Fri Jul 17, 2015: Upgraded for utf8.
-# Sat Apr 16, 2016: Now using -CSDA.
-# Sun Dec 24, 2017: Now splicing options from @ARGV.
-# Thu Jul 11, 2019: Combined getting & processing options and arguments.
-# Fri Jul 19, 2019: Renamed "get_and_options_and_arguments" to "argv" and got rid of arrays @CLOptions and @CLArguments.
-# Sun Feb 23, 2020: Added entry and exit announcements, and refactored statistics.
-# Sat Jan 02, 2021: Got rid of all "our" variables; all subs return 1; and all Here documents are now indented 3 spaces.
-# Fri Jan 29, 2021: Corrected minor comment and formatting errors, and changed erasure of Here-document indents
-#                   from "s/^ +//gmr" to "s/^   //gmr".
-# Mon Feb 08, 2021: Got rid of "help" function (now using "__DATA__"). Renamed "error" to "error".
-# Sat Feb 13, 2021: Reinstituted "help()". "error()" now exits program. Created "dire_stats()".
-# Wed Feb 17, 2021: Refactored to use the new GetFiles(), which now requires a fully-qualified directory as its first
-#                   argument, target as second, and regexp (instead of wildcard) as third.
-# Mon Mar 15, 2021: Now using time stamping.
-# Sat Nov 13, 2021: Refreshed colophon, title card, and boilerplate.
-# Mon Nov 15, 2021: Changed regexps to qr/YourRegexpHere/, and instructed user to use "extended regexp sequences"
-#                   in order to use pattern modifiers such as "i".
-# Tue Nov 16, 2021: Now using common::sense, and now using extended regexp sequences instead of regexp delimiters.
-# Wed Nov 17, 2021: Now using raw regexps instead of qr//. Also, fixed bug in which some files were being reported twice
-#                   because they matched more than one regexp. (I inverted the order of the regexp and file loops.)
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-# Fri Dec 03, 2021: Now using just 1 regexp. (Use alternation instead of multiple regexps.)
-# Sat Dec 04, 2021: Improved formatting in some places.
-# Sun Mar 05, 2023: Updated to v5.36. Got rid of "common::sense" (antiquated). Got rid of "given" (deprecated).
-#                   Changed all prototypes to conform to v5.36 standards: "sub mysub :prototype($) {my $x=shift;}"
-########################################################################################################################
-
-########################################################################################################################
-# myprog.pl
-# "MyProg" is a program which [insert description here].
+# canoperm.pl
+# Canonicalizes permissions in current directory tree.
 # Written by Robbie Hatley.
 # Edit history:
-# Sat Jun 05, 2021: Wrote it.
+# Sun Mar 05, 2023: Wrote it.
 ########################################################################################################################
 
 use v5.36;
@@ -54,20 +18,8 @@ use warnings;
 
 use Sys::Binmode;
 use Time::HiRes 'time';
-use charnames qw( :full :short );
-use Unicode::Normalize qw( NFD NFC );
-use Unicode::Collate;
-use MIME::QuotedPrint;
-use Scalar::Util qw( looks_like_number reftype );
-use List::AllUtils;
-use Hash::Util;
-use Regexp::Common;
 
 use RH::Dir;
-use RH::Math;
-use RH::RegTest;
-use RH::Util;
-use RH::WinChomp;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
@@ -82,10 +34,10 @@ sub help    :prototype()  ; # Print help and exit.
 
 # Settings:                    Meaning:                     Range:    Default:
 my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
-my $Target    = 'A'        ; # Files, dirs, both, all?      F|D|B|A   A (all)
-my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
-my $Recurse   = 0          ; # Recurse subdirectories?      bool      0 (don't recurse)
 my $Verbose   = 0          ; # Be wordy?                    bool      0 (don't be verbose)
+my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (recurse)
+my $Target    = 'A'        ; # Files, dirs, both, all?      F|D|B|A   A (process all directory entries)
+my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
 
 # Counters:
 my $direcount = 0          ; # Count of directories processed by curdire().
@@ -135,20 +87,26 @@ sub argv :prototype()
       if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
             if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
+
+         elsif ( $_ eq '-l' || $_ eq '--local'        ) {$Recurse =  0 ;}
+         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;} # Default
+
          elsif ( $_ eq '-f' || $_ eq '--target=files' ) {$Target  = 'F';}
          elsif ( $_ eq '-d' || $_ eq '--target=dirs'  ) {$Target  = 'D';}
          elsif ( $_ eq '-b' || $_ eq '--target=both'  ) {$Target  = 'B';}
-         elsif ( $_ eq '-a' || $_ eq '--target=all'   ) {$Target  = 'A';}
+         elsif ( $_ eq '-a' || $_ eq '--target=all'   ) {$Target  = 'A';} # Default.
+
+         elsif ( $_ eq '-q' || $_ eq '--quiet'        ) {$Verbose =  0 ;} # Default
          elsif ( $_ eq '-v' || $_ eq '--verbose'      ) {$Verbose =  1 ;}
+
+         elsif ( $_ eq '-y' || $_ eq '--debug=yes'    ) {$db      =  1 ;}
+         elsif ( $_ eq '-n' || $_ eq '--debug=no'     ) {$db      =  0 ;} # Default
 
          # Remove option from @ARGV:
          splice @ARGV, $i, 1;
 
-         # Move the index 1-left, so that the "++$i" above
-         # moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right
-         # due to deletion of previous element contents:
+         # Move the index 1-left, so that the "++$i" above moves the index back to the current @ARGV element,
+         # but with the new content which slid-in from the right due to deletion of previous element contents:
          --$i;
       }
    }
@@ -266,23 +224,32 @@ sub error :prototype($)
 sub help :prototype()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "[insert Program Name here]". This program does blah blah blah
-   to all files in the current directory (and all subdirectories if a -r or
-   --recurse option is used).
+   Welcome to "canoperm.pl". This program canonicalizes the permissions of
+   all directories and files in the current directory tree. Directory permissions
+   are set to "drwxrwxr-x", things which should be executable are set to
+   "-rwxrwxr-x", and everything else is set to "-rw-rw-r--".
 
    Command lines:
-   program-name.pl -h | --help            (to print help and exit)
-   program-name.pl [options] [arguments]  (to [perform funciton] )
+   canoperm.pl -h | --help            (to print this help and exit)
+   canoperm.pl [options] [arguments]  (to canonicalize permissions)
 
    Description of options:
    Option:                      Meaning:
    "-h" or "--help"             Print help and exit.
-   "-r" or "--recurse"          Recurse subdirectories (but not links).
+
+   "-l" or "--local"            Don't recurse subdirectories.
+   "-r" or "--recurse"          Recurse subdirectories (but not links). (Default.)
+
    "-f" or "--target=files"     Target files only.
    "-d" or "--target=dirs"      Target directories only.
    "-b" or "--target=both"      Target both files and directories.
-   "-a" or "--target=all"       Target all (files, directories, symlinks, etc).
+   "-a" or "--target=all"       Target all files, directory entries.    (Default.)
+
+   "-q" or "--quiet"            Be quiet.                               (Default.)
    "-v" or "--verbose"          Print lots of extra statistics.
+
+   "-n" or "--debug=no"         Don't print diagnostics.                (Default.)
+   "-y" or "--debug=yes"        Do    print diagnostics.
 
    Description of arguments:
    In addition to options, this program can take one optional argument which, if
@@ -296,7 +263,7 @@ sub help :prototype()
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead. 
 
-   Happy item processing!
+   Happy directory tree permissions canonicalizing!
    Cheers,
    Robbie Hatley,
    programmer.

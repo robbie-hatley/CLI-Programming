@@ -1,12 +1,13 @@
 /************************************************************************************************************\
- * Program:     primes-in-range
- * source file: primes-in-range.c
- * exe file:    primes-in-range.exe
- * Description: Prints all prime numbers in range [a,b].
- * Author:      Robbie Hatley
+ * Program:        primes-in-range
+ * source file:    primes-in-range.c
+ * exe file (lin): primes-in-range
+ * exe file (win): primes-in-range.exe
+ * Description:    Prints all prime numbers in range [a,b].
+ * Author:         Robbie Hatley
  * Edit History:
- *   Wed Dec 05, 2018: Wrote it.
- *   Tue Mar 16, 2021: Refactored.
+ * Wed Dec 05, 2018: Wrote it.
+ * Tue Mar 16, 2021: Refactored.
 \************************************************************************************************************/
 
 #include <stdio.h>
@@ -38,6 +39,9 @@ int main (int Beren, char *Luthien[])
    uint64_t Upr = 0; // upper limit
    uint64_t Sta = 0; // start point for wheel search
    uint64_t pc  = 0; // prime count
+   double start,end,elapsed;
+
+   start = MonoTime();
 
    if (Beren > 1 && (0==strcmp("-h", Luthien[1])||0==strcmp("--help",Luthien[1])))
    {
@@ -69,7 +73,7 @@ int main (int Beren, char *Luthien[])
          c=FirstFour[i];
          if (c>=Lwr && c<=Upr)
          {
-            printf("%lu\n", c);
+            // printf("%lu\n", c);
             ++pc;
          }
       }
@@ -78,7 +82,7 @@ int main (int Beren, char *Luthien[])
    // If Upr < 11, we're done:
    if (Upr < 11)
    {
-      exit(0);
+      goto END;
    }
 
    // If we get to here, Upr > 11, so set start point for wheel search:
@@ -96,10 +100,15 @@ int main (int Beren, char *Luthien[])
    {
       if(IsPrime(c))
       {
-         printf("%15lu\n",c);
+         //printf("%15lu\n",c);
          ++pc;
       }
       ++i;
    }
+   END:
+   printf("primes found = %lu\n", pc);
+   end = MonoTime();
+   elapsed = end-start;
+   printf("elapsed time = %.9f\n", elapsed);
    exit(EXIT_SUCCESS);
 }

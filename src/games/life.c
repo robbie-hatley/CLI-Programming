@@ -36,7 +36,7 @@
 static bool       Help                 = false;
 static double     Speed                = 2.0;
 static bool       Walk                 = false;
-static ColorPair  Colors               = GREEN_CYAN;   
+static ColorPair  Colors               = GREEN_BLACK;   
 static char       Charset  [2]         = {' ', 'O'};
 static char       GameGrid [100][200]  = {{'\0'}};
 static char       FateGrid [100][200]  = {{'\0'}};

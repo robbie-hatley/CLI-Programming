@@ -93,13 +93,31 @@ uint64_t RandU64 (uint64_t min, uint64_t max)
 
 /* ========== Clocks, Timers, and Delays: ================================== */
 
-/* Get high-resolution time (time in seconds, to nearest microsecond, since
-00:00:00 on the morning of Jan 1, 1970) as double (for timing things): */
+/* Get high-resolution time (in seconds, to nearest microsecond,
+since 00:00:00 on the morning of Jan 1, 1970), as double, for timing things: */
 double HiResTime (void)
 {
    struct timeval t;
    gettimeofday(&t, NULL);
    return (double)t.tv_sec + (double)t.tv_usec / 1000000.0;
+}
+
+/* Get VERY-high-resolution real time (in seconds, to nearest nanosecond,
+since 00:00:00 on the morning of Jan 1, 1970), as double, for timing things: */
+double RealTime (void)
+{
+   struct timespec t;
+   clock_gettime(CLOCK_REALTIME, &t);
+   return (double)t.tv_sec + (double)t.tv_nsec / 1000000000.0;
+}
+
+/* Get VERY-high-resolution monotonic time (in seconds, to nearest nanosecond,
+since 00:00:00 on the morning of Jan 1, 1970), as double, for timing things: */
+double MonoTime (void)
+{
+   struct timespec t;
+   clock_gettime(CLOCK_MONOTONIC, &t);
+   return (double)t.tv_sec + (double)t.tv_nsec / 1000000000.0;
 }
 
 /* Delay for a given time in seconds (resolution is theoretically 1us): */

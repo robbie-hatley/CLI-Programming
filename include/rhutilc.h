@@ -58,9 +58,17 @@ uint64_t RandU64 (uint64_t min, uint64_t max);
 
 /* ========== Clocks, Timers, and Delays: ================================== */
 
-/* Get high-resolution time (time in seconds, to nearest microsecond, since
-00:00:00 on the morning of Jan 1, 1970) as double (for timing things): */
+/* Get high-resolution time (in seconds, to nearest microsecond,
+since 00:00:00 on the morning of Jan 1, 1970), as double, for timing things: */
 double HiResTime (void);
+
+/* Get VERY-high-resolution real time (in seconds, to nearest nanosecond,
+since 00:00:00 on the morning of Jan 1, 1970), as double, for timing things: */
+double RealTime (void);
+
+/* Get VERY-high-resolution monotonic time (in seconds, to nearest nanosecond,
+since 00:00:00 on the morning of Jan 1, 1970), as double, for timing things: */
+double MonoTime (void);
 
 /* Delay for a given time in seconds (resolution is theoretically 1us): */
 void Delay (double s);

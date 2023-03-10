@@ -2249,6 +2249,8 @@ sub is_data_file ($)
    my $name = get_name_from_path($path);
    return 0 if $name eq '.';
    return 0 if $name eq '..';
+   return 0 if $name =~ m/^\.sync.ffs_db/;
+   return 0 if $name =~ m/^\.directory/;
    return 0 if $name =~ m/^desktop.*\.ini$/i;
    return 0 if $name =~ m/^thumbs.*\.db$/i;
    return 0 if $name =~ m/^pspbrwse.*\.jbf$/i;

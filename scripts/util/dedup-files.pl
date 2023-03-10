@@ -81,27 +81,28 @@
 #                   Also, added lots more comments. (Some parts of this program were sorely lacking documentation.)
 ########################################################################################################################
 
-use v5.32; # WOMBAT : Eventually update this to v5.36, but first I must rewrite the prototypes; research this.
-use common::sense;
+use v5.36;
 use Sys::Binmode;
+use common::sense;
+use feature 'signatures';
 use Time::HiRes 'time';
-
 use RH::Util;
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub argv            ()   ; # Use contents of @ARGV to set settings.
-sub process_curdir  ()   ; # Process the files of the current directory.
-sub dup_prompt      ($$) ; # DupPrompt Mode (asks user what to do).
-sub spotlight       ($$) ; # Spotlight Mode (for processing Microsoft Windows Spotlight scenic photographs).
-sub no_prompt       ($$) ; # NoPromt   Mode (does whatever it damn well pleases, fuck you very much).
-sub erase_newer     ($$) ; # Erases the newer of a pair of identical files by calling unlink_file().
-sub erase_older     ($$) ; # Erases the older of a pair of identical files by calling unlink_file().
-sub unlink_file     ($)  ; # Unlink a file.
-sub print_two_files ($$) ; # Print two file names, with times and dates, aligned.
-sub stats           ()   ; # Print statistics for a run of this program.
-sub help            ()   ; # Print help for this program.
+sub argv            :prototype()   ; # Use contents of @ARGV to set settings.
+sub process_curdir  :prototype()   ; # Process the files of the current directory.
+sub dup_prompt      :prototype($$) ; # DupPrompt Mode (asks user what to do).
+sub spotlight       :prototype($$) ; # Spotlight Mode (for processing Microsoft Windows Spotlight scenic photographs).
+sub no_prompt       :prototype($$) ; # NoPromt   Mode (does whatever it damn well pleases, fuck you very much).
+sub erase_newer     :prototype($$) ; # Erases the newer of a pair of identical files by calling unlink_file().
+sub erase_older     :prototype($$) ; # Erases the older of a pair of identical files by calling unlink_file().
+sub unlink_file     :prototype($)  ; # Unlink a file.
+sub print_two_files :prototype($$) ; # Print two file names, with times and dates, aligned.
+sub dire_stats      :prototype()   ; # Print statistics for current directory.
+sub tree_stats      :prototype()   ; # Print statistics for current tree.
+sub help            :prototype()   ; # Print help for this program.
 
 # ======= VARIABLES: ===================================================================================================
 
@@ -150,7 +151,16 @@ my $gibpat = qr(^[a-z]{8}(?:-\(\d{4}\))?(?:\.\w+)?$);
 # Windows SpotLight pattern:
 my $wslpat = qr(^[0-9a-f]{64}(?:-\(\d{4}\))?(?:\.\w+)?$);
 
-# Counters:
+# Per-Directory Counters:
+my $regfdirec =  0; # Count of regular files processed.
+my $compdirec =  0; # Count of comparisons of file pairs.
+my $dupldirec =  0; # Count of duplicate file pairs found.
+my $ignodirec =  0; # Count of ignored duplicate file pairs.
+my $deledirec =  0; # Count of deleted files.
+my $faildirec =  0; # Count of failed attempts at deleting files.
+my $errodirec =  0; # Count of errors.
+
+# Per-Tree Counters:
 my $direcount = 0; # Count of directories traversed.
 my $regfcount = 0; # Count of regular files seen.
 my $compcount = 0; # Count of comparisons of file pairs.
@@ -167,7 +177,7 @@ my $errocount = 0; # Count of errors.
    argv;
    say "\nNow entering program \"" . get_name_from_path($0) . "\".";
    $Recurse and RecurseDirs {process_curdir} or process_curdir;
-   stats;
+   tree_stats;
    my $t1 = time; my $te = $t1 - $t0;
    say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
    exit 0;
@@ -175,7 +185,7 @@ my $errocount = 0; # Count of errors.
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
-sub argv ()
+sub argv :prototype()
 {
    for ( my $i = 0 ; $i < @ARGV ; ++$i )
    {
@@ -208,23 +218,13 @@ sub argv ()
       default  {error($NA)             ;} # Print error and help messages then exit 666.
    }
    return 1;
-} # end sub process_argv ()
+} # end sub process_argv :prototype()
 
 # Process current directory:
-sub process_curdir ()
+sub process_curdir :prototype()
 {
    # We just entered a new directory, so increment directory counter:
    ++$direcount;
-
-   # Variables used by this function only:
-   my $result    = ''; # Result of processing pair of duplicate files.
-   my $regfdirec =  0; # Count of regular files processed.
-   my $compdirec =  0; # Count of comparisons of file pairs.
-   my $dupldirec =  0; # Count of duplicate file pairs found.
-   my $ignodirec =  0; # Count of ignored duplicate file pairs.
-   my $deledirec =  0; # Count of deleted files.
-   my $faildirec =  0; # Count of failed attempts at deleting files.
-   my $errodirec =  0; # Count of errors.
 
    # Get and announce current working directory:
    my $curdir = cwd_utf8;
@@ -341,7 +341,10 @@ sub process_curdir ()
                ++$dupldirec;
                ++$duplcount;
 
-               # Call appropriate subroutine depending on value of $PromptMode:
+               # Create a "result" variable to hold the result of processing pair of duplicate files:
+               my $result = '';
+
+               # Call appropriate subroutine (depending on value of $PromptMode) and store result in $result:
                given ($PromptMode)
                {
                   # If in DupPrompt mode, call dup_prompt:
@@ -396,7 +399,8 @@ sub process_curdir ()
                   }
                   when ('exit')
                   {
-                     stats;
+                     dire_stats;
+                     tree_stats;
                      exit 0;
                   }
                } # end given (result of processing pair of duplicate files)
@@ -422,23 +426,12 @@ sub process_curdir ()
       }
       say '';
    }
-
-   say '';
-   say 'Statistics for this directory:';
-   printf("Processed %6d files.\n",                    $regfdirec);
-   printf("Compared  %6d pairs of files.\n",           $compdirec);
-   printf("Found     %6d pairs of duplicate files.\n", $dupldirec);
-   printf("Ignored   %6d pairs of duplicate files.\n", $ignodirec);
-   printf("Deleted   %6d files.\n",                    $deledirec);
-   printf("Failed    %6d file deletion attempts.\n",   $faildirec);
-   printf("Suffered  %6d errors.\n",                   $errodirec);
-
-   # We successfully completed executing this function, so return 1:
+   dire_stats;
    return 1;
-} # end sub process_curdir ()
+} # end sub process_curdir :prototype()
 
 # Mode 0 (DupPrompt = "Ask user what to do."):
-sub dup_prompt ($$)
+sub dup_prompt :prototype($$)
 {
    my ($file1, $file2) = @_;
    my $char = '\x{00}';
@@ -511,10 +504,10 @@ sub dup_prompt ($$)
          }
       } # end given ($char)
    } # end while (42) {get keystroke from user}
-} # end sub dup_prompt ($$) (MODE 0)
+} # end sub dup_prompt :prototype($$) (MODE 0)
 
 # Mode 1 (Spotlight = "Process Microsoft Windows Spotlight scenic photographs."):
-sub spotlight ($$)
+sub spotlight :prototype($$)
 {
    my ($file1, $file2) = @_;
 
@@ -570,10 +563,10 @@ sub spotlight ($$)
       say 'Neither file has a gib, wsl, or sha1 name, so entering user-intervention mode.';
       return dup_prompt($file1, $file2);
    }
-} # end sub spotlight ($$) (MODE 1)
+} # end sub spotlight :prototype($$) (MODE 1)
 
-# Mode 2 (NoPrompt = "Do whatever the fuck you like and don't ask the fucking user a god-damned thing."):
-sub no_prompt ($$)
+# Mode 2 (NoPrompt = "Erase a duplicate file automatically without prompting the user."):
+sub no_prompt :prototype($$)
 {
    my ($file1, $file2) = @_;
    if ( 1 == $PrejudMode )
@@ -584,10 +577,10 @@ sub no_prompt ($$)
    {
       return erase_newer($file1, $file2);
    }
-} # end sub no_prompt ($$) (MODE 2)
+} # end sub no_prompt :prototype($$) (MODE 2)
 
 # Erase the newer of a pair of duplicate files (by calling unlink_file()):
-sub erase_newer ($$)
+sub erase_newer :prototype($$)
 {
    my ($file1, $file2) = @_;
    if ($file1->{Mtime} > $file2->{Mtime})
@@ -598,10 +591,10 @@ sub erase_newer ($$)
    {
       return unlink_file($file2); # Unlink second file.
    }
-} # end sub erase_newer ($$)
+} # end sub erase_newer :prototype($$)
 
 # Erase the older of a pair of duplicate files (by calling unlink_file()):
-sub erase_older ($$)
+sub erase_older :prototype($$)
 {
    my ($file1, $file2) = @_;
    if ($file1->{Mtime} < $file2->{Mtime})
@@ -612,10 +605,10 @@ sub erase_older ($$)
    {
       return unlink_file($file2); # Unlink second file.
    }
-} # end sub erase_older ($$)
+} # end sub erase_older :prototype($$)
 
 # Unlink a file (leave the data in-situ, but remove this hard link from this directory):
-sub unlink_file ($)
+sub unlink_file :prototype($)
 {
    my $file = shift;
    my $success = unlink e $file->{Name};
@@ -631,10 +624,10 @@ sub unlink_file ($)
       $file->{Name} = "***FAILED***";
       return 'failed';
    }
-} # end sub unlink_file ($)
+} # end sub unlink_file :prototype($)
 
 # Print two file names, with times and dates, aligned:
-sub print_two_files ($$)
+sub print_two_files :prototype($$)
 {
    my $file1 = shift;
    my $file2 = shift;
@@ -664,12 +657,34 @@ sub print_two_files ($$)
       $file2->{Name}, $date2, $time2, $file2->{Size}
    );
 
-   # We successfully completed executing this function, so return 1:
    return 1;
-} # end sub print_two_files ($$)
+} # end sub print_two_files :prototype($$)
 
-# Print statistics for a run of this program:
-sub stats ()
+# Print statistics for current directory:
+sub dire_stats :prototype()
+{
+   say '';
+   say 'Statistics for this directory:';
+   printf("Processed %6d files.\n",                    $regfdirec);
+   printf("Compared  %6d pairs of files.\n",           $compdirec);
+   printf("Found     %6d pairs of duplicate files.\n", $dupldirec);
+   printf("Ignored   %6d pairs of duplicate files.\n", $ignodirec);
+   printf("Deleted   %6d files.\n",                    $deledirec);
+   printf("Failed    %6d file deletion attempts.\n",   $faildirec);
+   printf("Suffered  %6d errors.\n",                   $errodirec);
+   # Zero all per-directory counters here so they don't accumulate garbage between calls to process_curdir:
+   $regfdirec = 0; # Count of regular files processed.
+   $compdirec = 0; # Count of comparisons of file pairs.
+   $dupldirec = 0; # Count of duplicate file pairs found.
+   $ignodirec = 0; # Count of ignored duplicate file pairs.
+   $deledirec = 0; # Count of deleted files.
+   $faildirec = 0; # Count of failed attempts at deleting files.
+   $errodirec = 0; # Count of errors.
+   return 1;
+} # end sub dire_stats :prototype()
+
+# Print statistics for current tree:
+sub tree_stats :prototype()
 {
    say '';
    say 'Statistics for this tree:';
@@ -681,13 +696,20 @@ sub stats ()
    printf("Deleted   %6d duplicate files.\n",          $delecount);
    printf("Failed    %6d file deletion attempts.\n",   $failcount);
    printf("Suffered  %6d errors.\n",                   $errocount);
-
-   # We successfully completed executing this function, so return 1:
+   # Zero all per-tree counters here, in case this function ever needs to be called twice in the future:
+   $direcount = 0; # Count of directories traversed.
+   $regfcount = 0; # Count of regular files seen.
+   $compcount = 0; # Count of comparisons of file pairs.
+   $duplcount = 0; # Count of duplicate file pairs found.
+   $ignocount = 0; # Count of ignored duplicate file pairs.
+   $delecount = 0; # Count of deleted files.
+   $failcount = 0; # Count of failed attempts at deleting files.
+   $errocount = 0; # Count of errors.
    return 1;
-} # end sub stats ()
+} # end sub tree_stats :prototype()
 
 # Print help for this program:
-sub help ()
+sub help :prototype()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to dedup-files, Robbie Hatley's nifty duplicate-file
@@ -773,7 +795,5 @@ sub help ()
    Robbie Hatley,
    programmer.
    END_OF_HELP
-
-   # We successfully completed executing this function, so return 1:
    return 1;
-} # end sub help ()
+} # end sub help :prototype()

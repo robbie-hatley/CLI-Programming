@@ -23,4 +23,4 @@ X_PROGRAMS = $(shell make-x-list.pl)
 #  *************************************************************************
 #  * All the actual compilation is done via the pattern rules in maketail: *
 #  *************************************************************************
-include /rhe/src/maketail
+include /d/rhe/src/maketail

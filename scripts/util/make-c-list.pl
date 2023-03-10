@@ -29,7 +29,7 @@ foreach (@names)
    s/\s+$//;
    if (m/\.c$/)
    {
-      if ($ENV{DESKTOP_SESSION} eq 'mate')
+      if ($ENV{PLATFORM} eq 'Linux')
       {
          s/\.(c)$//;
       }

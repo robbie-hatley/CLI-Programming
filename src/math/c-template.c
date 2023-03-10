@@ -1,7 +1,5 @@
 // This is a 120-character-wide ASCII C source-code text file.
 //=======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
-#ifndef MY_HEADER_NAME  // For headers only
-#define MY_HEADER_NAME  // For headers only
 
 /************************************************************************************************************\
  * Program name:  
@@ -34,9 +32,7 @@
 
 int main(int Beren, char * Luthien[])
 {
-   double t0;
-
-   t0 = HiResTime();
+   double t0 = MonoTime();
 
    printf("Hi. The arguments you typed were:\n");
    for ( int i = 1 ; i < Beren ; ++i )
@@ -44,9 +40,6 @@ int main(int Beren, char * Luthien[])
       printf("%s\n", Luthien[i]);
    }
 
-   printf("Elapsed time = %f seconds.\n", HiResTime() - t0);
+   printf("Elapsed time = %.9f seconds.\n", MonoTime() - t0);
    return 0;
 }
-
-/* End include guard: */
-#endif

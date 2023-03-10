@@ -27,4 +27,4 @@ X_PROGRAMS = $(shell make-x-list.pl)
 #  ****************************************************************************
 
 # Include maketail:
-include /rhe/src/maketail
+include /d/rhe/src/maketail
