@@ -18,48 +18,50 @@
 #include <time.h>
 #include <sys/time.h>
 
-// Get 1ns-resolution time in seconds since an arbitrary epoch which is not
-// effected by system time changes, as a double, for timing things (valid for
-// durations only; is NOT based on calendar/clock time):
+// Get 1ns-resolution time in seconds since an arbitrary epoch which is not affected
+// by system time changes, as a double, for timing things (valid for durations within
+// current program run ONLY; is NOT based on calendar/clock time):
 double MonoTime (void)
 {
    struct timespec t;
    clock_gettime(CLOCK_MONOTONIC, &t);
-   return (double)t.tv_sec + (double)t.tv_nsec / 1000000000.0;
+   return (double)t.tv_sec + (double)t.tv_nsec/1000000000.0;
 }
 
 // Set a bit in a uint64_t-based bitmap:
 void setbit (uint64_t * map, int idx)
 {
-   map[idx/64] = map[idx/64] | (1UL<<(idx%64));
+   map[idx/64] = map[idx/64] | (((size_t)1)<<(idx%64));
 }
 
 // Get a bit in a uint64_t-based bitmap:
 int getbit (uint64_t * map, int idx)
 {
-   if ( map[idx/64] & (1UL<<(idx%64)) ) {return 1;}
-   else                                 {return 0;}
+   if ( map[idx/64] & (((size_t)1)<<(idx%64)) ) {return 1;}
+   else                                         {return 0;}
 }
 
 int main ( int Beren , char **Luthien )
 {
    // Declare and initialize all variables used in main() here:
-   uint64_t *  Fred    = NULL    ; // Map of composites.
-   int         n       = 1000000 ; // Find primes through this number.
-   int         asize   = 0       ; // Array size.
-   int         esize   = 64      ; // Our bitmap uses 64-bit chunks.
-   int         limit   = 0       ; // Stop looking past limit.
-   int         count   = 1       ; // Primes found. (2 is prime.)
-   int         i       = 0       ; // Outer index.
-   int         j       = 0       ; // Inner index.
-   double      start   = 0.0     ; // Start time.
+   double      start   = 0.0   ; // Start time.
+   int         n       = 0     ; // Find primes through this number.
+   size_t      asize   = 0     ; // Array size.
+   uint64_t *  Fred    = NULL  ; // Array of composites.
+   int         limit   = 0     ; // Stop looking past limit.
+   int         i       = 0     ; // Outer index.
+   int         j       = 0     ; // Inner index.
+   int         count   = 0     ; // Primes found.
 
    // Capture start time:
    start = MonoTime();
-   
+
+   // Start with n = one million:
+   n = 1000000;
+
    // If we have arguments, use first argument as n ("top" number):
    if (Beren > 1){
-      n = (size_t)strtoul(Luthien[1],NULL,10);
+      n = (int)strtol(Luthien[1],NULL,10);
    }
 
    // But if n is now < 11 or > 1 billion, revert n back to 1 million:
@@ -69,13 +71,13 @@ int main ( int Beren , char **Luthien )
    }
 
    // Announce n:
-   printf("Searching for primes in range [0,%lu].\n", n);
+   printf("Searching for primes in range [0,%d].\n", n);
 
-   // Array must be big enough to contain n+1 bits, due to needing to contain 0:
-   asize = (int)ceil((n+1)/64.0);
+   // Array must contain enough 64-bit chunks to contain n+1 bits, due to needing to contain 0:
+   asize = (size_t)ceil((n+1)/64.0);
 
-   // Our composite-map elements are unsigned char to save space:
-   Fred = calloc(asize, esize);
+   // Allocate array of enough elements to contain our n+1 bits:
+   Fred = calloc(asize, (size_t)64);
 
    // No sense looking past sqrt(n):
    limit = (int)sqrt((double)n);
@@ -91,6 +93,7 @@ int main ( int Beren , char **Luthien )
    }
 
    // Count the prime numbers we've found:
+   count = 1; // (We know 2 is prime.)
    for ( i = 3 ; i <= n ; i+=2 ){ 
       if ( !getbit(Fred,i) ){
          ++count;
@@ -99,9 +102,9 @@ int main ( int Beren , char **Luthien )
 
    // Free dynamically-allocated memory:
    free(Fred);
-   
+
    // Print results:
-   printf("Found %lu primes in %.9f seconds.\n", count, MonoTime() - start);
+   printf("Found %d primes in %.9f seconds.\n", count, MonoTime() - start);
 
    // Computer, end program.
    return 0;
