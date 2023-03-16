@@ -20,6 +20,7 @@
 # Sat Jul 31, 2021: Now using "use Sys::Binmode" and "e".
 # Wed Nov 16, 2021: Now using "use common::sense;".
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate.
+# Tue Mar 14, 2023: Added options for local, recursive, quiet, and verbose.
 ########################################################################################################################
 
 use v5.32;
@@ -43,7 +44,8 @@ sub help_msg            ();
 my $db = 0;
 
 # Settings:
-my $Recurse = 0;  # Recurse subdirectories?   (bool)
+my $Recurse = 1;  # Recurse subdirectories?   (bool)    Default = 1 (recurse)
+my $Verbose = 1;  # Be verbose                (bool)    Default = 1 (be verbose)
 
 # Counters:
 my $direcount = 0;
@@ -81,7 +83,10 @@ sub process_argv ()
       if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
          /^-h$/ || /^--help$/     and $help    = 1;
-         /^-r$/ || /^--recurse$/  and $Recurse = 1;
+         /^-l$/ || /^--local$/    and $Recurse = 0;
+         /^-r$/ || /^--recurse$/  and $Recurse = 1; # DEFAULT
+         /^-q$/ || /^--quiet$/    and $Verbose = 0;
+         /^-v$/ || /^--verbose$/  and $Verbose = 1; # DEFAULT
       }
    }
    if ($help) {help_msg(); exit(777);} # If user wants help, just print help and exit.
@@ -92,12 +97,11 @@ sub dedup_newsbin_files ()
 {
    ++$direcount;
 
-   # Get and announce current working directory:
+   # Get current working directory:
    my $curdir = cwd_utf8;
-   say '';
-   say '';
-   say "Directory # $direcount:";
-   say $curdir;
+
+   # If being verbose, announce directory:
+   say "\nDirectory # $direcount: $curdir\n" if $Verbose;
 
    # Get reference to array of references to file records for all regular files
    # in current directory:
@@ -169,10 +173,10 @@ sub dedup_newsbin_files ()
                if ($file2->{Mtime} > $file1->{Mtime})
                {
                   unlink(e($file2->{Name})) # Unlink second file.
-                     and say "Erased $file2->{Name}"
+                     and say "Erased $file2->{Path}"
                      and $file2->{Name} = "***DELETED***"
                      and ++$delecount
-                  or warn("Error in dnf: Failed to unlink $file2->{Name}.\n") 
+                  or warn("Error in dnf: Failed to unlink $file2->{Path}.\n") 
                      and ++$failcount;
                   next SECOND;
                }
@@ -181,10 +185,10 @@ sub dedup_newsbin_files ()
                else
                {
                   unlink(e($file1->{Name})) # Unlink first file.
-                     and say "Erased $file1->{Name}"
+                     and say "Erased $file1->{Path}"
                      and $file1->{Name} = "***DELETED***"
                      and ++$delecount
-                  or warn("Error in dnf: Failed to unlink $file1->{Name}.\n")
+                  or warn("Error in dnf: Failed to unlink $file1->{Path}.\n")
                      and ++$failcount;
                   next FIRST;
                }#end else (erase file 1)
@@ -234,7 +238,10 @@ sub help_msg ()
    Description of options:
    Option:              Meaning:
    "-h" or "--help"     Print this help and exit.
-   "-r" or "--recurse"  Recurse subdirectories.
+   "-l" or "--local"    Don't recurse subdirectories.  
+   "-r" or "--recurse"  Recurse subdirectories.        (DEFAULT)
+   "-q" or "--quiet"    Be quiet.
+   "-v" or "--verbose"  Be verbose.                    (DEFAULT)
 
    Description of arguments:
    This program ignores all arguments except for the two options mentioned 

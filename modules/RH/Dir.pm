@@ -55,6 +55,7 @@
 # Fri Nov 26, 2021: Clarified some comments.
 # Fri Aug 19, 2022: Got rid of "#use Win32API::File;" as my scripts are all now dual-OS (Linux+Windows).
 # Sun Feb 19, 2023: Added "is_valid_qual_dir".
+# Sat Mar 11, 2023: Made MANY changes, mostly relating to skipping problematic directories in both Windows and Linux.
 ########################################################################################################################
 
 # ======= PACKAGE: =====================================================================================================
@@ -91,6 +92,7 @@ use File::Copy;
 use Image::Size;
 use List::Util qw( sum0 );
 use Time::HiRes qw( time );
+#use Filesys::Type qw( fstype );
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
@@ -612,71 +614,163 @@ sub FilesAreIdentical ($$)
 # Navigate a directory tree recursively, applying code at each node on the tree:
 sub RecurseDirs (&)
 {
+   # This is a recursive function, being used in a chaotic and unpredictable environment (an unknown computer file
+   # system, EEEK!!!), so it is VERY possible for runaway recursion to occur. So, to keep track of recursion, we
+   # use this variable, which is initialized to zero once only, the first time this function is called during this
+   # run of this program; this will be incremented before recursing and checked to make sure it never exceeds 50:
+   state $recursion = 0;
+
    # Store incoming code reference in variable $f:
    my $f = \&{shift @_};
 
    # Die if f is not a ref to some code (block or sub):
    if ('CODE' ne ref $f)
    {
-      die '\nError: RecurseDirs takes 1 argument which must be\n'.
-          'a {code block} or a reference to a subroutine.\n\n';
+      die '\nFatal error in RecurseDirs: This subroutine takes 1 argument which must be a\n'.
+          '{code block} or a reference to a subroutine.\n\n';
    }
 
    # Get current directory:
-   my $curdir = cwd_utf8;
+   my $curdir = d getcwd;
+   #my $fst    = fstype($curdir);
 
-   # Keep track of recursion:
-   state $recursion = 0;
-   ++$recursion;
-
-   # Disallow more than 50 recursive levels, to prevent stack overflow:
-   if ( $recursion > 50 )
+   # Try to open current directory; if that fails, print warning and return 1:
+   my $dh = undef;
+   opendir $dh, e $curdir;
+   if ( ! defined $dh )
    {
-      die "Error in RecurseDirs: More than 50 levels of recursion!\n"
-        . "CWD = \"$curdir\"\n"
-        . "$!\n";
+      warn "Warning from RecurseDirs: Couldn't open directory \"$curdir\".\n".
+           "Moving on to next directory.";
+      return 1; # This allows directory-tree-walking to continue.
    }
 
-   # Get a list of all entries in the current directory:
-   # my @subdirs = glob_utf8 '.* *';
-   my $dh = undef;
-   opendir $dh, e $curdir      or die "Error in RecurseDirs: Couldn't open  directory \"$curdir\".\n$!\n";
-   my @subdirs = d readdir $dh or die "Error in RecurseDirs: Couldn't read  directory \"$curdir\".\n$!\n";
-   closedir $dh                or die "Error in RecurseDirs: Couldn't close directory \"$curdir\".\n$!\n";
+   # Try to read current directory; if that fails, print warning and return 1:
+   my @subdirs = d readdir $dh;
+   if ( scalar(@subdirs) < 2 )
+   {
+      warn "Warning from RecurseDirs: Couldn't read directory \"$curdir\".\n".
+           "Moving on to next directory.";
+      closedir $dh or die "Fatal error in RecurseDirs: Couldn't close directory \"$curdir\".\n$!\n";
+      return 1; # This allows directory-tree-walking to continue.
+   }
+
+   # Try to close current directory; if that fails, abort program:
+   if ( ! closedir $dh )
+   {
+      die "Fatal error in RecurseDirs: Couldn't close directory \"$curdir\".\n$!\n";
+   }
 
    # Navigate immediate subdirs (if any) of this instance's current directory:
    SUBDIR: foreach my $subdir (@subdirs)
    {
-      # Don't try to navigate certain troublesome subdirectories:
-      next SUBDIR if $subdir eq '.';                            # Link to self.
-      next SUBDIR if $subdir eq '..';                           # Link to parent.
-      next SUBDIR if $subdir =~ m/^\$/i;                        # System directories.
-      next SUBDIR if $subdir =~ m/System Volume Information/i;  # System volume information.
-      next SUBDIR if $subdir =~ m/^Recyler$/i;                  # Garbage can.
-      next SUBDIR if $subdir =~ m/MapData/i;                    # Microsoft Maps Data.
+      # ========== SUBDIR NAME CHECKS: =================================================================================
 
-      # Skip this path if it doesn't exist:
-      next SUBDIR if ! -e e $subdir;
+      # Avoid certain specific miscellaneous problematic directories:
+      next SUBDIR if $subdir eq '.';                            # Windows/Linux/Cygwin: Hard link to self.
+      next SUBDIR if $subdir eq '..';                           # Windows/Linux/Cygwin: Hard link to parent.
+      next SUBDIR if $subdir eq 'System Volume Information';    # Windows: System volume information.
+      next SUBDIR if $subdir eq 'MapData';                      # Windows: Microsoft Maps Data.
+      next SUBDIR if $subdir eq 'lost+found';                   # Linux: Lost & Found Dept.
+
+      # Avoid rooting in trash bins:
+      next SUBDIR if $subdir =~ m/^.Recycle$/i;                 # Windows trash bins.
+      next SUBDIR if $subdir =~ m/^\$Recycle.Bin$/i;            # Windows trash bins.
+      next SUBDIR if $subdir =~ m/^Recyler$/i;                  # Windows trash bins.
+      next SUBDIR if $subdir eq 'Trash';                        # Linux trash bins.
+      next SUBDIR if $subdir =~ m/^\.Trash/;                    # Linux trash bins.
+
+      # Don't try to navigate troublesome Linux or Cygwin subdirectories of root:
+      next SUBDIR if $curdir eq '/' && $subdir eq 'dev';        # Linux/Cygwin: Devices.
+      next SUBDIR if $curdir eq '/' && $subdir eq 'proc';       # Linux/Cygwin: Processes.
+      next SUBDIR if $curdir eq '/' && $subdir eq 'srv';        # Linux/Cygwin: Services.
+      next SUBDIR if $curdir eq '/' && $subdir eq 'sys';        # Linux/Cygwin: System.
+      next SUBDIR if $curdir eq '/' && $subdir eq 'tmp';        # Linux/Cygwin: Temporary files.
+
+      # Don't mess with the private files of certain Windows users:
+      if
+      (
+            $curdir eq '/home/aragorn/net/KE/Valinor/Users'
+         || $curdir eq '/home/aragorn/net/SR/Imladris/Users'
+         || $curdir eq '/cygdrive/c/Users'
+         || $curdir eq '/cygdrive/n/Users'
+      )
+      {
+         next SUBDIR if $subdir eq 'Administrator';             # Microsoft Windows: Problematic account.
+         next SUBDIR if $subdir eq 'Default';                   # Microsoft Windows: Problematic account.
+         next SUBDIR if $subdir eq 'Default User';              # Microsoft Windows: Problematic account.
+         next SUBDIR if $subdir eq 'Public';                    # Microsoft Windows: Problematic account.
+         next SUBDIR if $subdir eq 'All Users';                 # Microsoft Windows: Problematic account.
+      }
+
+      # Avoid problematic subdirectories of bootable Windows partitions:
+      if
+      (
+            $curdir =~ m[^/home/aragorn/net/KE/Valinor] 
+         || $curdir =~ m[^/home/aragorn/net/SR/Imladris]
+         || $curdir =~ m[^/cygdrive/c]
+         || $curdir =~ m[^/cygdrive/n]
+      )
+      {
+         next SUBDIR if $subdir =~ m/^\$/;                      # Microsoft Windows: System directories.
+         next SUBDIR if $subdir =~ m/^cygwin/i;                 # Microsoft Windows: Cygwin
+         next SUBDIR if $subdir eq 'Application Data';          # Microsoft Windows: OLD LINK: Application Data.
+         next SUBDIR if $subdir eq 'Documents and Settings';    # Microsoft Windows: OLD LINK: Documents and Settings.
+         next SUBDIR if $subdir eq 'Local Settings';            # Microsoft Windows: OLD LINK: Local Settings.
+         next SUBDIR if $subdir eq 'My Documents';              # Microsoft Windows: OLD LINK: My Documents.
+         next SUBDIR if $subdir eq 'My Music';                  # Microsoft Windows: OLD LINK: My Music.
+         next SUBDIR if $subdir eq 'My Pictures';               # Microsoft Windows: OLD LINK: My Pictures.
+         next SUBDIR if $subdir eq 'My Videos';                 # Microsoft Windows: OLD LINK: My Videos.
+         next SUBDIR if $subdir eq 'NetHood';                   # Microsoft Windows: Networks.
+         next SUBDIR if $subdir eq 'PrintHood';                 # Microsoft Windows: Printers.
+         next SUBDIR if $subdir eq 'PerfLogs';                  # Microsoft Windows: Performance Logs.
+         next SUBDIR if $subdir eq 'ProgramData';               # Microsoft Windows: Program Data.
+         next SUBDIR if $subdir eq 'Program Files';             # Microsoft Windows: Program Files (64bit).
+         next SUBDIR if $subdir eq 'Program Files (x86)';       # Microsoft Windows: Program Files (32bit).
+         next SUBDIR if $subdir eq 'Recovery';                  # Microsoft Windows: System Recovery Files.
+         next SUBDIR if $subdir eq 'SendTo';                    # Microsoft Windows: Send To.
+         next SUBDIR if $subdir eq 'Start Menu';                # Microsoft Windows: Start Menu.
+         next SUBDIR if $subdir eq 'Temp';                      # Microsoft Windows: Temporary Files.
+         next SUBDIR if $subdir eq 'Temporary Internet Files';  # Microsoft Windows: Temporary Internet Files.
+         next SUBDIR if $subdir eq 'Windows';                   # Microsoft Windows: Windows operating system.
+      }
+
+      # ========== SUBDIR STATS CHECKS: ================================================================================
+
+      # Now that we've ascertained that $subdir doesn't name a known directory that we specifically want to avoid,
+      # lets examine the statistics of the referent to which label $subdir refers.
+      # Start by making sure that $subdir is the name of something that actually exists:
+      next SUBDIR if ! -e e $subdir;                            # Something that doesn't exist.
+
+      # Now that we know that $subdir exists, store dir stats for subdir in _ :
+      lstat e $subdir;
 
       # Skip this path if it's not a directory:
-      next SUBDIR if ! -d e $subdir;
+      next SUBDIR if ! -d _ ;                                   # Not a directory.
 
       # Skip this path if it's a symbolic link:
-      next SUBDIR if -l e $subdir;
+      next SUBDIR if -l _ ;                                     # Symbolic link.
 
-      # Try to chdir to $subdir:
+      # Skip this directory if we don't have permission to interact with it:
+      next SUBDIR if ! -r _ ;                                   # We can't read file names in this subdir!
+      next SUBDIR if ! -x _ ;                                   # We can't read file info  in this subdir!
+
+      # Try to chdir to $subdir; if that fails, try to cd back to $curdir (or die if that fails),
+      # then move on to next subdirectory:
       if ( ! chdir e $subdir )
       {
          warn "Warning from RecurseDirs: Couldn't cd to subdir \"$subdir\"!\n";
-         chdir e $curdir or die "Error in RecurseDirs: Couldn't cd back to curdir \"$curdir\"!\n";
+         chdir e $curdir or die "Fatal error in RecurseDirs: Couldn't cd back to curdir \"$curdir\"!\n";
          next SUBDIR;
       }
 
       # Try to recurse:
-      RecurseDirs(\&{$f}) or die "Error in RecurseDirs: Couldn't recurse!\n";
+      ++$recursion;
+      die "Fatal error in RecurseDirs: More than 50 levels of recursion!\nCWD = \"$curdir\"\n$!\n" if $recursion > 50;
+      RecurseDirs(\&{$f}) or die "Fatal error in RecurseDirs: Couldn't recurse!\n";
+      --$recursion;
 
-      # Try to cd back to $curdir:
-      chdir_utf8 $curdir or die "Error in RecurseDirs: Couldn't cd back!\n";
+      # Try to cd back to $curdir (and die if that fails):
+      chdir e $curdir or die "Fatal error in RecurseDirs: Couldn't cd back to previous directory!\n";
 
    } # end foreach my $subdir (@subdirs)
 
@@ -685,8 +779,12 @@ sub RecurseDirs (&)
    # because all navigation of subdirectories of the current directory is complete before f is executed.
    # In other words, each instance of RecurseDirs is only allowed to fulfill its primary task after its
    # children have all died of old age, having fulfilled their tasks.
-   $f->() or die "Error in RecurseDirs: Couldn't apply function!\n";
-   --$recursion;
+   if ( ! $f->() )
+   {
+      warn "Warning from RecurseDirs: Couldn't apply function in directory $curdir!\n";
+   }
+
+   # If we get to here, we've succeeded, so return 1:
    return 1;
 } # end sub RecurseDirs (&)
 
@@ -1686,20 +1784,32 @@ sub glob_regexp_utf8 (;$$$)
    }
 
    # Make sure that $dir starts with '/':
-   if ($dir !~ m/^\//)
-      {die "Error in glob_regexp_utf8: directory must start with \"/\".\n";}
+   # WOMBAT RH 2023-03-11: Why? I don't see why $dir can't be a relative directory, so comment this out for now:
+   # if ($dir !~ m/^\//)
+   #    {die "Fatal error in glob_regexp_utf8: directory must start with \"/\".\n";}
 
-   # Attempt to grab list of entries in $dir:
+   # Try to open $dir; if that fails, print warning and return empty path list:
    my $dh = undef;
-   opendir_utf8($dh, $dir)
-   or die "Fatal error in glob_regexp_utf8: Couldn't open directory \"$dir\".\n$!\n";
-   my @names = readdir_utf8($dh)
-   or die "Fatal error in glob_regexp_utf8: Couldn't read directory \"$dir\".\n$!\n";
-   closedir $dh
-   or die "Fatal error in glob_regexp_utf8: Couldn't close directory \"$dir\".\n$!\n";
-   # @names should contain at least 2 entries ('.' and '..'), else something went very wrong!!!
-   scalar(@names) >= 2
-   or die "Fatal error in glob_regexp_utf8: < 2 entries in directory \"$dir\".\n$!\n";
+   if ( ! opendir $dh, e $dir )
+   {
+      warn "Warning from glob_regexp_utf8: Couldn't open  directory \"$dir\".\n".
+           "Returning empty path list.";
+      return ();
+   }
+
+   # Try to read $dir into @names; @names should now contain at least 2 entries ('.' and '..');
+   # if it doesn't, then something went very wrong!!!
+   my @names = d readdir $dh;
+   if ( scalar(@names) < 2 )
+   {
+      warn "Warning from glob_regexp_utf8: Couldn't read  directory \"$dir\".\n".
+           "Returning empty path list.";
+      closedir $dh or die "Fatal Error in glob_regexp_utf8: Couldn't close directory \"$dir\".\n$!\n";
+      return ();
+   }
+
+   # Try to close $dir; if that fails, abort program:
+   closedir $dh or die "Error in RecurseDirs: Couldn't close directory \"$dir\".\n$!\n";
 
    # Riffle through @names. Skip '.', '..', and names not matching $regex, construct paths from names, skip paths that
    # don't exist if target is F or D or B, skip paths to objects of types not matching target, and push remaining paths

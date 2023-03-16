@@ -49,6 +49,7 @@ my $Target      = 'A'            ; # Files, directories, both, or All?  (F, D, B
 my $RegExp      = qr/^.+$/o      ; # RegExp.                            (RegExp)       qr/^(.+)$/o
 my $Replacement = '$1'           ; # Replacement string.                (string)       '$1'
 my $Flags       = ''             ; # Flags for s/// operator.           imsxopdualgre  
+my $Verbose     = 1              ; # Be verbose?                        (bool)         1 (be verbose
 
 # Counters:
 my $dircount     = 0; # Count of directories processed.
@@ -89,7 +90,7 @@ sub argv ()
       {
          say "Option: $_" if $db;
             if ('-h' eq $_ || '--help'          eq $_) {$help    =  1 ;}
-         elsif ('-p' eq $_ || '--mode=prompt'   eq $_) {$Mode    = 'P';}
+         elsif ('-p' eq $_ || '--mode=prompt'   eq $_) {$Mode    = 'P';} # DEFAULT
          elsif ('-s' eq $_ || '--mode=simulate' eq $_) {$Mode    = 'S';}
          elsif ('-y' eq $_ || '--mode=noprompt' eq $_) {$Mode    = 'Y';}
          elsif ('-l' eq $_ || '--local'         eq $_) {$Recurse =  0 ;}
@@ -97,7 +98,9 @@ sub argv ()
          elsif ('-f' eq $_ || '--target=files'  eq $_) {$Target  = 'F';}
          elsif ('-d' eq $_ || '--target=dirs'   eq $_) {$Target  = 'D';}
          elsif ('-b' eq $_ || '--target=both'   eq $_) {$Target  = 'B';}
-         elsif ('-a' eq $_ || '--target=all'    eq $_) {$Target  = 'A';}
+         elsif ('-a' eq $_ || '--target=all'    eq $_) {$Target  = 'A';} # DEFAULT
+         elsif ('-q' eq $_ || '--quiet'         eq $_) {$Verbose =  0 ;}
+         elsif ('-v' eq $_ || '--verbose'       eq $_) {$Verbose =  1 ;} # DEFAULT
          splice @ARGV, $i, 1; # Remove current option from @ARGV.
          --$i; # Move index one-left so that "++$i" above will move index back to current spot with new item.
       }
@@ -139,7 +142,7 @@ sub rename_files ()
 
    # Get and announce current working directory:
    my $curdir = cwd_utf8;
-   say "\nDirectory # $dircount: $curdir";
+   say "\nDirectory # $dircount: $curdir" if $Verbose;
 
    # Get list of targeted files in current directory:
    my $curdirfiles = GetFiles($curdir, $Target, $RegExp);
@@ -168,6 +171,11 @@ sub rename_files ()
          next FILE;
       }
 
+      # Generate full paths for old and new file names, and send THOSE to rename_file instead of the file names,
+      # so that any error messages might actually mean something:
+      my $OldPath = path($curdir, $OldName);
+      my $NewPath = path($curdir, $NewName);
+
       # What mode are we in?
       given ($Mode) 
       {
@@ -182,7 +190,7 @@ sub rename_files ()
                when (['a','A'])
                {
                   $Mode = 'Y';
-                  $Success = rename_file($OldName, $NewName);
+                  $Success = rename_file($OldPath, $NewPath);
                   if ($Success)
                   {
                      ++$renamecount;
@@ -196,7 +204,7 @@ sub rename_files ()
                }
                when (['y','Y'])
                {
-                  $Success = rename_file($OldName, $NewName);
+                  $Success = rename_file($OldPath, $NewPath);
                   if ($Success)
                   {
                      ++$renamecount;
@@ -231,7 +239,7 @@ sub rename_files ()
          # No-Prompt Mode:
          when ('Y')
          {
-            $Success = rename_file($OldName, $NewName);
+            $Success = rename_file($OldPath, $NewPath);
             if ($Success)
             {
                ++$renamecount;
@@ -309,6 +317,8 @@ sub help ()
    "-d" or "--target=dirs"      Rename directories only.
    "-b" or "--target=both"      Rename both regular files and directories.
    "-a" or "--target=all"       Rename all files. (DEFAULT)
+   "-q" or "--quiet"            Don't print directories.
+   "-v" or "--verbose"          Print directories. (DEFAULT)
 
    Brief description of arguments:
    Arg1: "Regular Expression" giving pattern to search for.

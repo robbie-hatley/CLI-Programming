@@ -20,14 +20,11 @@
 
 #include "rhutilc.h"
 
-/* ========== Specialized Input Functions: ================================= */
 
-////////////////////////////////////////////////////////////////////////
-//                                                                    //
-// Wait for user to press one key on keyboard, then return that       //
-// character, the instant user presses key (no buffering).            //
-//                                                                    //
-////////////////////////////////////////////////////////////////////////
+/* ========== Unbuffered-Input Functions: ================================== */
+
+/* Wait for user to press one key on keyboard, then return that character,
+the instant user presses key (no buffering): */
 char getkey (void)
 {
    char A;
@@ -37,14 +34,9 @@ char getkey (void)
    return A;
 }
 
-
-///////////////////////////////////////////////////////////////////////////
-//                                                                       //
-// Check for recent keypress on keyboard; if there is one, get that one  //
-// character; but don't wait more than 1 decisecond for input (keep      //
-// executing program).                                                   //
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
+/* Check for recent keypress on keyboard; if there is one, get that one
+character (no buffering); but don't wait more than 1 decisecond for
+input (keep executing program): */
 char getkey_unlocked (void)
 {
    char A;
@@ -59,7 +51,6 @@ char getkey_unlocked (void)
 
 
 /* ========== Random Numbers: ============================================== */
-
 
 /* Reseed random number generator using clock: */
 void Randomize (void)

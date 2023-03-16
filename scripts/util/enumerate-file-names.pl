@@ -29,6 +29,7 @@
 # Tue Jan 19, 2021: Heavily refactored. Got rid of all global vars, now using prototypes, etc.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Sat Dec 04, 2021: Now using regexp instead of wildcard.
+# Wed Mar 15, 2023: Added options for local, recursive, quiet, and verbose.
 ########################################################################################################################
 
 use v5.32;
@@ -54,7 +55,8 @@ sub help    ()  ; # Print help and exit.
 my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
 my $Target    = 'F'        ; # Files, dirs, both, all?      F|D|B|A   F (files only)
 my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
-my $Recurse   = 0          ; # Recurse subdirectories?      bool      0 (don't recurse)
+my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (recurse)
+my $Verbose   = 1          ; # Be verbose?                  bool      1 (be verbose)
 
 # Counters:
 my $direcount = 0          ; # Directories processed.
@@ -89,8 +91,11 @@ sub argv ()
       $_ = $ARGV[$i];
       if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
-            if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
+            if ( $_ eq '-h' || $_ eq '--help'    ) {help; exit 777;}
+         elsif ( $_ eq '-l' || $_ eq '--local'   ) {$Recurse =  0 ;}
+         elsif ( $_ eq '-r' || $_ eq '--recurse' ) {$Recurse =  1 ;} # Default
+         elsif ( $_ eq '-q' || $_ eq '--quiet'   ) {$Verbose =  0 ;}
+         elsif ( $_ eq '-v' || $_ eq '--verbose' ) {$Verbose =  1 ;} # Default
          splice @ARGV, $i, 1;
          --$i;
       }
@@ -111,9 +116,11 @@ sub curdire ()
    # Increment directory counter:
    ++$direcount;
 
-   # Get and announce current working directory:
+   # Get current working directory:
    my $cwd = cwd_utf8;
-   say "\nDirectory # $direcount: $cwd\n";
+
+   # If being verbose, announce current working directory:
+   say "\nDirectory # $direcount: $cwd\n" if $Verbose;
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
@@ -219,7 +226,10 @@ sub help ()
    Description of options:
    Option:               Meaning:
    "-h" or "--help"      Print help and exit.
-   "-r" or "--recurse"   Recurse subdirectories (default is "don't recurse").
+   "-l" or "--local"     Don't recurse subdirectories.
+   "-r" or "--recurse"   Recurse subdirectories.         (DEFAULT)
+   "-q" or "--quiet"     Don't announce directories.
+   "-v" or "--verbose"   Do    announce directories.     (DEFAULT)
 
    All other options are ignored.
 

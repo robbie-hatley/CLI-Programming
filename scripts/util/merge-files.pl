@@ -190,7 +190,7 @@ sub error_msg ()
 sub help_msg ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "merge-directories.pl", Robbie Hatley's nifty directory merging
+   Welcome to "merge-files.pl", Robbie Hatley's nifty directory merging
    utility. This program moves all files from a source directory (lets call it
    "dir1") to a destination directory (let's call it "dir2"), enumerting each file
    if necessary, after first unlinking all "Thumbs*.db", "pspbrwse*.jbf", and
@@ -217,9 +217,10 @@ sub help_msg ()
    subdirectories of dir1 upward one at a time, from the bottom up, before merging
    dir1 to dir2. 
 
-   Or, run this program through "for-each-dir.pl" with arguments "." and "..":
+   Or, run this program through "for-each-immediate-subdirectory.pl" with
+   arguments "." and "..":
 
-   for-each-dir.pl 'merge-directories.pl "." ".."'
+   for-each-immediate-subdirectory.pl 'merge-files.pl "." ".."'
 
    (Do this after first dumping all subdirectories of dir1 into a subdir
    of dir1 called "subdirs", then cd to "subdirs", so that everything from

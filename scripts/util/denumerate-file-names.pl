@@ -29,6 +29,7 @@
 # Tue Jan 19, 2021: Heavily refactored. Got rid of all global vars, now using prototypes, etc.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Sat Dec 04, 2021: Now using regexp instead of wildcard.
+# Wed Mar 15, 2023: Added options for local, recursive, quiet, and verbose.
 ########################################################################################################################
 
 use v5.32;
@@ -54,12 +55,14 @@ sub help    ()  ; # Print help and exit.
 my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
 my $Target    = 'F'        ; # Files, dirs, both, all?      F|D|B|A   F (files only)
 my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
-my $Recurse   = 0          ; # Recurse subdirectories?      bool      0 (don't recurse)
+my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (recurse)
+my $Verbose   = 1          ; # Be verbose?                  bool      1 (be verbose)
 
 # Counters:
 my $direcount = 0          ; # Directories processed.
 my $filecount = 0          ; # Files processed.
-my $skipcount = 0          ; # Files skipped.
+my $notncount = 0          ; # Files skipped because they were not numerated.
+my $undecount = 0          ; # Files which are undenumerable because different files with same name bases existed.
 my $dnumcount = 0          ; # Files denumerated.
 my $failcount = 0          ; # Failed denumeration attempts.
 
@@ -69,9 +72,9 @@ my $failcount = 0          ; # Failed denumeration attempts.
    my $t0 = time;
    argv;
    say "\nNow entering program \"" . get_name_from_path($0) . "\".";
-   say "Target  = $Target";
-   say "RegExp  = $RegExp";
-   say "Recurse = $Recurse";
+   say "Target  = $Target" if $Verbose;
+   say "RegExp  = $RegExp" if $Verbose;
+   say "Recurse = $Recurse" if $Verbose;
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $t1 = time; my $te = $t1 - $t0;
@@ -89,8 +92,11 @@ sub argv ()
       $_ = $ARGV[$i];
       if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
-            if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
+            if ( $_ eq '-h' || $_ eq '--help'    ) {help; exit 777;}
+         elsif ( $_ eq '-l' || $_ eq '--local'   ) {$Recurse =  0 ;}
+         elsif ( $_ eq '-r' || $_ eq '--recurse' ) {$Recurse =  1 ;} # Default
+         elsif ( $_ eq '-q' || $_ eq '--quiet'   ) {$Verbose =  0 ;}
+         elsif ( $_ eq '-v' || $_ eq '--verbose' ) {$Verbose =  1 ;} # Default
          splice @ARGV, $i, 1;
          --$i;
       }
@@ -111,9 +117,11 @@ sub curdire ()
    # Increment directory counter:
    ++$direcount;
 
-   # Get and announce current working directory:
+   # Get current working directory:
    my $cwd = cwd_utf8;
-   say "\nDirectory # $direcount: $cwd\n";
+
+   # If being verbose, announce current working directory:
+   say "\nDirectory # $direcount: $cwd\n" if $Verbose;
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
@@ -144,7 +152,7 @@ sub curfile ($)
    # Skip this file if it's not numerated:
    if (get_prefix($name) !~ m/-\(\d\d\d\d\)$/)
    {
-      ++$skipcount;
+      ++$notncount;
       return 1;
    }
 
@@ -154,8 +162,8 @@ sub curfile ($)
    # Increment skip counter and return success if a file with the same base name already exists in this directory:
    if ( -e e $newname )
    {
-      warn "Can't denumerate file \"$name\"\nbecause a file with the same name base exists in this directory.\n";
-      ++$skipcount;
+      warn "Cannot denumerate \"$path\".\n";
+      ++$undecount;
       return 1;
    }
 
@@ -163,7 +171,7 @@ sub curfile ($)
    $success = rename_file($name, $newname);
    if ($success)
    {
-      say "$name => $newname";
+      say "$path => $newname";
       ++$dnumcount;
       return 1;
    }
@@ -172,7 +180,7 @@ sub curfile ($)
       warn
       "\nError in sub curfile in program \"denumerate-file-names.pl\":\n".
       "The followed attempted file rename failed:\n".
-      "$name => $newname\n".
+      "$path => $newname\n".
       "Moving on to next file.\n";
       ++$failcount;
       return 0;
@@ -187,7 +195,8 @@ sub stats ()
    say "\$RegExp = '$RegExp'.";
    printf("Traversed   %6u directories.                            \n" , $direcount);
    printf("Found       %6u files matching RegExp.                  \n" , $filecount);
-   printf("Skipped     %6u unnumerated and/or undenumerable files. \n" , $skipcount);
+   printf("Skipped     %6u files because the were not numerated.   \n" , $notncount);
+   printf("Skipped     %6u undenumerable files.                    \n" , $undecount);
    printf("Denumerated %6u files.                                  \n" , $dnumcount);
    printf("Failed      %6u file rename attempts.                   \n" , $failcount);
    return 1;
@@ -217,13 +226,16 @@ sub help ()
    directory (and all of its subdirectories if a -r or --recurse option is used).
 
    Command line:
-   denumerate-file-names.pl [-h|--help]            (to print this help and exit)
-   denumerate-file-names.pl [-r|--recurse] [Arg1]  (to denumerate file names)
+   denumerate-file-names.pl [-h|--help]         (to print this help and exit)
+   denumerate-file-names.pl [options] [Arg1]    (to denumerate file names)
 
    Description of options:
    Option:               Meaning:
    "-h" or "--help"      Print help and exit.
-   "-r" or "--recurse"   Recurse subdirectories (default is "don't recurse").
+   "-l" or "--local"     Don't recurse subdirectories.
+   "-r" or "--recurse"   Recurse subdirectories.         (DEFAULT)
+   "-q" or "--quiet"     Don't announce directories.
+   "-v" or "--verbose"   Do    announce directories.     (DEFAULT)
 
    All other options are ignored.
 

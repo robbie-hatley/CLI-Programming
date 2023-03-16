@@ -109,3 +109,9 @@ int main ( int Beren , char **Luthien )
    // Computer, end program.
    return 0;
 }
+
+/*
+
+gcc -I /d/rhe/include -D_GNU_SOURCE -finput-charset=UTF-8 -fextended-identifiers -Ofast -std=gnu17 /d/rhe/src/math/eratosthenes.c -L/usr/lib -lm -o /d/rhe/bin_lin/math/eratosthenes
+
+*/
