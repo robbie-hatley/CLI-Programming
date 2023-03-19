@@ -6,8 +6,9 @@ sub ext ($line){
    return '' if -1 == $di;
    return substr $line, $di+1}
 my %exts;
-for (<>){
-   chomp;
+my @dir_lines = `/usr/bin/ls -l`;
+for (@dir_lines){
+   s/\s+$//;                     # Nix trailing whitespace (incl win, lin, or mac newlines).
    next if $_ =~ m/^total/;      # Line starting with "total"      is not a regular file.
    next if $_ =~ m/^d[rwx-]{9}/; # Line starting with "drwxrwxr-x" is not a regular file.
    my $ext = ext($_);            # Get the file-name extension.

@@ -57,8 +57,7 @@ sub process_argv ()
       }
       else
       {
-         if ($_ !~ m/^\//) {$_ = $cwd . '/' . $_};
-         push @Paths, $_;
+         push @Paths, path($cwd,$_);
       }
    }
    if ($help) {help; exit 777;}

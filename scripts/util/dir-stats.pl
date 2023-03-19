@@ -198,26 +198,12 @@ sub curfile ($)
 
 sub list_paths ()
 {
-   say '';
-   if (@LocalFilePaths)
-   {
-      say 'List of paths found in this directory:';
-      say for @LocalFilePaths;
-   }
-   else
-   {
-      say 'List of paths found in this directory: None.';
-   }
-   say '';
-   if (@LocalDeadPaths)
-   {
-      say 'List of paths NOT found in this directory:';
-      say for @LocalDeadPaths;
-   }
-   else
-   {
-      say("List of paths NOT found in this directory: None.");
-   }
+   say "\nList of paths found in this directory:";
+   if (@LocalFilePaths) {say for @LocalFilePaths}
+   else                 {say '(none)'}
+   say "\nList of paths NOT found in this directory:";
+   if (@LocalDeadPaths) {say for @LocalDeadPaths}
+   else                 {say '(none)'}
    @LocalFilePaths=();
    @LocalDeadPaths=();
    return 1;

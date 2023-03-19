@@ -634,6 +634,25 @@ sub RecurseDirs (&)
    my $curdir = d getcwd;
    #my $fst    = fstype($curdir);
 
+   # If $curdir is (or is in) a critical Linux system directory, die:
+   if
+   (
+         $curdir eq '/'
+      || $curdir =~ m#^/dev#
+      || $curdir =~ m#^/lost+found#
+      || $curdir =~ m#^/proc#
+      || $curdir =~ m#^/srv#
+      || $curdir =~ m#^/sys#
+      || $curdir =~ m#^/tmp#
+   )
+   {
+      warn "Error in RecurseDirs:\n"
+         . "Can't operate in critical Linux directory \"$curdir\".\n"
+         . "Aborting program.\n";
+      chdir '~';
+      return 1;
+   }
+
    # Try to open current directory; if that fails, print warning and return 1:
    my $dh = undef;
    opendir $dh, e $curdir;

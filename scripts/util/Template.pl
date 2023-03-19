@@ -38,6 +38,9 @@
 # Sat Dec 04, 2021: Improved formatting in some places.
 # Sun Mar 05, 2023: Updated to v5.36. Got rid of "common::sense" (antiquated). Got rid of "given" (deprecated).
 #                   Changed all prototypes to conform to v5.36 standards: "sub mysub :prototype($) {my $x=shift;}"
+# Sat Mar 18, 2023: Added missing "use utf8" (necessary due to removal of common::sense). Got rid of all prototypes.
+#                   Converted &curfile and &error to signatures. Made &error a "do one thing only" subroutine.
+#                   Added "quiet", "verbose", "local", and "recurse" options.
 ########################################################################################################################
 
 ########################################################################################################################
@@ -51,6 +54,7 @@
 use v5.36;
 use strict;
 use warnings;
+use utf8;
 
 use Sys::Binmode;
 use Time::HiRes 'time';
@@ -71,21 +75,21 @@ use RH::WinChomp;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub argv    :prototype()  ; # Process @ARGV.
-sub curdire :prototype()  ; # Process current directory.
-sub curfile :prototype($) ; # Process current file.
-sub stats   :prototype()  ; # Print statistics.
-sub error   :prototype($) ; # Handle errors.
-sub help    :prototype()  ; # Print help and exit.
+sub argv    ; # Process @ARGV.
+sub curdire ; # Process current directory.
+sub curfile ; # Process current file.
+sub stats   ; # Print statistics.
+sub error   ; # Handle errors.
+sub help    ; # Print help and exit.
 
 # ======= VARIABLES: ===================================================================================================
 
 # Settings:                    Meaning:                     Range:    Default:
-my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
-my $Target    = 'A'        ; # Files, dirs, both, all?      F|D|B|A   A (all)
+my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (Don't print diagnostics.)
+my $Verbose   = 1          ; # Be wordy?                    bool      1 (Blab.)
+my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (Recurse.)
+my $Target    = 'A'        ; # Files, dirs, both, all?      F|D|B|A   A (All.)
 my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
-my $Recurse   = 0          ; # Recurse subdirectories?      bool      0 (don't recurse)
-my $Verbose   = 0          ; # Be wordy?                    bool      0 (don't be verbose)
 
 # Counters:
 my $direcount = 0          ; # Count of directories processed by curdire().
@@ -112,11 +116,13 @@ my $unkncount = 0          ; # Count of all unknown files.
 { # begin main
    my $t0 = time;
    argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\".";
+   say '';
+   say "Now entering program \"" . get_name_from_path($0) . "\".";
    say "Target  = $Target";
    say "RegExp  = $RegExp";
    say "Recurse = $Recurse";
    say "Verbose = $Verbose";
+   say '';
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $t1 = time; my $te = $t1 - $t0;
@@ -127,7 +133,7 @@ my $unkncount = 0          ; # Count of all unknown files.
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
 # Process @ARGV :
-sub argv :prototype()
+sub argv
 {
    for ( my $i = 0 ; $i < @ARGV ; ++$i )
    {
@@ -135,12 +141,14 @@ sub argv :prototype()
       if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
             if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
+         elsif ( $_ eq '-q' || $_ eq '--quiet'        ) {$Verbose =  0 ;}
+         elsif ( $_ eq '-v' || $_ eq '--verbose'      ) {$Verbose =  1 ;} # DEFAULT
+         elsif ( $_ eq '-l' || $_ eq '--local'        ) {$Recurse =  0 ;}
+         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;} # DEFAULT
          elsif ( $_ eq '-f' || $_ eq '--target=files' ) {$Target  = 'F';}
          elsif ( $_ eq '-d' || $_ eq '--target=dirs'  ) {$Target  = 'D';}
          elsif ( $_ eq '-b' || $_ eq '--target=both'  ) {$Target  = 'B';}
-         elsif ( $_ eq '-a' || $_ eq '--target=all'   ) {$Target  = 'A';}
-         elsif ( $_ eq '-v' || $_ eq '--verbose'      ) {$Verbose =  1 ;}
+         elsif ( $_ eq '-a' || $_ eq '--target=all'   ) {$Target  = 'A';} # DEFAULT
 
          # Remove option from @ARGV:
          splice @ARGV, $i, 1;
@@ -153,14 +161,14 @@ sub argv :prototype()
       }
    }
    my $NA = scalar(@ARGV);
-   if    ( 0 == $NA ) {                          } # Do nothing.
-   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/o   } # Set $RegExp.
-   else               {error($NA); help; exit 666} # Print error and help messages then exit 666.
+   if    ( 0 == $NA ) {                                  } # Do nothing.
+   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/o           } # Set $RegExp.
+   else               {error($NA); say ''; help; exit 666} # Print error and help messages and exit 666.
    return 1;
-} # end sub argv :prototype()
+} # end sub argv
 
 # Process current directory:
-sub curdire :prototype()
+sub curdire
 {
    # Increment directory counter:
    ++$direcount;
@@ -197,32 +205,29 @@ sub curdire :prototype()
       curfile($file);
    }
    return 1;
-} # end sub curdire :prototype()
+} # end sub curdire
 
 # Process current file:
-sub curfile :prototype($)
+sub curfile ($file)
 {
    # Increment file counter:
    ++$filecount;
 
-   # Get file and path:
-   my $file   = shift;
-   my $path   = $file->{Path};
+   # Get path from file:
+   my $path = $file->{Path};
 
    # Announce path:
    say $path;
 
    # We're done, so scram:
    return 1;
-} # end sub curfile :prototype($)
+} # end sub curfile
 
 # Print statistics for this program run:
-sub stats :prototype()
+sub stats
 {
    say '';
    say 'Statistics for this directory tree:';
-   say "Target  = $Target";
-   say "RegExp  = $RegExp";
    say "Navigated $direcount directories.";
    say "Found $filecount paths matching given target and regexp.";
 
@@ -246,24 +251,21 @@ sub stats :prototype()
       printf("%7u files of unknown type\n",                  $unkncount);
    }
    return 1;
-} # end sub stats :prototype()
+} # end sub stats
 
 # Handle errors:
-sub error :prototype($)
+sub error ($err_msg)
 {
-   my $NA = shift;
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
-   Error: you typed $NA arguments, but this program takes at most 1 argument,
+   Error: you typed $err_msg arguments, but this program takes at most 1 argument,
    which, if present, must be a Perl-Compliant Regular Expression specifying
    which directory entries to process. Help follows:
-
    END_OF_ERROR
-   help;
-   exit 666;
-} # end sub error ($)
+   return 1;
+} # end sub error
 
 # Print help:
-sub help :prototype()
+sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "[insert Program Name here]". This program does blah blah blah
@@ -277,12 +279,23 @@ sub help :prototype()
    Description of options:
    Option:                      Meaning:
    "-h" or "--help"             Print help and exit.
-   "-r" or "--recurse"          Recurse subdirectories (but not links).
-   "-f" or "--target=files"     Target files only.
-   "-d" or "--target=dirs"      Target directories only.
-   "-b" or "--target=both"      Target both files and directories.
-   "-a" or "--target=all"       Target all (files, directories, symlinks, etc).
+   "-q" or "--quiet"          Print lots of extra statistics.
    "-v" or "--verbose"          Print lots of extra statistics.
+   "-l" or "--local"          Recurse subdirectories (but not links).
+   "-r" or "--recurse"          Recurse subdirectories (but not links).
+
+
+   Description of options:
+   Option:                      Meaning:
+   "-h" or "--help"             Print help and exit.
+   "-q" or "--quiet"            Don't be verbose.
+   "-v" or "--verbose"          Do    be Verbose.    (DEFAULT)
+   "-l" or "--local"            Don't recurse.
+   "-r" or "--recurse"          Do    recurse.       (DEFAULT)
+   "-f" or "--target=files"     Target Files.
+   "-d" or "--target=dirs"      Target Directories.
+   "-b" or "--target=both"      Target Both.
+   "-a" or "--target=all"       Target All.          (DEFAULT)
 
    Description of arguments:
    In addition to options, this program can take one optional argument which, if
@@ -302,4 +315,4 @@ sub help :prototype()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help :prototype()
+} # end sub help
