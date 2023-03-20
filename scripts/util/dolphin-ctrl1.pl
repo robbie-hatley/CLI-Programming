@@ -14,11 +14,15 @@
 # Edit history:
 # Mon Mar 13, 2023: Wrote it.
 # Tue Mar 14, 2023: Expanded from jpg to (jpg,bmp,png,gif) and make extensions case-insensitive.
+# Sun Mar 19, 2023: Made "error" a "do just one thing" function, fixed "error" and "help" duplication bug, removed all
+#                   "prototypes", added "signature" to "error", and added "use utf8" (necessary due to removal of
+#                   "use common::sense").
 ########################################################################################################################
 
 use v5.36;
 use strict;
 use warnings;
+use utf8;
 
 use Sys::Binmode;
 use Time::HiRes 'time';
@@ -27,11 +31,11 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub argv    :prototype()  ; # Process @ARGV.
-sub curdire :prototype()  ; # Process current directory.
-sub stats   :prototype()  ; # Print statistics.
-sub error   :prototype($) ; # Handle errors.
-sub help    :prototype()  ; # Print help and exit.
+sub argv    ; # Process @ARGV.
+sub curdire ; # Process current directory.
+sub stats   ; # Print statistics.
+sub error   ; # Handle errors.
+sub help    ; # Print help and exit.
 
 # ======= VARIABLES: ===================================================================================================
 
@@ -39,10 +43,10 @@ sub help    :prototype()  ; # Print help and exit.
 my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
 my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (process all directories)
 my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (recurse)
-my $Verbose   = 0          ; # Be wordy?                    bool      0 (be quiet)
+my $Verbose   = 1          ; # Be wordy?                    bool      1 (blab)
 
 # Path to a known "ctrl-1"-style ".directory" file:
-my $dpath = '/home/aragorn/rem/Xanadu/Adults/Naked/.directory';
+my $spath = '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic/.directory';
 
 # Counters:
 my $direcount = 0          ; # Count of directories processed by curdire().
@@ -67,7 +71,7 @@ my $copycount = 0          ; # Count of ".directory" files copied.
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
 # Process @ARGV :
-sub argv :prototype()
+sub argv
 {
    for ( my $i = 0 ; $i < @ARGV ; ++$i )
    {
@@ -77,8 +81,8 @@ sub argv :prototype()
             if ( $_ eq '-h' || $_ eq '--help'    ) {help; exit 777;}
          elsif ( $_ eq '-r' || $_ eq '--recurse' ) {$Recurse =  1 ;} # DEFAULT
          elsif ( $_ eq '-l' || $_ eq '--local'   ) {$Recurse =  0 ;}
-         elsif ( $_ eq '-v' || $_ eq '--verbose' ) {$Verbose =  1 ;}
-         elsif ( $_ eq '-q' || $_ eq '--quiet'   ) {$Verbose =  0 ;} # DEFAULT
+         elsif ( $_ eq '-v' || $_ eq '--verbose' ) {$Verbose =  1 ;} # DEFAULT
+         elsif ( $_ eq '-q' || $_ eq '--quiet'   ) {$Verbose =  0 ;}
 
          # Remove option from @ARGV:
          splice @ARGV, $i, 1;
@@ -91,14 +95,14 @@ sub argv :prototype()
       }
    }
    my $NA = scalar(@ARGV);
-   if    ( 0 == $NA ) {                          } # Do nothing.
-   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/o   } # Set $RegExp.
-   else               {error($NA); help; exit 666} # Print error and help messages then exit 666.
+   if    ( 0 == $NA ) {                                  } # Do nothing.
+   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/o           } # Set $RegExp.
+   else               {error($NA); say ''; help; exit 666} # Print error and help messages then exit 666.
    return 1;
-} # end sub argv :prototype()
+} # end sub argv
 
 # Process current directory:
-sub curdire :prototype()
+sub curdire
 {
    # Get current working directory:
    my $cwd = cwd_utf8;
@@ -115,74 +119,67 @@ sub curdire :prototype()
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, 'F', $RegExp);
 
-   # How many jpg files are in this directory?
-   my $jpgs = 0;
+   # How many picture files are in this directory?
+   my $pics = 0;
    foreach my $file (@{$curdirfiles})
    {
       if 
       (
             get_suffix($file->{Name}) =~ m/jpg/i
+         || get_suffix($file->{Name}) =~ m/jpeg/i
          || get_suffix($file->{Name}) =~ m/bmp/i
          || get_suffix($file->{Name}) =~ m/png/i
          || get_suffix($file->{Name}) =~ m/gif/i
+         || get_suffix($file->{Name}) =~ m/tif/i
+         || get_suffix($file->{Name}) =~ m/tiff/i
       )
       {
-         ++$jpgs;
+         ++$pics;
          last;
       }
    }
 
-   # If 1-or-more jpgs exist in this directory, then copy a "picture view" ".directory" file here:
-   if ( $jpgs >= 1 )
+   # If 1-or-more pictures exist in this directory, then copy a "picture view" ".directory" file here:
+   if ( $pics >= 1 )
    {
-      my $directory_file_path = path($cwd, ".directory");
-      if ( -e e $directory_file_path )
-      {
-         say "Erasing $directory_file_path";
-         unlink e path($cwd, ".directory");
-      }
-      say ".directory => $cwd";
-      my $success = ! system(e("cp '$dpath' '$cwd'"));
-      if ( $success ) {++$copycount;}
-      else            {warn "Failed to copy .directory file to $cwd\n";}
+      my $dpath = path($cwd, ".directory");
+      unlink(e($dpath)) if -e e($dpath);
+      !system(e("cp '$spath' '$dpath'")) and ++$copycount and say("created \"$dpath\"")
+      or warn "Failed to copy .directory file to $cwd\n";
    }
 
    # We're done, so return 1:
    return 1;
-} # end sub curdire :prototype()
+} # end sub curdire
 
 # Print statistics for this program run:
-sub stats :prototype()
+sub stats
 {
    say '';
    say 'Statistics for this directory tree:';
    say "Found $direcount directories matching RegExp.";
    say "Copied $copycount copies of \".directory\" to directories with pictures.";
    return 1;
-} # end sub stats :prototype()
+} # end sub stats
 
 # Handle errors:
-sub error :prototype($)
+sub error ($err_msg)
 {
-   my $NA = shift;
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
-   Error: you typed $NA arguments, but this program takes at most 1 argument,
+   Error: you typed $err_msg arguments, but this program takes at most 1 argument,
    which, if present, must be a Perl-Compliant Regular Expression specifying
    which directory entries to process. Help follows:
-
    END_OF_ERROR
-   help;
-   exit 666;
-} # end sub error ($)
+} # end sub error
 
 # Print help:
-sub help :prototype()
+sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "dolphin-ctrl1.pl". This program pastes a "ctrl-1" type Dolphin
    ".directory" file to each subdirectory of the current directory which contains
-   1-or-more picture (jpg, bmp, png, or gif) files. This causes picture files to 
-   be displayed as picture thumbnails instead of as lines of text.
+   1-or-more picture (jpg, jpeg, bmp, png, gif, tif, or tiff) files. This causes
+   picture files to be displayed as picture thumbnails instead of as lines of text.
 
    Command lines:
    program-name.pl -h | --help            (to print help and exit)
@@ -190,11 +187,11 @@ sub help :prototype()
 
    Description of options:
    Option:                      Meaning:
-   "-h" or "--help"             Print help and exit.
-   "-r" or "--recurse"          Recurse subdirectories. (DEFAULT)
+   "-h" or "--help"             Print this help and exit.
+   "-q" or "--quiet"            Don't print directories.
+   "-v" or "--verbose"          Do    print directories.      (DEFAULT)
    "-l" or "--local"            Don't recurse subdirectories.
-   "-v" or "--verbose"          Print directories.
-   "-q" or "--quiet"            Don't print directories. (DEFAULT)
+   "-r" or "--recurse"          Do    recurse subdirectories. (DEFAULT)
 
    Description of arguments:
    In addition to options, this program can take one optional argument which,
@@ -214,4 +211,4 @@ sub help :prototype()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help :prototype()
+} # end sub help

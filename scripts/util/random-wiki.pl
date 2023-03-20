@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /bin/perl
 # "random-wiki.pl"
 use v5.20;
 

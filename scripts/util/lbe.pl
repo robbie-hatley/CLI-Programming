@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /bin/perl
 # lbe.pl
 use v5.36; 
 sub ext ($line){

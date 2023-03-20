@@ -207,10 +207,6 @@ our $hlnkcount = 0; # Count of all regular files with multiple hard links.
 our $regfcount = 0; # Count of all regular files.
 our $unkncount = 0; # Count of all unknown files.
 
-# File-typing variables:
-my $FileTyper = File::Type->new(); # File-typing functor.
-my $FileType  = '';                # File type.
-
 # ======= SECTION 1, MAJOR SUBROUTINES: ================================================================================
 
 # GetFiles returns a reference to an array of filerecords for all files in a user-specified directory.
@@ -2161,6 +2157,10 @@ sub is_large_image ($)
 {
    my $path = shift;
 
+   # File-typing variables:
+   my $FileTyper = File::Type->new(); # File-typing functor.
+   my $FileType  = '';                # File type.
+
    # Return 0 if no object exists at path $path:
    if ( ! -e e $path ) {return 0 ;}
 
@@ -2272,6 +2272,8 @@ sub hash($$;$)
    my $suff = get_suffix($name);                                      # Get suffix      of source file.
    my $fh;                                                            # File handle (initially undefined).
    my $hash;                                                          # Hash of file contents
+   my $FileTyper = File::Type->new();                                 # File-typing functor.
+   my $FileType  = '';                                                # File type.
    local $/ = undef;                                                  # Local undef sets input record separator to EOF.
    open($fh, '< :raw', e($path))                                      # Try to open the file for reading;
    or warn "Error in sub \"hash()\" in module \"Dir.pm\":\n".         # if file-open failed for any reason,

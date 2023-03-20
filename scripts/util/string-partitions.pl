@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /bin/perl
 
 use v5.32;
 

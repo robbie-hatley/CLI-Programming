@@ -1,4 +1,4 @@
-#! /usr/bin/env perl
+#! /bin/env perl
 #  array-permutations.pl
 use v5.36;
 use Time::HiRes 'time';

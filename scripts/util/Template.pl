@@ -259,7 +259,7 @@ sub error ($err_msg)
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
    Error: you typed $err_msg arguments, but this program takes at most 1 argument,
    which, if present, must be a Perl-Compliant Regular Expression specifying
-   which directory entries to process. Help follows:
+   which directory entries to process.
    END_OF_ERROR
    return 1;
 } # end sub error
@@ -277,25 +277,16 @@ sub help
    program-name.pl [options] [arguments]  (to [perform funciton] )
 
    Description of options:
-   Option:                      Meaning:
-   "-h" or "--help"             Print help and exit.
-   "-q" or "--quiet"          Print lots of extra statistics.
-   "-v" or "--verbose"          Print lots of extra statistics.
-   "-l" or "--local"          Recurse subdirectories (but not links).
-   "-r" or "--recurse"          Recurse subdirectories (but not links).
-
-
-   Description of options:
-   Option:                      Meaning:
-   "-h" or "--help"             Print help and exit.
-   "-q" or "--quiet"            Don't be verbose.
-   "-v" or "--verbose"          Do    be Verbose.    (DEFAULT)
-   "-l" or "--local"            Don't recurse.
-   "-r" or "--recurse"          Do    recurse.       (DEFAULT)
-   "-f" or "--target=files"     Target Files.
-   "-d" or "--target=dirs"      Target Directories.
-   "-b" or "--target=both"      Target Both.
-   "-a" or "--target=all"       Target All.          (DEFAULT)
+   Option:                     Meaning:
+   "-h" or "--help"            Print help and exit.
+   "-q" or "--quiet"           Don't be verbose.
+   "-v" or "--verbose"         Do    be Verbose.    (DEFAULT)
+   "-l" or "--local"           Don't recurse.
+   "-r" or "--recurse"         Do    recurse.       (DEFAULT)
+   "-f" or "--target=files"    Target Files.
+   "-d" or "--target=dirs"     Target Directories.
+   "-b" or "--target=both"     Target Both.
+   "-a" or "--target=all"      Target All.          (DEFAULT)
 
    Description of arguments:
    In addition to options, this program can take one optional argument which, if

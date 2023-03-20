@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#! /bin/bash
 sudo mount /home/aragorn/net/SR/Imladris
 sudo mount /home/aragorn/net/SR/Lothlorien
 sudo mount /home/aragorn/net/SR/Gondor
