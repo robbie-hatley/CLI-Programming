@@ -5,9 +5,11 @@
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ########################################################################################################################
-# "dolphin-ctrl1.pl"
-# Pastes appropriate ".directory" file to each subdirectory of current directory with 1-or-more picture files
-# (jpg, bmp, png, or gif) in it.
+# repair-dolphin-directory-files.pl"
+# For the current directory and all subdirectories (unless a -l or --local option is used), make sure that the Dolphin
+# ".directory" file is uncorrupted and appropriate for the contents of the directory. This means that directories which
+# contain 1-or-more picture files (jpg, jpeg, bmp, png, apng, gif, tif, tiff) should have a "thumbnails" or ctrl-1
+# ".directory" file, and all other directories should have a "details" or ctrl-3 ".directory" file.
 #
 # Written by Robbie Hatley.
 #
@@ -17,6 +19,9 @@
 # Sun Mar 19, 2023: Made "error" a "do just one thing" function, fixed "error" and "help" duplication bug, removed all
 #                   "prototypes", added "signature" to "error", and added "use utf8" (necessary due to removal of
 #                   "use common::sense").
+# Mon Mar 20, 2023: Renamed from "dolphin-ctrl1.pl" to "repair-dolphin-directory-files.pl". Changed program semantics
+#                   so that it doesn't just paste a ctrl-1 file to "picture" directories, but also pastes a ctrl-3 file
+#                   to non-picture directories.
 ########################################################################################################################
 
 use v5.36;
@@ -45,12 +50,16 @@ my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o 
 my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (recurse)
 my $Verbose   = 1          ; # Be wordy?                    bool      1 (blab)
 
-# Path to a known "ctrl-1"-style ".directory" file:
-my $spath = '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic/.directory';
+# Paths to known ctrl-1 and ctrl-3 ".directory" files:
+my $ctrl_1_path = '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic/.directory';
+my $ctrl_3_path = '/home/aragorn/Data/Celephais/Captain’s-Den/FFS-Profiles/.directory';
 
 # Counters:
-my $direcount = 0          ; # Count of directories processed by curdire().
-my $copycount = 0          ; # Count of ".directory" files copied.
+my $direcount = 0 ; # Count of directories processed by curdire().
+my $erascount = 0 ; # Count of ".directory" files erased.
+my $erfacount = 0 ; # Count of failed erasure attempts.
+my $copycount = 0 ; # Count of ".directory" files copied.
+my $cofacount = 0 ; # Count of failed copy attempts.
 
 # ======= MAIN BODY OF PROGRAM: ========================================================================================
 
@@ -119,34 +128,40 @@ sub curdire
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, 'F', $RegExp);
 
-   # How many picture files are in this directory?
+   # Riffle through the files, count how many pictures are here, and get rid of any old (possibly enumerated or
+   # corrupted) ".directory" files"
    my $pics = 0;
    foreach my $file (@{$curdirfiles})
    {
-      if 
-      (
-            get_suffix($file->{Name}) =~ m/jpg/i
-         || get_suffix($file->{Name}) =~ m/jpeg/i
-         || get_suffix($file->{Name}) =~ m/bmp/i
-         || get_suffix($file->{Name}) =~ m/png/i
-         || get_suffix($file->{Name}) =~ m/gif/i
-         || get_suffix($file->{Name}) =~ m/tif/i
-         || get_suffix($file->{Name}) =~ m/tiff/i
-      )
+      if (
+            $file->{Name} =~ m/\A(?:-\(\d{4}\))*\.directory\z/
+         )
+      {
+         unlink(e($file->{Path})) and ++$erascount and say("erased \"$file->{Path}\"")
+         or ++$erfacount and warn "Failed to erase \"$file->{Path}\"\n";
+      }
+
+      if (
+               get_suffix($file->{Name}) =~ m/jpg/i
+            || get_suffix($file->{Name}) =~ m/jpeg/i
+            || get_suffix($file->{Name}) =~ m/bmp/i
+            || get_suffix($file->{Name}) =~ m/png/i
+            || get_suffix($file->{Name}) =~ m/apng/i
+            || get_suffix($file->{Name}) =~ m/gif/i
+            || get_suffix($file->{Name}) =~ m/tif/i
+            || get_suffix($file->{Name}) =~ m/tiff/i
+         )
       {
          ++$pics;
-         last;
       }
    }
 
-   # If 1-or-more pictures exist in this directory, then copy a "picture view" ".directory" file here:
-   if ( $pics >= 1 )
-   {
-      my $dpath = path($cwd, ".directory");
-      unlink(e($dpath)) if -e e($dpath);
-      !system(e("cp '$spath' '$dpath'")) and ++$copycount and say("created \"$dpath\"")
-      or warn "Failed to copy .directory file to $cwd\n";
-   }
+   # If 1-or-more pictures exist in this directory, paste a ctrl-1 ".directory" file here;
+   # otherwise, paste a ctrl-3 ".directory" file here:
+   my $spath = ( ( $pics > 0 ) ? ($ctrl_1_path) : ($ctrl_3_path) );
+   my $dpath = path($cwd, ".directory");
+   !system(e("cp '$spath' '$dpath'")) and ++$copycount and say("created \"$dpath\"")
+   or ++$cofacount and warn "Failed to copy .directory file to $cwd\n";
 
    # We're done, so return 1:
    return 1;
@@ -157,8 +172,11 @@ sub stats
 {
    say '';
    say 'Statistics for this directory tree:';
-   say "Found $direcount directories matching RegExp.";
-   say "Copied $copycount copies of \".directory\" to directories with pictures.";
+   say "Found  $direcount directories matching RegExp.";
+   say "Erased $erascount old, enumerated, or corrupted \".directory\" files.";
+   say "Failed $erfacount erasure attempts.";
+   say "Copied $copycount new \".directory\" files.";
+   say "Failed $cofacount copy attempts.";
    return 1;
 } # end sub stats
 
@@ -196,7 +214,7 @@ sub help
    Description of arguments:
    In addition to options, this program can take one optional argument which,
    if present, must be a Perl-Compliant Regular Expression specifying which 
-   directories process. To specify multiple patterns, use the | alternation 
+   directories to process. To specify multiple patterns, use the | alternation 
    operator. To apply pattern modifier letters, use an Extended RegExp Sequence.
    For example, if you want to search for items with names containing "cat",
    "dog", or "horse", title-cased or not, you could use this regexp:

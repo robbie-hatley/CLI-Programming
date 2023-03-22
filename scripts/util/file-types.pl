@@ -5,11 +5,11 @@
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ########################################################################################################################
-# myprog.pl
-# "MyProg" is a program which [insert description here].
+# file-types.pl
+# Prints the MIME types of all files in cur dir (and all subdirs if recursing).
 # Written by Robbie Hatley.
 # Edit history:
-# Sat Jun 05, 2021: Wrote it.
+# Mon Mar 20, 2023: Wrote it.
 ########################################################################################################################
 
 use v5.36;
@@ -103,14 +103,14 @@ sub curdire
    say "\nDirectory # $direcount: $cwd\n";
 
    # Get list of fully-qualified paths of all regular files in current directory matching $RegExp:
-   my @curdirpaths = glob_regexp_utf8 ($cwd, 'F', $RegExp);
+   my @curdirpaths = glob_regexp_utf8($cwd, 'F', $RegExp);
 
    # Set-up a file-typing functor and file-type variable:
    my $typer = File::Type->new();
    my $type  = '';
 
    # Iterate through $curdirpaths and print the MIME type of each file:
-   foreach my $path (@curdirpaths)
+   foreach my $path (sort @curdirpaths)
    {
       $type = $typer->checktype_filename($path);
       printf("%-95s = %-30s\n", $path, $type);

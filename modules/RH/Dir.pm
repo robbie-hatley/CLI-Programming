@@ -628,7 +628,11 @@ sub RecurseDirs (&)
 
    # Get current directory:
    my $curdir = d getcwd;
-   #my $fst    = fstype($curdir);
+
+   # If we FAILED to get current working directory, something is very wrong!!!
+   if ( ! defined $curdir ){die "Fatal error in RecurseDirs: Can't get current directory!\n$!\n"}
+
+   #my $fst = fstype($curdir);
 
    # If $curdir is (or is in) a critical Linux system directory, die:
    if

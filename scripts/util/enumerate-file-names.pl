@@ -51,19 +51,19 @@ sub help    ()  ; # Print help and exit.
 
 # ======= VARIABLES: ===================================================================================================
 
-# Settings:                    Meaning:                     Range:    Default:
-my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
-my $Target    = 'F'        ; # Files, dirs, both, all?      F|D|B|A   F (files only)
-my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
-my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (recurse)
-my $Verbose   = 1          ; # Be verbose?                  bool      1 (be verbose)
+# Settings:                       Meaning:                     Range:    Default:
+my $db        = 0             ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
+my $Target    = 'F'           ; # Files, dirs, both, all?      F|D|B|A   F (files only)
+my $RegExp    = qr/^[^.].*$/o ; # File-name RegExp.            regexp    qr/^[^.].*$/o (doesn't start with dot)
+my $Recurse   = 1             ; # Recurse subdirectories?      bool      1 (recurse)
+my $Verbose   = 1             ; # Be verbose?                  bool      1 (be verbose)
 
 # Counters:
-my $direcount = 0          ; # Directories processed.
-my $filecount = 0          ; # Files processed.
-my $skipcount = 0          ; # Files skipped.
-my $enumcount = 0          ; # Files enumerated.
-my $failcount = 0          ; # Failed enumeration attempts.
+my $direcount = 0 ; # Directories processed.
+my $filecount = 0 ; # Files processed.
+my $skipcount = 0 ; # Files skipped.
+my $enumcount = 0 ; # Files enumerated.
+my $failcount = 0 ; # Failed enumeration attempts.
 
 # ======= MAIN BODY OF PROGRAM: ========================================================================================
 
@@ -124,6 +124,9 @@ sub curdire ()
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
+   # (Note: The default file-name RegExp is "any non-empty string NOT starting with a dot", so by default this program
+   # will not enumerate hidden files. Likewise, the default target is "regular files only", so by default this program
+   # will not enumerate anything else. However, both of these behaviors may be altered via options and arguments.)
 
    # Iterate through $curdirfiles and send each file to curfile():
    foreach my $file (@{$curdirfiles})
