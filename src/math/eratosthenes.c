@@ -29,9 +29,15 @@ double MonoTime (void)
 }
 
 // Set a bit in a uint64_t-based bitmap:
-void setbit (uint64_t * map, int idx)
+void setbit (uint64_t *map, int idx)
 {
-   map[idx/64] = map[idx/64] | (((size_t)1)<<(idx%64));
+   map[idx/64] = map[idx/64] | (((uint64_t)1)<<(idx%64));
+}
+
+// Reset a bit in a uint64_t-based bitmap:
+void resetbit (uint64_t *map, int idx)
+{
+   map[idx/64] = map[idx/64] & ~(((uint64_t)1)<<(idx%64));;
 }
 
 // Get a bit in a uint64_t-based bitmap:
