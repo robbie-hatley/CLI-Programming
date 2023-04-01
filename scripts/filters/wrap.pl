@@ -107,6 +107,4 @@ sub help {
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help
-__END__
-Hmmm.
+}
