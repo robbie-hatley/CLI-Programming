@@ -94,32 +94,43 @@ sub curdire
    ++$direcount;
 
    # Get cwd:
-   my $cwd = d getcwd;
+   my $cwd    = d getcwd;
+   my $dir    = get_dir_from_path($cwd);
+   my $name   = get_name_from_path($cwd);
+   my $parent = get_name_from_path($dir);
 
    # Announce directory if being verbose:
    say "Directory #$direcount: \"$cwd\"" if $Verbose;
 
    my $command = '';
 
-   $command = 'chmod 664'
-            . ' *.pdf  *.PDF  *.chm  *.CHM  *.epub *.EPUB *.txt  *.TXT'
-            . ' *.doc  *.DOC  *.odt  *.ODT  *.ods  *.ODS  *.htm  *.HTM'
-            . ' *.html *.HTML *.jpg  *.JPG  *.png  *.PNG  *.gif  *.GIF'
-            . ' *.bmp  *.BMP  *.tif  *.TIF  *.tiff *.TIFF *.xcf  *.XCF'
-            . ' *.zip  *.ZIP  *.rar  *.RAR  *.tar  *.TAR  *.tgz  *.TGZ'
-            . ' *.ion  *.ION  *.eml  *.EML  *.log  *.LOG'
-            . ' *.c    *.C    *.cpp  *.CPP  *.h    *.H    *.hpp  *.HPP'
-            . ' *.pm   *.PM   *.cism *.cppism *.cismh *.cppismh'
-            . ' makefile maketail'
-            . ' 2> /dev/null';
-   system(e $command);
+   # If this is a binary-executables directory, set everything to be executable:
+   if ( $name eq 'bin' || $parent eq 'bin_lin' ){
+      $command = 'chmod 775 * 2> /dev/null';
+      system(e $command);
+   }
 
-   $command = 'chmod 775'
-            . ' *.pl   *.PL   *.perl *.PERL *.py   *.PY   *.sh   *.SH'
-            . ' *.exe  *.EXE  *.awk  *.AWK  *.sed  *.SED'
-            . ' 2> /dev/null';
-   system(e $command);
+   # Otherwise, only set permissions for files with the following name extensions:
+   else {
+      $command = 'chmod 664'
+               . ' *.pdf  *.PDF  *.chm  *.CHM  *.epub *.EPUB *.txt  *.TXT'
+               . ' *.doc  *.DOC  *.odt  *.ODT  *.ods  *.ODS  *.htm  *.HTM'
+               . ' *.html *.HTML *.jpg  *.JPG  *.png  *.PNG  *.gif  *.GIF'
+               . ' *.bmp  *.BMP  *.tif  *.TIF  *.tiff *.TIFF *.xcf  *.XCF'
+               . ' *.zip  *.ZIP  *.rar  *.RAR  *.tar  *.TAR  *.tgz  *.TGZ'
+               . ' *.ion  *.ION  *.eml  *.EML  *.log  *.LOG'
+               . ' *.c    *.C    *.cpp  *.CPP  *.h    *.H    *.hpp  *.HPP'
+               . ' *.pm   *.PM   *.cism *.cppism *.cismh *.cppismh'
+               . ' makefile maketail'
+               . ' 2> /dev/null';
+      system(e $command);
 
+      $command = 'chmod 775'
+               . ' *.pl   *.PL   *.perl *.PERL *.py   *.PY   *.sh   *.SH'
+               . ' *.exe  *.EXE  *.awk  *.AWK  *.sed  *.SED'
+               . ' 2> /dev/null';
+      system(e $command);
+   }
    return 1;
 } # end sub curdire
 
