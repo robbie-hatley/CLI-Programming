@@ -21,7 +21,6 @@ use Text::Wrap qw(wrap $columns $huge);
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub trim    ; # Chop white space off ends of lines.
 sub argv    ; # Process @ARGV.
 sub help    ; # Print help and exit.
 
@@ -40,16 +39,11 @@ my $Blank    = '';   # Blank line between paragraphs.   string   ''
    argv;
    $columns = $Columns + 1;
    $huge = 'wrap';
-   trim(\$_), say wrap $Indent, $Tab, $_, $Blank for (<STDIN>);
+   $_  =~ s/\s+$//, say wrap $Indent, $Tab, $_, $Blank for (<STDIN>);
    exit 0;
 }
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
-
-sub trim ($strref){
-   die "Fatal error in trim(): input not reference to scalar.\n$!.\n" if 'SCALAR' ne ref($strref);
-   ${$strref} =~ s/\s+$//;
-}
 
 # Process @ARGV :
 sub argv {
