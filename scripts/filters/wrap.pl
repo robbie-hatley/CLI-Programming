@@ -39,7 +39,7 @@ my $Blank    = '';   # Blank line between paragraphs.   string   ''
    argv;
    $columns = $Columns + 1;
    $huge = 'wrap';
-   $_  =~ s/\s+$//, say wrap $Indent, $Tab, $_, $Blank for (<STDIN>);
+   $_ =~ s/\s+$//, say wrap $Indent, $Tab, $_, $Blank for (<STDIN>);
    exit 0;
 }
 
