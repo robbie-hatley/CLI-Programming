@@ -101,7 +101,7 @@ sub consecutive_partition ($aref){
    my $numpar = $card/$size;
    my @sorted = sort {$a<=>$b} @set;
 
-   # Try to make $numpar parts:
+   # Try to partition @sorted into $numpar parts:
    my @parts;
    for ( my $i = 0 ; $i < $numpar ; ++$i ){
       # Start-off the $i'th part with the least remaining element:
@@ -124,8 +124,8 @@ sub consecutive_partition ($aref){
       if (scalar(@{$parts[$i]}) < $size) {return "-1"}
    }
 
-   # If we get to here, we've made a valid partition,
-   # so make and return the final "partition" string:
+   # If we get to here, we've made a valid partition of @sorted (and hence also a valid
+   # partition of @set), so make and return the final "partition" string:
    my $partition = '(';
    for ( my $i = 0 ; $i < $numpar ; ++$i ){
       $partition .= "[@{$parts[$i]}]";
