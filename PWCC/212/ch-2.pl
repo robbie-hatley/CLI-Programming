@@ -72,7 +72,7 @@ INPUT / OUTPUT NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument
 which must be a 'single-quoted' array of arrays in proper Perl syntax, with each array
 consisting of the sequence to be partitioned followed by the desired part size, like so:
-./ch-1.pl '([2, -36, 5, -37, 4, -35, 3, -34, 4],[1,7,6,2,2])'
+./ch-2.pl '([2, -36, 5, -37, 4, -35, 3, -34, 4],[1,7,6,2,2])'
 
 Output is to STDOUT and will be the input array and part size followed by either a
 compliant partition or by "-1" if no compliant partition is possible.

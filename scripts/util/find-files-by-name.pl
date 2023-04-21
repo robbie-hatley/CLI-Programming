@@ -37,13 +37,10 @@
 #                   common::sense and signatures.
 ########################################################################################################################
 
-use v5.36;
+use v5.32;
 use common::sense;
-use feature "signatures";
-
 use Sys::Binmode;
 use Time::HiRes 'time';
-
 use RH::Util;
 use RH::Dir;
 
@@ -181,8 +178,9 @@ sub stats
 } # end sub stats
 
 # Print error and help messages and exit 666:
-sub error ($NA)
+sub error
 {
+   my $NA = shift;
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
    Error: you typed $NA arguments, but \"find-files-by-name.pl\"
    requires either 0 or 1 arguments. Help follows:
