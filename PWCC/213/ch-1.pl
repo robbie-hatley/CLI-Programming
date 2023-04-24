@@ -1,10 +1,10 @@
-#! /bin/perl
+#! /bin/perl -CSDA
 
 =pod
 
 ------------------------------------------------------------------------------------------
 COLOPHON:
-This is a 90-character-wide ASCII Perl-source-code text file with hard Unix line breaks.
+This is a 90-character-wide UTF-8 Perl-source-code text file with hard Unix line breaks.
 =========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ------------------------------------------------------------------------------------------
@@ -37,17 +37,17 @@ Output is to STDOUT and will be the input array followed by the "Fun Sort" of th
 =cut
 
 # ======= PRELIMINARIES: =================================================================
-use v5.32;
+use v5.36;
 use strict;
 use warnings;
+use utf8;
+use Sys::Binmode;
 use Time::HiRes 'time';
 $"=', ';
 
 # ======= SUBROUTINES: ===================================================================
 
-sub even_odd {
-   my $aref  = shift;
-   my $sref  = shift;
+sub even_odd ($aref, $sref) {
    my @evens = ();
    my @odds  = ();
    for my $x (@{$aref}) {
@@ -80,7 +80,7 @@ if (@ARGV) {@arrays = eval($ARGV[0])}
       say " un-sorted array: (@{$_})";
       say "Fun-Sorted array: (@sorted)";
    }
-   my $t1 = time; my $te = 1000000*($t1-$t0);
+   my $t1 = time; my $te = 1000000*($t1 - $t0);
    printf("\nExecution time was %.3fµs.\n", $te);
    exit 0;
 } # end main

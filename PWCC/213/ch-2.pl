@@ -68,15 +68,27 @@ or -1 of no route exists from source to destination.
 
 # ======= PRELIMINARIES: =================================================================
 # 
-use v5.32;
+use v5.36;
 use strict;
 use warnings;
 use utf8;
+use Sys::Binmode;
 use Time::HiRes 'time';
+use List::AllUtils;
 $"=', ';
 
 # ======= SUBROUTINES: ===================================================================
 
+sub shortest ($srce, $dest, $routes, $path) {
+   my @sri; # Srce Route Indexes.
+   my @dri; # Dest Route Indexes.
+   for ( my $i = 0 ; $i <= $#$routes ; ++$i ) {
+      push @sri, $i if any { $_ == $srce } @{${$routes}[$i]};
+      push @dri, $i if any { $_ == $dest } @{${$routes}[$i]};
+   }
+   
+   @$path = (-1);
+}
 
 # ======= DEFAULT INPUTS: ================================================================
 
@@ -95,19 +107,23 @@ if (@ARGV) {@arrays = eval($ARGV[0]);}
 
 { # begin main
    my $t0 = time;
+   say 'Incomplete. (Stub.)';
    for (@arrays){
-      my $srce   = $$_[0];
-      my $dest   = $$_[1];
-      my @routes = @$_[2..$#$_];
+      my $srce    = $$_[0];
+      my $dest    = $$_[1];
+      my $routes  = [@$_[2..$#$_]];
+      my $path    = [];
+      my $success = shortest ($srce, $dest, $routes, $path);
       say '';
       print "srce: $srce  dest: $dest  routes: ";
-      for ( my $i = 0 ; $i <= $#routes ; ++$i ) {
-         print "[@{$routes[$i]}]";
-         print ', ' if $i != $#routes;
+      for ( my $i = 0 ; $i <= $#$routes ; ++$i ) {
+         print "[@{${$routes}[$i]}]";
+         print ', ' if $i != $#$routes;
       }
       print "\n";
+      say "Shortest route: @$path";
    }
-   my $t1 = time; my $te = 1000000*($t1 - $t0);
-   printf("\nExecution time was %.3fµs.\n", $te);
+   my $µs = 1000000 * (time - $t0);
+   printf("\nExecution time was %.3fµs.\n", $µs);
    exit 0;
 } # end main
