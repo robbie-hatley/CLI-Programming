@@ -724,7 +724,7 @@ sub RecurseDirs (&)
       # Avoid problematic subdirectories of bootable Windows partitions:
       if
       (
-            $curdir =~ m[^/home/aragorn/net/KE/Valinor] 
+            $curdir =~ m[^/home/aragorn/net/KE/Valinor]
          || $curdir =~ m[^/home/aragorn/net/SR/Imladris]
          || $curdir =~ m[^/cygdrive/c]
          || $curdir =~ m[^/cygdrive/n]

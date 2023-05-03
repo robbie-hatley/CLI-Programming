@@ -97,7 +97,7 @@ my $filecount = 0          ; # Count of dir entries processed by curfile().
 
 # Accumulations of counters from RH::Dir::GetFiles():
 my $totfcount = 0          ; # Count of all targeted directory entries matching regexp and verified by GetFiles().
-my $noexcount = 0          ; # Count of all nonexistent files encountered. 
+my $noexcount = 0          ; # Count of all nonexistent files encountered.
 my $ottycount = 0          ; # Count of all tty files.
 my $cspccount = 0          ; # Count of all character special files.
 my $bspccount = 0          ; # Count of all block special files.
@@ -125,8 +125,8 @@ my $unkncount = 0          ; # Count of all unknown files.
    say '';
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
-   my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   my $µs = 1000000 * (time - $t0);
+   printf("\nNow exiting program \"%s\". Execution time was %.3fµs.\n", get_name_from_path($0), $µs);
    exit 0;
 } # end main
 
@@ -298,7 +298,7 @@ sub help
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Happy item processing!
    Cheers,

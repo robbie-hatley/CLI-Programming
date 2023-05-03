@@ -43,12 +43,12 @@ use POSIX 'floor', 'ceil', 'strftime';
 use Term::ReadKey 'ReadMode', 'ReadKey';
 
 # Symbols to be exported by default:
-our @EXPORT = 
+our @EXPORT =
    qw
    (
-      round_to_int            rand_int                get_character           
-      is_ascii                is_iso_8859_1           tc                      
-      extract_digits          random_name             
+      round_to_int            rand_int                get_character
+      is_ascii                is_iso_8859_1           tc
+      extract_digits          random_name
    );
 
 # Subroutine prototypes and descriptions:
@@ -128,7 +128,7 @@ sub is_ascii ($)
       next if ( 11 == $ord ); # VT
       next if ( 13 == $ord ); # CR
       next if ( 32 == $ord ); # SP
-      next if ( $ord >=  33 
+      next if ( $ord >=  33
              && $ord <= 126); # ASCII glyph
       # If we get to here, all of the above tests failed, which means that
       # our current character is neither commonly-used ASCII whitespace
@@ -152,9 +152,9 @@ sub is_iso_8859_1 ($)
       next if ( 11 == $ord ); # VT
       next if ( 13 == $ord ); # CR
       next if ( 32 == $ord ); # SP
-      next if ( $ord >=  33 
+      next if ( $ord >=  33
              && $ord <= 126); # ASCII glyph
-      next if ( $ord >= 160 
+      next if ( $ord >= 160
              && $ord <= 255); # iso-8859-1 character
       # If we get to here, all of the above tests failed, which means that
       # our current character is neither commonly-used ASCII whitespace
