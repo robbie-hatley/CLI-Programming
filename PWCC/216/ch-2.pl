@@ -83,7 +83,7 @@ IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a double-quoted
 array of arrays in proper Perl syntax, with each inner array being a sequence of single-quoted words to be used as
 "stickers" (decals) followed by a word to be made from those stickers, like so:
-./ch-2.pl "(['horse', 'pig ', 'goat', 'port'], ['dog', 'pig', 'cow', 'ddddd'], ['fig', 'apple', 'peach', 'helm'])";
+./ch-2.pl "(['horse', 'pig ', 'goat', 'port'], ['dog', 'pig', 'cow', 'ddddd'], ['fig', 'apple', 'peach', 'helm'])"
 
 Output is to STDOUT and will be the word to be made, followed by a list of sticker types from which the word is to be
 made, followed by the number of stickers required (or "0" if the word can't be made from those sticker types).

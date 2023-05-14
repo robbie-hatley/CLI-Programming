@@ -44,7 +44,7 @@ IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a double-quoted
 array of arrays in proper Perl syntax, with each inner array being a sequence of single-quoted words followed by a
 registration string, like so:
-./ch-1.pl "(['Tom', 'Bob', 'Sue', 'O32 M7T'], ['fig', 'apple', 'peach', 'APE H7C'])";
+./ch-1.pl "(['Tom', 'Bob', 'Sue', 'O32 M7T'], ['fig', 'apple', 'peach', 'APE H7C'])"
 
 Output is to STDOUT and will be each word list, followed by the registration string, followed by the list of
 "fully-registered" words (words containing all letters from the registration string).
