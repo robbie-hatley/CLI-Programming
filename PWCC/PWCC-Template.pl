@@ -53,8 +53,8 @@ use warnings;
 use utf8;
 use Sys::Binmode;
 use Time::HiRes 'time';
-use List::Util  'uniq';
 use List::Util  'max';
+use Math::Combinatorics;
 $"=', ';
 
 # ------------------------------------------------------------------------------------------------------------

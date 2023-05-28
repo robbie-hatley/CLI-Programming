@@ -17,8 +17,8 @@ Written by Robbie Hatley on Wed May 17, 2023.
 PROBLEM DESCRIPTION:
 Task 1: Sorted Matrix
 Submitted by: Mohammad S Anwar
-You are given a n x n matrix where n >= 2.
-Write a script to find 3rd smallest element in the sorted matrix.
+Given an n x n matrix of real numbers (where n >= 2), write a script to find 3rd smallest element in the
+sorted matrix.
 
 Example 1
 Input: @matrix = ([3, 1, 2], [5, 2, 4], [0, 1, 3])
