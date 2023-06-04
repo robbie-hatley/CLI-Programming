@@ -10,38 +10,29 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
 ch-1.pl
-Solutions in Perl for The Weekly Challenge 216-1.
-Written by Robbie Hatley on Sat May 13, 2023.
+Solutions in Perl for The Weekly Challenge 219-1.
+Written by Robbie Hatley on Fri Jun 02, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 1: Anamatu Serjianu
+Task 1: Sorted Squares
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
-
-Example 1:
-Input:   ('abc', 'lqtg', 'lgc'),
-Output:  ('pnrq')
-
-Example 2:
-Input:   ('abc', 'lqtg', 'lgc'),
-Output:  ('pnrq')
-
-Example 3:
-Input:   ('abc', 'lqtg', 'lgc'),
-Output:  ('pnrq')
+Given a list of numbers, write a script to square each number in the list and return the sorted list of
+squares in increasing order.
+Example 1:  Input: (-2, -1, 0, 3, 4)  Output: (0, 1, 4, 9, 16)
+Example 2:  Input: (5, -4, -1, 3, 6)  Output: (1, 9, 16, 25, 36)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+Easy; just do 'for my $aref (@arrays) {my squares = sort {$a<=>$b} map {$_*$_} @$aref; say "(@squares)";}'
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of arrays in proper Perl syntax, like so:
-./ch-1.pl '([[13,0,96],[-8,3,11],[2,6,4]], [[-83,-42,-57],[-99,478,952],[113,127,121]])'
+single-quoted array of arrays in proper Perl syntax, like so:
+./ch-1.pl '([13.2,0,-96.3],[-8.1,3.7,11.92],[2,-6.03,4.371])'
 
-Output is to STDOUT and will be each input array, followed by the corresponding output.
+Output is to STDOUT and will be each input array followed by the corresponding sorted list of squares.
 
 =cut
 
@@ -53,36 +44,14 @@ use warnings;
 use utf8;
 use Sys::Binmode;
 use Time::HiRes 'time';
-use List::Util  'max';
-use Math::Combinatorics;
 $"=', ';
-
-# ------------------------------------------------------------------------------------------------------------
-# SUBROUTINES:
-sub is_in_list ($item, $list) {
-   for (@$list) {$item eq $_ and return 1;}
-   return 0;
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # DEFAULT INPUTS:
 my @arrays =
 (
-   [
-      [40,3,17],
-      [19,7,438],
-      [5,191,18],
-   ],
-   [
-      [7,3,2],
-      [8,9,10],
-      [18,6,34],
-   ],
-   [
-      [9,5,33],
-      [1,2,1],
-      [8,17,64],
-   ],
+   [-2, -1, 0, 3, 4],
+   [5, -4, -1, 3, 6],
 );
 
 # ------------------------------------------------------------------------------------------------------------
@@ -91,23 +60,13 @@ if (@ARGV) {@arrays = eval($ARGV[0]);}
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
-{ # begin main
-   my $t0 = time;
-   for my $mref (@arrays) {
-      my $max = $mref->[0]->[0];
-      for my $rref (@$mref) {
-         for my $element (@$rref) {
-            $element > $max and $max = $element;
-         }
-      }
-      say '';
-      say 'matrix:';
-      for my $rref (@$mref) {
-         say "[@$rref],";
-      }
-      say "max = $max";
-   }
-   my $µs = 1000000 * (time - $t0);
-   printf("\nExecution time was %.3fµs.\n", $µs);
-   exit 0;
-} # end main
+my $t0 = time;
+for my $aref (@arrays) {
+   my @squares = sort {$a<=>$b} map {$_*$_} @$aref;
+   say '';
+   say "array   = (@$aref)";
+   say "squares = (@squares)";
+}
+my $µs = 1000000 * (time - $t0);
+printf("\nExecution time was %.3fµs.\n", $µs);
+exit 0;
