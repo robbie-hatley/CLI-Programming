@@ -5,7 +5,8 @@
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ########################################################################################################################
-# p1-to-p2.pl
+# reindent.pl
+# Usage: "rindent.pl p1 p2 regexp"
 # Reformats files from multiple-of-p1 indentation to multiple-of-p2 indentation.
 #
 # Author: Robbie Hatley
@@ -13,6 +14,7 @@
 # Edit history:
 # Mon Nov 01, 2021: Wrote it.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Mon Jun 05, 2023: Renamed from "p1-to-p2.pl" (cryptic!) to "reindent.pl".
 ########################################################################################################################
 
 use v5.32;
@@ -54,7 +56,7 @@ my $failcount = 0; # Count of failed reformat attempts.
 # ======= MAIN BODY OF PROGRAM: ========================================================================================
 
 { # begin main
-   say "Now entering \"p1-to-p2.pl\".";
+   say "Now entering program \"" . get_name_from_path($0) . "\".";
    my $t0 = time;
    argv();
    say "Recurse = $Recurse";
@@ -64,8 +66,8 @@ my $failcount = 0; # Count of failed reformat attempts.
    say "RegExp  = $RegExp";
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
-   my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting \"p1-to-p2.pl\". Execution time was $te seconds.";
+   my $µs = 1000000 * (time - $t0);
+   printf("\nNow exiting program \"%s\". Execution time was %.3fµs.\n", get_name_from_path($0), $µs);
    exit 0;
 } # end main
 
@@ -128,7 +130,7 @@ sub curdire ()
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
 
    # Iterate through $curdirfiles and send each file to curfile():
-   foreach my $file (@{$curdirfiles}) 
+   foreach my $file (@{$curdirfiles})
    {
       curfile($file);
    }
@@ -216,15 +218,15 @@ sub error ($)
 sub help ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "p1-to-p2.pl". This program converts space-based indenting of
+   Welcome to "reindent.pl". This program converts space-based indenting of
    files (lsl scripts by default, but this can be changed with regexps)
    from "multiples-of-p1" to "multiples-of-p2". This program effects all
    targeted files in the current directory, and all subdirectories as well
    if a -r or --recurse option is used.
 
    Command lines:
-   p1-to-p2.pl   -h | --help             (to print help and exit)
-   p1-to-p2.pl   [options] [arguments]   (to [perform funciton] )
+   reindent.pl   -h | --help             (to print help and exit)
+   reindent.pl   [options] [arguments]   (to [perform funciton] )
 
    Options:
    Option:                      Meaning:
@@ -242,7 +244,7 @@ sub help ()
    Optional arguments:
 
    This program can take an optional 3rd argument which, if present, must be a
-   Perl-Compliant Regular Expression specifying which items to process. 
+   Perl-Compliant Regular Expression specifying which items to process.
    To specify multiple patterns, use the | alternation operator.
    To apply pattern modifier letters, use an Extended RegExp Sequence.
    For example, if you want to search for items with names containing "cat",
@@ -250,7 +252,7 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Happy script reformatting!
    Cheers,

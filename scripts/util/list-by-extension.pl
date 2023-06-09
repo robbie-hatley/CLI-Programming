@@ -1,6 +1,6 @@
 #! /bin/perl
-# lbe.pl
-use v5.36; 
+# list-by-extension.pl
+use v5.36;
 sub ext ($line){
    my $di = rindex $line, '.';
    return '' if -1 == $di;
