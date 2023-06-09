@@ -76,8 +76,8 @@ if (@ARGV) {@arrays = eval($ARGV[0]);}               # non-default inputs
 for my $aref (@arrays) {                             # for each input array
    say '';
    my $cref = [common_chars($aref)];                 # get common characters
-   say "array  = (@$aref)";                          # print array
-   say "common = (@$cref)";                          # print common characters
+   say "original array    = (@$aref)";               # print array
+   say "common characters = (@$cref)";               # print common characters
 }
 my $µs = 1000000 * (time - $t0);                     # get   execution µs
 printf("\nExecution time was %.3fµs.\n", $µs);       # print execution µs
