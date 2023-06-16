@@ -65,7 +65,12 @@ sub is_in_list ($item, $list) {
 }
 
 # ------------------------------------------------------------------------------------------------------------
-# DEFAULT INPUTS:
+# MAIN BODY OF PROGRAM:
+
+# Start timer:
+my $t0 = time;
+
+# Default inputs:
 my @arrays =
 (
    [
@@ -85,29 +90,25 @@ my @arrays =
    ],
 );
 
-# ------------------------------------------------------------------------------------------------------------
-# NON-DEFAULT INPUTS:
+# Non-default inputs:
 if (@ARGV) {@arrays = eval($ARGV[0]);}
 
-# ------------------------------------------------------------------------------------------------------------
-# MAIN BODY OF PROGRAM:
-{ # begin main
-   my $t0 = time;
-   for my $mref (@arrays) {
-      my $max = $mref->[0]->[0];
-      for my $rref (@$mref) {
-         for my $element (@$rref) {
-            $element > $max and $max = $element;
-         }
+# Main loop:
+for my $mref (@arrays) {
+   my $max = $mref->[0]->[0];
+   for my $rref (@$mref) {
+      for my $element (@$rref) {
+         $element > $max and $max = $element;
       }
-      say '';
-      say 'matrix:';
-      for my $rref (@$mref) {
-         say "[@$rref],";
-      }
-      say "max = $max";
    }
-   my $µs = 1000000 * (time - $t0);
-   printf("\nExecution time was %.3fµs.\n", $µs);
-   exit 0;
-} # end main
+   say '';
+   say 'matrix:';
+   for my $rref (@$mref) {
+      say "[@$rref],";
+   }
+   say "max = $max";
+}
+
+# Determine and print execution time:
+my $µs = 1000000 * (time - $t0);
+printf("\nExecution time was %.3fµs.\n", $µs);
