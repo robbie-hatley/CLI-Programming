@@ -10,35 +10,40 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
 File name:    "ch-2.pl"
-Description:  Solutions in Perl for The Weekly Challenge 221-2.
-Authorship:   Written by Robbie Hatley on Mon Jun 12, 2023.
+Description:  Solutions in Perl for The Weekly Challenge 222-2.
+Authorship:   Written by Robbie Hatley on Thu Jun 22, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 2: Arithmetic Subsequence
+Task 2: Last Member
 Submitted by: Mohammad S Anwar
-You are given an array of integers, @ints. Write a script to find the length of the longest Arithmetic
-Subsequence in the given array. A subsequence is an array that can be derived from another array by deleting
-some or none elements without changing the order of the remaining elements. A subsquence is arithmetic if
-ints[i + 1] - ints[i] are all the same value (for 0 <= i < ints.length - 1).
 
-Example 1:  Input: @ints = (9, 4, 7, 2, 10)  Output: 3
-The longest Arithmetic Subsequence (4, 7, 10) can be derived by deleting 9 and 2.
+You are given an array of positive integers, @ints. Write a script to find the last member if found,
+otherwise return 0. Each turn pick 2 biggest members (x, y), then decide based on the following conditions,
+continue this until you are left with 1 member or none.
+    a) if x == y then remove both members
+    b) if x != y then remove both members and add new member (y-x)
 
-Example 2:  Input: @ints = (3, 6, 9, 12)  Output: 4
-No need to remove any elements, it is already an Arithmetic Subsequence.
+Example 1:
+Input: @ints = (2, 7, 4, 1, 8, 1)
+Output: 1
+Step 1: pick 7 and 8, we remove both and add new member 1 => (2, 4, 1, 1, 1).
+Step 2: pick 2 and 4, we remove both and add new member 2 => (2, 1, 1, 1).
+Step 3: pick 2 and 1, we remove both and add new member 1 => (1, 1, 1).
+Step 4: pick 1 and 1, we remove both => (1).
 
-Example 3:  Input: @ints = (20, 1, 15, 3, 10, 5, 8)  Output: 4
-The longest Arithmetic Subsequence (20, 15, 10, 5) can be derived by deleting 1, 3 and 8.
+Example 2:
+Input: @ints = (1)
+Output: 1
 
+Example 3:
+Input: @ints = (1, 1)
+Output: 0
+Step 1: pick 1 and 1, we remove both and we left with none.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I think I'll solve this by using slices with indexes consisting of all combinations, of all lengths, of the
-set of all indices [0..$#ints]. Math::Combinatorics will come to my aid once again. Start with the entire
-array and keep decrementing the size until we get to a subsequence which is arithmetic. And ALL sequences
-of integers always WILL contain an arithmetic subsquence, becuase all sequences of integers which are length
-2, 1, or 0 are automatically arithmetic.
+Blah blah blah.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
