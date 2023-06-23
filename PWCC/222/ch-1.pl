@@ -43,26 +43,17 @@ Compare the two lists, we found 5 matching members.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-Blah blah blah.
+This is simply a matter of comparing the sorted and unsorted versions of each array using a 3-part loop and
+counting matching elements.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-<<<<<<< HEAD
 single-quoted array of arrays of positive integers in proper Perl syntax, like so:
 ./ch-1.pl '([8,4,32,7,9],[2,6,17,11,5])'
 
 Output is to STDOUT and will be each original array, followed by the sorted version, followed by the count
 of all "matching members".
-=======
-single-quoted array of arrays of words, with the last word in each array being the string "$chars" for that
-array, in proper Perl syntax, like so:
-./ch-1.pl '(["ban", "can", "ran", "tan", "Charles R. Tanner"],["bat", "cat", "rat", "brat"])'
-
-Output is to STDOUT and will be each input "@words" array and "$chars" string, followed by the sum of the
-lengths of all elements of @words which can be made by pasting-together letters spliced from a fresh copy
-of "$string".
->>>>>>> origin/main
 
 =cut
 

@@ -9,7 +9,7 @@
 # 1. In each makefile, set COLLECTION to the name of that program collection. For example, in the makefile in
 #    /d/rhe/src/librh, set COLLECTION to "Robbie Hatley's Library".
 #
-# 2. In each makefile, set EXSUFF to the name of that makefile's folder. For example, in the makefile in 
+# 2. In each makefile, set EXSUFF to the name of that makefile's folder. For example, in the makefile in
 #    /d/rhe/src/Euler, set EXSUFF to "Euler".
 #
 # 3. In each makefile, set a "vpath" for each kind of source-code file present. For example, in "d/rhe/Euler", write:
@@ -49,22 +49,22 @@
 #                     make rules and the "rebuild all unconditionally" make rule.
 #   Wed Dec 19, 2007: Changed drive of rhe, bin, and scripts from C: to E:.
 #   Wed Nov 24, 2010: Changed drive of rhe, bin, and scripts from E: to C: on Sloop.  I might also make
-#                     the same change on Brig so that makehead, maketail, and makefiles can be 
+#                     the same change on Brig so that makehead, maketail, and makefiles can be
 #                     synchronized without alteration.
 #   Wed Apr 01, 2015: Updated for Cygwin. Now used almost solely on Ketch.
 #   Sun Feb 21, 2016: Subsumed makehead into maketail.
 #   Wed Mar 23, 2016: Cut out a lot of commentary and put it in separate file.
 #   Sat Apr 09, 2016: Got rid of "-pedantic" because I'm interested in enabling and using GNU extensions to
-#                     the C and C++ programming languages. Also got rid multiple warning levels. Warnings are 
+#                     the C and C++ programming languages. Also got rid multiple warning levels. Warnings are
 #                     now determined only by language and usage, and lots of warnings are always turned on.
-#   Sun Oct 15, 2017: Converted paths to indicate that the "rhe" directory is now "/cygdrive/d/rhe",  
+#   Sun Oct 15, 2017: Converted paths to indicate that the "rhe" directory is now "/cygdrive/d/rhe",
 #                     not "/rhe" as it was in the past. That's because "/cygdrive/d/rhe" is now ~ , in order
 #                     to have rhe backed-up whenever my D and E drives on Ketch and Galleon are backed-up.
 #   Tue Jan 23, 2018: Minor corrections in some comments.
 #   Wed Feb 07, 2018: Added -lncurses .
 #   Thu Feb 21, 2018: Added rhncgraphics module.
 #   Fri Feb 23, 2018: Subsumed librhc.a into librh.a .
-#   Mon Mar 05, 2018: Move home dir to /home (for all users). That way, Ketch-Win10, Galleon-WinXP, and 
+#   Mon Mar 05, 2018: Move home dir to /home (for all users). That way, Ketch-Win10, Galleon-WinXP, and
 #                     Galleon-Linux all have separate .bashrc files, on C: drives, so that they don't
 #                     Step on each other. Also, renamed "C:\cygwin64" to "C:\cygwin" to mirror Galleon
 #                     so that makefiles can stay the same. Also, instituted HOST and OSTYPE checks in
@@ -73,11 +73,11 @@
 #                     Also, moved setting of EXEDIR_ROOT and LIBDIR to above vpaths, so vpaths can use them.
 #   Thu Dec 19, 2018: I just dramatically changed my exe and lib paths for simplicity, so I also had to change
 #                     this file (and .bashrc, and dos_init.bat) to match.
-#   Fri Feb 07, 2020: I'm commenting-out standard selection, because it's already defaulting to 
+#   Fri Feb 07, 2020: I'm commenting-out standard selection, because it's already defaulting to
 #                     gnu11 & gnu++14 as of Feb 7, 2020, which is exactly what I want.
 #   Sat Jan 15, 2022: Restructured for use with Linux + Windows.
 #   Tue Jan 18, 2022: Updated paths to start with "/d/", and clarified instructions & comments.
-# 
+#
 
 # ======================================================================================================================
 # SET DIRECTORIES:
@@ -111,7 +111,7 @@ vpath %.o   $(LIBDIR)
 vpath %.a   $(LIBDIR)
 vpath %.exe $(EXEDIR)
 vpath %     $(EXEDIR)
-# Note that these are separate from variables which tell gcc & g++ where to find files; vpaths tell Make ITSELF 
+# Note that these are separate from variables which tell gcc & g++ where to find files; vpaths tell Make ITSELF
 # where to find files. This helps it navigate dependencies. Also note that while vpaths for %.c and %.cpp are in
 # each makefile (because they're directory-specific), the six vpaths above are in maketail only because they are
 # the same for all program collections.
@@ -167,12 +167,12 @@ WX := -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual \
 # C and C++ compilation flags. -Os optimizes for smallest size, and -s also
 # decreases size by stripping-away the symbol table. I'm commenting-out
 # standard selection, becuase it's already defaulting to gnu11 & gnu++14
-# as of Feb 7, 2020: 
+# as of Feb 7, 2020:
 ifdef DEBUG
   CCE := -finput-charset=UTF-8 -fextended-identifiers -g -Og -std=gnu17   -fsanitize=address
   CXE := -finput-charset=UTF-8 -fextended-identifiers -g -Og -std=gnu++17 -fsanitize=address
 else
-  CCE := -finput-charset=UTF-8 -fextended-identifiers -s -Ofast -std=gnu17  
+  CCE := -finput-charset=UTF-8 -fextended-identifiers -s -Ofast -std=gnu17
   CXE := -finput-charset=UTF-8 -fextended-identifiers -s -O2 -std=gnu++17
 endif
 
@@ -185,7 +185,7 @@ else
   CXL := -finput-charset=UTF-8 -std=gnu++17 -c -O2
 endif
 
-# C & C++ Assembly compilation flags (compile to assembly language, don't run assembler, 
+# C & C++ Assembly compilation flags (compile to assembly language, don't run assembler,
 # don't run linker, don't strip symbol table, and don't optimize):
   CCA := -finput-charset=UTF-8 -std=gnu17   -S
   CXA := -finput-charset=UTF-8 -std=gnu++17 -S
@@ -197,9 +197,9 @@ LIBDIRS := -L$(LIBDIR) -L/lib -L/usr/lib
 LIBS := -lrh -lncurses -lname -lgmp -lm -lquadmath # -lasan -lfl -ly
 
 # C Compilation Command string:
-COMPILE_CE = gcc $(PP) $(WC) $(CCE) $< $(LIBDIRS) $(LIBS) -o $(EXEDIR)/$@
+COMPILE_CE= gcc $(PP) $(WC) $(CCE) $< $(LIBDIRS) $(LIBS) -o $(EXEDIR)/$@
 
-# C Library Compilation String (compile and assemble, no strip, no linker flags, 
+# C Library Compilation String (compile and assemble, no strip, no linker flags,
 # no libraries because not linking, and output to $(LIBDIR) rather than $(EXEDIR)):
 COMPILE_CL = gcc $(PP) $(WC) $(CCL) $< -o $(LIBDIR)/$%
 
@@ -209,7 +209,7 @@ COMPILE_CA = gcc $(PP) $(WC) $(CCA) $< -o ./$@
 # C++ Compilation Command String:
 COMPILE_XE = g++ $(PP) $(WX) $(CXE) $< $(LIBDIRS) $(LIBS) -o $(EXEDIR)/$@
 
-# C++ Library Compilation String (compile and assemble, no strip, no linker flags, 
+# C++ Library Compilation String (compile and assemble, no strip, no linker flags,
 # no libraries because not linking, and output to $(LIBDIR) rather than $(EXEDIR)):
 COMPILE_XL = g++ $(PP) $(WX) $(CXL) $< -o $(LIBDIR)/$%
 
@@ -224,7 +224,7 @@ COMPILE_XA = g++ $(PP) $(WX) $(CXA) $< -o ./$@
 # ======================================================================================================================
 # MAKE ALL (SINCE THIS IS THE FIRST ACTUAL RULE, THIS IS THE DEFAULT RULE):
 
-# (NOTE: Don't set variable "ALL" to all corresponding exe files here, because not all projects even INVOLVE 
+# (NOTE: Don't set variable "ALL" to all corresponding exe files here, because not all projects even INVOLVE
 # exe files. For example, /d/rhe/src/librh contains cpp files for the building of objects, not programs,
 # and /d/rhe/src/jive contains "*.l" source files which are in lex, which are first compiled by flex to c then
 # compiled by gcc to exe.)
@@ -245,7 +245,7 @@ $(ALL): $(Elessar)
 $(LIBRARY_OBJECTS_C): $(Elessar)
 $(LIBRARY_OBJECTS_X): $(Elessar)
 
-# When user types "make rebuild", recursively invoke make with Elessar set to 
+# When user types "make rebuild", recursively invoke make with Elessar set to
 # Telcontar:
 rebuild:
 	make all Elessar=Telcontar
@@ -256,10 +256,10 @@ Telcontar:
 # this maketail specifies "$(Elessar)" as a prerequisite of all targets, and if a user
 # then issues the command "make rebuild", all targets will be rebuilt unconditionally.
 # This is an application of the second of these two more-general rules:
-# 
+#
 # 1. A non-existent   target     is always more OUT-OF-DATE than its prerequisites.
 # 2. A non-existent prerequisite is always more  UP-TO-DATE than its target.
-# 
+#
 # Using either will therefore cause the associated rule to be executed unconditionally.
 # This is very useful for forcing things to happen regardless of dates of files.
 
@@ -268,7 +268,7 @@ Telcontar:
 
 # Since GNU make doesn't understand the *.exe extention, I've had to # make my own pattern rules instead of relying on
 # the built-in ones in Gnu Make in order to compile programs for Windows.
-# 
+#
 # And as of 2022-01-08, since I've started compiling for Linux, I needed to add still more rules
 
 # RULES FOR MAKING ASM FILES FROM C OR CPP FILES:
