@@ -42,14 +42,16 @@ Step 1: pick 1 and 1, we remove both and we left with none.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-
+This is very straightforward, just a matter of repeatedly sorting, popping, and unshifting until either
+zero or one elements are left.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays in proper Perl syntax.
+single-quoted array of arrays of positive integers in proper Perl syntax, like so:
+./ch-2.pl '([8,4,32,7,9],[2,6,17,11,5])'
 
-Output is to STDOUT and will be each input array, followed by the corresponding output.
+Output is to STDOUT and will be each original array followed by the "Last Member" (or 0 if there is none).
 
 =cut
 
@@ -61,13 +63,20 @@ use warnings;
 use utf8;
 use Sys::Binmode;
 use Time::HiRes 'time';
-use List::Util  'max';
-use Math::Combinatorics;
 $"=', ';
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
-
+sub last_member (@array) {
+   while (scalar(@array) >= 2) {
+      @array = sort {$a<=>$b} @array;
+      my $big1 = pop @array;
+      my $big2 = pop @array;
+      my $diff = $big1 - $big2;
+      unshift @array, $diff if $diff;
+   }
+   return @array ? $array[0] : 0;
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
@@ -89,7 +98,9 @@ if (@ARGV) {@arrays = eval($ARGV[0]);}
 # Main loop:
 for my $aref (@arrays) {
    say '';
+   my $last = last_member(@$aref);
    say "array = (@$aref)";
+   say "Last Member = $last";
 }
 
 # Determine and print execution time:
