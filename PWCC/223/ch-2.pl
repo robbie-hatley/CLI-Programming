@@ -9,16 +9,16 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-ch-1.pl
-Solutions in Perl for The Weekly Challenge 216-1.
-Written by Robbie Hatley on Sat May 13, 2023.
+ch-2.pl
+Solutions in Perl for The Weekly Challenge 223-2.
+Written by Robbie Hatley on Sunday July 2, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
 Task 2: Box Coins
 Submitted by: Mohammad S Anwar
-You are given an array representing box coins, @box. Write a script to collect the maximum coins until you 
-took out all boxes. If we pick box[i] then we collect the coins $box[i-1] * $box[i] * $box[i+1]. 
+You are given an array representing box coins, @box. Write a script to collect the maximum coins until you
+took out all boxes. If we pick box[i] then we collect the coins $box[i-1] * $box[i] * $box[i+1].
 If $box[i+1] or $box[i-1] is out of bound then treat it as 1 coin.
 
 Example 1:  Input: @box = (3, 1, 5, 8)  Output: 167
@@ -33,15 +33,19 @@ Step 2: pick box [i=0] and collected coins 1 * 5 * 1 => 5. No more box available
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+Like all such "maximum" problem, this is just a matter of trying all possible orders of doing things to see
+which one yields the most-desirable results. Instead of actually removing emptied coin boxes from the array,
+I'll just mark them "X", which dramatically simplifies things by retaining the same set of indices always.
+Then it's just a matter of looking at all possible permutations of that set and seeing what results I get.
+As usual, Math::Combinatorics will come to my aid.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of arrays in proper Perl syntax, like so:
-./ch-1.pl '([[13,0,96],[-8,3,11],[2,6,4]], [[-83,-42,-57],[-99,478,952],[113,127,121]])'
+single-quoted array of arrays of integers in proper Perl syntax, like so:
+./ch-2.pl '([13,0,96], [-8,3,11], [2,6,4], [53,127,4,76,2,83])'
 
-Output is to STDOUT and will be each input array, followed by the corresponding output.
+Output is to STDOUT and will be each input array, followed by maximum coins.
 
 =cut
 
@@ -53,15 +57,56 @@ use warnings;
 use utf8;
 use Sys::Binmode;
 use Time::HiRes 'time';
-use List::Util  'max';
 use Math::Combinatorics;
+use List::Util  'max';
 $"=', ';
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
-sub is_in_list ($item, $list) {
-   for (@$list) {$item eq $_ and return 1;}
-   return 0;
+
+sub is_integer ($x) {
+   return ($x =~ m/^(?:-[1-9]\d*)|(?:0)|(?:[1-9]\d*)$/)
+}
+
+sub are_integers (@a) {
+   for (@a) {return 0 if ! is_integer($_)}
+   return 1;
+}
+
+sub max_coins (@a) {
+   my $n = scalar(@a);
+   return 'ERROR: EMPTY ARRAY'  if $n < 1;
+   return 'ERROR: NOT INTEGERS' if !are_integers(@a);
+   my @indices = 0..$n-1;
+   my @scores = ();
+   my $perms = Math::Combinatorics->new(count => $n, data => [@indices]);
+   while(my @perm = $perms->next_permutation){
+      my @b = @a; # Start with fresh copy of @a to avoid landing on 'X'!!!!!
+      my $score = 0;
+      for ( my $i_select = 0 ; $i_select < $n ; ++$i_select ) {
+         my $i = $perm[$i_select];
+         if ($b[$i] eq 'X') {say 'ERROR: LANDED ON X';}
+         my $partial = $b[$i];
+         $b[$i] = 'X';
+         # Multiply by left box, if any:
+         for ( my $j = $i-1 ; $j > -1 ; --$j ) {
+            if ('X' ne $b[$j]) {
+               $partial *= $b[$j];
+               last;
+            }
+         }
+         # Multiply by right box, if any:
+         for ( my $j = $i+1 ; $j < $n ; ++$j ) {
+            if ('X' ne $b[$j]) {
+               $partial *= $b[$j];
+               last;
+            }
+         }
+         $score += $partial;
+      }
+      push @scores, $score;
+   }
+   return max(@scores);
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -73,40 +118,18 @@ my $t0 = time;
 # Default inputs:
 my @arrays =
 (
-   [
-      [40,3,17],
-      [19,7,438],
-      [5,191,18],
-   ],
-   [
-      [7,3,2],
-      [8,9,10],
-      [18,6,34],
-   ],
-   [
-      [9,5,33],
-      [1,2,1],
-      [8,17,64],
-   ],
+   [3, 1, 5, 8],
+   [1, 5]
 );
 
 # Non-default inputs:
 if (@ARGV) {@arrays = eval($ARGV[0]);}
 
 # Main loop:
-for my $mref (@arrays) {
-   my $max = $mref->[0]->[0];
-   for my $rref (@$mref) {
-      for my $element (@$rref) {
-         $element > $max and $max = $element;
-      }
-   }
+for my $aref (@arrays) {
    say '';
-   say 'matrix:';
-   for my $rref (@$mref) {
-      say "[@$rref],";
-   }
-   say "max = $max";
+   my $max = max_coins(@$aref);
+   say "Given coin-boxes (@$aref), max coins = $max";
 }
 
 # Determine and print execution time:

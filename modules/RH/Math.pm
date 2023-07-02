@@ -44,7 +44,7 @@ use bignum;
 Math::BigFloat->accuracy(250);
 
 # Symbols to be exported by default:
-our @EXPORT = 
+our @EXPORT =
    qw
    (
       @PrimeWheel              number_of_digits         logb
@@ -113,29 +113,29 @@ sub is_number ($)
 sub is_integer ($)
 {
    my $x = shift;
-   if ($x =~ m/^-?\d+$/)           # If arg is digits w optional sign,
+   if ($x =~ m/^-?[1-9]\d*$/)      # If arg is digits w optional sign,
       {return 1;}                  # then arg represents an integer;
    else                            # otherwise,
       {return 0;}                  # it doesn't.
-}   
+}
 
 sub is_nonnegative_integer ($)
 {
    my $x = shift;                  # Get arg.
-   if ($x =~ m/^\d+$/ && $x >= 0)  # If arg is digits only and is >= 0, 
+   if ($x =~ m/^\d+$/ && $x >= 0)  # If arg is digits only and is >= 0,
       {return 1;}                  # then arg represents a non-negative integer;
    else                            # otherwise,
       {return 0;}                  # it doesn't.
-}   
+}
 
 sub is_positive_integer ($)
 {
-   my $x = shift;                  # Get arg.
-   if ($x =~ m/^\d+$/ && $x  > 0)  # If arg is digits-only and is > 0,
-      {return 1;}                  # then arg represents a positive integer;
-   else                            # otherwise,
-      {return 0;}                  # it doesn't.
-}   
+   my $x = shift;                       # Get x.
+   if ($x =~ m/^[1-9]\d*$/ && $x  > 0)  # If x is digits-only, starting with a non-zero digit,
+      {return 1;}                       # then x represents a positive integer;
+   else                                 # otherwise,
+      {return 0;}                       # it doesn't.
+}
 
 sub is_negative_integer ($)
 {
@@ -144,14 +144,14 @@ sub is_negative_integer ($)
       {return 1;}                  # then arg represents a negative integer;
    else                            # otherwise,
       {return 0;}                  # it doesn't.
-}   
+}
 
 sub is_prime ($)
 {
    my $i = 0 + shift;
 
    # If $i is not a positive integer, it is not a Prime Number:
-   #return 0 if not is_positive_integer($i);
+   return 0 if ! is_positive_integer($i);
 
    # If $i is 1,4,6,8,9,10, $i is not prime:
    return 0 if $i==1||$i==4||$i==6||$i==8||$i==9||$i==10;
@@ -162,7 +162,7 @@ sub is_prime ($)
    # If $i is divisible by any of the first few primes, it's not prime:
    return 0 if !($i%2)||!($i%3)||!($i%5)||!($i%7);
 
-   # If $i is divisible by any spoke numbers up to it's sqrt, it's not prime, 
+   # If $i is divisible by any spoke numbers up to it's sqrt, it's not prime,
    # so return 0:
    my $Limit = Math::BigInt->new(int(Math::BigFloat->new($i)->bsqrt()));
    say "\$Limit = $Limit" if $db;
