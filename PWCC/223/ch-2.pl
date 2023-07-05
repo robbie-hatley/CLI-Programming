@@ -85,7 +85,7 @@ sub max_coins (@a) {
       my $score = 0;
       for ( my $i_select = 0 ; $i_select < $n ; ++$i_select ) {
          my $i = $perm[$i_select];
-         if ($b[$i] eq 'X') {say 'ERROR: LANDED ON X';}
+         if ($b[$i] eq 'X') {return 'ERROR: LANDED ON X';}
          my $partial = $b[$i];
          $b[$i] = 'X';
          # Multiply by left box, if any:
