@@ -78,9 +78,9 @@ sub is_prime                 ($)   ; # Is a value a prime number?
 sub primes_up_to             ($)   ; # Generate prime numbers up to a value.
 
 # Combinatorics:
-sub fact                     (;$)  ; # Factorial of x.
-sub C                        (;$$) ; # C(n,k) = Number of k-Combinations of n things.
-sub P                        (;$$) ; # P(n,k) = Number of k-Permutations of n things.
+sub fact                     ($)   ; # Factorial of x.
+sub C                        ($$)  ; # C(n,k) = Number of k-Combinations of n things.
+sub P                        ($;$) ; # P(n,k) = Number of k-Permutations of n things.
 
 # Miscellanious Mathematics Functions:
 sub number_of_digits         ($)   ; # Number of decimal digits in an integer.
@@ -200,7 +200,7 @@ sub primes_up_to ($)
 # Combinatorics:
 
 # Factorial of x:
-sub fact (;$) {
+sub fact ($) {
    my $x = shift;
    my $f = 1;
    for ( my $i = 2 ; $i <= $x ; ++$i ) {
@@ -210,16 +210,16 @@ sub fact (;$) {
 }
 
 # C(n,k) = Number of k-Combinations of n things:
-sub C (;$$) {
-   my $n = 0; $n = shift if @_;
-   my $k = 0; $k = shift if @_;
+sub C ($$) {
+   my $n = shift;
+   my $k = shift;
    return (fact($n)/(fact($k)*fact($n-$k)));
 }
 
 # P(n,k) = Number of k-Permutations of n things:
-sub P (;$$) {
-   my $n = 0; $n = shift if @_;
-   my $k = 0; $k = shift if @_;
+sub P ($;$) {
+   my $n = shift;
+   my $k = (@_ ? shift : $n);
    return fact($n)/fact($n-$k);
 }
 
