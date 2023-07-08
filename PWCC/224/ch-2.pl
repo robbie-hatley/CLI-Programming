@@ -11,84 +11,61 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 TITLE BLOCK:
 ch-2.pl
 Solutions in Perl for The Weekly Challenge 224-2.
-Written by Robbie Hatley on Thursday July 6, 2023.
+Written by Robbie Hatley on Saturday July 8, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
 Task 2: Additive Number
 Submitted by: Mohammad S Anwar
+You are given a string containing digits 0-9 only. Write a script to find out if the given string is an
+"additive number". An "additive number" is a string whose digits can form an "additive sequence".
+An "additive sequence" is a sequence (finite or infinite) of integers, containing at least 3 numbers, such
+that except the first 2 numbers, each subsequent number in the sequence is the sum of the preceding two.
 
-You are given a string containing digits 0-9 only.
-
-Write a script to find out if the given string is additive number. An additive number is a string whose digits can form an additive sequence.
-
-    A valid additive sequence should contain at least 3 numbers. Except the first 2 numbers, each subsequent number in the sequence must be the sum of the preceding two.
-
-
-Example 1:
-
-Input: $string = "112358"
-Output: true
-
+Example 1:  Input: $string = "112358"  Output: true
 The additive sequence can be created using the given string digits: 1,1,2,3,5,8
 1 + 1 => 2
 1 + 2 => 3
 2 + 3 => 5
 3 + 5 => 8
 
-Example 2:
-
-Input: $string = "12345"
-Output: false
-
+Example 2:  Input: $string = "12345"  Output: false
 No additive sequence can be created using the given string digits.
 
-Example 3:
-
-Input: $string = "199100199"
-Output: true
-
+Example 3:  Input: $string = "199100199"  Output: true
 The additive sequence can be created using the given string digits: 1,99,100,199
  1 +  99 => 100
 99 + 100 => 199
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-This is a "partitions of a string" problem. Oh, my. String partitions are collections of substrings which are 
-non-overlapping (injective) and non-gapping (surjective). Each part is is a substring determined by starting 
-index. Each available index may-or-may-not be a start of a part, except for index [0] which is ALWAYS the 
-start of a part (this is necessary to achieve "non-gapping"; if a part does not start at [0] we have a gap to 
-the left of the first part). Hence the number of possible partitions of a string of size n is 2^(n-1).
+This is a "partitions of a string" problem. String partitions are collections of substrings which are
+non-duplicating (injective), non-gapping (surjective), non-crossing, and non-overlapping.
 
-The length of each part is determined by its starting index and by the starting index of the next partition
-(or by the end of the string).
+String partitions are tantalizingly close to being "non-crossing partitions", given by Catalan numbers,
+but are not quite the same thing, as "non-crossing" partitions can overlap, whereas string partitions can't.
 
-So ultimately, every partition is determined by a unique subset of indices, and every 
-subset of indices determines a unique partition. (See Pascal's Triangle.)
+Given a string of length n, each "part" of one of its partitions is a substring determined by its
+starting and one-past-end indices. The possible "one-past-end" indices are (1..n). 0 can't be a one-past-end
+because no strings start before 0, and no empty parts are allowed. And n will ALWAYS be the one-past-end for
+the last part (which may also be the first and only part). So the only one-past-end indices which are
+"in question" are (1..n-1). Therefore, the total number of possible partitions is the number of subsets of
+(1..n-1), which is 2^(n-1).
 
-So the partitions of a string of length n are isomorphic to the set of all m-combinations of the set of
-indices 0..n-1 for all possible m from 0 through n-1. So I shall once again employ Math::Combinatorics. 
-
-The algorithm will look like this: 
-
-Given a string $string of length n:
-make an array @i = 0..n-1         of the indices of $string.
-make an array-of-arrays @c = ()   to hold all 3+ combinations of @i
-make an array-of-arrays @p = ()   to hold all 3+ partitionings of $string
-for each m from 3 through n-1 {
-   push each possible m-combination of @i to array @p
-}
-for each element of @c, push the corresponding partitioning of $string onto @p.
-
-
+This suggests an algorithm that bypasses recursion and bypasses CPAN, and is determined only by the 2^(n-1)
+possible sets of one-past-end indices described by the following binary-number signatures:
+my @signatures=(0..2**($n-1)-1);
+Algorithm:
+For each such signature, form a partition using those one-past-end indices, and see if that partition is
+additive.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of integers in proper Perl syntax, like so:
-./ch-2.pl '([13,0,96], [-8,3,11], [2,6,4], [53,127,4,76,2,83])'
+single-quoted array of non-negative integers in proper Perl syntax, like so:
+./ch-2.pl '("frog", 13096, 8311, 471118294776123, 2533836361018, 2533836361019, 2533836361020)'
 
-Output is to STDOUT and will be each input array, followed by maximum coins.
+Output is to STDOUT and will be each input number, followed by "IS additive" or "ISN'T additive".
 
 =cut
 
@@ -100,56 +77,56 @@ use warnings;
 use utf8;
 use Sys::Binmode;
 use Time::HiRes 'time';
-use Math::Combinatorics;
-use List::Util  'max';
 $"=', ';
+my $db = 0;
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub is_integer ($x) {
-   return ($x =~ m/^(?:-[1-9]\d*)|(?:0)|(?:[1-9]\d*)$/)
+sub is_digits ($x) {
+   return ($x =~ m/^\d+$/)
 }
 
-sub are_integers (@a) {
-   for (@a) {return 0 if ! is_integer($_)}
-   return 1;
-}
-
-sub max_coins (@a) {
-   my $n = scalar(@a);
-   return 'ERROR: EMPTY ARRAY'  if $n < 1;
-   return 'ERROR: NOT INTEGERS' if !are_integers(@a);
-   my @indices = 0..$n-1;
-   my @scores = ();
-   my $perms = Math::Combinatorics->new(count => $n, data => [@indices]);
-   while(my @perm = $perms->next_permutation){
-      my @b = @a; # Start with fresh copy of @a to avoid landing on 'X'!!!!!
-      my $score = 0;
-      for ( my $i_select = 0 ; $i_select < $n ; ++$i_select ) {
-         my $i = $perm[$i_select];
-         if ($b[$i] eq 'X') {return 'ERROR: LANDED ON X';}
-         my $partial = $b[$i];
-         $b[$i] = 'X';
-         # Multiply by left box, if any:
-         for ( my $j = $i-1 ; $j > -1 ; --$j ) {
-            if ('X' ne $b[$j]) {
-               $partial *= $b[$j];
-               last;
-            }
+sub is_additive ($x) {
+   # NaN strings aren't additive:
+   return 'ISN\'T additive.' if ! is_digits($x);
+   # Record length of $x:
+   my $n = length($x);
+   # Make a list of signatures, which are binary numbers specifying which "in-question" one-past-end
+   # indices are active (the 0th is NEVER active, and then nth is ALWAYS active, so those two are
+   # never in-question, just the n-1 indices in-between):
+   my @signatures=(0..2**($n-1)-1);
+   # If debugging, say signatures:
+   if ($db) {say "Signatures = (@signatures)";}
+   SIG: foreach my $sig (@signatures) {
+      # Make a partition based on current signature:
+      my @partition = ();
+      # The first part always starts at index 0:
+      my $start = 0;
+      # The next parts (if any) are determined by the one-past-end markers given by the "1" digits in
+      # the current signature:
+      for ( my $i = 0 ; $i <= $n-2 ; ++$i ) {
+         if (1<<($n-2-$i) & $sig) {
+            push(@partition,substr($x,$start,$i+1-$start));
+            $start=$i+1;
          }
-         # Multiply by right box, if any:
-         for ( my $j = $i+1 ; $j < $n ; ++$j ) {
-            if ('X' ne $b[$j]) {
-               $partial *= $b[$j];
-               last;
-            }
-         }
-         $score += $partial;
       }
-      push @scores, $score;
+      # The nth one-past-end marker (the index one-past the end of the entire string) is always active,
+      # so manually push the final part onto the partition:
+      push(@partition,substr($x,$start,$n-$start));
+      # If debugging, print partition:
+      if ($db) {say "partition = (@partition)";}
+      # This partition can't be additive if it has less than 3 parts:
+      next SIG if scalar(@partition) < 3;
+      # This partition isn't additive if any two consecutive numbers don't add to the next:
+      for ( my $i = 2 ; $i <= $#partition ; ++$i ) {
+         next SIG if $partition[$i-2] + $partition[$i-1] != $partition[$i];
+      }
+      # If we get to here, everything adds-up, so this partition is additive:
+      return 'IS additive.';
    }
-   return max(@scores);
+   # If we get to here, there are no additive partitions of the string $x:
+   return 'ISN\'T additive.';
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -159,22 +136,24 @@ sub max_coins (@a) {
 my $t0 = time;
 
 # Default inputs:
-my @arrays =
+my @numbers =
 (
-   [3, 1, 5, 8],
-   [1, 5]
+   112358,
+   12345,
+   199100199,
 );
 
 # Non-default inputs:
-if (@ARGV) {@arrays = eval($ARGV[0]);}
+if (@ARGV) {@numbers = eval($ARGV[0]);}
 
 # Main loop:
-for my $aref (@arrays) {
+for my $number (@numbers) {
    say '';
-   my $max = max_coins(@$aref);
-   say "Given coin-boxes (@$aref), max coins = $max";
+   say "Number = $number";
+   my $status = is_additive($number);
+   say "Status = $status";
 }
 
-# Determine and print execution time:
+# Determine and print execution time to the nearest microsecond:
 my $µs = 1000000 * (time - $t0);
-printf("\nExecution time was %.3fµs.\n", $µs);
+printf("\nExecution time was %.0fµs.\n", $µs);

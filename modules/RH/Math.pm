@@ -43,7 +43,7 @@ use open         OUT => ':encoding(UTF-8)';
 use Sys::Binmode;
 use parent 'Exporter';
 use Regexp::Common;
-use bignum;
+use bigint;
 Math::BigFloat->accuracy(250);
 
 # Symbols to be exported by default:

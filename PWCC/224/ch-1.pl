@@ -17,26 +17,19 @@ Written by Robbie Hatley on Thursday July 6, 2023.
 PROBLEM DESCRIPTION:
 Task 1: Special Notes
 Submitted by: Mohammad S Anwar
+Given two strings, $source and $target, write a script to determine if using the characters (only once) from
+$source, $target can be created.
 
-You are given two strings, $source and $target.
-
-Write a script to find out if using the characters (only once) from source, a target string can be created.
-Example 1
-
-Input: $source = "abc"
-       $target = "xyz"
+Example 1:
+Input:  $source = "abc", $target = "xyz"
 Output: false
 
-Example 2
-
-Input: $source = "scriptinglanguage"
-       $target = "perl"
+Example 2:
+Input:  $source = "scriptinglanguage", $target = "perl"
 Output: true
 
-Example 3
-
-Input: $source = "aabbcc"
-       $target = "abc"
+Example 3:
+Input:  $source = "aabbcc", $target = "abc"
 Output: true
 
 --------------------------------------------------------------------------------------------------------------
@@ -83,13 +76,17 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
    my @tchars = split //, $target;
    foreach my $tchar (@tchars) {
       my $index = index $source, $tchar;
+      # If index is -1, this Target CAN'T be built from this Source:
       if ( -1 == $index ) {
          return 'false';
       }
+      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
       else {
          substr $source, $index, 1, '';
       }
    }
+   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
+   # so this poison-pen letter CAN be built from the source letters given:
    return 'true';
 }
 
@@ -116,11 +113,11 @@ for my $aref (@arrays) {
    my $source = $aref->[0];
    my $target = $aref->[1];
    my $output = ppl($source, $target);
-   say "Source: $source";
-   say "Target: $target";
-   say "Output: $output";
+   say "Source string: \"$source\"";
+   say "Target string: \"$target\"";
+   say "Can build Target from Source?: $output";
 }
 
 # Determine and print execution time:
 my $µs = 1000000 * (time - $t0);
-printf("\nExecution time was %.3fµs.\n", $µs);
+printf("\nExecution time was %.0fµs.\n", $µs);
