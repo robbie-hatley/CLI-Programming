@@ -60,8 +60,8 @@ index. Each available index may-or-may-not be a start of a part, except for inde
 start of a part (this is necessary to achieve "non-gapping"; if a part does not start at [0] we have a gap to 
 the left of the first part). Hence the number of possible partitions of a string of size n is 2^(n-1).
 
-The length of each partis determined by the starting index of the next partition, or by the end of 
-the string. 
+The length of each part is determined by its starting index and by the starting index of the next partition
+(or by the end of the string).
 
 So ultimately, every partition is determined by a unique subset of indices, and every 
 subset of indices determines a unique partition. (See Pascal's Triangle.)
