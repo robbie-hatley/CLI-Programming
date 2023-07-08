@@ -47,10 +47,10 @@ Math::BigFloat->accuracy(250);
 our @EXPORT =
    qw
    (
-      @PrimeWheel              number_of_digits         logb
-      is_number                is_integer               is_nonnegative_integer
-      is_positive_integer      is_negative_integer      is_prime
-      primes_up_to
+      @PrimeWheel              number_of_digits         fact
+      logb                     is_number                is_integer
+      is_nonnegative_integer   is_positive_integer      is_negative_integer
+      is_prime                 primes_up_to
    );
 
 # Private variables:
@@ -68,6 +68,7 @@ our @PrimeWheel =
 # Subroutine Predeclarations And Prototypes:
 
 sub number_of_digits         ($)   ; # Number of decimal digits in an integer.
+sub fact                     ($)   ; # Factorial of x.
 sub logb                     ($$)  ; # Logarithm to base b of n.
 sub is_number                ($)   ; # Is a value a real number?
 sub is_integer               ($)   ; # Is a value an integer?
@@ -91,6 +92,16 @@ sub number_of_digits ($)
       $power *= 10;
    }
    return $digits;
+}
+
+# Factorial of x:
+sub fact ($) {
+   my $x = shift;
+   my $f = 1;
+   for ( my $i = 2 ; $i <= $x ; ++$i ) {
+      $f *= $i;
+   }
+   return $f;
 }
 
 # Log to base b of n:
