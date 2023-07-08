@@ -18,6 +18,9 @@
 # Sat Nov 20, 2021: use v5.32. Renewed colophon. Revamped pragmas & encodings.
 ########################################################################################################################
 
+# ======================================================================================================================
+# Preliminaries:
+
 # Package:
 package RH::Math;
 
@@ -47,73 +50,49 @@ Math::BigFloat->accuracy(250);
 our @EXPORT =
    qw
    (
-      @PrimeWheel              number_of_digits         fact
-      logb                     is_number                is_integer
-      is_nonnegative_integer   is_positive_integer      is_negative_integer
-      is_prime                 primes_up_to
+      is_number                is_integer               is_nonnegative_integer
+      is_positive_integer      is_negative_integer      is_zero
+
+      @PrimeWheel              is_prime                 primes_up_to
+
+      fact                     C                        P
+
+      number_of_digits         logb
    );
 
-# Private variables:
 my $db = 1;
 
-# Global variables:
-our @PrimeWheel =
-   (
-        1,  11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47,
-       53,  59,  61,  67,  71,  73,  79,  83,  89,  97, 101, 103,
-      107, 109, 113, 121, 127, 131, 137, 139, 143, 149, 151, 157,
-      163, 167, 169, 173, 179, 181, 187, 191, 193, 197, 199, 209
-   );
+# ======================================================================================================================
+# Subroutine Predeclarations:
 
-# Subroutine Predeclarations And Prototypes:
-
-sub number_of_digits         ($)   ; # Number of decimal digits in an integer.
-sub fact                     ($)   ; # Factorial of x.
-sub logb                     ($$)  ; # Logarithm to base b of n.
+# Identification ("is" functions):
 sub is_number                ($)   ; # Is a value a real number?
 sub is_integer               ($)   ; # Is a value an integer?
 sub is_nonnegative_integer   ($)   ; # Is a value a non-negative integer?
 sub is_positive_integer      ($)   ; # Is a value a positive integer?
 sub is_negative_integer      ($)   ; # Is a value a negative integer?
+sub is_zero                  ($)   ; # Is a value zero?
+
+# Prime Numbers:
 sub is_prime                 ($)   ; # Is a value a prime number?
 sub primes_up_to             ($)   ; # Generate prime numbers up to a value.
 
+# Combinatorics:
+sub fact                     (;$)  ; # Factorial of x.
+sub C                        (;$$) ; # C(n,k) = Number of k-Combinations of n things.
+sub P                        (;$$) ; # P(n,k) = Number of k-Permutations of n things.
+
+# Miscellanious Mathematics Functions:
+sub number_of_digits         ($)   ; # Number of decimal digits in an integer.
+sub logb                     ($$)  ; # Logarithm to base b of n.
+
+# ======================================================================================================================
 # Subroutine Definitions:
 
-# Return number of digits in integer argument:
-sub number_of_digits ($)
-{
-   my $n      = int(abs(shift));
-   my $digits = 1;
-   my $power  = 1;
-   while ( $n / $power >= 10 )
-   {
-      ++$digits;
-      $power *= 10;
-   }
-   return $digits;
-}
+# ----------------------------------------------------------------------------------------------------------------------
+# Identification ("is" functions):
 
-# Factorial of x:
-sub fact ($) {
-   my $x = shift;
-   my $f = 1;
-   for ( my $i = 2 ; $i <= $x ; ++$i ) {
-      $f *= $i;
-   }
-   return $f;
-}
-
-# Log to base b of n:
-sub logb ($$)
-{
-   my $b = shift;
-   my $n = shift;
-   return log($n)/log($b);
-}
-
-sub is_number ($)
-{
+sub is_number ($) {
    my $x = shift;
    if ($x =~ m/$RE{num}{real}/)
       {return 1;}
@@ -121,8 +100,7 @@ sub is_number ($)
       {return 0;}
 }
 
-sub is_integer ($)
-{
+sub is_integer ($) {
    my $x = shift;
    if ($x =~ m/^-?[1-9]\d*$/)      # If arg is digits w optional sign,
       {return 1;}                  # then arg represents an integer;
@@ -130,8 +108,7 @@ sub is_integer ($)
       {return 0;}                  # it doesn't.
 }
 
-sub is_nonnegative_integer ($)
-{
+sub is_nonnegative_integer ($) {
    my $x = shift;                  # Get arg.
    if ($x =~ m/^\d+$/ && $x >= 0)  # If arg is digits only and is >= 0,
       {return 1;}                  # then arg represents a non-negative integer;
@@ -139,8 +116,7 @@ sub is_nonnegative_integer ($)
       {return 0;}                  # it doesn't.
 }
 
-sub is_positive_integer ($)
-{
+sub is_positive_integer ($) {
    my $x = shift;                       # Get x.
    if ($x =~ m/^[1-9]\d*$/ && $x  > 0)  # If x is digits-only, starting with a non-zero digit,
       {return 1;}                       # then x represents a positive integer;
@@ -148,14 +124,29 @@ sub is_positive_integer ($)
       {return 0;}                       # it doesn't.
 }
 
-sub is_negative_integer ($)
-{
+sub is_negative_integer ($) {
    my $x = shift;                  # Get arg.
    if ($x !~ m/^-\d+$/ && $x < 0)  # If arg is a negative sign followed by all-digits and is < 0,
       {return 1;}                  # then arg represents a negative integer;
    else                            # otherwise,
       {return 0;}                  # it doesn't.
 }
+
+sub is_zero ($) {
+   my $x = shift;
+   return ($x eq '0');
+}
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Prime Numbers:
+
+our @PrimeWheel =
+   (
+        1,  11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47,
+       53,  59,  61,  67,  71,  73,  79,  83,  89,  97, 101, 103,
+      107, 109, 113, 121, 127, 131, 137, 139, 143, 149, 151, 157,
+      163, 167, 169, 173, 179, 181, 187, 191, 193, 197, 199, 209
+   );
 
 sub is_prime ($)
 {
@@ -203,6 +194,58 @@ sub primes_up_to ($)
       push @Primes, $Candidate;
    }
    return \@Primes;
+}
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Combinatorics:
+
+# Factorial of x:
+sub fact (;$) {
+   my $x = shift;
+   my $f = 1;
+   for ( my $i = 2 ; $i <= $x ; ++$i ) {
+      $f *= $i;
+   }
+   return $f;
+}
+
+# C(n,k) = Number of k-Combinations of n things:
+sub C (;$$) {
+   my $n = 0; $n = shift if @_;
+   my $k = 0; $k = shift if @_;
+   return (fact($n)/(fact($k)*fact($n-$k)));
+}
+
+# P(n,k) = Number of k-Permutations of n things:
+sub P (;$$) {
+   my $n = 0; $n = shift if @_;
+   my $k = 0; $k = shift if @_;
+   return fact($n)/fact($n-$k);
+}
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Miscellanious Mathematical Functions:
+
+# Return number of digits in integer argument:
+sub number_of_digits ($)
+{
+   my $n      = int(abs(shift));
+   my $digits = 1;
+   my $power  = 1;
+   while ( $n / $power >= 10 )
+   {
+      ++$digits;
+      $power *= 10;
+   }
+   return $digits;
+}
+
+# Log to base b of n:
+sub logb ($$)
+{
+   my $b = shift;
+   my $n = shift;
+   return log($n)/log($b);
 }
 
 1;
