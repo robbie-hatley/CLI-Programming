@@ -54,11 +54,33 @@ The additive sequence can be created using the given string digits: 1,99,100,199
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-Like all such "maximum" problem, this is just a matter of trying all possible orders of doing things to see
-which one yields the most-desirable results. Instead of actually removing emptied coin boxes from the array,
-I'll just mark them "X", which dramatically simplifies things by retaining the same set of indices always.
-Then it's just a matter of looking at all possible permutations of that set and seeing what results I get.
-As usual, Math::Combinatorics will come to my aid.
+This is a "partitions of a string" problem. Oh, my. String partitions are collections of substrings which are 
+non-overlapping (injective) and non-gapping (surjective). Each part is is a substring determined by starting 
+index. Each available index may-or-may-not be a start of a part, except for index [0] which is ALWAYS the 
+start of a part (this is necessary to achieve "non-gapping"; if a part does not start at [0] we have a gap to 
+the left of the first part). Hence the number of possible partitions of a string of size n is 2^(n-1).
+
+The length of each partis determined by the starting index of the next partition, or by the end of 
+the string. 
+
+So ultimately, every partition is determined by a unique subset of indices, and every 
+subset of indices determines a unique partition. (See Pascal's Triangle.)
+
+So the partitions of a string of length n are isomorphic to the set of all m-combinations of the set of
+indices 0..n-1 for all possible m from 0 through n-1. So I shall once again employ Math::Combinatorics. 
+
+The algorithm will look like this: 
+
+Given a string $string of length n:
+make an array @i = 0..n-1         of the indices of $string.
+make an array-of-arrays @c = ()   to hold all 3+ combinations of @i
+make an array-of-arrays @p = ()   to hold all 3+ partitionings of $string
+for each m from 3 through n-1 {
+   push each possible m-combination of @i to array @p
+}
+for each element of @c, push the corresponding partitioning of $string onto @p.
+
+
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
