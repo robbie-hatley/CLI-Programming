@@ -9,9 +9,9 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-ch-1.pl
-Solutions in Perl for The Weekly Challenge 216-1.
-Written by Robbie Hatley on Sat May 13, 2023.
+ch-x.pl
+Solutions in Perl for The Weekly Challenge xxx-x.
+Written by Robbie Hatley on Xxx Xxx xx, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
@@ -112,3 +112,4 @@ for my $mref (@arrays) {
 # Determine and print execution time:
 my $µs = 1000000 * (time - $t0);
 printf("\nExecution time was %.3fµs.\n", $µs);
+exit 0;

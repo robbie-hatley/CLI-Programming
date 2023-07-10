@@ -11,7 +11,7 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 TITLE BLOCK:
 ch-1.pl
 Solutions in Perl for The Weekly Challenge 225-1.
-Written by Robbie Hatley on Sun Jul 09, 2023.
+Written by Robbie Hatley on Sunday July 9, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
