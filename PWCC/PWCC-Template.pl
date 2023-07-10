@@ -111,5 +111,5 @@ for my $mref (@arrays) {
 
 # Determine and print execution time:
 my $µs = 1000000 * (time - $t0);
-printf("\nExecution time was %.3fµs.\n", $µs);
+printf("\nExecution time was %.0fµs.\n", $µs);
 exit 0;
