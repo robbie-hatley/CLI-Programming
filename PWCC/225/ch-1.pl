@@ -49,7 +49,7 @@ my $max = max map {scalar split /[ .]+/, $_} @sentences;
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 double-quoted array of arrays of single-quoted sentences in proper Perl syntax, apostrophes escaped, like so:
-./ch-1.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs'],['She sat.', 'I didn\'t sit.'])"
+./ch-1.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
 
 Output is to STDOUT and will be each list of sentences, followed by max word count.
 
