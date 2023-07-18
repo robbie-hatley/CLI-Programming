@@ -9,26 +9,44 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge xxx-x.
-Written by Robbie Hatley on Xxx Xxx xx, 2023.
+Solutions in Perl for The Weekly Challenge 226-2.
+Written by Robbie Hatley on Mon Jul 17, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 1: Anamatu Serjianu
+Task 2: Zero Array
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
+
+You are given an array of non-negative integers, @ints.
+
+Write a script to return the minimum number of operations to make every element equal zero.
+
+In each operation, you are required to pick a positive number less than or equal to the smallest element in the array, then subtract that from each positive element in the array.
+
 
 Example 1:
-Input:   ('dog', 'cow', 'pig'),
-Output:  ('horse')
+
+Input: @ints = (1, 5, 0, 3, 5)
+Output: 3
+
+operation 1: pick 1 => (0, 4, 0, 2, 4)
+operation 2: pick 2 => (0, 2, 0, 0, 2)
+operation 3: pick 2 => (0, 0, 0, 0, 0)
 
 Example 2:
-Input:   ('apple', 'pear', 'peach'),
-Output:  ('grape')
+
+Input: @ints = (0)
+Output: 0
 
 Example 3:
-Input:   ('Sam', 'Bob', 'Pete'),
-Output:  ('Susan')
+
+Input: @ints = (2, 1, 4, 0, 3)
+Output: 4
+
+operation 1: pick 1 => (1, 0, 3, 0, 2)
+operation 2: pick 1 => (0, 0, 2, 0, 1)
+operation 3: pick 1 => (0, 0, 1, 0, 0)
+operation 4: pick 1 => (0, 0, 0, 0, 0)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
@@ -40,7 +58,7 @@ Input is via either built-in variables or via @ARGV. If using @ARGV, provide one
 double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
 ./ch-1.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
 
-Output is to STDOUT and will be each input array followed by the corresponding output.
+Output is to STDOUT and will be each input array followed by corresponding output.
 
 =cut
 
@@ -86,8 +104,8 @@ my $t0 = time;
 my @arrays =
 (
    ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+ ['scriptinglanguage', 'perl'],
+ ['aabbcc', 'abc'],
 );
 
 # Non-default inputs:

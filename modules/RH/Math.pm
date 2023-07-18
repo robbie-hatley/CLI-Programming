@@ -1,24 +1,28 @@
 #! /usr/bin/perl
 
-# This is a 120-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # /cygdrive/D/rhe/modules/RH/Math.pm
 # Robbie Hatley's Math Module
 # Written by Robbie Hatley, starting 2016-02-20
 # Contains math subroutines.
 # Edit history:
-#    Sat Feb 20, 2016: Started writing it.
-#    Tue Jul 25, 2017: Removed "number-to-words" (it's not general-purpose
-#                      enough to warrant being included here).
-#    Sun Dec 31, 2017: use 5.026_001. use Exporter.
-#    Tue Jun 05, 2018: use v5.20
+# Sat Feb 20, 2016: Started writing it.
+# Tue Jul 25, 2017: Removed "number-to-words" (it's not general-purpose
+#                   enough to warrant being included here).
+# Sun Dec 31, 2017: use v5.026_001. use Exporter.
+# Tue Jun 05, 2018: use v5.20
 # Sat Nov 20, 2021: use v5.32. Renewed colophon. Revamped pragmas & encodings.
-########################################################################################################################
+# Mon Jul 17, 2023: Discontinued using "bignum" as it was adding lots of superfluous "0" digits on ends of
+#                   integer results. Now using modules "Math::BigInt", "Math::BigFloat", and "bigint".
+#                   Now using "Math::BigInt->accuracy(250)" to get 250-digit integer accuracy.
+#                   And, I narrowed the formatting from 120 chars to 110 chars, to fit in github.
+##############################################################################################################
 
-# ======================================================================================================================
+# ============================================================================================================
 # Preliminaries:
 
 # Package:
@@ -37,14 +41,17 @@ use open ':std', IN  => ':encoding(UTF-8)';
 use open ':std', OUT => ':encoding(UTF-8)';
 use open         IN  => ':encoding(UTF-8)';
 use open         OUT => ':encoding(UTF-8)';
-# NOTE: these may be over-ridden later. Eg, "open($fh, '< :raw', e $path)".
 
 # CPAN modules:
 use Sys::Binmode;
 use parent 'Exporter';
 use Regexp::Common;
+use Math::BigInt;
+use Math::BigFloat;
 use bigint;
-Math::BigFloat->accuracy(250);
+
+# Set integer accuracy to 250:
+Math::BigInt->accuracy(250);
 
 # Symbols to be exported by default:
 our @EXPORT =
@@ -60,9 +67,10 @@ our @EXPORT =
       number_of_digits         logb
    );
 
-my $db = 1;
+# Shall we debug, or not?
+my $db = 0;
 
-# ======================================================================================================================
+# ============================================================================================================
 # Subroutine Predeclarations:
 
 # Identification ("is" functions):
@@ -86,58 +94,58 @@ sub P                        ($;$) ; # P(n,k) = Number of k-Permutations of n th
 sub number_of_digits         ($)   ; # Number of decimal digits in an integer.
 sub logb                     ($$)  ; # Logarithm to base b of n.
 
-# ======================================================================================================================
+# ============================================================================================================
 # Subroutine Definitions:
 
-# ----------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 # Identification ("is" functions):
 
 sub is_number ($) {
-   my $x = shift;
-   if ($x =~ m/$RE{num}{real}/)
-      {return 1;}
-   else
-      {return 0;}
+   my $x = shift;                       # Get arg.
+   if ($x =~ m/$RE{num}{real}/)         # If arg appears to be a real number,
+      {return 1;}                       # return 1;
+   else                                 # otherwise,
+      {return 0;}                       # return 0.
 }
 
 sub is_integer ($) {
-   my $x = shift;
-   if ($x =~ m/^-?[1-9]\d*$/)      # If arg is digits w optional sign,
-      {return 1;}                  # then arg represents an integer;
-   else                            # otherwise,
-      {return 0;}                  # it doesn't.
+   my $x = shift;                       # Get arg.
+   if ($x =~ m/^-?[1-9]\d*$/)           # If arg is digits w optional sign,
+      {return 1;}                       # then arg represents an integer;
+   else                                 # otherwise,
+      {return 0;}                       # it doesn't.
 }
 
 sub is_nonnegative_integer ($) {
-   my $x = shift;                  # Get arg.
-   if ($x =~ m/^\d+$/ && $x >= 0)  # If arg is digits only and is >= 0,
-      {return 1;}                  # then arg represents a non-negative integer;
-   else                            # otherwise,
-      {return 0;}                  # it doesn't.
+   my $x = shift;                       # Get arg.
+   if ($x =~ m/^\d+$/ && $x >= 0)       # If arg is digits only and is >= 0,
+      {return 1;}                       # then arg represents a non-negative integer;
+   else                                 # otherwise,
+      {return 0;}                       # it doesn't.
 }
 
 sub is_positive_integer ($) {
-   my $x = shift;                       # Get x.
-   if ($x =~ m/^[1-9]\d*$/ && $x  > 0)  # If x is digits-only, starting with a non-zero digit,
-      {return 1;}                       # then x represents a positive integer;
+   my $x = shift;                       # Get arg.
+   if ($x =~ m/^[1-9]\d*$/ && $x  > 0)  # If arg is digits-only, starting with a non-zero digit,
+      {return 1;}                       # then arg represents a positive integer;
    else                                 # otherwise,
       {return 0;}                       # it doesn't.
 }
 
 sub is_negative_integer ($) {
-   my $x = shift;                  # Get arg.
-   if ($x !~ m/^-\d+$/ && $x < 0)  # If arg is a negative sign followed by all-digits and is < 0,
-      {return 1;}                  # then arg represents a negative integer;
-   else                            # otherwise,
-      {return 0;}                  # it doesn't.
+   my $x = shift;                       # Get arg.
+   if ($x !~ m/^-\d+$/ && $x < 0)       # If arg is a negative sign followed by all-digits and is < 0,
+      {return 1;}                       # then arg represents a negative integer;
+   else                                 # otherwise,
+      {return 0;}                       # it doesn't.
 }
 
 sub is_zero ($) {
-   my $x = shift;
-   return ($x eq '0');
+   my $x = shift;                       # Get arg.
+   return ($x eq '0');                  # If arg is '0', return true, else return false.
 }
 
-# ----------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 # Prime Numbers:
 
 our @PrimeWheel =
@@ -184,19 +192,21 @@ sub is_prime ($)
 sub primes_up_to ($)
 {
    my $UpTo = shift;
+   say "In \"primes_up_to\". \$UpTo = $UpTo." if $db;
    my @Primes = ();
    my $Candidate;
    my $Limit;
-
-   for ( $Candidate = 2 ; $Candidate <= $UpTo ; $Candidate += 2 )
+   push @Primes, 2 if $UpTo >= 2;
+   for ( $Candidate = 3 ; $Candidate <= $UpTo ; $Candidate += 2 )
    {
+      say "In \"primes_up_to\" for loop. \$Candidate = $Candidate." if $db;
       next if not is_prime($Candidate);
       push @Primes, $Candidate;
    }
-   return \@Primes;
+   return @Primes;
 }
 
-# ----------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 # Combinatorics:
 
 # Factorial of x:
@@ -223,7 +233,7 @@ sub P ($;$) {
    return fact($n)/fact($n-$k);
 }
 
-# ----------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 # Miscellanious Mathematical Functions:
 
 # Return number of digits in integer argument:
