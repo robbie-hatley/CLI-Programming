@@ -51,7 +51,7 @@ do a "uniq sort", and shift the first number if it's 0.
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 double-quoted array of arrays of non-negative integers, in proper Perl syntax, like so:
-./ch-1.pl "([0,17,6,17,4,2],[1,2,3,4,5,6])"
+./ch-2.pl "([0,17,6,17,4,2],[1,2,3,4,5,6])"
 
 Output is to STDOUT and will be each input array followed by corresponding output.
 
@@ -104,9 +104,15 @@ for my $aref (@arrays) {
       say "Moving on to next array.";
       next;
    }
-   my @nums = uniq sort {$a<=>$b} @$aref;
-   shift @nums if 0 == $nums[0];
-   say "Number of operations required = ", scalar(@nums);
+   my $n = 0;
+   my %h;
+   $h{0} = 'yes';
+   for (@$aref) {
+      next if defined $h{$_};
+      ++$n;
+      $h{$_} = 'yes';
+   }
+   say "Number of operations required = $n";
 }
 
 # Determine and print execution time:
