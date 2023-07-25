@@ -2,9 +2,9 @@
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # Template.pl
 # "Template" serves as a template for making new file and directory maintenance scripts.
 #
@@ -17,39 +17,46 @@
 # Sat Apr 16, 2016: Now using -CSDA.
 # Sun Dec 24, 2017: Now splicing options from @ARGV.
 # Thu Jul 11, 2019: Combined getting & processing options and arguments.
-# Fri Jul 19, 2019: Renamed "get_and_options_and_arguments" to "argv" and got rid of arrays @CLOptions and @CLArguments.
+# Fri Jul 19, 2019: Renamed "get_and_options_and_arguments" to "argv" and got rid of arrays @CLOptions and
+#                   @CLArguments.
 # Sun Feb 23, 2020: Added entry and exit announcements, and refactored statistics.
-# Sat Jan 02, 2021: Got rid of all "our" variables; all subs return 1; and all Here documents are now indented 3 spaces.
-# Fri Jan 29, 2021: Corrected minor comment and formatting errors, and changed erasure of Here-document indents
-#                   from "s/^ +//gmr" to "s/^   //gmr".
+# Sat Jan 02, 2021: Got rid of all "our" variables; all subs return 1; and all Here documents are now
+#                   indented 3 spaces.
+# Fri Jan 29, 2021: Corrected minor comment and formatting errors, and changed erasure of Here-document
+#                   indents from "s/^ +//gmr" to "s/^   //gmr".
 # Mon Feb 08, 2021: Got rid of "help" function (now using "__DATA__"). Renamed "error" to "error".
 # Sat Feb 13, 2021: Reinstituted "help()". "error()" now exits program. Created "dire_stats()".
-# Wed Feb 17, 2021: Refactored to use the new GetFiles(), which now requires a fully-qualified directory as its first
-#                   argument, target as second, and regexp (instead of wildcard) as third.
+# Wed Feb 17, 2021: Refactored to use the new GetFiles(), which now requires a fully-qualified directory as
+#                   its first argument, target as second, and regexp (instead of wildcard) as third.
 # Mon Mar 15, 2021: Now using time stamping.
 # Sat Nov 13, 2021: Refreshed colophon, title card, and boilerplate.
-# Mon Nov 15, 2021: Changed regexps to qr/YourRegexpHere/, and instructed user to use "extended regexp sequences"
-#                   in order to use pattern modifiers such as "i".
-# Tue Nov 16, 2021: Now using common::sense, and now using extended regexp sequences instead of regexp delimiters.
-# Wed Nov 17, 2021: Now using raw regexps instead of qr//. Also, fixed bug in which some files were being reported twice
-#                   because they matched more than one regexp. (I inverted the order of the regexp and file loops.)
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Mon Nov 15, 2021: Changed regexps to qr/YourRegexpHere/, and instructed user to use "extended regexp
+#                   sequences" in order to use pattern modifiers such as "i".
+# Tue Nov 16, 2021: Now using common::sense, and now using extended regexp sequences instead of regexp
+#                   delimiters.
+# Wed Nov 17, 2021: Now using raw regexps instead of qr//. Also, fixed bug in which some files were being
+#                   reported twice because they matched more than one regexp. (I inverted the order of the
+#                   regexp and file loops.)
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
 # Fri Dec 03, 2021: Now using just 1 regexp. (Use alternation instead of multiple regexps.)
 # Sat Dec 04, 2021: Improved formatting in some places.
-# Sun Mar 05, 2023: Updated to v5.36. Got rid of "common::sense" (antiquated). Got rid of "given" (deprecated).
-#                   Changed all prototypes to conform to v5.36 standards: "sub mysub :prototype($) {my $x=shift;}"
-# Sat Mar 18, 2023: Added missing "use utf8" (necessary due to removal of common::sense). Got rid of all prototypes.
-#                   Converted &curfile and &error to signatures. Made &error a "do one thing only" subroutine.
-#                   Added "quiet", "verbose", "local", and "recurse" options.
-########################################################################################################################
+# Sun Mar 05, 2023: Updated to v5.36. Got rid of "common::sense" (antiquated). Got rid of "given" (obsolete).
+#                   Changed all prototypes to conform to v5.36 standards:
+#                   "sub mysub :prototype($) {my $x=shift;}"
+# Sat Mar 18, 2023: Added missing "use utf8" (necessary due to removal of common::sense). Got rid of all
+#                   prototypes. Converted &curfile and &error to signatures. Made &error a "do one thing only"
+#                   subroutine. Added "quiet", "verbose", "local", and "recurse" options.
+# Tue Jul 25, 2023: Decreased width to 110 (with github in mind). Made single-letter options stackable.
+##############################################################################################################
 
-########################################################################################################################
+##############################################################################################################
 # myprog.pl
 # "MyProg" is a program which [insert description here].
 # Written by Robbie Hatley.
 # Edit history:
 # Sat Jun 05, 2021: Wrote it.
-########################################################################################################################
+##############################################################################################################
 
 use v5.36;
 use strict;
@@ -73,7 +80,7 @@ use RH::RegTest;
 use RH::Util;
 use RH::WinChomp;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 sub argv    ; # Process @ARGV.
 sub curdire ; # Process current directory.
@@ -82,9 +89,10 @@ sub stats   ; # Print statistics.
 sub error   ; # Handle errors.
 sub help    ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Settings:                    Meaning:                     Range:    Default:
+$,            = ', '       ; # Array formatting.
 my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (Don't print diagnostics.)
 my $Verbose   = 1          ; # Be wordy?                    bool      1 (Blab.)
 my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (Recurse.)
@@ -96,7 +104,7 @@ my $direcount = 0          ; # Count of directories processed by curdire().
 my $filecount = 0          ; # Count of dir entries processed by curfile().
 
 # Accumulations of counters from RH::Dir::GetFiles():
-my $totfcount = 0          ; # Count of all targeted directory entries matching regexp and verified by GetFiles().
+my $totfcount = 0          ; # Count of all directory entries matching target & regexp & verified by GetFiles.
 my $noexcount = 0          ; # Count of all nonexistent files encountered.
 my $ottycount = 0          ; # Count of all tty files.
 my $cspccount = 0          ; # Count of all character special files.
@@ -111,7 +119,7 @@ my $hlnkcount = 0          ; # Count of all regular files with multiple hard lin
 my $regfcount = 0          ; # Count of all regular files.
 my $unkncount = 0          ; # Count of all unknown files.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
@@ -130,39 +138,36 @@ my $unkncount = 0          ; # Count of all unknown files.
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
 sub argv
 {
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-q' || $_ eq '--quiet'        ) {$Verbose =  0 ;}
-         elsif ( $_ eq '-v' || $_ eq '--verbose'      ) {$Verbose =  1 ;} # DEFAULT
-         elsif ( $_ eq '-l' || $_ eq '--local'        ) {$Recurse =  0 ;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;} # DEFAULT
-         elsif ( $_ eq '-f' || $_ eq '--target=files' ) {$Target  = 'F';}
-         elsif ( $_ eq '-d' || $_ eq '--target=dirs'  ) {$Target  = 'D';}
-         elsif ( $_ eq '-b' || $_ eq '--target=both'  ) {$Target  = 'B';}
-         elsif ( $_ eq '-a' || $_ eq '--target=all'   ) {$Target  = 'A';} # DEFAULT
-
-         # Remove option from @ARGV:
-         splice @ARGV, $i, 1;
-
-         # Move the index 1-left, so that the "++$i" above
-         # moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right
-         # due to deletion of previous element contents:
-         --$i;
-      }
+   my @options;
+   my @arguments;
+   for (@ARGV) {
+     #if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/) {push @options  , $_}
+      if (/^-[^-]+$/ || /^--[^-]+$/) {push @options  , $_}
+      else                           {push @arguments, $_}
    }
-   my $NA = scalar(@ARGV);
+   if ($db) {
+      say "options   = (@options)";
+      say "arguments = (@arguments)";
+   }
+   for (@options) {
+      if ( $_ =~ m/^-[^-]*h/ || $_ eq '--help'         ) {help; exit 777;}
+      if ( $_ =~ m/^-[^-]*q/ || $_ eq '--quiet'        ) {$Verbose =  0 ;}
+      if ( $_ =~ m/^-[^-]*v/ || $_ eq '--verbose'      ) {$Verbose =  1 ;} # DEFAULT
+      if ( $_ =~ m/^-[^-]*l/ || $_ eq '--local'        ) {$Recurse =  0 ;}
+      if ( $_ =~ m/^-[^-]*r/ || $_ eq '--recurse'      ) {$Recurse =  1 ;} # DEFAULT
+      if ( $_ =~ m/^-[^-]*f/ || $_ eq '--target=files' ) {$Target  = 'F';}
+      if ( $_ =~ m/^-[^-]*d/ || $_ eq '--target=dirs'  ) {$Target  = 'D';}
+      if ( $_ =~ m/^-[^-]*b/ || $_ eq '--target=both'  ) {$Target  = 'B';}
+      if ( $_ =~ m/^-[^-]*a/ || $_ eq '--target=all'   ) {$Target  = 'A';} # DEFAULT
+   }
+   my $NA = scalar(@arguments);
    if    ( 0 == $NA ) {                                  } # Do nothing.
-   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/o           } # Set $RegExp.
+   elsif ( 1 == $NA ) {$RegExp = qr/$arguments[0]/o      } # Set $RegExp.
    else               {error($NA); say ''; help; exit 666} # Print error and help messages and exit 666.
    return 1;
 } # end sub argv
@@ -287,6 +292,8 @@ sub help
    "-d" or "--target=dirs"     Target Directories.
    "-b" or "--target=both"     Target Both.
    "-a" or "--target=all"      Target All.          (DEFAULT)
+   All single-letter options are stackable (eg: "-qlf").
+   All options other than those shown above are ignored.
 
    Description of arguments:
    In addition to options, this program can take one optional argument which, if
