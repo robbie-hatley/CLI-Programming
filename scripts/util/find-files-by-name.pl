@@ -1,10 +1,10 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # find-files-by-name.pl
 # Finds directory entries in current directory (and all subdirectories, unless a -l or --local option is used)
 # which match a given target ("files", "directories", "both", or "all") and which have names which match a
@@ -16,43 +16,49 @@
 # Edit history:
 # Sun Sep 06, 2020: Wrote first draft;
 # Mon Feb 01, 2021: Now using both regular expression and optional wildcard.
-# Tue Feb 09, 2021: Got rid of two versions of this program (I apparently wrote it in 2020 and forgot about it, then
-#                   wrote it again in 2021) and consolidated into this version. Got rid of most of the boiler plate
-#                   (now using common::sense).
-# Sat Feb 13, 2021: No-longer using a wildcard at all, as it's superfluous now that we're using a regex. Now using my
-#                   "glob_regexp_utf8" function.
+# Tue Feb 09, 2021: Got rid of two versions of this program. (I apparently wrote it in 2020 and forgot about
+#                   it, then wrote it again in 2021) and consolidated into this version. Got rid of most of
+#                   the boiler plate (now using common::sense).
+# Sat Feb 13, 2021: No-longer using a wildcard at all, as it's superfluous now that we're using a regex.
+#                   Now using my "glob_regexp_utf8" function.
 # Sun Feb 28, 2021: Added case-insensitive search.
 # Fri Mar 12, 2021: Correct errors in comments, and changed "use v5.16" to "use v5.30".
-# Wed Mar 17, 2021: Extreme refactor. Now accepts unlimited number of regexps. Also, now requires qr(delimiters) on each
-#                   regexp, like my "match.pl" does. Also, now using Sys::Binmode. Also, now using raw readdir, then
-#                   manually decoding each incoming directory entry to "$name", and only encoding IMMEDIATELY BEFORE
-#                   send-out, as I've discovered that trying to hold encoded strings in-memory corrupts MinTTY settings
-#                   so that some characters become boxes. In other words, my "e" sub should be used inline, in the style
-#                   of "functional programming".
-# Tue Nov 16, 2021: Now using extended regexp sequences ('(?i:dog)') instead of regexp delimiters ('/dog/i') for args.
+# Wed Mar 17, 2021: Extreme refactor. Now accepts unlimited number of regexps. Also, now requires
+#                   qr(delimiters) on each regexp, like my "match.pl" does. Also, now using Sys::Binmode.
+#                   Also, now using raw readdir, then manually decoding each incoming directory entry to
+#                   "$name", and only encoding IMMEDIATELY BEFORE send-out, as I've discovered that trying to
+#                   hold encoded strings in-memory corrupts MinTTY settings so that some characters become
+#                   boxes. In other words, my "e" sub should be used inline, in the style of
+#                   "functional programming".
+# Tue Nov 16, 2021: Now using extended regexp sequences ('(?i:dog)') instead of regexp delimiters ('/dog/i').
 # Wed Nov 17, 2021: Now using "if/elsif" instead of "and" in "sub argv ()".
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-# Mon Feb 20, 2023: Upgraded to 5.36. Got rid of all prototypes (they were all empty anyway). Fixed help and argv.
-#                   Put 'use feature "signatures";' after 'use common::sense;" to fix conflict between
-#                   common::sense and signatures.
-########################################################################################################################
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
+# Mon Feb 20, 2023: Got rid of all prototypes (they were all empty anyway). Fixed help and argv.
+# Thu Jul 27, 2023: Extreme re-factor. Upgraded from "use v5.32;" to "use v5.36;". Got rid of "common::sense"
+#                   (antiquated). Reduced width to 110 characters with github in-mind. Sub "error" is now
+#                   "error($NA)". Sub "argv" now accepts piled-up single-letter options such as "-qlf".
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+
 use Sys::Binmode;
 use Time::HiRes 'time';
 use RH::Util;
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv     ; # Process @ARGV.
-sub curdire  ; # Process current directory.
-sub stats    ; # Print statistics.
-sub error    ; # Print error message, print help message, and exit 666.
-sub help     ; # Print help.
+sub argv    ; # Process @ARGV.
+sub curdire ; # Process current directory.
+sub stats   ; # Print statistics.
+sub error   ; # Print error message, print help message, and exit 666.
+sub help    ; # Print help.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Turn on debugging?
 my $db = 0; # Set to 1 for debugging, 0 for no debugging.
@@ -67,7 +73,7 @@ my $Target    = 'A'        ; # Files, dirs, both, all?   F|D|B|A   'A'
 my $direcount = 0          ; # Count of directories processed.
 my $pathcount = 0          ; # Count of paths found matching given target and regexps.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
@@ -85,50 +91,47 @@ my $pathcount = 0          ; # Count of paths found matching given target and re
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV:
-sub argv
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if (/^-h$/ || /^--help$/        ) {help; exit 777;}
-         elsif (/^-l$/ || /^--local$/       ) {$Recurse =  0 ;}
-         elsif (/^-r$/ || /^--recurse$/     ) {$Recurse =  1 ;} # DEFAULT
-         elsif (/^-q$/ || /^--quiet$/       ) {$Verbose =  0 ;} # DEFAULT
-         elsif (/^-v$/ || /^--verbose$/     ) {$Verbose =  1 ;}
-         elsif (/^-f$/ || /^--target=files$/) {$Target  = 'F';}
-         elsif (/^-d$/ || /^--target=dirs$/ ) {$Target  = 'D';}
-         elsif (/^-b$/ || /^--target=both$/ ) {$Target  = 'B';}
-         elsif (/^-a$/ || /^--target=all$/  ) {$Target  = 'A';} # DEFAULT
-
-         # Remove option from @ARGV:
-         splice @ARGV, $i, 1;
-
-         # Move the index 1-left, so that the "++$i" above
-         # moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right
-         # due to deletion of previous element contents:
-         --$i;
-      }
+sub argv {
+   # Get options and arguments:
+   my @options;
+   my @arguments;
+   for (@ARGV) {
+      if (/^-[^-]+$/ || /^--[^-]+$/) {push @options  , $_}
+      else                           {push @arguments, $_}
+   }
+   if ($db) {
+      say "options   = (@options)";
+      say "arguments = (@arguments)";
    }
 
-   # Get number of arguments and take action accordingly:
-   my $NA = scalar @ARGV;
-   if    ( 0 == $NA ) {}                                               # Do nothing. (Use default settings.)
-   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/;}                        # Set RegExp.
-   else               {error($NA);}                                    # Error.
+   # Process options:
+   for (@options) {
+      if ( $_ =~ m/^-[^-]*h/ || $_ eq '--help'         ) {help; exit 777;}
+      if ( $_ =~ m/^-[^-]*q/ || $_ eq '--quiet'        ) {$Verbose =  0 ;}
+      if ( $_ =~ m/^-[^-]*v/ || $_ eq '--verbose'      ) {$Verbose =  1 ;} # DEFAULT
+      if ( $_ =~ m/^-[^-]*l/ || $_ eq '--local'        ) {$Recurse =  0 ;}
+      if ( $_ =~ m/^-[^-]*r/ || $_ eq '--recurse'      ) {$Recurse =  1 ;} # DEFAULT
+      if ( $_ =~ m/^-[^-]*f/ || $_ eq '--target=files' ) {$Target  = 'F';}
+      if ( $_ =~ m/^-[^-]*d/ || $_ eq '--target=dirs'  ) {$Target  = 'D';}
+      if ( $_ =~ m/^-[^-]*b/ || $_ eq '--target=both'  ) {$Target  = 'B';}
+      if ( $_ =~ m/^-[^-]*a/ || $_ eq '--target=all'   ) {$Target  = 'A';} # DEFAULT
+   }
 
+   # Process arguments:
+   my $NA = scalar(@arguments);
+   if    ( 0 == $NA ) {                                  } # Do nothing.
+   elsif ( 1 == $NA ) {$RegExp = qr/$arguments[0]/o      } # Set $RegExp.
+   else               {error($NA); say ''; help; exit 666} # Print error and help messages and exit 666.
 
-   return 1;                                                           # Redi ad munus vocationis.
+   # Redi ad munus vocationis:
+   return 1;
 } # end sub argv
 
 # Process current directory:
-sub curdire
-{
+sub curdire {
    # Increment directory counter:
    ++$direcount;
 
@@ -142,8 +145,8 @@ sub curdire
    my $valid = is_valid_qual_dir($cwd);
    if ( ! $valid )
    {
-      print STDERR "Warning in \"find-files-by-name.pl\":\n" . 
-                   "cwd_utf8 returned an invalid directory name.\n" . 
+      print STDERR "Warning in \"find-files-by-name.pl\":\n" .
+                   "cwd_utf8 returned an invalid directory name.\n" .
                    "Skipping this directory and moving on to next.\n\n";
       return 1;
    }
@@ -166,8 +169,7 @@ sub curdire
 } # end sub curdire
 
 # Print stats:
-sub stats
-{
+sub stats {
    warn "\n";
    warn "Stats for \"find-files-by-name.pl\":\n";
    warn "Target = \"$Target\"\n";
@@ -178,29 +180,28 @@ sub stats
 } # end sub stats
 
 # Print error and help messages and exit 666:
-sub error
-{
-   my $NA = shift;
+sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
-   Error: you typed $NA arguments, but \"find-files-by-name.pl\"
-   requires either 0 or 1 arguments. Help follows:
 
+   Error: you typed $NA arguments, but \"find-files-by-name.pl\"
+   requires either 0 or 1 arguments.
    END_OF_ERROR
-   help;
-   exit 666;
 } # end error ($NA)
 
 # Print help message:
-sub help
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "find-files-by-name.pl". This program finds directory entries in
    the current directory (and all subdirectories, unless a -l or --local option
    is used) which match a given target ("files", "directories", "both", or "all",
-   defaulting to "all") and which have names which match given Perl-Compliant
-   Regular Expressions (defaulting to the single regular expression '^.+$', which
-   matches all file names) and prints their full paths. If no target, no regexps,
-   and no options are specified, this program prints all directory-tree entries.
+   defaulting to "all") and which have names which match a given Perl-Compliant
+   Regular Expression (defaulting to the regular expression '^.+$', which matches
+   all file names) and prints their full paths.
+
+   If no target, no regexps, and no options are specified, this program prints
+   all entries in the current directory tree, which probably isn't what you want,
+   so I suggest using options and an argument to specify what you're looking for.
 
    Command lines:
    find-files-by-name.pl [-h|--help]            (to print help)
@@ -217,11 +218,17 @@ sub help
    "-d" or "--target=dirs"      Find directories.
    "-b" or "--target=both"      Find both files and directories.
    "-a" or "--target=all"       Find ALL directory entries. (DEFAULT)
-   All other options are ignored.
+   Single-letter options may be piled-up after a single hyphen:
+   ffn -rqf 'dog'
+   If multiple conflicting options are given, the last dominates.
+   If multiple conflicting letters are piled after a single colon,
+   the last of these dominates: hqvlrfdba.
+   All options  not listed above are ignored.
 
    Description of arguments:
+
    In addition to options, this program takes 0 or 1 arguments.
-   
+
    Argument 1 (optional), if present, must be a Perl-Compliant Regular Expression
    specifying which items to process. To specify multiple patterns, use the "|"
    alternation operator. To apply pattern modifier letters, use an Extended RegExp
