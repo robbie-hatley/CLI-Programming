@@ -122,9 +122,9 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar(@arguments);
-   if    ( 0 == $NA ) {                                  } # Do nothing.
-   elsif ( 1 == $NA ) {$RegExp = qr/$arguments[0]/o      } # Set $RegExp.
-   else               {error($NA); say ''; help; exit 666} # Print error and help messages and exit 666.
+   if    ( 0 == $NA ) {                             } # Do nothing.
+   elsif ( 1 == $NA ) {$RegExp = qr/$arguments[0]/o } # Set $RegExp.
+   else               {error($NA); help; exit 666   } # Print error and help messages and exit 666.
 
    # Redi ad munus vocationis:
    return 1;
