@@ -285,7 +285,7 @@ sub error ($NA) {
    a regular expression, a replacement string, and (optionally) a cluster of
    s/// flag letters. Did you forget to put each argument in 'single quotes'?
    Failure to do this can send dozens (or hundreds, or thousands) of arguments
-   to RenameFiles, instead of the required 2 or 3 arguments. Help follows:
+   to RenameFiles, instead of the required 2 or 3 arguments.
    END_OF_ERROR
 } # end sub error ($NA)
 
