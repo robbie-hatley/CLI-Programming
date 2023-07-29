@@ -62,14 +62,16 @@ my $filecount = 0; # Count of files processed.
 
 # Accumulations of counters from RH::Dir :
 my $totfcount = 0; # Count of all targeted directory entries matching wildcard and verified by GetFiles().
-my $noexcount = 0; # Count of all nonexistent files encountered. 
+my $noexcount = 0; # Count of all nonexistent files encountered.
 my $ottycount = 0; # Count of all tty files.
 my $cspccount = 0; # Count of all character special files.
 my $bspccount = 0; # Count of all block special files.
 my $sockcount = 0; # Count of all sockets.
 my $pipecount = 0; # Count of all pipes.
+my $brkncount = 0; # Count of all symbolic links to nowhere.
 my $slkdcount = 0; # Count of all symbolic links to directories.
-my $linkcount = 0; # Count of all symbolic links to non-directories.
+my $linkcount = 0; # Count of all symbolic links to files.
+my $weircount = 0; # Count of all symbolic links to weirdness.
 my $multcount = 0; # Count of all directories with multiple hard links.
 my $sdircount = 0; # Count of all directories.
 my $hlnkcount = 0; # Count of all regular files with multiple hard links.
@@ -166,8 +168,10 @@ sub curdire ()
       $bspccount += $RH::Dir::bspccount; # block special files
       $sockcount += $RH::Dir::sockcount; # sockets
       $pipecount += $RH::Dir::pipecount; # pipes
+      $brkncount += $RH::Dir::brkncount; # symbolic links to nowhere
       $slkdcount += $RH::Dir::slkdcount; # symbolic links to directories
       $linkcount += $RH::Dir::linkcount; # symbolic links to non-directories
+      $weircount += $RH::Dir::weircount; # symbolic links to non-directories
       $multcount += $RH::Dir::multcount; # directories with multiple hard links
       $sdircount += $RH::Dir::sdircount; # directories
       $hlnkcount += $RH::Dir::hlnkcount; # regular files with multiple hard links
@@ -176,17 +180,14 @@ sub curdire ()
    }
 
    # Make a list of types:
-   # WOMBAT RH 2022-07-30: I'm removing "M" from this list PERMANENTLY, because in Linux, EVERY directory has multiple
-   # hardlinks to it, so "M" would only be meaningful in Windows, and I'm phasing Windows out of my life:
-  #my @Types = split //,'NTYXOPSLMDHFU';
-   my @Types = split //,'NTYXOPSLDHFU';
+   my @Types = split //,'NTYXOPBSLWDHFU';
 
    # Make a hash of refs to lists of refs to file-record hashes, keyed by type:
    my %TypeLists;
 
    if ($db) {print Dumper \%TypeLists}
 
-   # Use autovivification to insert refs to anonymous arrays into %TypeLists, 
+   # Use autovivification to insert refs to anonymous arrays into %TypeLists,
    # and to push refs to file-record hashes into those anonymous arrays:
    foreach my $type (@Types)
    {
@@ -203,29 +204,30 @@ sub curdire ()
 
    if ($Inodes)
    {
-      say 'T: Date:       Time:        Size:     Inode:                #:   Name:';
+      say 'T: Date:       Time:        Size:     Inode:      L:   Bsize:   Blocks:  Name:';
       foreach my $type (@Types)
       {
          foreach my $file (sort {fc($a->{Name}) cmp fc($b->{Name})} @{$TypeLists{$type}})
          {
             ++$filecount;
-            printf("%-1s  %-10s  %-11s  %-8.2E  %20d  %3u  %-s\n", 
-                   $file->{Type}, $file->{Date},  $file->{Time}, 
-                   $file->{Size}, $file->{Inode}, $file->{Nlink}, $file->{Name});
+            printf("%-1s  %-10s  %-11s  %-8.2E  %10d  %3u  %7u  %7u  %-s\n",
+                   $file->{Type},  $file->{Date},   $file->{Time},
+                   $file->{Size},  $file->{Inode},  $file->{Nlink},
+                   $file->{Bsize}, $file->{Blocks}, $file->{Name});
          }
       }
    }
 
    else
    {
-      say 'T: Date:       Time:        Size:     #:   Name:';
+      say 'T: Date:       Time:        Size:     L:   Name:';
       foreach my $type (@Types)
       {
          foreach my $file (sort {fc($a->{Name}) cmp fc($b->{Name})} @{$TypeLists{$type}})
          {
             ++$filecount;
-            printf("%-1s  %-10s  %-11s  %-8.2E  %3u  %-s\n", 
-                   $file->{Type}, $file->{Date},  $file->{Time}, 
+            printf("%-1s  %-10s  %-11s  %-8.2E  %3u  %-s\n",
+                   $file->{Type}, $file->{Date},  $file->{Time},
                    $file->{Size}, $file->{Nlink}, $file->{Name});
          }
       }
@@ -253,8 +255,10 @@ sub dir_stats ($)
       printf("%7u block special files\n",                    $RH::Dir::bspccount);
       printf("%7u sockets\n",                                $RH::Dir::sockcount);
       printf("%7u pipes\n",                                  $RH::Dir::pipecount);
+      printf("%7u symbolic links to nowhere\n",              $RH::Dir::brkncount);
       printf("%7u symbolic links to directories\n",          $RH::Dir::slkdcount);
-      printf("%7u symbolic links to non-directories\n",      $RH::Dir::linkcount);
+      printf("%7u symbolic links to files\n",                $RH::Dir::linkcount);
+      printf("%7u symbolic links to weirdness\n",            $RH::Dir::weircount);
       printf("%7u directories\n",                            $RH::Dir::sdircount);
       printf("%7u regular files with multiple hard links\n", $RH::Dir::hlnkcount);
       printf("%7u regular files\n",                          $RH::Dir::regfcount);
@@ -282,8 +286,10 @@ sub tree_stats ()
       printf("%7u block special files\n",                    $bspccount);
       printf("%7u sockets\n",                                $sockcount);
       printf("%7u pipes\n",                                  $pipecount);
+      printf("%7u symbolic links to nowhere\n",              $brkncount);
       printf("%7u symbolic links to directories\n",          $slkdcount);
-      printf("%7u symbolic links to non-directories\n",      $linkcount);
+      printf("%7u symbolic links to files\n",                $linkcount);
+      printf("%7u symbolic links to weirdness\n",            $weircount);
       printf("%7u directories\n",                            $sdircount);
       printf("%7u regular files with multiple hard links\n", $hlnkcount);
       printf("%7u regular files\n",                          $regfcount);
@@ -313,26 +319,14 @@ sub help ()
    the current directory (and all subdirectories if a -r or --recurse
    option is used). Each listing line will give the following pieces
    of information about a file:
-   1. Type of file (single-letter code, one of NTYXOPSLMDHFU).
+   1. Type of file (single-letter code, one of BDFHLNOPSTUWXY).
    2. Last-modified Date of file.
    3. Last-modified Time of file.
    4. Size of file in format #.##E+##
    5. Number of hard links to file.
    6. Name of file.
-
-   The meanings of the Type letters are as follows:
-   N - object is nonexistent
-   T - object opens to a TTY
-   Y - object is a character special file
-   X - object is a block special file
-   O - object is a socket
-   P - object is a pipe
-   S - object is a symbolic link to a directory ("SYMLINKD")
-   L - object is a symbolic link to a file
-   D - object is a directory
-   H - object is a regular file with multiple hard links
-   F - object is a regular file
-   U - object is of unknown type
+   If a "-i" or "--inodes" option is used, the inode number,
+   recommended block size, and number of blocks are also printed.
 
    Command line:
    rhdir.pl [options] [Argument]
@@ -360,10 +354,25 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
+
+   The meanings of the Type letters are as follows:
+   B - object is a Broken symbolic link
+   D - object is a Directory
+   F - object is a regular File
+   H - object is a regular file with multiple Hard links
+   L - object is a symbolic Link to a file
+   N - object is Nonexistent
+   O - object is a sOcket
+   P - object is a Pipe
+   S - object is a Symbolic link to a directory
+   T - object opens to a Tty
+   U - object is of Unknown type
+   W - object is a symbolic link to Weirdness
+   X - object is a block special file
+   Y - object is a character special file
 
    Happy directory listing!
-
    Cheers,
    Robbie Hatley,
    programmer.

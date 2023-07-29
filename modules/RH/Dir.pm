@@ -199,8 +199,10 @@ our $cspccount = 0; # Count of all character special files.
 our $bspccount = 0; # Count of all block special files.
 our $sockcount = 0; # Count of all sockets.
 our $pipecount = 0; # Count of all pipes.
+our $brkncount = 0; # Count of all symbolic links to nowhere.
 our $slkdcount = 0; # Count of all symbolic links to directories.
 our $linkcount = 0; # Count of all symbolic links to non-directories.
+our $weircount = 0; # Count of all symbolic links to weirdness.
 our $multcount = 0; # Count of all directories with multiple hard links.
 our $sdircount = 0; # Count of all directories.
 our $hlnkcount = 0; # Count of all regular files with multiple hard links.
@@ -251,8 +253,10 @@ sub GetFiles (;$$$)
    $bspccount = 0; # Count of all block special files.
    $sockcount = 0; # Count of all sockets.
    $pipecount = 0; # Count of all pipes.
+   $brkncount = 0; # Count of all symbolic links to nowhere.
    $slkdcount = 0; # Count of all symbolic links to directories.
-   $linkcount = 0; # Count of all symbolic links to non-directories.
+   $linkcount = 0; # Count of all symbolic links to files.
+   $weircount = 0; # Count of all symbolic links to weirdness.
    $multcount = 0; # Count of all directories with multiple hard links.
    $sdircount = 0; # Count of all directories.
    $hlnkcount = 0; # Count of all regular files with multiple hard links.
@@ -298,60 +302,67 @@ sub GetFiles (;$$$)
       # Target of file (for links):
       my $l_targ;
 
-      # Stats of file:
-      my ($Ldev, $Linode, $Lmode, $Lnlink, $Luid, $Lgid, $Lrdev, $Lsize, $Latime, $Lmtime, $Lctime);
+      # Stats variables:
+      my @stats;
+      my ($Ldev,   $Linode, $Lmode,  $Lnlink,
+          $Luid,   $Lgid,   $Lrdev,  $Lsize,
+          $Latime, $Lmtime, $Lctime, $Lbsize, $Lblcks);
 
-      # Non-existent paths require special handling because stat or lstat returns undef values:
-      if ( ! -e e $path ) # if path does NOT exist...
-      {
+      # Do an lstat before using any file-test operators, so that they can save time by
+      # testing "_" instead of "$path":
+      @stats = lstat e $path;
+
+      # Non-existent paths require special handling because stat or lstat returns empty array. So if @stats
+      # has fewer than 13 elements, set $type to 'N', increment $noexcount, set our stats variables to 0,
+      # set $l_targ to 'NONEXISTENT FILE', and print warning:
+      if ( scalar(@stats) < 13 ) {
+         warn "Warning from GetFiles: Can't lstat path \"$path\" in directory \"$dir\".\n";
          $type = 'N' ;  # $type = nonexistent
          ++$noexcount;  # increment noex counter
                         # Set all of our stats to 0:
-         ($Ldev, $Linode, $Lmode, $Lnlink, $Luid, $Lgid, $Lrdev, $Lsize, $Latime, $Lmtime, $Lctime)
-         = (0,0,0,0,0,0,0,0,0,0,0);
+         ($Ldev,   $Linode, $Lmode,  $Lnlink,
+          $Luid,   $Lgid,   $Lrdev,  $Lsize,
+          $Latime, $Lmtime, $Lctime, $Lbsize, $Lblcks) = (0,0,0,0,0,0,0,0,0,0,0,0,0);
          $l_targ = 'NONEXISTENT FILE';
-         warn "Warning from GetFiles: Path \"$path\" in directory \"$dir\" does not exist.\n";
       } # end if path does NOT exist
 
-      # Then handle existent paths:
-      else # else if path DOES exist...
+      # Otherwise, set our stats variables to the 13 elements of @stats, and determine number of links,
+      # target (if any), and type of file:
+      else
       {
-         # Do an lstat before using any file-test operators, so that they can save time by
-         # testing "_" instead of "$path":
-         ($Ldev, $Linode, $Lmode, $Lnlink, $Luid, $Lgid, $Lrdev, $Lsize, $Latime, $Lmtime, $Lctime)
-         = lstat e $path;
-         my $ml = $Lnlink > 1 ? 1 : 0;                   # Do multiple incoming hard links exist to this inode?
-         $l_targ = 'NO TARGET';                          # Assume for now that no outgoing link target exists.
-         if    ( -t _ )     {$type = 'T'; ++$ottycount;} # Opened to tty.
-         elsif ( -c _ )     {$type = 'Y'; ++$cspccount;} # Character special file.
-         elsif ( -b _ )     {$type = 'X'; ++$bspccount;} # Block special file.
-         elsif ( -S _ )     {$type = 'O'; ++$sockcount;} # Socket.
-         elsif ( -p _ )     {$type = 'P'; ++$pipecount;} # Pipe.
-         # WOMBAT RH 2022-07-30: I'm commenting-out the following PERMANENTLY because it's a misguided historical relic;
-         # in Linux, EVERY directory has many hard links to it because of "." and ".." in each subdir,
-         # so this would only work in Windows, and I'm phasing Windows out of my life:
-        #elsif ( -d _ )
-        #{
-        #   if ($ml)        {$type = 'M'; ++$multcount;} # Directory with multiple hard links.
-        #   else            {$type = 'D'; ++$sdircount;} # Regular directory.
-        #}
-         elsif ( -d _ )     {$type = 'D'; ++$sdircount;} # Directory.
-         elsif ( -l _ )                                  # Symbolic link to something.
+         ($Ldev,   $Linode, $Lmode,  $Lnlink,
+          $Luid,   $Lgid,   $Lrdev,  $Lsize,
+          $Latime, $Lmtime, $Lctime, $Lbsize, $Lblcks) = @stats;
+         my $ml = $Lnlink > 1 ? 1 : 0;  # Do multiple incoming hard links exist to this inode?
+         $l_targ = 'NO TARGET';         # Assume for now that no outgoing link target exists.
+         if       (   -l _     )                              # IS a symbolic link to something.
          {
-            if (-d  _ )     {$type = 'S'; ++$slkdcount;} # Symbolic link to directory.
-            else            {$type = 'L'; ++$linkcount;} # Symbolic link to file.
+            if    ( ! -e $path ) {$type = 'B'; ++$brkncount;} # Symbolic link to nowhere.
+            elsif (   -d _     ) {$type = 'S'; ++$slkdcount;} # Symbolic link to directory.
+            elsif (   -f _     ) {$type = 'L'; ++$linkcount;} # Symbolic link to file.
+            else                 {$type = 'W'; ++$weircount;} # Symbolic link to weirdness.
             $l_targ = readlink_utf8 $path;
             if (not defined $l_targ)
             {
                $l_targ = 'UNDEFINED TARGET';
             }
          }
-         elsif ( -f _ )                                  # File.
+         else                                                 # Is NOT a symbolic link to anything.
          {
-            if ($ml)        {$type = 'H'; ++$hlnkcount;} # File with multiple hard links.
-            else            {$type = 'F'; ++$regfcount;} # Regular file.
+            if    ( ! -e $path ) {$type = 'N'; ++$noexcount;} # Spectre.
+            elsif (   -d _     ) {$type = 'D'; ++$sdircount;} # Directory.
+            elsif (   -t _     ) {$type = 'T'; ++$ottycount;} # Opened to tty.
+            elsif (   -c _     ) {$type = 'Y'; ++$cspccount;} # Character special file.
+            elsif (   -b _     ) {$type = 'X'; ++$bspccount;} # Block special file.
+            elsif (   -S _     ) {$type = 'O'; ++$sockcount;} # Socket.
+            elsif (   -p _     ) {$type = 'P'; ++$pipecount;} # Pipe.
+            elsif (   -f _     )                              # Regular file.
+            {
+               if ($ml)          {$type = 'H'; ++$hlnkcount;} # File with multiple hard links.
+               else              {$type = 'F'; ++$regfcount;} # Regular file.
+            }
+            else                 {$type = 'U'; ++$unkncount;} # Object of unknown type.
          }
-         else               {$type = 'U'; ++$unkncount;} # Object of unknown type.
       } # end else if path DOES exist
 
       # Get date and time from Lmtime:
@@ -378,6 +389,8 @@ sub GetFiles (;$$$)
          'Atime'  => $Latime, # lstat[ 8]
          'Mtime'  => $Lmtime, # lstat[ 9]
          'Ctime'  => $Lctime, # lstat[10]
+         'Bsize'  => $Lbsize, # lstat[11]
+         'Blocks' => $Lblcks, # lstat[12]
          'Target' => $l_targ, # link target (or "NO TARGET" if not link, or "UNDEFINED TARGET" if bad link)
       };
    }; # end foreach (@filepaths)

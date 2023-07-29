@@ -1,13 +1,13 @@
 #! /bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # find-files-by-type.pl
 # Finds directory entries in current directory (and all subdirectories, unless a -l or --local option is used)
-# by type, such as "regular file", "directory", "symbolic link", "socket", "pipe", "block special file", 
+# by type, such as "regular file", "directory", "symbolic link", "socket", "pipe", "block special file",
 # "character special file", or any boolean expression based on Perl file-type operators.
 # Also allows specifying files by a RegExp to be matched against file names.
 #
@@ -25,29 +25,32 @@
 # Wed Feb 17, 2021: Refactored to use the new GetFiles(), which now requires a fully-qualified directory as
 #                   its first argument, target as second, and regexp (instead of wildcard) as third.
 # Tue Nov 16, 2021: Got rid of most boilerplate; now using "use common::sense" instead.
-# Wed Nov 17, 2021: Now using "use Sys::Binmode". Also, fixed hidden bug which was causing program to fail to find
-#                   any files with names using non-English letters, by setting "local $_ = e file->{Path}" in sub
-#                   "process_current_file". (It was the "sending unencoded names to shell under Sys::Binmode" bug,
-#                   previously hidden due to a compensating bug in Perl itself which is removed by Sys::Binmode.)
+# Wed Nov 17, 2021: Now using "use Sys::Binmode". Also, fixed hidden bug which was causing program to fail to
+#                   find any files with names using non-English letters. This was the "sending unencoded
+#                   names to shell under Sys::Binmode" bug, which was previously hidden due to a compensating
+#                   bug in Perl itself, which is removed by "Sys::Binmode". I fixed this by setting
+#                   "local $_ = e file->{Path}" in sub "curfile".
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate, and now using "common::sense".
 # Sat Nov 27, 2021: Shortened sub names. Tested: Works.
 # Mon Feb 20, 2023: Upgraded to "v5.36". Got rid of prototypes. Put signatures on "curfile" and "error".
 #                   Fixed the "$Quiet" vs "$Verbose" variable conflict. Improved "argv". Improved "help".
 #                   Put 'use feature "signatures";' after 'use common::sense;" to fix conflict between
 #                   common::sense and signatures.
-########################################################################################################################
+# Fri Jul 28, 2023: Reduced width from to 110 with Github in-mind. Got rid of "common::sense" (antiquated).
+#                   Multiple single-letter options can now be piled-up after a single hyphen.
+##############################################################################################################
 
 use v5.36;
-use common::sense;
-use feature "signatures";
+use strict;
+use warnings;
+use utf8;
 
 use Sys::Binmode;
 use Time::HiRes 'time';
-
 use RH::Util;
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 sub argv     ; # Process @ARGV.
 sub curdire  ; # Process current directory.
@@ -56,12 +59,13 @@ sub stats    ; # Print statistics.
 sub error    ; # Handle errors.
 sub help     ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Turn on debugging?
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 
 # Settings:                    Meaning:                  Range:    Default:
+   $,         = ', '       ; # Array formatting.         string    ', '
+my $db        = 0          ; # Debug?                    bool      0
 my $Recurse   = 1          ; # Recurse subdirectories?   bool      1
 my $Verbose   = 0          ; # Be wordy?                 bool      0
 my $RegExp    = qr/^.+$/o  ; # Regular expression.       regexp    qr/^.+$/
@@ -74,7 +78,7 @@ my $findcount = 0; # Count of files found which match predicate.
 
 # Accumulations of counters from RH::Dir::GetFiles():
 our $totfcount = 0; # Count of all targeted directory entries matching regexp and verified by GetFiles().
-our $noexcount = 0; # Count of all nonexistent files encountered. 
+our $noexcount = 0; # Count of all nonexistent files encountered.
 our $ottycount = 0; # Count of all tty files.
 our $cspccount = 0; # Count of all character special files.
 our $bspccount = 0; # Count of all block special files.
@@ -88,7 +92,7 @@ our $hlnkcount = 0; # Count of all regular files with multiple hard links.
 our $regfcount = 0; # Count of all regular files.
 our $unkncount = 0; # Count of all unknown files.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
@@ -106,46 +110,55 @@ our $unkncount = 0; # Count of all unknown files.
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV:
-sub argv
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if (/^-h$/ || /^--help$/        ) {help; exit 777;}
-         elsif (/^-l$/ || /^--local$/       ) {$Recurse =  0 ;}
-         elsif (/^-r$/ || /^--recurse$/     ) {$Recurse =  1 ;} # DEFAULT
-         elsif (/^-q$/ || /^--quiet$/       ) {$Verbose =  0 ;} # DEFAULT
-         elsif (/^-v$/ || /^--verbose$/     ) {$Verbose =  1 ;}
-
-         # Remove option from @ARGV:
-         splice @ARGV, $i, 1;
-
-         # Move the index 1-left, so that the "++$i" above
-         # moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right
-         # due to deletion of previous element contents:
-         --$i;
-      }
+sub argv {
+   # Get options and arguments:
+   my @options;
+   my @arguments;
+   for (@ARGV) {
+      if (/^-[^-]+$/ || /^--[^-]+$/) {push @options  , $_}
+      else                           {push @arguments, $_}
+   }
+   if ($db) {
+      say "options   = (@options)";
+      say "arguments = (@arguments)";
    }
 
-   # Get number of arguments and take action accordingly:
-   my $NA = scalar @ARGV;
-   if    ( 0 == $NA ) {}                                               # Do nothing. (Use default settings.)
-   elsif ( 1 == $NA ) {$Predicate = $ARGV[0];}                         # Set predicate.
-   elsif ( 2 == $NA ) {$Predicate = $ARGV[0]; $RegExp = qr/$ARGV[1]/;} # Set predicate and RegExp.
-   else               {error($NA);}                                    # Error.
+   # Process options:
+   for ( @options ) {
+      if ( $_ =~ m/^-[^-]*h/ || $_ eq '--help'         ) {help; exit 777;}
+      if ( $_ =~ m/^-[^-]*q/ || $_ eq '--quiet'        ) {$Verbose =  0 ;} # DEFAULT
+      if ( $_ =~ m/^-[^-]*v/ || $_ eq '--verbose'      ) {$Verbose =  1 ;}
+      if ( $_ =~ m/^-[^-]*l/ || $_ eq '--local'        ) {$Recurse =  0 ;}
+      if ( $_ =~ m/^-[^-]*r/ || $_ eq '--recurse'      ) {$Recurse =  1 ;} # DEFAULT
+   }
 
-   return 1;                                                           # Redi ad munus vocationis.
+   # Process arguments:
+   my $NA = scalar(@arguments);
+   if    ( 0 == $NA ) {
+      ;                             # Do nothing. (Use default settings.)
+   }
+   elsif ( 1 == $NA ) {
+      $Predicate = $arguments[0];   # Set predicate.
+   }
+   elsif ( 2 == $NA ) {
+      $Predicate = $arguments[0];   # Set predicate.
+      $RegExp = qr/$arguments[1]/;  # Set RegExp.
+   }
+   else               {
+      error($NA);                   # Print error message.
+      help();                       # Print help message.
+      exit 666;                     # Exit, returning error code 666 to OS.
+   }
+
+   # Redi ad munus vocationis:
+   return 1;
 } # end sub argv
 
 # Process current directory:
-sub curdire
-{
+sub curdire {
    # Increment directory counter:
    ++$direcount;
 
@@ -159,8 +172,8 @@ sub curdire
    my $valid = is_valid_qual_dir($cwd);
    if ( ! $valid )
    {
-      print STDERR "Warning in \"find-files-by-type.pl\":\n" . 
-                   "cwd_utf8 returned an invalid directory name.\n" . 
+      print STDERR "Warning in \"find-files-by-type.pl\":\n" .
+                   "cwd_utf8 returned an invalid directory name.\n" .
                    "Skipping this directory and moving on to next.\n\n";
       return 1;
    }
@@ -196,8 +209,7 @@ sub curdire
 } # end sub curdire
 
 # Process current file:
-sub curfile ($file)
-{
+sub curfile ($file) {
    ++$filecount;
    local $_ = e $file->{Path};
    if (eval($Predicate))
@@ -209,8 +221,7 @@ sub curfile ($file)
 } # end sub curfile ($file)
 
 # Print stats:
-sub stats
-{
+sub stats {
    say '';
    say 'Statistics for this directory tree:';
    say "Navigated $direcount directories.";
@@ -239,21 +250,19 @@ sub stats
 } # end sub stats
 
 # Print error and help messages and exit 666:
-sub error ($NA)
-{
+sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: you typed $NA arguments, but \"find-files-by-type.pl\"
    requires 0, 1, or 2 arguments. Help follows:
-
    END_OF_ERROR
-   help;
-   exit 666;
 } # end error ($NA)
 
 # Print help message:
 sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "find-files-by-type.pl", Robbie Hatley's nifty file finding
    utility. Given a boolean expression using Perl file test operators,
    and an optional Csh-style file-path wildcard, this program will find
@@ -281,8 +290,8 @@ sub help
 
    Description of arguments:
 
-   "find-files-by-type.pl" takes either 0, 1, or 2 arguments. 
-   
+   "find-files-by-type.pl" takes either 0, 1, or 2 arguments.
+
    Providing no arguments will result in this program returning the paths of all
    regular files and directories, which probably not what you want.
 
@@ -303,15 +312,15 @@ sub help
      -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
 
    Argument 2 (optional), if present, must be a Perl-Compliant Regular Expression
-   specifying which items to process. To specify multiple patterns, use the | 
-   alternation operator. To apply pattern modifier letters, use an Extended 
-   RegExp Sequence. For example, if you want to search for items with names 
-   containing "cat", "dog", or "horse", title-cased or not, you could use this 
+   specifying which items to process. To specify multiple patterns, use the |
+   alternation operator. To apply pattern modifier letters, use an Extended
+   RegExp Sequence. For example, if you want to search for items with names
+   containing "cat", "dog", or "horse", title-cased or not, you could use this
    regexp:
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    If the number of arguments is not 0, 1, or 2, this program will print an
    error message and abort.
