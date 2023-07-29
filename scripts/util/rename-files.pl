@@ -20,7 +20,7 @@
 # Tue Nov 16, 2021: Now using common::sense, and now using extended regexp sequences instead of regexp
 #                   delimiters.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "Sys::Binmode".
-# Thu Jul 27, 2023: Extreme refactor. Reduced width from 120 to 110 with github in-mind. Upgraded from
+# Thu Jul 27, 2023: Heavily refactored. Reduced width from 120 to 110 with github in-mind. Upgraded from
 #                   "use v5.32;" to "use v5.36;". Got rid of prototypes. Sub "error" is now "error($NA)".
 #                   Single-letter options can now be piled-up after a single hyphen. Got rid of
 #                   "common::sense" (antiquated). Sub "error" now prints error message ONLY (doesn't run help

@@ -1,10 +1,10 @@
 #! /usr/bin/perl
 
-# This is a 120-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # Dir.pm
 # Robbie Hatley's Directory Tools Module
 # Written by Robbie Hatley, starting 2015-03-24
@@ -40,14 +40,16 @@
 #                   however, using glob() or <* .*> as source for directory will cause trouble.
 # Tue Feb 16, 2021: Completely re-wrote GetFiles() to use glob_regexp_utf8. Refactored both subs to require
 #                   a fully-qualified directory (starting with '/') as their first argument.
-# Sat Jul 24, 2021: Merged all 6 of my hash subs into a single sub named "hash" to get rid of massive duplication.
-# Wed Nov 16, 2021: Re-arranged order of UTF-8-related subs, putting the simple ones on-top. Added warning text
-#                   regarding bareword file handles. Also, now using "use common::sense;".
+# Sat Jul 24, 2021: Merged all 6 of my hash subs into a single sub named "hash" to get rid of massive
+#                   duplication.
+# Wed Nov 16, 2021: Re-arranged order of UTF-8-related subs, putting the simple ones on-top. Added warning
+#                   text regarding bareword file handles. Also, now using "use common::sense;".
 # Sat Nov 20, 2021: use v5.32. Renewed colophon. Revamped pragmas & encodings.
-# Sun Nov 21, 2021: Changed name of "find_available_name" to "find_avail_enum_name", and fixed bug which was causing
-#                   "enumerate-file-names.pl" to DENUMERATE file names, due to sub "find_available_name" returning the
-#                   denumerated version of a file name if that was available for use. That is stupid, because for
-#                   "enumerate-file-names.pl" to work right, sub find_available_name MUST return an enumerated name!
+# Sun Nov 21, 2021: Changed name of "find_available_name" to "find_avail_enum_name", and fixed bug which was
+#                   causing "enumerate-file-names.pl" to DENUMERATE file names, due to sub
+#                   "find_available_name" returning the denumerated version of a file name if that was
+#                   available for use. That is stupid, because for "enumerate-file-names.pl" to work right,
+#                   sub find_available_name MUST return an enumerated name!
 # Mon Nov 22, 2021: Changed name of "find_available_random" to "find_avail_rand_name".
 #                   Changed name of "copy_large_images" to "copy_files" and widened its scope of usefulness.
 #                   Changed name of "move_large_images" to "move_files" and widened its scope of usefulness.
@@ -55,14 +57,20 @@
 # Fri Nov 26, 2021: Clarified some comments.
 # Fri Aug 19, 2022: Got rid of "#use Win32API::File;" as my scripts are all now dual-OS (Linux+Windows).
 # Sun Feb 19, 2023: Added "is_valid_qual_dir".
-# Sat Mar 11, 2023: Made MANY changes, mostly relating to skipping problematic directories in both Windows and Linux.
-########################################################################################################################
+# Sat Mar 11, 2023: Made MANY changes, mostly regarding skipping problematic directories in Windows and Linux.
+# Sat Jul 29, 2023: Dramatically improved handling of existent links to non-existent things, by first dumping
+#                   the contents of an lstat into an array "@stats" then checking the scalar of that array;
+#                   if it's 13, everything is hunky-dory; if < 13 then the lstat failed so do special handing.
+#                   Also fixed a bug which I inadvertently introduced by doing "if ( ! -e $path )" when I
+#                   should have written "if ( ! -e e $path )" instead. ($path MUST be encoded before sending
+#                   it to either lstat or any of the file-test operators.) Also reduced width to 110.
+##############################################################################################################
 
-# ======= PACKAGE: =====================================================================================================
+# ======= PACKAGE: ===========================================================================================
 
 package RH::Dir;
 
-# ======= PRAGMAS: =====================================================================================================
+# ======= PRAGMAS: ===========================================================================================
 
 # Boilerplate:
 use v5.32;
@@ -94,7 +102,7 @@ use List::Util qw( sum0 );
 use Time::HiRes qw( time );
 #use Filesys::Type qw( fstype );
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 # Section 1, Major Subroutines (code is long and complex):
 sub GetFiles               (;$$$) ; # Get array of filerecords.
@@ -147,10 +155,10 @@ sub cyg2win                ($)    ; # Convert Cygwin  path to Windows path.
 sub win2cyg                ($)    ; # Convert Windows path to Cygwin  path.
 sub hash                   ($$;$) ; # Return hash or hash-based file-name of a file.
 sub shorten_sl_names       ($$$$) ; # Shorten directory and file names for Spotlight.
-sub is_data_file           ($)    ; # Return 1 if a given string is a path to a non-link non-directory regular file.
+sub is_data_file           ($)    ; # Return 1 if a given string is a path to a non-link non-dir regular file.
 sub is_valid_qual_dir      ($)    ; # Is a given string a fully-qualified path to an existing directory?
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Symbols exported by default:
 our @EXPORT =
@@ -180,8 +188,8 @@ our @EXPORT_OK =
    qw
    (
       $totfcount $noexcount $ottycount $cspccount $bspccount
-      $sockcount $pipecount $slkdcount $linkcount $multcount
-      $sdircount $hlnkcount $regfcount $unkncount
+      $sockcount $pipecount $brkncount $slkdcount $linkcount
+      $weircount $sdircount $hlnkcount $regfcount $unkncount
    );
 
 # Turn on debugging?
@@ -203,13 +211,12 @@ our $brkncount = 0; # Count of all symbolic links to nowhere.
 our $slkdcount = 0; # Count of all symbolic links to directories.
 our $linkcount = 0; # Count of all symbolic links to non-directories.
 our $weircount = 0; # Count of all symbolic links to weirdness.
-our $multcount = 0; # Count of all directories with multiple hard links.
 our $sdircount = 0; # Count of all directories.
 our $hlnkcount = 0; # Count of all regular files with multiple hard links.
 our $regfcount = 0; # Count of all regular files.
 our $unkncount = 0; # Count of all unknown files.
 
-# ======= SECTION 1, MAJOR SUBROUTINES: ================================================================================
+# ======= SECTION 1, MAJOR SUBROUTINES: ======================================================================
 
 # GetFiles returns a reference to an array of filerecords for all files in a user-specified directory.
 # Optionally, user can also specify a regular expression to match names against and a single-letter "target"
@@ -244,8 +251,9 @@ sub GetFiles (;$$$)
           "To use \"..\", use \"chdir '..'; GetFiles cwd_utf8\".\n";
    }
 
-   # Zero all RH::Dir counters here. You should save a copy in main:: if you want to keep this info, because it gets
-   # zeroed each time GetFiles or GetRegularFilesBySize are run. These are "per directory info fetch" only.
+   # Zero all RH::Dir counters here. You should save a copy in main:: if you want to keep this info, because
+   # it gets zeroed each time GetFiles or GetRegularFilesBySize are run. These are "per directory info fetch"
+   # only.
    $totfcount = 0; # Count of all directory entities seen, of all types.
    $noexcount = 0; # Count of all errors encountered.
    $ottycount = 0; # Count of all tty files.
@@ -257,7 +265,6 @@ sub GetFiles (;$$$)
    $slkdcount = 0; # Count of all symbolic links to directories.
    $linkcount = 0; # Count of all symbolic links to files.
    $weircount = 0; # Count of all symbolic links to weirdness.
-   $multcount = 0; # Count of all directories with multiple hard links.
    $sdircount = 0; # Count of all directories.
    $hlnkcount = 0; # Count of all regular files with multiple hard links.
    $regfcount = 0; # Count of all regular files.
@@ -335,33 +342,33 @@ sub GetFiles (;$$$)
           $Latime, $Lmtime, $Lctime, $Lbsize, $Lblcks) = @stats;
          my $ml = $Lnlink > 1 ? 1 : 0;  # Do multiple incoming hard links exist to this inode?
          $l_targ = 'NO TARGET';         # Assume for now that no outgoing link target exists.
-         if       (   -l _     )                              # IS a symbolic link to something.
+         if       (   -l _       )                              # IS a symbolic link to something.
          {
-            if    ( ! -e $path ) {$type = 'B'; ++$brkncount;} # Symbolic link to nowhere.
-            elsif (   -d _     ) {$type = 'S'; ++$slkdcount;} # Symbolic link to directory.
-            elsif (   -f _     ) {$type = 'L'; ++$linkcount;} # Symbolic link to file.
-            else                 {$type = 'W'; ++$weircount;} # Symbolic link to weirdness.
+            if    ( ! -e e $path ) {$type = 'B'; ++$brkncount;} # Symbolic link to nowhere.
+            elsif (   -d _       ) {$type = 'S'; ++$slkdcount;} # Symbolic link to directory.
+            elsif (   -f _       ) {$type = 'L'; ++$linkcount;} # Symbolic link to file.
+            else                   {$type = 'W'; ++$weircount;} # Symbolic link to weirdness.
             $l_targ = readlink_utf8 $path;
             if (not defined $l_targ)
             {
                $l_targ = 'UNDEFINED TARGET';
             }
          }
-         else                                                 # Is NOT a symbolic link to anything.
+         else                                                  # Is NOT a symbolic link to anything.
          {
-            if    ( ! -e $path ) {$type = 'N'; ++$noexcount;} # Spectre.
-            elsif (   -d _     ) {$type = 'D'; ++$sdircount;} # Directory.
-            elsif (   -t _     ) {$type = 'T'; ++$ottycount;} # Opened to tty.
-            elsif (   -c _     ) {$type = 'Y'; ++$cspccount;} # Character special file.
-            elsif (   -b _     ) {$type = 'X'; ++$bspccount;} # Block special file.
-            elsif (   -S _     ) {$type = 'O'; ++$sockcount;} # Socket.
-            elsif (   -p _     ) {$type = 'P'; ++$pipecount;} # Pipe.
-            elsif (   -f _     )                              # Regular file.
+            if    ( ! -e e $path ) {$type = 'N'; ++$noexcount;} # Spectre.
+            elsif (   -d _       ) {$type = 'D'; ++$sdircount;} # Directory.
+            elsif (   -t _       ) {$type = 'T'; ++$ottycount;} # Opened to tty.
+            elsif (   -c _       ) {$type = 'Y'; ++$cspccount;} # Character special file.
+            elsif (   -b _       ) {$type = 'X'; ++$bspccount;} # Block special file.
+            elsif (   -S _       ) {$type = 'O'; ++$sockcount;} # Socket.
+            elsif (   -p _       ) {$type = 'P'; ++$pipecount;} # Pipe.
+            elsif (   -f _       )                              # Regular file.
             {
-               if ($ml)          {$type = 'H'; ++$hlnkcount;} # File with multiple hard links.
-               else              {$type = 'F'; ++$regfcount;} # Regular file.
+               if ($ml)            {$type = 'H'; ++$hlnkcount;} # File with multiple hard links.
+               else                {$type = 'F'; ++$regfcount;} # Regular file.
             }
-            else                 {$type = 'U'; ++$unkncount;} # Object of unknown type.
+            else                   {$type = 'U'; ++$unkncount;} # Object of unknown type.
          }
       } # end else if path DOES exist
 
@@ -397,12 +404,13 @@ sub GetFiles (;$$$)
    return \@filerecords;
 } # end sub GetFiles (;$$)
 
-# GetRegularFilesBySize returns a reference to a hash of arrays of same-size file records for all regular files in the
-# current directory, with the outer hash keyed by file size. This sub can take one optional argument which, if present,
-# must be a regular expression specifying which regular files to get records for. This sub is especially useful for
-# programs which compare regular files for identicalness, preperatory to making decisions regarding copying or deleting
-# of files. To make such comparisons FAST, this sub stores files records in same-file-size arrays and does not collect
-# any stats other than $totfcount and $regfcount (which will be equal).
+# GetRegularFilesBySize returns a reference to a hash of arrays of same-size file records for all regular
+# files in the current directory, with the outer hash keyed by file size. This sub can take one optional
+# argument which, if present, must be a regular expression specifying which regular files to get records for.
+# This sub is especially useful for programs which compare regular files for identicalness, preperatory to
+# making decisions regarding copying or deleting of files. To make such comparisons FAST, this sub stores
+# files records in same-file-size arrays and does not collect any stats other than $totfcount and $regfcount
+# (which will be equal).
 sub GetRegularFilesBySize (;$)
 {
    my $cwd    = cwd_utf8                                   ; # Current Working Directory.
@@ -425,8 +433,9 @@ sub GetRegularFilesBySize (;$)
    # ZEBRA : The following line is wrong! It's not an error to receive no files! Some directories are empty!
    # or die "Can't read  directory \"$cwd\"\n$!\n";
 
-   # Zero all RH::Dir counters here. You should save a copy in main:: if you want to keep this info, because it gets
-   # zeroed each time GetFiles or GetRegularFilesBySize are run. These are "per directory info fetch" only.
+   # Zero all RH::Dir counters here. You should save a copy in main:: if you want to keep this info, because
+   # it gets zeroed each time GetFiles or GetRegularFilesBySize are run. These are "per directory info fetch"
+   # only.
    $totfcount = 0; # Count of all directory entities seen, of all types.
    $noexcount = 0; # Count of all errors encountered.
    $ottycount = 0; # Count of all tty files.
@@ -436,7 +445,6 @@ sub GetRegularFilesBySize (;$)
    $pipecount = 0; # Count of all pipes.
    $slkdcount = 0; # Count of all symbolic links to directories.
    $linkcount = 0; # Count of all symbolic links to non-directories.
-   $multcount = 0; # Count of all directories with multiple hard links.
    $sdircount = 0; # Count of all directories.
    $hlnkcount = 0; # Count of all regular files with multiple hard links.
    $regfcount = 0; # Count of all regular files.
@@ -445,9 +453,9 @@ sub GetRegularFilesBySize (;$)
    # Iterate through current directory, collecting info on all "regular" files:
    for $path (@filepaths)
    {
-      # Increment $totfcount and $regfcount here. The glob_regexp_utf8 call above will ensure that every $path we see
-      # here is the fully-qualified path of an existing regular file in the current working directory, so these two
-      # counts will always be equal:
+      # Increment $totfcount and $regfcount here. The glob_regexp_utf8 call above will ensure that every $path
+      # we see here is the fully-qualified path of an existing regular file in the current working directory,
+      # so these two counts will always be equal:
       ++$totfcount;
       ++$regfcount;
 
@@ -455,7 +463,8 @@ sub GetRegularFilesBySize (;$)
       $name = get_name_from_path($path);
 
       # Get stats for this path:
-      my ($Ldev, $Linode, $Lmode, $Lnlink, $Luid, $Lgid, $Lrdev, $Lsize, $Latime, $Lmtime, $Lctime) = lstat e $path;
+      my ($Ldev, $Linode, $Lmode, $Lnlink, $Luid, $Lgid, $Lrdev, $Lsize, $Latime, $Lmtime, $Lctime)
+      = lstat e $path;
 
       # Get date and time from Lmtime:
       my @LocalTimeFields = localtime($Lmtime);
@@ -495,7 +504,8 @@ sub GetRegularFilesBySize (;$)
 # return 0 if files are different.
 sub FilesAreIdentical ($$)
 {
-   # Get path of first file, make sure it exists, get its stats, make sure it's a regular file, and get its size:
+   # Get path of first file, make sure it exists, get its stats, make sure it's a regular file,
+   # and get its size:
    my $filepath1 = shift;
    if ( ! -e e $filepath1 )
    {
@@ -509,7 +519,8 @@ sub FilesAreIdentical ($$)
    }
    my $size1 = -s e $filepath1;
 
-   # Get path of second file, make sure it exists, get its stats, make sure it's a regular file, and get its size:
+   # Get path of second file, make sure it exists, get its stats, make sure it's a regular file,
+   # and get its size:
    my $filepath2 = shift;
    if ( ! -e e $filepath2 )
    {
@@ -623,10 +634,11 @@ sub FilesAreIdentical ($$)
 # Navigate a directory tree recursively, applying code at each node on the tree:
 sub RecurseDirs (&)
 {
-   # This is a recursive function, being used in a chaotic and unpredictable environment (an unknown computer file
-   # system, EEEK!!!), so it is VERY possible for runaway recursion to occur. So, to keep track of recursion, we
-   # use this variable, which is initialized to zero once only, the first time this function is called during this
-   # run of this program; this will be incremented before recursing and checked to make sure it never exceeds 50:
+   # This is a recursive function, being used in a chaotic and unpredictable environment with an unknown file
+   # system, so it is VERY possible for runaway recursion to occur. So, to keep track of recursion, we
+   # use this variable, which is initialized to zero once only, the first time this function is called during
+   # this run of this program; this will be incremented before recursing and checked to make sure it never
+   # exceeds 50 levels of recursion:
    state $recursion = 0;
 
    # Store incoming code reference in variable $f:
@@ -695,7 +707,7 @@ sub RecurseDirs (&)
    # Navigate immediate subdirs (if any) of this instance's current directory:
    SUBDIR: foreach my $subdir (@subdirs)
    {
-      # ========== SUBDIR NAME CHECKS: =================================================================================
+      # ========== SUBDIR NAME CHECKS: =======================================================================
 
       # Avoid certain specific miscellaneous problematic directories:
       next SUBDIR if $subdir eq '.';                            # Windows/Linux/Cygwin: Hard link to self.
@@ -745,8 +757,8 @@ sub RecurseDirs (&)
       {
          next SUBDIR if $subdir =~ m/^\$/;                      # Microsoft Windows: System directories.
          next SUBDIR if $subdir =~ m/^cygwin/i;                 # Microsoft Windows: Cygwin
-         next SUBDIR if $subdir eq 'Application Data';          # Microsoft Windows: OLD LINK: Application Data.
-         next SUBDIR if $subdir eq 'Documents and Settings';    # Microsoft Windows: OLD LINK: Documents and Settings.
+         next SUBDIR if $subdir eq 'Application Data';          # Microsoft Windows: OLD LINK: App Data.
+         next SUBDIR if $subdir eq 'Documents and Settings';    # Microsoft Windows: OLD LINK: Doc n Settings.
          next SUBDIR if $subdir eq 'Local Settings';            # Microsoft Windows: OLD LINK: Local Settings.
          next SUBDIR if $subdir eq 'My Documents';              # Microsoft Windows: OLD LINK: My Documents.
          next SUBDIR if $subdir eq 'My Music';                  # Microsoft Windows: OLD LINK: My Music.
@@ -766,10 +778,10 @@ sub RecurseDirs (&)
          next SUBDIR if $subdir eq 'Windows';                   # Microsoft Windows: Windows operating system.
       }
 
-      # ========== SUBDIR STATS CHECKS: ================================================================================
+      # ========== SUBDIR STATS CHECKS: ======================================================================
 
-      # Now that we've ascertained that $subdir doesn't name a known directory that we specifically want to avoid,
-      # lets examine the statistics of the referent to which label $subdir refers.
+      # Now that we've ascertained that $subdir doesn't name a known directory that we specifically want to
+      # avoid, lets examine the statistics of the referent to which label $subdir refers.
       # Start by making sure that $subdir is the name of something that actually exists:
       next SUBDIR if ! -e e $subdir;                            # Something that doesn't exist.
 
@@ -797,8 +809,10 @@ sub RecurseDirs (&)
 
       # Try to recurse:
       ++$recursion;
-      die "Fatal error in RecurseDirs: More than 50 levels of recursion!\nCWD = \"$curdir\"\n$!\n" if $recursion > 50;
-      RecurseDirs(\&{$f}) or die "Fatal error in RecurseDirs: Couldn't recurse!\n";
+      $recursion > 50
+      and die "Fatal error in RecurseDirs: More than 50 levels of recursion!\nCWD = \"$curdir\"\n$!\n";
+      RecurseDirs(\&{$f})
+      or die "Fatal error in RecurseDirs: Couldn't recurse!\n";
       --$recursion;
 
       # Try to cd back to $curdir (and die if that fails):
@@ -1281,7 +1295,7 @@ sub copy_files ($$;@)
    {
          if (/^regexp=(.+)$/) {$regexp = $1 ;} # Copy only files matching regexp.
       elsif (/^sl$/         ) {$sl     = 1  ;} # Shorten names for Spotlight.
-      elsif (/^unique$/     ) {$unique = 1  ;} # Copy only files for which duplicates don't exist in destination.
+      elsif (/^unique$/     ) {$unique = 1  ;} # Copy only files for which duplicates don't exist in dest.
       elsif (/^large$/      ) {$large  = 1  ;} # Copy only large image files (W=1200+, H=600+).
    }
 
@@ -1474,7 +1488,7 @@ sub move_files ($$;@)
    {
          if (/^regexp=(.+)$/) {$regexp = $1 ;} # Move only files matching regexp.
       elsif (/^sl$/         ) {$sl     = 1  ;} # Shorten names for Spotlight.
-      elsif (/^unique$/     ) {$unique = 1  ;} # Move only files for which duplicates don't exist in destination.
+      elsif (/^unique$/     ) {$unique = 1  ;} # Move only files for which duplicates don't exist in dest.
       elsif (/^large$/      ) {$large  = 1  ;} # Move only large image files (W=1200+, H=600+).
    }
 
@@ -1620,7 +1634,7 @@ sub move_files ($$;@)
    return 1;
 } # end sub move_files
 
-# ======= SECTION 2, PRIVATE SUBROUTINES: ==============================================================================
+# ======= SECTION 2, PRIVATE SUBROUTINES: ====================================================================
 
 # Subroutine rand_int returns a random integer in the range [m,n] inclusive,
 # where n and m are any two integers with n > m, and with n and m being greater
@@ -1686,7 +1700,7 @@ sub is_ascii ($)
    return 1;
 } # end sub is_ascii
 
-# ======= SECTION 3, UTF-8 SUBROUTINES: ================================================================================
+# ======= SECTION 3, UTF-8 SUBROUTINES: ======================================================================
 
 # Prepare constant "EFLAGS" which contains bitwise-OR'd flags for Encode::encode and Encode::decode :
 use constant EFLAGS => RETURN_ON_ERR | WARN_ON_ERR | LEAVE_SRC;
@@ -1815,11 +1829,6 @@ sub glob_regexp_utf8 (;$$$)
       say "IN glob_regexp_utf8. \$regex  = $regex";
    }
 
-   # Make sure that $dir starts with '/':
-   # WOMBAT RH 2023-03-11: Why? I don't see why $dir can't be a relative directory, so comment this out for now:
-   # if ($dir !~ m/^\//)
-   #    {die "Fatal error in glob_regexp_utf8: directory must start with \"/\".\n";}
-
    # Try to open $dir; if that fails, print warning and return empty path list:
    my $dh = undef;
    if ( ! opendir $dh, e $dir )
@@ -1843,9 +1852,9 @@ sub glob_regexp_utf8 (;$$$)
    # Try to close $dir; if that fails, abort program:
    closedir $dh or die "Error in RecurseDirs: Couldn't close directory \"$dir\".\n$!\n";
 
-   # Riffle through @names. Skip '.', '..', and names not matching $regex, construct paths from names, skip paths that
-   # don't exist if target is F or D or B, skip paths to objects of types not matching target, and push remaining paths
-   # onto @paths:
+   # Riffle through @names. Skip '.', '..', and names not matching $regex, construct paths from names,
+   # skip paths that don't exist if target is F or D or B, skip paths to objects of types not matching target,
+   # and push remaining paths onto @paths:
    my @paths;
    my $path;
    foreach my $name (@names)
@@ -1879,7 +1888,7 @@ sub glob_regexp_utf8 (;$$$)
    return @paths;
 } # end sub glob_regexp_utf8 (;$$$)
 
-# ======= SECTION 4, MINOR SUBROUTINES: ================================================================================
+# ======= SECTION 4, MINOR SUBROUTINES: ======================================================================
 
 # Rename a file, with more error-checking than unwrapped rename() :
 sub rename_file ($$)
@@ -2279,58 +2288,59 @@ sub win2cyg ($)
 #    $path   (Path of file to make hash for. Eg: /home/Bob/myfile.txt)
 #    $type   (Type of hash to generate. Options are: md5 sha1 sha224 sha256 sha384 sha512)
 # Optional argument:
-#    $mode   (Options are: "name" (hash-based file name, eg "9e5a...b071.txt") or "hash" (default: just the hash).)
+#    $mode   (Options are: "name" (hash-based file name, eg "9e5a...b071.txt")
+#                       or "hash" (default: just the hash).)
 sub hash($$;$)
 {
-   my $path = shift;                                                  # Path to source file.
-   my $type = shift;                                                  # What type of hash?
-   my $mode = @_ ? shift : 'hash';                                    # Return raw hash, or hash-based file name?
-   my $name = get_name_from_path($path);                              # Get name        of source file.
-   my $suff = get_suffix($name);                                      # Get suffix      of source file.
-   my $fh;                                                            # File handle (initially undefined).
-   my $hash;                                                          # Hash of file contents
-   my $FileTyper = File::Type->new();                                 # File-typing functor.
-   my $FileType  = '';                                                # File type.
-   local $/ = undef;                                                  # Local undef sets input record separator to EOF.
-   open($fh, '< :raw', e($path))                                      # Try to open the file for reading;
-   or warn "Error in sub \"hash()\" in module \"Dir.pm\":\n".         # if file-open failed for any reason,
-           "Couldn't open file \"$path\" for reading.\n"              # warn user
-   and return '***ERROR***';                                          # and return '***ERROR***'.
-   my $data = <$fh>;                                                  # Slurrrp file into $data as one big string.
-   defined $data                                                      # Test if $data is defined.
-   or warn "Error in sub \"hash()\" in module \"Dir.pm\":\n".         # If file-read failed for any reason
-           "Couldn't read data from file \"$path\".\n"                # warn user
-   and return '***ERROR***';                                          # and return '***ERROR***'.
-   close($fh);                                                        # Close file.
-   given ($type)                                                      # Depending on which hash type user requested,
-   {                                                                  # set $hash to the appropriate hash.
+   my $path = shift;                                           # Path to source file.
+   my $type = shift;                                           # What type of hash?
+   my $mode = @_ ? shift : 'hash';                             # Return raw hash, or hash-based file name?
+   my $name = get_name_from_path($path);                       # Get name        of source file.
+   my $suff = get_suffix($name);                               # Get suffix      of source file.
+   my $fh;                                                     # File handle (initially undefined).
+   my $hash;                                                   # Hash of file contents
+   my $FileTyper = File::Type->new();                          # File-typing functor.
+   my $FileType  = '';                                         # File type.
+   local $/ = undef;                                           # Sets input record separator to EOF.
+   open($fh, '< :raw', e($path))                               # Try to open the file for reading;
+   or warn "Error in sub \"hash()\" in module \"Dir.pm\":\n".  # if file-open failed for any reason,
+           "Couldn't open file \"$path\" for reading.\n"       # warn user
+   and return '***ERROR***';                                   # and return '***ERROR***'.
+   my $data = <$fh>;                                           # Slurrrp file into $data as one big string.
+   defined $data                                               # Test if $data is defined.
+   or warn "Error in sub \"hash()\" in module \"Dir.pm\":\n".  # If file-read failed for any reason
+           "Couldn't read data from file \"$path\".\n"         # warn user
+   and return '***ERROR***';                                   # and return '***ERROR***'.
+   close($fh);                                                 # Close file.
+   given ($type)                                               # Depending on which hash type user requested,
+   {                                                           # set $hash to the appropriate hash.
       when ('md5')
       {
-         $hash = md5_hex($data);                                      # Get MD-5 file hash.
+         $hash = md5_hex($data);                               # Get MD-5 file hash.
       }
       when ('sha1')
       {
-         $hash = sha1_hex($data);                                     # Get SHA-1 file hash.
+         $hash = sha1_hex($data);                              # Get SHA-1 file hash.
       }
       when ('sha224')
       {
-         $hash = sha224_hex($data);                                   # Get SHA-224 file hash.
+         $hash = sha224_hex($data);                            # Get SHA-224 file hash.
       }
       when ('sha256')
       {
-         $hash = sha256_hex($data);                                   # Get SHA-256 file hash.
+         $hash = sha256_hex($data);                            # Get SHA-256 file hash.
       }
       when ('sha384')
       {
-         $hash = sha384_hex($data);                                   # Get SHA-384 file hash.
+         $hash = sha384_hex($data);                            # Get SHA-384 file hash.
       }
       when ('sha512')
       {
-         $hash = sha512_hex($data);                                   # Get SHA-512 file hash.
+         $hash = sha512_hex($data);                            # Get SHA-512 file hash.
       }
       default
       {
-         return '***ERROR***';                                        # Return '***ERROR***'.
+         return '***ERROR***';                                 # Return '***ERROR***'.
       }
    } # end given ($type)
    given ($mode)
@@ -2341,21 +2351,21 @@ sub hash($$;$)
       }
       when ('name')
       {
-         if ('' eq $suff)                                             # If suffix is blank,
+         if ('' eq $suff)                                      # If suffix is blank,
          {
-            $FileType = $FileTyper->checktype_filename($path);        # get mime type of original file,
-            $suff = get_suffix_from_type($FileType);                  # then get suffix from type.
+            $FileType = $FileTyper->checktype_filename($path); # get mime type of original file,
+            $suff = get_suffix_from_type($FileType);           # then get suffix from type.
          }
-         return $hash . $suff;                                        # Return hash with suffix tacked on.
+         return $hash . $suff;                                 # Return hash with suffix tacked on.
       }
       default
       {
          return '***ERROR***';
       }
    } # end given ($mode)
-   say "And he tapped with his whip on the shutters,";                # We can't possibly get here. But if we do,
-   say "but all was locked and barred.";                              # then print some cryptic shit
-   return 'We\'re in the fucking Twilight Zone, baby.';               # and return suitable error message.
+   say "And he tapped with his whip on the shutters,";         # We can't possibly get here. But if we do,
+   say "but all was locked and barred.";                       # then print some cryptic shit
+   return 'We\'re in the fucking Twilight Zone, baby.';        # and return suitable error message.
 } # end sub hash($$;$)
 
 # Shorten directory and file names for Spotlight:
@@ -2390,7 +2400,7 @@ sub shorten_sl_names ($$$$)
    return ($src_dir, $src_fil, $dst_dir, $dst_fil);
 } # end sub shorten_sl_names ($$$$)
 
-# Return 1 if-and-only-if a given string is a path to a data file (a regular file that is not a link or directory).
+# Return 1 if-and-only-if a given string is a path to a data file (a regular file that is not a link or dir).
 sub is_data_file ($)
 {
    my $path = shift;

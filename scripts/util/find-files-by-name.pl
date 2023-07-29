@@ -46,7 +46,9 @@ use warnings;
 use utf8;
 
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
+
 use RH::Util;
 use RH::Dir;
 
@@ -60,34 +62,38 @@ sub help    ; # Print help.
 
 # ======= VARIABLES: =========================================================================================
 
-# Turn on debugging?
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
-
-# Settings:                    Meaning:                  Range:    Default:
-my $Recurse   = 1          ; # Recurse subdirectories?   bool      1
-my $Verbose   = 0          ; # Be wordy?                 bool      0
-my $RegExp    = qr/^.+$/o  ; # Regular expression.       regexps   qr/^.+$/o (matches all files)
-my $Target    = 'A'        ; # Files, dirs, both, all?   F|D|B|A   'A'
+# Settings:                      Meaning:                  Range:    Default:
+   $,         = ', '         ; # Array formatting.         string    ', '
+my $db        = 0            ; # Debug?                    bool      0 (don't debug)
+my $Recurse   = 0            ; # Recurse subdirectories?   bool      0
+my $Verbose   = 0            ; # Be wordy?                 bool      0
+my $RegExp    = qr/^.+$/o    ; # Regular expression.       regexps   qr/^.+$/o (matches all files)
+my $Target    = 'A'          ; # Files, dirs, both, all?   F|D|B|A   'A'
 
 # Counters:
-my $direcount = 0          ; # Count of directories processed.
-my $pathcount = 0          ; # Count of paths found matching given target and regexps.
+my $direcount = 0            ; # Count of directories processed by curdire().
+my $filecount = 0            ; # Count of files found which match target and regexp.
+
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
    argv;
-   print STDERR "\nNow entering program \"" . get_name_from_path($0) . "\".\n"  if $Verbose;
-   print STDERR "Verbose   = $Verbose\n"                                        if $Verbose;
-   print STDERR "Recurse   = $Recurse\n"                                        if $Verbose;
-   print STDERR "RegExp    = $RegExp\n"                                         if $Verbose;
-   print STDERR "Target    = $Target\n"                                         if $Verbose;
+   if ($Verbose) {
+      print STDERR "\nNow entering program \"" . get_name_from_path($0) . "\".\n";
+      print STDERR "Recurse   = $Recurse\n";
+      print STDERR "RegExp    = $RegExp\n";
+      print STDERR "Target    = $Target\n";
+   }
    $Recurse and RecurseDirs {curdire} or curdire;
-   stats                                                                        if $Verbose;
-   my $t1 = time; my $te = $t1 - $t0;
-   print STDERR "\nNow exiting program \"" . get_name_from_path($0) . "\".\n"   if $Verbose;
-   print STDERR "Execution time was $te seconds.\n"                             if $Verbose;
+   stats;
+   my $ms;
+   if ($Verbose) {
+      $ms = 1000 * (time - $t0);
+      print  STDERR "\nNow exiting program \"" . get_name_from_path($0) . "\".\n";
+      printf STDERR "Execution time was %.3fms.\n", $ms;
+   }
    exit 0;
 } # end main
 
@@ -108,16 +114,16 @@ sub argv {
    }
 
    # Process options:
-   for (@options) {
+   for ( @options ) {
       if ( $_ =~ m/^-[^-]*h/ || $_ eq '--help'         ) {help; exit 777;}
-      if ( $_ =~ m/^-[^-]*q/ || $_ eq '--quiet'        ) {$Verbose =  0 ;}
-      if ( $_ =~ m/^-[^-]*v/ || $_ eq '--verbose'      ) {$Verbose =  1 ;} # DEFAULT
-      if ( $_ =~ m/^-[^-]*l/ || $_ eq '--local'        ) {$Recurse =  0 ;}
-      if ( $_ =~ m/^-[^-]*r/ || $_ eq '--recurse'      ) {$Recurse =  1 ;} # DEFAULT
+      if ( $_ =~ m/^-[^-]*q/ || $_ eq '--quiet'        ) {$Verbose =  0 ;} # Be quiet.      (DEFAULT)
+      if ( $_ =~ m/^-[^-]*v/ || $_ eq '--verbose'      ) {$Verbose =  1 ;} # Be verbose.
+      if ( $_ =~ m/^-[^-]*l/ || $_ eq '--local'        ) {$Recurse =  0 ;} # Don't recurse. (DEFAULT)
+      if ( $_ =~ m/^-[^-]*r/ || $_ eq '--recurse'      ) {$Recurse =  1 ;} # Recurse.
       if ( $_ =~ m/^-[^-]*f/ || $_ eq '--target=files' ) {$Target  = 'F';}
       if ( $_ =~ m/^-[^-]*d/ || $_ eq '--target=dirs'  ) {$Target  = 'D';}
       if ( $_ =~ m/^-[^-]*b/ || $_ eq '--target=both'  ) {$Target  = 'B';}
-      if ( $_ =~ m/^-[^-]*a/ || $_ eq '--target=all'   ) {$Target  = 'A';} # DEFAULT
+      if ( $_ =~ m/^-[^-]*a/ || $_ eq '--target=all'   ) {$Target  = 'A';} #                (DEFAULT)
    }
 
    # Process arguments:
@@ -126,7 +132,7 @@ sub argv {
    elsif ( 1 == $NA ) {$RegExp = qr/$arguments[0]/o } # Set $RegExp.
    else               {error($NA); help; exit 666   } # Print error and help messages and exit 666.
 
-   # Redi ad munus vocationis:
+   # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
@@ -136,46 +142,43 @@ sub curdire {
    ++$direcount;
 
    # Get current working directory:
-   my $cwd = cwd_utf8;
+   my $cwd = d getcwd;
 
-   # If being verbose, announce $cwd:
+   # Announce $cwd if being verbose:
    print STDERR "\nDir # $direcount: $cwd\n\n" if $Verbose;
 
    # Return without doing anything further if $cwd is not a fully-qualified path to an existing directory:
    my $valid = is_valid_qual_dir($cwd);
    if ( ! $valid )
    {
-      print STDERR "Warning in \"find-files-by-name.pl\":\n" .
-                   "cwd_utf8 returned an invalid directory name.\n" .
-                   "Skipping this directory and moving on to next.\n\n";
+      warn "Warning in \"find-files-by-name.pl\":\n" .
+           "getcwd returned an invalid directory name.\n" .
+           "Skipping this directory and moving on to next.\n\n";
       return 1;
    }
 
    # Get ref to array of file-info packets for all files in current directory matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
 
-   # Increment path counter and print path for each matching file:
-   foreach my $file (@{$curdirfiles})
-   {
-      my $path = $file->{Path};
-      my $name = $file->{Name};
-      if ($name =~ m/$RegExp/)
-      {
-         ++$pathcount;
-         say $path;
-      }
+   # Print path for each matching file:
+   foreach my $file (@{$curdirfiles}) {
+      ++$filecount;
+      say $file->{Path};
    }
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub curdire
 
 # Print stats:
 sub stats {
-   warn "\n";
-   warn "Stats for \"find-files-by-name.pl\":\n";
-   warn "Target = \"$Target\"\n";
-   warn "RegExp = \"$RegExp\"\n";
-   warn "Navigated $direcount directories.\n";
-   warn "Found $pathcount paths matching given target and regexp.\n";
+   # If being verbose, print stats for this program run:
+   if ( $Verbose > 0 ) {
+      print STDERR "\n";
+      print STDERR "Statistics for \"find-files-by-name.pl\":\n";
+      print STDERR "Navigated $direcount directories.\n";
+      print STDERR "Found $filecount paths matching target \"$Target\" and regexp \"$RegExp\".\n";
+   }
    return 1;
 } # end sub stats
 
@@ -184,7 +187,7 @@ sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
    Error: you typed $NA arguments, but \"find-files-by-name.pl\"
-   requires either 0 or 1 arguments.
+   requires 0 or 1 arguments. Help follows:
    END_OF_ERROR
 } # end error ($NA)
 
@@ -193,38 +196,41 @@ sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
    Welcome to "find-files-by-name.pl". This program finds directory entries in
-   the current directory (and all subdirectories, unless a -l or --local option
-   is used) which match a given target ("files", "directories", "both", or "all",
-   defaulting to "all") and which have names which match a given Perl-Compliant
-   Regular Expression (defaulting to the regular expression '^.+$', which matches
-   all file names) and prints their full paths.
+   the current directory (and all subdirectories if a -r or --recurse option
+   is used) which match a given target ("files", "directories", "both", or "all")
+   and which have names which match a given Perl-Compliant Regular Expression
+   (defaulting to the regular expression '^.+$', which matches all file names)
+   and prints their full paths.
 
    If no target, no regexps, and no options are specified, this program prints
-   all entries in the current directory tree, which probably isn't what you want,
-   so I suggest using options and an argument to specify what you're looking for.
+   all entries in the current directory, which probably isn't what you want,
+   so I suggest using options and arguments to specify what you're looking for.
 
    Command lines:
-   find-files-by-name.pl [-h|--help]            (to print help)
-   find-files-by-name.pl [options] [arguments]  (to find files)
+   find-files-by-name.pl [-h|--help]              (to print help)
+   find-files-by-name.pl [options] [arg1]         (to find files)
 
+   -------------------------------------------------------------------------------
    Description of options:
+
    Option:                      Meaning:
    "-h" or "--help"             Print help and exit.
-   "-l" or "--local"            Be local.
-   "-r" or "--recurse"          Recurse subdirectories. (DEFAULT)
-   "-q" or "--quiet"            Be quiet. (DEFAULT)
+   "-l" or "--local"            Be local.                                (DEFAULT)
+   "-r" or "--recurse"          Recurse subdirectories.
+   "-q" or "--quiet"            Be quiet.                                (DEFAULT)
    "-v" or "--verbose"          Be verbose.
    "-f" or "--target=files"     Find regular files only.
    "-d" or "--target=dirs"      Find directories.
    "-b" or "--target=both"      Find both files and directories.
-   "-a" or "--target=all"       Find ALL directory entries. (DEFAULT)
-   Single-letter options may be piled-up after a single hyphen:
-   ffn -rqf 'dog'
+   "-a" or "--target=all"       Find ALL directory entries.              (DEFAULT)
+   Multiple single-letter options may be piled-up after a single hyphen, like so:
+   find-files-by-name.pl -rqf 'dog'
    If multiple conflicting options are given, the last dominates.
    If multiple conflicting letters are piled after a single colon,
    the last of these dominates: hqvlrfdba.
    All options  not listed above are ignored.
 
+   -------------------------------------------------------------------------------
    Description of arguments:
 
    In addition to options, this program takes 0 or 1 arguments.

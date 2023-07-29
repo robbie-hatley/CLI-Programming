@@ -23,6 +23,7 @@
 #                   because of "." and ".."; all directories are now type "D" instead of "M". Also, corrected ommission
 #                   in help(), which failed to mention the number-of-links column. Also, removed mention of "directories
 #                   with multiple hard links" from both dir_stats and tree_stats.
+# Sat Jul 29, 2023: Got rid of count of "directories with multiple links", as in Linux, that's ALL directories.
 ########################################################################################################################
 
 use v5.32;
@@ -72,7 +73,6 @@ my $brkncount = 0; # Count of all symbolic links to nowhere.
 my $slkdcount = 0; # Count of all symbolic links to directories.
 my $linkcount = 0; # Count of all symbolic links to files.
 my $weircount = 0; # Count of all symbolic links to weirdness.
-my $multcount = 0; # Count of all directories with multiple hard links.
 my $sdircount = 0; # Count of all directories.
 my $hlnkcount = 0; # Count of all regular files with multiple hard links.
 my $regfcount = 0; # Count of all regular files.
@@ -170,9 +170,8 @@ sub curdire ()
       $pipecount += $RH::Dir::pipecount; # pipes
       $brkncount += $RH::Dir::brkncount; # symbolic links to nowhere
       $slkdcount += $RH::Dir::slkdcount; # symbolic links to directories
-      $linkcount += $RH::Dir::linkcount; # symbolic links to non-directories
-      $weircount += $RH::Dir::weircount; # symbolic links to non-directories
-      $multcount += $RH::Dir::multcount; # directories with multiple hard links
+      $linkcount += $RH::Dir::linkcount; # symbolic links to files
+      $weircount += $RH::Dir::weircount; # symbolic links to weirdness
       $sdircount += $RH::Dir::sdircount; # directories
       $hlnkcount += $RH::Dir::hlnkcount; # regular files with multiple hard links
       $regfcount += $RH::Dir::regfcount; # regular files
