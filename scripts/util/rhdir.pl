@@ -1,10 +1,10 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # rhdir.pl
 # Prints information about every file in current working directory.
 #
@@ -17,52 +17,59 @@
 # Sun Sep 30, 2018: Now also discerns hard links.
 # Tue Feb 01, 2021: Refactored to use the new GetFiles($dir, $target, $regexp).
 # Tue Mar 09, 2021: Changed help() to reflect fact that we're now using PCREs instead of csh wildcards.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-# Sat Jul 30, 2022: Now sorts files within each type, so one doesn't get a random jumble of "regular files" as before.
-#                   Also, removed type "M", because in Linux, ALL directories have multiple hard links pointing to them
-#                   because of "." and ".."; all directories are now type "D" instead of "M". Also, corrected ommission
-#                   in help(), which failed to mention the number-of-links column. Also, removed mention of "directories
-#                   with multiple hard links" from both dir_stats and tree_stats.
-# Sat Jul 29, 2023: Got rid of count of "directories with multiple links", as in Linux, that's ALL directories.
-########################################################################################################################
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
+# Sat Jul 30, 2022: Now sorts files within each type, so one doesn't get a random jumble of "regular files" as
+#                   before. Removed type "M", because in Linux, ALL directories have multiple hard links
+#                   pointing to them because of "." and "..". All directories are now type "D" instead of "M".
+#                   Corrected omission in help(), which failed to mention the number-of-links column.
+#                   Removed mention of "directories with multiple hard links" from dir_stats and stats.
+# Sun Jul 30, 2023: Upgraded from "use v5.32;" to "use v5.36;". Got rid of "common::sense" (antiquated).
+#                   Got rid of "prototypes". Now using "signature" for error() and dir_stats().
+#                   Got rid of all usage of given/when. Reduced width from 120 to 110 with github in mind.
+#                   Now counting broken symbolic links and symbolic links to "other than file or directory".
+#                   Sub error is now single-purpose (help and exit are called from argv instead).
+#                   Multiple single-letter options can now be piled-up after a single hyphen.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+
 use Sys::Binmode;
-
 use Cwd;
 use Time::HiRes 'time';
 use Data::Dumper qw(Dumper);
 
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv       ();
-sub curdire    ();
-sub dir_stats  ($);
-sub tree_stats ();
-sub error      ($);
-sub help       ();
+sub argv      ;
+sub curdire   ;
+sub dir_stats ;
+sub stats     ;
+sub error     ;
+sub help      ;
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
-# Use debugging? (Ie, print extra diagnostics?)
-my $db = 0;
-
-# Settings:               # Meaning of setting:     Possible values:  Default:
-my $Verbose  = 1;         # Be verbose?             0, 1, or 2        1 (somewhat verbose)
-my $Recurse  = 0;         # Recurse subdirectories? (bool)            0 (don't recurse)
-my $Target   = 'A';       # Target                  F|D|B|A           A (print directory entries of all types)
-my $Regexp   = qr/^.+$/o; # Regular Expression.     (regexp)          qr/^.+$/o (matches all strings)
-my $Inodes   = 0;         # Print inodes?           (bool)            0 (don't print inodes)
+# Settings:                   Meaning of setting:     Possible values:  Default:
+   $,         = ', '      ; # Array formatting.       (string)          ', '
+my $db        = 0         ; # Debug?                  0, 1              0 (don't debug)
+my $Verbose   = 1         ; # Be verbose?             0, 1, or 2        1 (somewhat verbose)
+my $Recurse   = 0         ; # Recurse subdirectories? (bool)            0 (don't recurse)
+my $Target    = 'A'       ; # Target                  F|D|B|A           A (list files of all types)
+my $Regexp    = qr/^.+$/o ; # Regular Expression.     (regexp)          qr/^.+$/o (matches all strings)
+my $Inodes    = 0         ; # Print inodes?           (bool)            0 (don't print inodes)
 
 # Counts of events in this program:
 my $direcount = 0; # Count of directories processed.
 my $filecount = 0; # Count of files processed.
 
 # Accumulations of counters from RH::Dir :
-my $totfcount = 0; # Count of all targeted directory entries matching wildcard and verified by GetFiles().
+my $totfcount = 0; # Count of all targeted directory entries matching regexp.
 my $noexcount = 0; # Count of all nonexistent files encountered.
 my $ottycount = 0; # Count of all tty files.
 my $cspccount = 0; # Count of all character special files.
@@ -78,79 +85,75 @@ my $hlnkcount = 0; # Count of all regular files with multiple hard links.
 my $regfcount = 0; # Count of all regular files.
 my $unkncount = 0; # Count of all unknown files.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# Hashes:
+my %Targets;
+$Targets{F} = "Files Only";
+$Targets{D} = "Directories Only";
+$Targets{B} = "Both Files And Directories";
+$Targets{A} = "All Directory Entries";
+
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
+   my $t0 = time;
+   if ($Verbose >= 1) {say STDERR "\nNow entering program \"rhdir.pl\".";}
    argv;
-   if (2 == $Verbose)
-   {
-      say "Verbose  = $Verbose" ;
-      say "Recurse  = $Recurse" ;
-      say "Target   = $Target"  ;
-      say "Regexp   = $Regexp"  ;
-      say "Inodes   = $Inodes"  ;
+   if ( $Verbose >= 1 ) {
+      say STDERR "Verbose  = $Verbose" ;
+      say STDERR "Recurse  = $Recurse" ;
+      say STDERR "Target   = $Target"  ;
+      say STDERR "Regexp   = $Regexp"  ;
+      say STDERR "Inodes   = $Inodes"  ;
    }
-   my ($entry_time, $exit_time, $elapsed_time);
-   if (2 == $Verbose) {$entry_time = time;}
    $Recurse and RecurseDirs {curdire} or curdire;
-   if ($Verbose >= 1) {tree_stats;}
-   if (2 == $Verbose)
-   {
-      $exit_time = time;
-      $elapsed_time = $exit_time - $entry_time;
-      say "Run-time for \"rhdir.pl\" was $elapsed_time seconds.";
-   }
+   stats;
+   my $ms = 1000 * (time - $t0);
+   if ( $Verbose >= 2 ) {printf STDERR "Now exiting program \"rhdir.pl\". Execution time was %.3ums.\n", $ms;}
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS =======================================================================================
+# ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub argv ()
-{
-   my $help   = 0;
-   my @CLArgs = ();
-   foreach (@ARGV)
-   {
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pP\pS\pN]{2,}$/)
-      {
-         /^-h$/ || /^--help$/         and $help    =  1 ;
-         /^-v$/ || /^--verbose$/      and $Verbose =  2 ;
-         /^-q$/ || /^--quiet$/        and $Verbose =  0 ;
-         /^-r$/ || /^--recurse$/      and $Recurse =  1 ;
-         /^-f$/ || /^--target=files$/ and $Target  = 'F';
-         /^-d$/ || /^--target=dirs$/  and $Target  = 'D';
-         /^-b$/ || /^--target=both$/  and $Target  = 'B';
-         /^-a$/ || /^--target=all$/   and $Target  = 'A';
-         /^-i$/ || /^--inodes$/       and $Inodes  =  1 ;
-      }
-      else {push @CLArgs, $_;}
+sub argv {
+   my @options;
+   my @arguments;
+   for (@ARGV) {
+      if (/^-[^-]+$/ || /^--[^-]+$/) {push @options  , $_}
+      else                           {push @arguments, $_}
    }
-   $help and help and exit 777;
-   my $NA = scalar(@CLArgs);
-   given ($NA)
-   {
-      when (0) {                         ;} # Do nothing.
-      when (1) {$Regexp = qr/$CLArgs[0]/o;} # Set $Regexp.
-      default  {error($NA)               ;} # Print error and help messages then exit 666.
+   for (@options) {
+      if ( $_ =~ m/^-[^-]*h/ || $_ eq '--help'         ) {help; exit 777;}
+      if ( $_ =~ m/^-[^-]*q/ || $_ eq '--quiet'        ) {$Verbose =  0 ;}
+      if ( $_ =~ m/^-[^-]*v/ || $_ eq '--verbose'      ) {$Verbose =  2 ;}
+      if ( $_ =~ m/^-[^-]*l/ || $_ eq '--local'        ) {$Recurse =  0 ;}
+      if ( $_ =~ m/^-[^-]*r/ || $_ eq '--recurse'      ) {$Recurse =  1 ;}
+      if ( $_ =~ m/^-[^-]*f/ || $_ eq '--target=files' ) {$Target  = 'F';}
+      if ( $_ =~ m/^-[^-]*d/ || $_ eq '--target=dirs'  ) {$Target  = 'D';}
+      if ( $_ =~ m/^-[^-]*b/ || $_ eq '--target=both'  ) {$Target  = 'B';}
+      if ( $_ =~ m/^-[^-]*a/ || $_ eq '--target=all'   ) {$Target  = 'A';}
+      if ( $_ =~ m/^-[^-]*i/ || $_ eq '--inodes'       ) {$Inodes  =  1 ;}
    }
+   my $NA = scalar(@arguments);
+      if ( 0 == $NA ) {                               ; } # Do nothing.
+   elsif ( 1 == $NA ) { $Regexp = qr/$arguments[0]/o  ; } # Set $Regexp.
+   else               { error($NA); help; exit 666    ; } # Print error and help messages then exit 666.
    return 1;
-} # end sub argv ()
+} # end sub argv
 
-sub curdire ()
-{
+sub curdire {
    ++$direcount;
    my $curdir = cwd_utf8;
-   say "\nDir # $direcount: \"$curdir\"";
+   say STDOUT "\nDir # $direcount: \"$curdir\"";
 
    # Get list of files in current directory matching $Target and $Regexp:
    my $curdirfiles = GetFiles($curdir, $Target, $Regexp);
 
    if ($db)
    {
-      say '';
-      say 'IN curdire. List of paths from GetFiles:';
-      say $_->{Path} for @{$curdirfiles};
-      say '';
+      say STDERR '';
+      say STDERR 'IN curdire. List of paths from GetFiles:';
+      say STDERR $_->{Path} for @{$curdirfiles};
+      say STDERR '';
    }
 
    # If being "somewhat verbose", append total-files and nonexistant-files to accumulators:
@@ -161,7 +164,7 @@ sub curdire ()
    }
 
    # If being "VERY verbose", also append all remaining RH::Dir counters to accumulators:
-   if ($Verbose == 2)
+   if ($Verbose >= 2)
    {
       $ottycount += $RH::Dir::ottycount; # tty files
       $cspccount += $RH::Dir::cspccount; # character special files
@@ -203,16 +206,16 @@ sub curdire ()
 
    if ($Inodes)
    {
-      say 'T: Date:       Time:        Size:     Inode:      L:   Bsize:   Blocks:  Name:';
+      say STDOUT 'T: Date:       Time:        Size:     Inode:      L:   Bsize:   Blocks:  Name:';
       foreach my $type (@Types)
       {
          foreach my $file (sort {fc($a->{Name}) cmp fc($b->{Name})} @{$TypeLists{$type}})
          {
             ++$filecount;
-            printf("%-1s  %-10s  %-11s  %-8.2E  %10d  %3u  %7u  %7u  %-s\n",
-                   $file->{Type},  $file->{Date},   $file->{Time},
-                   $file->{Size},  $file->{Inode},  $file->{Nlink},
-                   $file->{Bsize}, $file->{Blocks}, $file->{Name});
+            printf STDOUT "%-1s  %-10s  %-11s  %-8.2E  %10d  %3u  %7u  %7u  %-s\n",
+                          $file->{Type},  $file->{Date},   $file->{Time},
+                          $file->{Size},  $file->{Inode},  $file->{Nlink},
+                          $file->{Bsize}, $file->{Blocks}, $file->{Name};
          }
       }
    }
@@ -225,100 +228,89 @@ sub curdire ()
          foreach my $file (sort {fc($a->{Name}) cmp fc($b->{Name})} @{$TypeLists{$type}})
          {
             ++$filecount;
-            printf("%-1s  %-10s  %-11s  %-8.2E  %3u  %-s\n",
-                   $file->{Type}, $file->{Date},  $file->{Time},
-                   $file->{Size}, $file->{Nlink}, $file->{Name});
+            printf STDOUT "%-1s  %-10s  %-11s  %-8.2E  %3u  %-s\n",
+                          $file->{Type}, $file->{Date},  $file->{Time},
+                          $file->{Size}, $file->{Nlink}, $file->{Name};
          }
       }
    }
    # Print stats for this directory:
    dir_stats($curdir);
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-sub dir_stats ($)
-{
-   if ($Verbose >= 1)
-   {
-      my $curdir = shift;
-      say "\nStatistics for directory \"$curdir\":";
-      say "Found ${RH::Dir::totfcount} files matching given target and regexp.";
-      say "Found ${RH::Dir::noexcount} nonexistent directory entries.";
+sub dir_stats ($curdir) {
+   if ( $Verbose >= 1 ) {
+      say STDERR "\nStatistics for directory \"$curdir\":";
+      say STDERR "Found ${RH::Dir::totfcount} files matching given target and regexp.";
+      say STDERR "Found ${RH::Dir::noexcount} nonexistent directory entries.";
    }
-
-   if ($Verbose == 2)
-   {
-      say "\nDirectory entries encountered included:";
-      printf("%7u tty files\n",                              $RH::Dir::ottycount);
-      printf("%7u character special files\n",                $RH::Dir::cspccount);
-      printf("%7u block special files\n",                    $RH::Dir::bspccount);
-      printf("%7u sockets\n",                                $RH::Dir::sockcount);
-      printf("%7u pipes\n",                                  $RH::Dir::pipecount);
-      printf("%7u symbolic links to nowhere\n",              $RH::Dir::brkncount);
-      printf("%7u symbolic links to directories\n",          $RH::Dir::slkdcount);
-      printf("%7u symbolic links to files\n",                $RH::Dir::linkcount);
-      printf("%7u symbolic links to weirdness\n",            $RH::Dir::weircount);
-      printf("%7u directories\n",                            $RH::Dir::sdircount);
-      printf("%7u regular files with multiple hard links\n", $RH::Dir::hlnkcount);
-      printf("%7u regular files\n",                          $RH::Dir::regfcount);
-      printf("%7u files of unknown type\n",                  $RH::Dir::unkncount);
+   if ( $Verbose >= 2 ) {
+      say    STDERR "\nDirectory entries encountered in this directory included:";
+      printf STDERR "%7u tty files\n",                              $RH::Dir::ottycount;
+      printf STDERR "%7u character special files\n",                $RH::Dir::cspccount;
+      printf STDERR "%7u block special files\n",                    $RH::Dir::bspccount;
+      printf STDERR "%7u sockets\n",                                $RH::Dir::sockcount;
+      printf STDERR "%7u pipes\n",                                  $RH::Dir::pipecount;
+      printf STDERR "%7u symbolic links to nowhere\n",              $RH::Dir::brkncount;
+      printf STDERR "%7u symbolic links to directories\n",          $RH::Dir::slkdcount;
+      printf STDERR "%7u symbolic links to files\n",                $RH::Dir::linkcount;
+      printf STDERR "%7u symbolic links to weirdness\n",            $RH::Dir::weircount;
+      printf STDERR "%7u directories\n",                            $RH::Dir::sdircount;
+      printf STDERR "%7u regular files with multiple hard links\n", $RH::Dir::hlnkcount;
+      printf STDERR "%7u regular files\n",                          $RH::Dir::regfcount;
+      printf STDERR "%7u files of unknown type\n",                  $RH::Dir::unkncount;
    }
    return 1;
-} # end sub dir_stats ($)
+} # end sub dir_stats ($curdir)
 
-sub tree_stats ()
-{
-   if ($Verbose >= 1)
-   {
-      say "\nStatistics for this tree:";
-      say "Navigated $direcount directories.";
-      say "Processed $filecount files.";
-      say "Found $totfcount files matching given target and regexp.";
-      say "Found $noexcount nonexistent directory entries.";
+sub stats {
+   if ( $Verbose >= 1 ) {
+      say STDERR "\nStatistics for this tree:";
+      say STDERR "Navigated $direcount directories.";
+      say STDERR "Processed $filecount files.";
+      say STDERR "Found $totfcount files matching given target and regexp.";
+      say STDERR "Found $noexcount nonexistent directory entries.";
    }
-
-   if ($Verbose == 2)
-   {
-      say "\nDirectory entries encountered included:";
-      printf("%7u tty files\n",                              $ottycount);
-      printf("%7u character special files\n",                $cspccount);
-      printf("%7u block special files\n",                    $bspccount);
-      printf("%7u sockets\n",                                $sockcount);
-      printf("%7u pipes\n",                                  $pipecount);
-      printf("%7u symbolic links to nowhere\n",              $brkncount);
-      printf("%7u symbolic links to directories\n",          $slkdcount);
-      printf("%7u symbolic links to files\n",                $linkcount);
-      printf("%7u symbolic links to weirdness\n",            $weircount);
-      printf("%7u directories\n",                            $sdircount);
-      printf("%7u regular files with multiple hard links\n", $hlnkcount);
-      printf("%7u regular files\n",                          $regfcount);
-      printf("%7u files of unknown type\n",                  $unkncount);
+   if ( $Verbose >= 2 ) {
+      say    STDERR "\nDirectory entries encountered in this tree included:";
+      printf STDERR "%7u tty files\n",                              $ottycount;
+      printf STDERR "%7u character special files\n",                $cspccount;
+      printf STDERR "%7u block special files\n",                    $bspccount;
+      printf STDERR "%7u sockets\n",                                $sockcount;
+      printf STDERR "%7u pipes\n",                                  $pipecount;
+      printf STDERR "%7u symbolic links to nowhere\n",              $brkncount;
+      printf STDERR "%7u symbolic links to directories\n",          $slkdcount;
+      printf STDERR "%7u symbolic links to files\n",                $linkcount;
+      printf STDERR "%7u symbolic links to weirdness\n",            $weircount;
+      printf STDERR "%7u directories\n",                            $sdircount;
+      printf STDERR "%7u regular files with multiple hard links\n", $hlnkcount;
+      printf STDERR "%7u regular files\n",                          $regfcount;
+      printf STDERR "%7u files of unknown type\n",                  $unkncount;
    }
    return 1;
-} # end sub tree_stats ()
+} # end sub stats
 
-sub error ($)
+sub error ($NA)
 {
-   my $NA = shift;
-   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+   print STDERR ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: rhdir.pl takes zero or one arguments, but you typed $NA. If an argument
    is present, it must be a Perl-Compliant Regular Expression specifying which
    directory entries to list. Help follows:
-
    END_OF_ERROR
-   help;
-   exit 666;
-} # end sub error ($)
+} # end sub error ($NA)
 
-sub help ()
+sub help
 {
-   print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+   print STDERR ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to RHDir, Robbie Hatley's Nifty directory listing utility.
    RHDir will list all files and/or folders and/or other objects in
    the current directory (and all subdirectories if a -r or --recurse
    option is used). Each listing line will give the following pieces
    of information about a file:
-   1. Type of file (single-letter code, one of BDFHLNOPSTUWXY).
+   1. Type of file (single-letter code; see chart below).
    2. Last-modified Date of file.
    3. Last-modified Time of file.
    4. Size of file in format #.##E+##
@@ -327,21 +319,52 @@ sub help ()
    If a "-i" or "--inodes" option is used, the inode number,
    recommended block size, and number of blocks are also printed.
 
-   Command line:
-   rhdir.pl [options] [Argument]
+   The meanings of the Type letters are as follows:
+   B - Broken symbolic link
+   D - Directory
+   F - regular File
+   H - regular file with multiple Hard links
+   L - symbolic Link to regular file
+   N - Nonexistent
+   O - sOcket
+   P - Pipe
+   S - Symbolic link to directory
+   T - opens to a Tty
+   U - Unknown
+   W - symbolic link to something other than a regular file or directory
+   X - block special file
+   Y - character special file
+
+   After the file listings, this program will print basic statistics, unless
+   the verbosity level has been set to 0 using a -q or --quiet option.
+   If the verbosity level has been set to 2 using a -v or --verbose option,
+   counts of all file types are printed after the basic statistics.
+   If neither option is used, stats will be printed but not counts.
+
+   Command lines:
+   rhdir.pl [-h | --help]             (to print this help and exit)
+   rhdir.pl [options] [Argument]      (to list files)
 
    Description of options:
-   Option:                      Meaning:
-   "-h" or "--help"             Print help and exit.
-   "-q" or "--quiet"            Be  non-verbose (don't list counts of file types).
-   "-v" or "--verbose"          Be VERY verbose (list counts of ALL files types).
-   "-r" or "--recurse"          Recurse subdirectories.
-   "-f" or "--target=files"     List files only.
-   "-d" or "--target=dirs"      List directories only.
-   "-b" or "--target=both"      List both files and directories.
-   "-a" or "--target=all"       List all file-system objects, of all types.
-   "-i" or "--inodes"           Also print inode numbers for all files
-   (Defaults are: no help, somewhat verbose, don't recurse, list all, no inodes.)
+   Option:                   Meaning:
+   "-h" or "--help"          Print help and exit.
+   "-q" or "--quiet"         Be  non-verbose (don't list stats or counts).
+   "-v" or "--verbose"       Be VERY verbose (list both stats AND counts).
+   "-r" or "--recurse"       Recurse subdirectories.
+   "-f" or "--target=files"  List files only.
+   "-d" or "--target=dirs"   List directories only.
+   "-b" or "--target=both"   List both files and directories.
+   "-a" or "--target=all"    List all file-system objects, of all types.
+   "-i" or "--inodes"        Print inode numbers, block sizes, & #s of blocks.
+   Defaults (what will be printed if no options are used) are as follows:
+    - Give file listings for files of all types (dir, reg, link, pipe, etc).
+    - Print basic stats such as how many directories and files were processed.
+    - Don't print counts of how many files of each type were encountered.
+    - List files in current directory only (don't recurse).
+    - Don't print inode numbers, recommended block size, or number of blocks.
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, use -vrfi to verbosely recurse and print files and inodes.
+   Options other than those listed above will be ignored.
 
    Description of arguments:
    In addition to options, this program can take one optional argument which, if
@@ -351,25 +374,9 @@ sub help ()
    For example, if you want to search for items with names containing "cat",
    "dog", or "horse", title-cased or not, you could use this regexp:
    '(?i:c)at|(?i:d)og|(?i:h)orse'
-   Be sure to enclose your regexp in 'single quotes', else BASH may replace it
-   with matching names of entities in the current directory and send THOSE to
+   Be sure to enclose your regexp in 'single quotes', else your shell may replace
+   it with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
-
-   The meanings of the Type letters are as follows:
-   B - object is a Broken symbolic link
-   D - object is a Directory
-   F - object is a regular File
-   H - object is a regular file with multiple Hard links
-   L - object is a symbolic Link to a file
-   N - object is Nonexistent
-   O - object is a sOcket
-   P - object is a Pipe
-   S - object is a Symbolic link to a directory
-   T - object opens to a Tty
-   U - object is of Unknown type
-   W - object is a symbolic link to Weirdness
-   X - object is a block special file
-   Y - object is a character special file
 
    Happy directory listing!
    Cheers,
@@ -377,4 +384,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help

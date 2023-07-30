@@ -111,9 +111,10 @@ my $cspccount = 0          ; # Count of all character special files.
 my $bspccount = 0          ; # Count of all block special files.
 my $sockcount = 0          ; # Count of all sockets.
 my $pipecount = 0          ; # Count of all pipes.
+my $brkncount = 0          ; # Count of all symbolic links to nowhere
 my $slkdcount = 0          ; # Count of all symbolic links to directories.
-my $linkcount = 0          ; # Count of all symbolic links to non-directories.
-my $multcount = 0          ; # Count of all directories with multiple hard links.
+my $linkcount = 0          ; # Count of all symbolic links to regular files.
+my $weircount = 0          ; # Count of all symbolic links to weirdness (things other than files or dirs).
 my $sdircount = 0          ; # Count of all directories.
 my $hlnkcount = 0          ; # Count of all regular files with multiple hard links.
 my $regfcount = 0          ; # Count of all regular files.
@@ -195,9 +196,10 @@ sub curdire
       $bspccount += $RH::Dir::bspccount; # block special files
       $sockcount += $RH::Dir::sockcount; # sockets
       $pipecount += $RH::Dir::pipecount; # pipes
+      $brkncount += $RH::Dir::slkdcount; # symbolic links to nowhere
       $slkdcount += $RH::Dir::slkdcount; # symbolic links to directories
-      $linkcount += $RH::Dir::linkcount; # symbolic links to non-directories
-      $multcount += $RH::Dir::multcount; # directories with multiple hard links
+      $linkcount += $RH::Dir::linkcount; # symbolic links to regular files
+      $weircount += $RH::Dir::multcount; # symbolic links to weirdness
       $sdircount += $RH::Dir::sdircount; # directories
       $hlnkcount += $RH::Dir::hlnkcount; # regular files with multiple hard links
       $regfcount += $RH::Dir::regfcount; # regular files
@@ -247,9 +249,10 @@ sub stats
       printf("%7u block special files\n",                    $bspccount);
       printf("%7u sockets\n",                                $sockcount);
       printf("%7u pipes\n",                                  $pipecount);
+      printf("%7u symbolic links to nowhere\n",              $brkncount);
       printf("%7u symbolic links to directories\n",          $slkdcount);
       printf("%7u symbolic links to non-directories\n",      $linkcount);
-      printf("%7u directories with multiple hard links\n",   $multcount);
+      printf("%7u symbolic links to weirdness\n",            $weircount);
       printf("%7u directories\n",                            $sdircount);
       printf("%7u regular files with multiple hard links\n", $hlnkcount);
       printf("%7u regular files\n",                          $regfcount);
