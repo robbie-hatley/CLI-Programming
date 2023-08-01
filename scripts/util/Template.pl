@@ -48,6 +48,9 @@
 #                   prototypes. Converted &curfile and &error to signatures. Made &error a "do one thing only"
 #                   subroutine. Added "quiet", "verbose", "local", and "recurse" options.
 # Tue Jul 25, 2023: Decreased width to 110 (with github in mind). Made single-letter options stackable.
+# Mon Jul 31, 2023: Cleaned up formatting and comments. Fine-tuned definitions of "option" and "argument".
+#                   Fixed bug in which $, was being set instead of $" .
+#                   Got rid of "--target=xxxx" options in favor of just "--xxxx".
 ##############################################################################################################
 
 ##############################################################################################################
@@ -91,85 +94,99 @@ sub help    ; # Print help and exit.
 
 # ======= VARIABLES: =========================================================================================
 
-# Settings:                    Meaning:                     Range:    Default:
-$,            = ', '       ; # Array formatting.
-my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (Don't print diagnostics.)
-my $Verbose   = 1          ; # Be wordy?                    bool      1 (Blab.)
-my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (Recurse.)
-my $Target    = 'A'        ; # Files, dirs, both, all?      F|D|B|A   A (All.)
-my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
+# Setting:      Default Value:   Meaning of Setting:         Range:     Meaning of Default:
+   $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma space.
+my $db        = 0            ; # Debug?                      bool       Don't debug.
+my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
+my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
+my $RegExp    = qr/^.+$/o    ; # Regular Expression.         regexp     Process all file names.
+my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Process all file types.
 
 # Counters:
-my $direcount = 0          ; # Count of directories processed by curdire().
-my $filecount = 0          ; # Count of dir entries processed by curfile().
+my $direcount = 0 ; # Count of directories processed by curdire().
+my $filecount = 0 ; # Count of dir entries processed by curfile().
 
 # Accumulations of counters from RH::Dir::GetFiles():
-my $totfcount = 0          ; # Count of all directory entries matching target & regexp & verified by GetFiles.
-my $noexcount = 0          ; # Count of all nonexistent files encountered.
-my $ottycount = 0          ; # Count of all tty files.
-my $cspccount = 0          ; # Count of all character special files.
-my $bspccount = 0          ; # Count of all block special files.
-my $sockcount = 0          ; # Count of all sockets.
-my $pipecount = 0          ; # Count of all pipes.
-my $brkncount = 0          ; # Count of all symbolic links to nowhere
-my $slkdcount = 0          ; # Count of all symbolic links to directories.
-my $linkcount = 0          ; # Count of all symbolic links to regular files.
-my $weircount = 0          ; # Count of all symbolic links to weirdness (things other than files or dirs).
-my $sdircount = 0          ; # Count of all directories.
-my $hlnkcount = 0          ; # Count of all regular files with multiple hard links.
-my $regfcount = 0          ; # Count of all regular files.
-my $unkncount = 0          ; # Count of all unknown files.
+my $totfcount = 0 ; # Count of all directory entries matching regexp & target.
+my $noexcount = 0 ; # Count of all nonexistent files encountered.
+my $ottycount = 0 ; # Count of all tty files.
+my $cspccount = 0 ; # Count of all character special files.
+my $bspccount = 0 ; # Count of all block special files.
+my $sockcount = 0 ; # Count of all sockets.
+my $pipecount = 0 ; # Count of all pipes.
+my $brkncount = 0 ; # Count of all symbolic links to nowhere
+my $slkdcount = 0 ; # Count of all symbolic links to directories.
+my $linkcount = 0 ; # Count of all symbolic links to regular files.
+my $weircount = 0 ; # Count of all symbolic links to weirdness (things other than files or dirs).
+my $sdircount = 0 ; # Count of all directories.
+my $hlnkcount = 0 ; # Count of all regular files with multiple hard links.
+my $regfcount = 0 ; # Count of all regular files.
+my $unkncount = 0 ; # Count of all unknown files.
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
    argv;
-   say '';
-   say "Now entering program \"" . get_name_from_path($0) . "\".";
-   say "Target  = $Target";
-   say "RegExp  = $RegExp";
-   say "Recurse = $Recurse";
-   say "Verbose = $Verbose";
-   say '';
+   if ( $Verbose >= 1 ) {
+      say STDERR '';
+      say STDERR "Now entering program \"" . get_name_from_path($0) . "\".";
+      say STDERR "Verbose = $Verbose";
+      say STDERR "Recurse = $Recurse";
+      say STDERR "RegExp  = $RegExp";
+      say STDERR "Target  = $Target";
+   }
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
-   my $µs = 1000000 * (time - $t0);
-   printf("\nNow exiting program \"%s\". Execution time was %.3fµs.\n", get_name_from_path($0), $µs);
+   my $ms = 1000 * (time - $t0);
+   if ( $Verbose >= 1 ) {
+      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.\n", get_name_from_path($0), $ms;
+   }
    exit 0;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
-sub argv
-{
-   my @options;
-   my @arguments;
-   for (@ARGV) {
-     #if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/) {push @options  , $_}
-      if (/^-[^-]+$/ || /^--[^-]+$/) {push @options  , $_}
-      else                           {push @arguments, $_}
+sub argv {
+   # Get options and arguments:
+   my @opts;
+   my @args;
+   for ( @ARGV ) {
+      # Single-hyphen options may contain letters only. (That way, "-5" is an argument, not an option.)
+      # Double-hyphen options may contain letters, combining marks, numbers, punctuation, and symbols.
+      if (/^-\pL*$|^--[\pL\pM\pN\pP\pS]*$/) {push @opts, $_}
+      else                                  {push @args, $_}
    }
-   if ($db) {
-      say "options   = (@options)";
-      say "arguments = (@arguments)";
+   if ( $db ) {
+      say STDERR "options   = (@opts)";
+      say STDERR 'num opts  = ', scalar(@opts);
+      say STDERR "arguments = (@args)";
+      say STDERR 'num args  = ', scalar(@args);
+      exit 555;
    }
-   for (@options) {
-      if ( $_ =~ m/^-[^-]*h/ || $_ eq '--help'         ) {help; exit 777;}
-      if ( $_ =~ m/^-[^-]*q/ || $_ eq '--quiet'        ) {$Verbose =  0 ;}
-      if ( $_ =~ m/^-[^-]*v/ || $_ eq '--verbose'      ) {$Verbose =  1 ;} # DEFAULT
-      if ( $_ =~ m/^-[^-]*l/ || $_ eq '--local'        ) {$Recurse =  0 ;}
-      if ( $_ =~ m/^-[^-]*r/ || $_ eq '--recurse'      ) {$Recurse =  1 ;} # DEFAULT
-      if ( $_ =~ m/^-[^-]*f/ || $_ eq '--target=files' ) {$Target  = 'F';}
-      if ( $_ =~ m/^-[^-]*d/ || $_ eq '--target=dirs'  ) {$Target  = 'D';}
-      if ( $_ =~ m/^-[^-]*b/ || $_ eq '--target=both'  ) {$Target  = 'B';}
-      if ( $_ =~ m/^-[^-]*a/ || $_ eq '--target=all'   ) {$Target  = 'A';} # DEFAULT
+
+   # Process options:
+   for ( @opts ) {
+      /^-\pL*h|^--help$/     and help and exit 777 ;
+      /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
+      /^-\pL*t|^--terse$/    and $Verbose =  1     ;
+      /^-\pL*v|^--verbose$/  and $Verbose =  2     ;
+      /^-\pL*l|^--local$/    and $Recurse =  0     ;
+      /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
+      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
+      /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
+      /^-\pL*b|^--both$/     and $Target  = 'B'    ;
+      /^-\pL*a|^--all$/      and $Target  = 'A'    ;
    }
-   my $NA = scalar(@arguments);
-   if    ( 0 == $NA ) {                                  } # Do nothing.
-   elsif ( 1 == $NA ) {$RegExp = qr/$arguments[0]/o      } # Set $RegExp.
-   else               {error($NA); say ''; help; exit 666} # Print error and help messages and exit 666.
+
+   # Process arguments:
+   my $NA = scalar(@args);
+   if    ( 0 == $NA ) {                                                } # Use default settings.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o                        } # Set $RegExp.
+   else               { error($NA); help; exit 666                     } # Something evil happened.
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
@@ -179,16 +196,19 @@ sub curdire
    # Increment directory counter:
    ++$direcount;
 
-   # Get and announce current working directory:
+   # Get current working directory:
    my $cwd = cwd_utf8;
-   say "\nDirectory # $direcount: $cwd\n";
+
+   # Announce current working directory if being at-least-somewhat-verbose:
+   if ( $Verbose >= 1) {
+      say "\nDirectory # $direcount: $cwd\n";
+   }
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
 
-   # If being verbose, also accumulate all counters from RH::Dir:: to main:
-   if ($Verbose)
-   {
+   # If being very-verbose, also accumulate all counters from RH::Dir:: to main:
+   if ( $Verbose >= 2 ) {
       $totfcount += $RH::Dir::totfcount; # all directory entries found
       $noexcount += $RH::Dir::noexcount; # nonexistent files
       $ottycount += $RH::Dir::ottycount; # tty files
@@ -199,7 +219,7 @@ sub curdire
       $brkncount += $RH::Dir::slkdcount; # symbolic links to nowhere
       $slkdcount += $RH::Dir::slkdcount; # symbolic links to directories
       $linkcount += $RH::Dir::linkcount; # symbolic links to regular files
-      $weircount += $RH::Dir::multcount; # symbolic links to weirdness
+      $weircount += $RH::Dir::weircount; # symbolic links to weirdness
       $sdircount += $RH::Dir::sdircount; # directories
       $hlnkcount += $RH::Dir::hlnkcount; # regular files with multiple hard links
       $regfcount += $RH::Dir::regfcount; # regular files
@@ -207,8 +227,7 @@ sub curdire
    }
 
    # Iterate through $curdirfiles and send each file to curfile():
-   foreach my $file (@{$curdirfiles})
-   {
+   foreach my $file (@{$curdirfiles}) {
       curfile($file);
    }
    return 1;
@@ -220,43 +239,41 @@ sub curfile ($file)
    # Increment file counter:
    ++$filecount;
 
-   # Get path from file:
-   my $path = $file->{Path};
-
    # Announce path:
-   say $path;
+   say STDOUT $file->{Path};
 
-   # We're done, so scram:
+   # Return success code 1 to caller:
    return 1;
 } # end sub curfile
 
 # Print statistics for this program run:
 sub stats
 {
-   say '';
-   say 'Statistics for this directory tree:';
-   say "Navigated $direcount directories.";
-   say "Found $filecount paths matching given target and regexp.";
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR 'Statistics for this directory tree:';
+      say    STDERR "Navigated $direcount directories.";
+      say    STDERR "Found $filecount paths matching given target and regexp.";
+   }
 
-   if ($Verbose)
-   {
-      say '';
-      say 'Directory entries encountered in this tree included:';
-      printf("%7u total files\n",                            $totfcount);
-      printf("%7u nonexistent files\n",                      $noexcount);
-      printf("%7u tty files\n",                              $ottycount);
-      printf("%7u character special files\n",                $cspccount);
-      printf("%7u block special files\n",                    $bspccount);
-      printf("%7u sockets\n",                                $sockcount);
-      printf("%7u pipes\n",                                  $pipecount);
-      printf("%7u symbolic links to nowhere\n",              $brkncount);
-      printf("%7u symbolic links to directories\n",          $slkdcount);
-      printf("%7u symbolic links to non-directories\n",      $linkcount);
-      printf("%7u symbolic links to weirdness\n",            $weircount);
-      printf("%7u directories\n",                            $sdircount);
-      printf("%7u regular files with multiple hard links\n", $hlnkcount);
-      printf("%7u regular files\n",                          $regfcount);
-      printf("%7u files of unknown type\n",                  $unkncount);
+   if ( $Verbose >= 2) {
+      say    STDERR '';
+      say    STDERR 'Directory entries encountered in this tree included:';
+      printf STDERR "%7u total files\n",                            $totfcount;
+      printf STDERR "%7u nonexistent files\n",                      $noexcount;
+      printf STDERR "%7u tty files\n",                              $ottycount;
+      printf STDERR "%7u character special files\n",                $cspccount;
+      printf STDERR "%7u block special files\n",                    $bspccount;
+      printf STDERR "%7u sockets\n",                                $sockcount;
+      printf STDERR "%7u pipes\n",                                  $pipecount;
+      printf STDERR "%7u symbolic links to nowhere\n",              $brkncount;
+      printf STDERR "%7u symbolic links to directories\n",          $slkdcount;
+      printf STDERR "%7u symbolic links to non-directories\n",      $linkcount;
+      printf STDERR "%7u symbolic links to weirdness\n",            $weircount;
+      printf STDERR "%7u directories\n",                            $sdircount;
+      printf STDERR "%7u regular files with multiple hard links\n", $hlnkcount;
+      printf STDERR "%7u regular files\n",                          $regfcount;
+      printf STDERR "%7u files of unknown type\n",                  $unkncount;
    }
    return 1;
 } # end sub stats
@@ -284,21 +301,27 @@ sub help
    program-name.pl -h | --help            (to print help and exit)
    program-name.pl [options] [arguments]  (to [perform funciton] )
 
+   -------------------------------------------------------------------------------
    Description of options:
-   Option:                     Meaning:
-   "-h" or "--help"            Print help and exit.
-   "-q" or "--quiet"           Don't be verbose.
-   "-v" or "--verbose"         Do    be Verbose.    (DEFAULT)
-   "-l" or "--local"           Don't recurse.
-   "-r" or "--recurse"         Do    recurse.       (DEFAULT)
-   "-f" or "--target=files"    Target Files.
-   "-d" or "--target=dirs"     Target Directories.
-   "-b" or "--target=both"     Target Both.
-   "-a" or "--target=all"      Target All.          (DEFAULT)
+
+   Option:             Meaning:
+   -h or --help        Print help and exit.
+   -q or --quiet       Be quiet.                       (DEFAULT)
+   -t or --terse       Be terse.
+   -v or --verbose     Be verbose.
+   -l or --local       Don't recurse subdirectories.   (DEFAULT)
+   -r or --recurse     Do    recurse subdirectories.
+   -f or --files       Target Files.
+   -d or --dirs        Target Directories.
+   -b or --both        Target Both.
+   -a or --all         Target All.                     (DEFAULT)
+
    All single-letter options are stackable (eg: "-qlf").
    All options other than those shown above are ignored.
 
+   -------------------------------------------------------------------------------
    Description of arguments:
+
    In addition to options, this program can take one optional argument which, if
    present, must be a Perl-Compliant Regular Expression specifying which items to
    process. To specify multiple patterns, use the | alternation operator.

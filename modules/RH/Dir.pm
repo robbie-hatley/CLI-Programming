@@ -660,22 +660,21 @@ sub RecurseDirs (&)
    #my $fst = fstype($curdir);
 
    # If $curdir is (or is in) a critical Linux system directory, die:
-   if
-   (
-         $curdir eq '/'
-      || $curdir =~ m#^/dev#
-      || $curdir =~ m#^/lost+found#
-      || $curdir =~ m#^/proc#
-      || $curdir =~ m#^/srv#
-      || $curdir =~ m#^/sys#
-      || $curdir =~ m#^/tmp#
-   )
-   {
-      warn "Error in RecurseDirs:\n"
-         . "Can't operate in critical Linux directory \"$curdir\".\n"
-         . "Aborting program.\n";
-      chdir '~';
-      return 1;
+   if ( 'Linux' eq $ENV{PLATFORM} ) {
+      if
+      (
+            $curdir eq '/'                  # Too huge!
+         || $curdir eq '/home'              # Too huge!
+         || $curdir eq '/home/aragorn'      # Too huge!
+         || $curdir eq '/home/aragorn/Data' # Too huge!
+         || $curdir eq '/mnt'               # May be huge, depending on what's mounted there.
+         || $curdir =~ m#^/proc#            # Trying to navigate within here causes errors.
+         || $curdir =~ m#^/lost+found#      # We're not allowed in here.
+      )
+      {
+         die  "Error in RecurseDirs: Can't recurse this problematic Linux directory:\n" .
+              "$curdir\nAborting program.\n$!\n";
+      }
    }
 
    # Try to open current directory; if that fails, print warning and return 1:
@@ -717,34 +716,11 @@ sub RecurseDirs (&)
       next SUBDIR if $subdir eq 'lost+found';                   # Linux: Lost & Found Dept.
 
       # Avoid rooting in trash bins:
-      next SUBDIR if $subdir =~ m/^.Recycle$/i;                 # Windows trash bins.
+      next SUBDIR if $subdir =~ m/^\.Recycle$/i;                # Windows trash bins.
       next SUBDIR if $subdir =~ m/^\$Recycle.Bin$/i;            # Windows trash bins.
       next SUBDIR if $subdir =~ m/^Recyler$/i;                  # Windows trash bins.
       next SUBDIR if $subdir eq 'Trash';                        # Linux trash bins.
       next SUBDIR if $subdir =~ m/^\.Trash/;                    # Linux trash bins.
-
-      # Don't try to navigate troublesome Linux or Cygwin subdirectories of root:
-      next SUBDIR if $curdir eq '/' && $subdir eq 'dev';        # Linux/Cygwin: Devices.
-      next SUBDIR if $curdir eq '/' && $subdir eq 'proc';       # Linux/Cygwin: Processes.
-      next SUBDIR if $curdir eq '/' && $subdir eq 'srv';        # Linux/Cygwin: Services.
-      next SUBDIR if $curdir eq '/' && $subdir eq 'sys';        # Linux/Cygwin: System.
-      next SUBDIR if $curdir eq '/' && $subdir eq 'tmp';        # Linux/Cygwin: Temporary files.
-
-      # Don't mess with the private files of certain Windows users:
-      if
-      (
-            $curdir eq '/home/aragorn/net/KE/Valinor/Users'
-         || $curdir eq '/home/aragorn/net/SR/Imladris/Users'
-         || $curdir eq '/cygdrive/c/Users'
-         || $curdir eq '/cygdrive/n/Users'
-      )
-      {
-         next SUBDIR if $subdir eq 'Administrator';             # Microsoft Windows: Problematic account.
-         next SUBDIR if $subdir eq 'Default';                   # Microsoft Windows: Problematic account.
-         next SUBDIR if $subdir eq 'Default User';              # Microsoft Windows: Problematic account.
-         next SUBDIR if $subdir eq 'Public';                    # Microsoft Windows: Problematic account.
-         next SUBDIR if $subdir eq 'All Users';                 # Microsoft Windows: Problematic account.
-      }
 
       # Avoid problematic subdirectories of bootable Windows partitions:
       if
@@ -755,27 +731,43 @@ sub RecurseDirs (&)
          || $curdir =~ m[^/cygdrive/n]
       )
       {
-         next SUBDIR if $subdir =~ m/^\$/;                      # Microsoft Windows: System directories.
-         next SUBDIR if $subdir =~ m/^cygwin/i;                 # Microsoft Windows: Cygwin
-         next SUBDIR if $subdir eq 'Application Data';          # Microsoft Windows: OLD LINK: App Data.
-         next SUBDIR if $subdir eq 'Documents and Settings';    # Microsoft Windows: OLD LINK: Doc n Settings.
-         next SUBDIR if $subdir eq 'Local Settings';            # Microsoft Windows: OLD LINK: Local Settings.
-         next SUBDIR if $subdir eq 'My Documents';              # Microsoft Windows: OLD LINK: My Documents.
-         next SUBDIR if $subdir eq 'My Music';                  # Microsoft Windows: OLD LINK: My Music.
-         next SUBDIR if $subdir eq 'My Pictures';               # Microsoft Windows: OLD LINK: My Pictures.
-         next SUBDIR if $subdir eq 'My Videos';                 # Microsoft Windows: OLD LINK: My Videos.
-         next SUBDIR if $subdir eq 'NetHood';                   # Microsoft Windows: Networks.
-         next SUBDIR if $subdir eq 'PrintHood';                 # Microsoft Windows: Printers.
-         next SUBDIR if $subdir eq 'PerfLogs';                  # Microsoft Windows: Performance Logs.
-         next SUBDIR if $subdir eq 'ProgramData';               # Microsoft Windows: Program Data.
-         next SUBDIR if $subdir eq 'Program Files';             # Microsoft Windows: Program Files (64bit).
-         next SUBDIR if $subdir eq 'Program Files (x86)';       # Microsoft Windows: Program Files (32bit).
-         next SUBDIR if $subdir eq 'Recovery';                  # Microsoft Windows: System Recovery Files.
-         next SUBDIR if $subdir eq 'SendTo';                    # Microsoft Windows: Send To.
-         next SUBDIR if $subdir eq 'Start Menu';                # Microsoft Windows: Start Menu.
-         next SUBDIR if $subdir eq 'Temp';                      # Microsoft Windows: Temporary Files.
-         next SUBDIR if $subdir eq 'Temporary Internet Files';  # Microsoft Windows: Temporary Internet Files.
-         next SUBDIR if $subdir eq 'Windows';                   # Microsoft Windows: Windows operating system.
+         next SUBDIR if $subdir =~ m/^\$/;                      # Windows: System directories.
+         next SUBDIR if $subdir =~ m/^cygwin/i;                 # Windows: Cygwin
+         next SUBDIR if $subdir eq 'Application Data';          # Windows: OLD LINK: App Data.
+         next SUBDIR if $subdir eq 'Documents and Settings';    # Windows: OLD LINK: Doc n Settings.
+         next SUBDIR if $subdir eq 'Local Settings';            # Windows: OLD LINK: Local Settings.
+         next SUBDIR if $subdir eq 'My Documents';              # Windows: OLD LINK: My Documents.
+         next SUBDIR if $subdir eq 'My Music';                  # Windows: OLD LINK: My Music.
+         next SUBDIR if $subdir eq 'My Pictures';               # Windows: OLD LINK: My Pictures.
+         next SUBDIR if $subdir eq 'My Videos';                 # Windows: OLD LINK: My Videos.
+         next SUBDIR if $subdir eq 'NetHood';                   # Windows: Networks.
+         next SUBDIR if $subdir eq 'PrintHood';                 # Windows: Printers.
+         next SUBDIR if $subdir eq 'PerfLogs';                  # Windows: Performance Logs.
+         next SUBDIR if $subdir eq 'ProgramData';               # Windows: Program Data.
+         next SUBDIR if $subdir eq 'Program Files';             # Windows: Program Files (64bit).
+         next SUBDIR if $subdir eq 'Program Files (x86)';       # Windows: Program Files (32bit).
+         next SUBDIR if $subdir eq 'Recovery';                  # Windows: System Recovery Files.
+         next SUBDIR if $subdir eq 'SendTo';                    # Windows: Send To.
+         next SUBDIR if $subdir eq 'Start Menu';                # Windows: Start Menu.
+         next SUBDIR if $subdir eq 'Temp';                      # Windows: Temporary Files.
+         next SUBDIR if $subdir eq 'Temporary Internet Files';  # Windows: Temporary Internet Files.
+         next SUBDIR if $subdir eq 'Windows';                   # Windows: Windows operating system.
+      }
+
+      # Don't mess with the private files of certain Windows users:
+      if
+      (
+            $curdir eq '/home/aragorn/net/KE/Valinor/Users'
+         || $curdir eq '/home/aragorn/net/SR/Imladris/Users'
+         || $curdir eq '/cygdrive/c/Users'
+         || $curdir eq '/cygdrive/n/Users'
+      )
+      {
+         next SUBDIR if $subdir eq 'Administrator';             # Windows: Problematic account.
+         next SUBDIR if $subdir eq 'Default';                   # Windows: Problematic account.
+         next SUBDIR if $subdir eq 'Default User';              # Windows: Problematic account.
+         next SUBDIR if $subdir eq 'Public';                    # Windows: Problematic account.
+         next SUBDIR if $subdir eq 'All Users';                 # Windows: Problematic account.
       }
 
       # ========== SUBDIR STATS CHECKS: ======================================================================

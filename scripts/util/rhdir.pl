@@ -6,7 +6,8 @@
 
 ##############################################################################################################
 # rhdir.pl
-# Prints information about every file in current working directory.
+# Prints information about every file in current working directory (and all subdirectories if a -r or
+# --recurse option is used).
 #
 # Edit history:
 # Sat Dec 06, 2014: Wrote it. (Date is approximate.)
@@ -19,8 +20,8 @@
 # Tue Mar 09, 2021: Changed help() to reflect fact that we're now using PCREs instead of csh wildcards.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
 #                   "Sys::Binmode".
-# Sat Jul 30, 2022: Now sorts files within each type, so one doesn't get a random jumble of "regular files" as
-#                   before. Removed type "M", because in Linux, ALL directories have multiple hard links
+# Sat Jul 30, 2022: Now sorts files within each type, so one doesn't get a random jumble of "regular files"
+#                   as before. Removed type "M", because in Linux, ALL directories have multiple hard links
 #                   pointing to them because of "." and "..". All directories are now type "D" instead of "M".
 #                   Corrected omission in help(), which failed to mention the number-of-links column.
 #                   Removed mention of "directories with multiple hard links" from dir_stats and stats.
@@ -28,8 +29,11 @@
 #                   Got rid of "prototypes". Now using "signature" for error() and dir_stats().
 #                   Got rid of all usage of given/when. Reduced width from 120 to 110 with github in mind.
 #                   Now counting broken symbolic links and symbolic links to "other than file or directory".
-#                   Sub error is now single-purpose (help and exit are called from argv instead).
+#                   Sub error() is now single-purpose (on error, help and exit are called from argv instead).
 #                   Multiple single-letter options can now be piled-up after a single hyphen.
+# Mon Jul 31, 2023: Cleaned up formatting and comments. Fine-tuned definitions of "option" and "argument".
+#                   Fixed bug in which $, was being set instead of $" .
+#                   Got rid of "--target=xxxx" options in favor of just "--xxxx".
 ##############################################################################################################
 
 use v5.36;
@@ -55,35 +59,35 @@ sub help      ;
 
 # ======= VARIABLES: =========================================================================================
 
-# Settings:                   Meaning of setting:     Possible values:  Default:
-   $,         = ', '      ; # Array formatting.       (string)          ', '
-my $db        = 0         ; # Debug?                  0, 1              0 (don't debug)
-my $Verbose   = 1         ; # Be verbose?             0, 1, or 2        1 (somewhat verbose)
-my $Recurse   = 0         ; # Recurse subdirectories? (bool)            0 (don't recurse)
-my $Target    = 'A'       ; # Target                  F|D|B|A           A (list files of all types)
-my $Regexp    = qr/^.+$/o ; # Regular Expression.     (regexp)          qr/^.+$/o (matches all strings)
-my $Inodes    = 0         ; # Print inodes?           (bool)            0 (don't print inodes)
+# Settings:     Default Val:     Meaning of Setting:         Range:     Meaning of Default:
+   $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma space.
+my $db        = 0            ; # Debug?                      0,1        Don't debug.
+my $Verbose   = 1            ; # Be verbose?                 0,1,2      Be somewhat verbose.
+my $Recurse   = 0            ; # Recurse subdirectories?     bool       Don't recurse.
+my $Target    = 'A'          ; # Target                      F|D|B|A    List files of all types.
+my $Regexp    = qr/^.+$/o    ; # Regular Expression.         regexp     List files of all names.
+my $Inodes    = 0            ; # Print inodes?               bool       Don't print inodes.
 
 # Counts of events in this program:
-my $direcount = 0; # Count of directories processed.
-my $filecount = 0; # Count of files processed.
+my $direcount = 0 ; # Count of directories processed.
+my $filecount = 0 ; # Count of files processed.
 
 # Accumulations of counters from RH::Dir :
-my $totfcount = 0; # Count of all targeted directory entries matching regexp.
-my $noexcount = 0; # Count of all nonexistent files encountered.
-my $ottycount = 0; # Count of all tty files.
-my $cspccount = 0; # Count of all character special files.
-my $bspccount = 0; # Count of all block special files.
-my $sockcount = 0; # Count of all sockets.
-my $pipecount = 0; # Count of all pipes.
-my $brkncount = 0; # Count of all symbolic links to nowhere.
-my $slkdcount = 0; # Count of all symbolic links to directories.
-my $linkcount = 0; # Count of all symbolic links to files.
-my $weircount = 0; # Count of all symbolic links to weirdness.
-my $sdircount = 0; # Count of all directories.
-my $hlnkcount = 0; # Count of all regular files with multiple hard links.
-my $regfcount = 0; # Count of all regular files.
-my $unkncount = 0; # Count of all unknown files.
+my $totfcount = 0 ; # Count of all targeted directory entries matching regexp.
+my $noexcount = 0 ; # Count of all nonexistent files encountered.
+my $ottycount = 0 ; # Count of all tty files.
+my $cspccount = 0 ; # Count of all character special files.
+my $bspccount = 0 ; # Count of all block special files.
+my $sockcount = 0 ; # Count of all sockets.
+my $pipecount = 0 ; # Count of all pipes.
+my $brkncount = 0 ; # Count of all symbolic links to nowhere.
+my $slkdcount = 0 ; # Count of all symbolic links to directories.
+my $linkcount = 0 ; # Count of all symbolic links to files.
+my $weircount = 0 ; # Count of all symbolic links to weirdness.
+my $sdircount = 0 ; # Count of all directories.
+my $hlnkcount = 0 ; # Count of all regular files with multiple hard links.
+my $regfcount = 0 ; # Count of all regular files.
+my $unkncount = 0 ; # Count of all unknown files.
 
 # Hashes:
 my %Targets;
@@ -105,38 +109,52 @@ $Targets{A} = "All Directory Entries";
       say STDERR "Regexp   = $Regexp"  ;
       say STDERR "Inodes   = $Inodes"  ;
    }
+   if ($db) {exit 555;}
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 2 ) {printf STDERR "Now exiting program \"rhdir.pl\". Execution time was %.3ums.\n", $ms;}
+   if ( $Verbose >= 1 ) {printf STDERR "Now exiting program \"rhdir.pl\". Execution time was %.3ums.\n", $ms;}
    exit 0;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
 sub argv {
-   my @options;
-   my @arguments;
-   for (@ARGV) {
-      if (/^-[^-]+$/ || /^--[^-]+$/) {push @options  , $_}
-      else                           {push @arguments, $_}
+   # Get options and arguments:
+   my @opts;
+   my @args;
+   for ( @ARGV ) {
+      # Single-hyphen options may contain letters only. (That way, "-5" is an argument, not an option.)
+      # Double-hyphen options may contain letters, combining marks, numbers, punctuation, and symbols.
+      if (/^-\pL*$|^--[\pL\pM\pN\pP\pS]*$/) {push @opts, $_}
+      else                                  {push @args, $_}
    }
-   for (@options) {
-      if ( $_ =~ m/^-[^-]*h/ || $_ eq '--help'         ) {help; exit 777;}
-      if ( $_ =~ m/^-[^-]*q/ || $_ eq '--quiet'        ) {$Verbose =  0 ;}
-      if ( $_ =~ m/^-[^-]*v/ || $_ eq '--verbose'      ) {$Verbose =  2 ;}
-      if ( $_ =~ m/^-[^-]*l/ || $_ eq '--local'        ) {$Recurse =  0 ;}
-      if ( $_ =~ m/^-[^-]*r/ || $_ eq '--recurse'      ) {$Recurse =  1 ;}
-      if ( $_ =~ m/^-[^-]*f/ || $_ eq '--target=files' ) {$Target  = 'F';}
-      if ( $_ =~ m/^-[^-]*d/ || $_ eq '--target=dirs'  ) {$Target  = 'D';}
-      if ( $_ =~ m/^-[^-]*b/ || $_ eq '--target=both'  ) {$Target  = 'B';}
-      if ( $_ =~ m/^-[^-]*a/ || $_ eq '--target=all'   ) {$Target  = 'A';}
-      if ( $_ =~ m/^-[^-]*i/ || $_ eq '--inodes'       ) {$Inodes  =  1 ;}
+   if ( $db ) {
+      say STDERR "options   = (@opts)";
+      say STDERR 'num opts  = ', scalar(@opts);
+      say STDERR "arguments = (@args)";
+      say STDERR 'num args  = ', scalar(@args);
+      exit 555;
    }
-   my $NA = scalar(@arguments);
-      if ( 0 == $NA ) {                               ; } # Do nothing.
-   elsif ( 1 == $NA ) { $Regexp = qr/$arguments[0]/o  ; } # Set $Regexp.
-   else               { error($NA); help; exit 666    ; } # Print error and help messages then exit 666.
+
+   # Process options:
+   for ( @opts ) {
+      /^-\pL*h|^--help$/     and help and exit 777 ;
+      /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
+      /^-\pL*t|^--terse$/    and $Verbose =  1     ;
+      /^-\pL*v|^--verbose$/  and $Verbose =  2     ;
+      /^-\pL*l|^--local$/    and $Recurse =  0     ;
+      /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
+      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
+      /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
+      /^-\pL*b|^--both$/     and $Target  = 'B'    ;
+      /^-\pL*a|^--all$/      and $Target  = 'A'    ;
+      /^-\pL*i|^--inodes$/   and $Inodes  =  1     ;
+   }
+   my $NA = scalar(@args);
+      if ( 0 == $NA ) {                            ; } # Do nothing.
+   elsif ( 1 == $NA ) { $Regexp = qr/$args[0]/o    ; } # Set $Regexp.
+   else               { error($NA); help; exit 666 ; } # Something evil happened.
    return 1;
 } # end sub argv
 
@@ -234,8 +252,11 @@ sub curdire {
          }
       }
    }
+
    # Print stats for this directory:
    dir_stats($curdir);
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub curdire
 
@@ -345,28 +366,37 @@ sub help
    rhdir.pl [-h | --help]             (to print this help and exit)
    rhdir.pl [options] [Argument]      (to list files)
 
+   -------------------------------------------------------------------------------
    Description of options:
-   Option:                   Meaning:
-   "-h" or "--help"          Print help and exit.
-   "-q" or "--quiet"         Be  non-verbose (don't list stats or counts).
-   "-v" or "--verbose"       Be VERY verbose (list both stats AND counts).
-   "-r" or "--recurse"       Recurse subdirectories.
-   "-f" or "--target=files"  List files only.
-   "-d" or "--target=dirs"   List directories only.
-   "-b" or "--target=both"   List both files and directories.
-   "-a" or "--target=all"    List all file-system objects, of all types.
-   "-i" or "--inodes"        Print inode numbers, block sizes, & #s of blocks.
+
+   Option:             Meaning:
+   -h or --help        Print help and exit.
+   -q or --quiet       Be  non-verbose (don't list stats or counts).
+   -t or --terse       Be semi-verbose (list stats  but not counts).     (DEFAULT)
+   -v or --verbose     Be VERY-verbose (list both stats AND counts).
+   -l or --local       Don't recurse subdirectories.                     (DEFAULT)
+   -r or --recurse     Do    recurse subdirectories.
+   -f or --files       List files only.
+   -d or --dirs        List directories only.
+   -b or --both        List both files and directories.
+   -a or --all         List all directory entries.                       (DEFAULT)
+   -i or --inodes      Print inode numbers, block sizes, & #s of blocks.
+
    Defaults (what will be printed if no options are used) are as follows:
     - Give file listings for files of all types (dir, reg, link, pipe, etc).
     - Print basic stats such as how many directories and files were processed.
     - Don't print counts of how many files of each type were encountered.
     - List files in current directory only (don't recurse).
-    - Don't print inode numbers, recommended block size, or number of blocks.
+    - Don't print inode numbers, recommended block sizes, or number of blocks.
+
    Multiple single-letter options may be piled-up after a single hyphen.
    For example, use -vrfi to verbosely recurse and print files and inodes.
+
    Options other than those listed above will be ignored.
 
+   -------------------------------------------------------------------------------
    Description of arguments:
+
    In addition to options, this program can take one optional argument which, if
    present, must be a Perl-Compliant Regular Expression specifying which items to
    process. To specify multiple patterns, use the | alternation operator.
