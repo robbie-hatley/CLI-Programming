@@ -34,6 +34,7 @@
 #                   Fixed bug in which $, was being set instead of $" .
 #                   Got rid of "--target=xxxx" options in favor of just "--xxxx".
 #                   Got rid of "--mode=xxxx"   options in favor of just "--xxxx".
+# Tue Aug 01, 2023: Improved help.
 ##############################################################################################################
 
 use v5.36;
@@ -302,8 +303,8 @@ sub error ($NA) {
 sub help {
    print STDERR ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
-   Welcome to "Rename-Files", Robbie Hatley's file-renaming Perl script. This
-   program renames batches of files by replacing matches to a given regular
+   Welcome to "Rename-Files", Robbie Hatley's nifty file-renaming Perl script.
+   This program renames batches of files by replacing matches to a given regular
    expression with a given replacement string.
 
    Command line:
@@ -339,10 +340,49 @@ sub help {
    -------------------------------------------------------------------------------
    Description of arguments:
 
-   Arg1: "Regular Expression" giving pattern to search for.        (MANDATORY)
-   Arg2: "Replacement String" giving substitution for regex match. (MANDATORY)
-   Arg3: "Substitution Flags" giving flags for s/// operator.      (OPTIONAL)
+   Renamefiles takes 2 or 3 command-line arguments:
+   Arg1 (MANDATORY): "Regular Expression" giving pattern to search for.
+   Arg2 (MANDATORY): "Replacement String" giving substitution for regex match.
+   Arg3 (OPTIONAL ): "Substitution Flags" giving flags for s/// operator.
 
+   Arg1 must be a Perl-Compliant Regular Expression specifying which files
+   to rename. To specify multiple patterns, use the | alternation operator.
+   To apply pattern modifier letters, use an Extended RegExp Sequence.
+   For example, if you want to search for items with names containing "cat",
+   "dog", or "horse", title-cased or not, you could use this regexp:
+   '(?i:c)at|(?i:d)og|(?i:h)orse'
+   Be sure to enclose your regexp in 'single quotes', else BASH may replace it
+   with matching names of entities in the current directory and send THOSE to
+   this program, whereas this program needs the raw regexp instead.
+
+   Arg2 must be a replacement string giving the string to substitute for each
+   RegExp match this program finds for Arg1. Arg2 may contain backreferences to
+   items stored via (parenthetical groups) in the RegExp in Arg1. For example, if
+   Arg1 is '(\d{3})(\d{3})' and Arg2 is '$1-$2', then Rename-Files would rename
+   "123456" to "123-456".
+
+   Arg3 (optional), if present, must be flags for the Perl s/// substitution
+   operator. For example, if Arg1 is 'dog' and Arg2 is 'cat', normally
+   Rename-Files would rename "dogdog" to "catdog", but if Arg3 is 'g' then the
+   result will be "catcat" instead.
+
+   The arguments should be   enclosed in 'single quotes'. Failure to do this may
+   cause the shell to decompose an argument to a list of entries in the current
+   directory and send THOSE to Rename-Files, whereas Rename-Files needs the raw
+   arguments.
+
+   Arguments may be freely mixed with options, but arguments must appear in
+   the order Arg1, Arg2, Arg3.
+
+   WARNING: Make sure that none of the arguments looks like an option!
+   Otherwise, they will be interpretted as "options" rather than as "arguments",
+   and this program will not do what you intend. If you avoid arguments of the
+   form 'hyphen-letter' (eg, '-h') or 'hyphen-hyphen-word' (eg, '--help') you
+   should be OK. As a workaround, you can use '^--help$' as your regexp
+   instead of '--help' if you feel that you absolutely MUST give a file such a
+   pathological name.
+
+   -------------------------------------------------------------------------------
    Example command lines:
 
    rnf -f 'dog' 'cat'
@@ -354,7 +394,9 @@ sub help {
    rnf -f '(?i:dog)' 'cat' 'g'
       (would rename "Dogdog.txt" to "catcat.txt")
 
+   -------------------------------------------------------------------------------
    Prompting:
+
    By default, Renamefiles will prompt the user to confirm or reject each rename
    it proposes based on the settings the user gave.  However, this can be altered.
 
@@ -370,58 +412,21 @@ sub help {
    by tapping the 'a' key when prompted.  All remaining renames will then be
    performed automatically without further prompting.
 
+   -------------------------------------------------------------------------------
    Directory tree traversal:
+
    By default, RenameFiles will rename files in the current directory only.
    However, if a "-r" or "--recurse" switch is used, all subdirectories
    of the current directory will also be processed.
 
+   -------------------------------------------------------------------------------
    Target selection:
+
    By default, RenameFiles renames files only, not directories.  However, if a
    "-d" or "--target=dirs" switch is used, it will rename directories instead.
    If a "-b" or "--target=both" switch is used, it will rename both.
    And if a "-a" or "--target=all" switch is use, it will rename ALL files
    (regular files, directories, links, pipes, sockets, etc, etc, etc).
-
-   Arguments:
-   Renamefiles takes 2 or 3 command-line arguments. The arguments should be
-   enclosed in 'single quotes'. Failure to do this may cause the shell to
-   decompose an argument to a list of entries in the current directory and
-   send THOSE to Rename-Files, whereas Rename-Files needs the raw arguments.
-
-   Arguments may be freely mixed with options, but arguments must appear in
-   the order Arg1, Arg2, Arg3. Detailed descriptions of Arg1, Arg2, and Arg3
-   follow:
-
-   Arg1:
-   This must be a Perl-Compliant Regular Expression specifying which files
-   to rename. To specify multiple patterns, use the | alternation operator.
-   To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to search for items with names containing "cat",
-   "dog", or "horse", title-cased or not, you could use this regexp:
-   '(?i:c)at|(?i:d)og|(?i:h)orse'
-   Be sure to enclose your regexp in 'single quotes', else BASH may replace it
-   with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead.
-
-   Arg2:
-   This must be a replacement string giving the string to substitute for each
-   RegExp match this program finds for Arg1. Arg2 may contain backreferences to
-   items stored via (parenthetical groups) in the RegExp in Arg1. For example, if
-   Arg1 is '(\d{3})(\d{3})' and Arg2 is '$1-$2', then Rename-Files would rename
-   "123456" to "123-456".
-
-   Arg3:
-   Optional flags for the Perl s/// substitution operator. For example, if Arg1
-   is 'dog' and Arg2 is 'cat', normally Rename-Files would rename "dogdog" to
-   "catdog", but if Arg3 is 'g' then the result will be "catcat" instead.
-
-   WARNING: Make sure that none of the arguments looks like an option!
-   Otherwise, they will be interpretted as "options" rather than as "arguments",
-   and this program will not do what you intend. If you avoid arguments of the
-   form 'hyphen-letter' (eg, '-h') or 'hyphen-hyphen-word' (eg, '--help') you
-   should be OK. As a workaround, you can use '^--help$' as your regexp
-   instead of '--help' if you feel that you absolutely MUST give a file such a
-   pathological name.
 
    Happy file renaming!
    Cheers,
