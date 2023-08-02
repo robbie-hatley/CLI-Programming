@@ -10,50 +10,38 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
 Solutions in Perl for The Weekly Challenge 228-2.
-Written by Robbie Hatley on Tue Aug 01, 2023.
+Written by Robbie Hatley on Wed Aug 02, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
 Task 2: Empty Array
 Submitted by: Mohammad S Anwar
 
-You are given an array of integers in which all elements are unique.
+You are given an array of integers in which all elements are unique. Write a script to perform the following
+operations until the array is empty, and return the total count of operations: If the first element is the
+smallest then remove it otherwise move it to the end.
 
-Write a script to perform the following operations until the array is empty and return the total count of operations.
-
-If the first element is the smallest then remove it otherwise move it to the end.
-
-
-Example 1
-
-Input: @int = (3, 4, 2)
-Ouput: 5
-
+Example 1:  Input: @int = (3, 4, 2)  Output: 5
 Operation 1: move 3 to the end: (4, 2, 3)
 Operation 2: move 4 to the end: (2, 3, 4)
 Operation 3: remove element 2: (3, 4)
 Operation 4: remove element 3: (4)
 Operation 5: remove element 4: ()
 
-Example 2
-
-Input: @int = (1, 2, 3)
-Ouput: 3
-
+Example 2:  Input: @int = (1, 2, 3)  Output: 3
 Operation 1: remove element 1: (2, 3)
 Operation 2: remove element 2: (3)
 Operation 3: remove element 3: ()
 
-
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I use List::Util::min, shift, and push, and increment a counter:
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-2.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+double-quoted array of arrays of uniq integers, in proper Perl syntax, like so:
+./ch-2.pl "([9,2,'dog',7],[3,7,3,7],[1,6,2,7,3,8,4,9],[8,7,6,5,4,3,2,1])"
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -66,29 +54,41 @@ use v5.36;
 use strict;
 use warnings;
 use utf8;
+
 use Sys::Binmode;
 use Time::HiRes 'time';
+use List::Util 'min';
+
 $"=', ';
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+sub are_ints ($aref) {
+   for ( @$aref ) {
+      return 0 if $_ !~ /(?:^-[1-9]\d*$)|(?:^0$)|(?:^[1-9]\d*$)/;
+   }
+   return 1;
+}
+
+sub are_uniq ($aref) {
+   for    ( my $i =    0   ; $i <= $#$aref - 1 ; ++ $i ) {
+      for ( my $j = $i + 1 ; $j <= $#$aref - 0 ; ++ $j ) {
+         return 0 if $$aref[$i] == $$aref[$j];
       }
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   return 1;
+}
+
+sub num_moves ($aref) {
+   my @array = @$aref;                         # Grab copy of original array.
+   my $moves = 0;                              # Count moves.
+   while (@array) {                            # For each element,
+      $array[0] == min @array and shift @array # if first is min, discard first;
+      or push @array, shift @array;            # otherwise, move first to last.
+      ++$moves;                                # Increment moves.
+   }
+   return $moves;                              # Return total moves.
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -100,9 +100,8 @@ my $t0 = time;
 # Default inputs:
 my @arrays =
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   [3, 4, 2],
+   [1, 2, 3],
 );
 
 # Non-default inputs:
@@ -111,12 +110,16 @@ my @arrays =
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say "array= (@$aref)";
+   if ( ! are_ints($aref) ) {
+      say "Error: not all array elements are ints; moving on to next array.";
+      next;
+   }
+   if ( ! are_uniq($aref) ) {
+      say "Error: not all array elements are uniq; moving on to next array.";
+      next;
+   }
+   say "Number of moves = ", num_moves $aref;
 }
 
 # Determine and print execution time:
