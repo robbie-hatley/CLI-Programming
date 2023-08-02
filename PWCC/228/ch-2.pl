@@ -64,22 +64,6 @@ $"=', ';
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub are_ints ($aref) {
-   for ( @$aref ) {
-      return 0 if $_ !~ /(?:^-[1-9]\d*$)|(?:^0$)|(?:^[1-9]\d*$)/;
-   }
-   return 1;
-}
-
-sub are_uniq ($aref) {
-   for    ( my $i =    0   ; $i <= $#$aref - 1 ; ++ $i ) {
-      for ( my $j = $i + 1 ; $j <= $#$aref - 0 ; ++ $j ) {
-         return 0 if $$aref[$i] == $$aref[$j];
-      }
-   }
-   return 1;
-}
-
 sub num_moves ($aref) {
    my @array = @$aref;                         # Grab copy of original array.
    my $moves = 0;                              # Count moves.
@@ -111,14 +95,6 @@ my @arrays =
 for my $aref (@arrays) {
    say '';
    say "array= (@$aref)";
-   if ( ! are_ints($aref) ) {
-      say "Error: not all array elements are ints; moving on to next array.";
-      next;
-   }
-   if ( ! are_uniq($aref) ) {
-      say "Error: not all array elements are uniq; moving on to next array.";
-      next;
-   }
    say "Number of moves = ", num_moves $aref;
 }
 
