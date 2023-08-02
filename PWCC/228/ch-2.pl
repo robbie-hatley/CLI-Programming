@@ -93,7 +93,7 @@ my @arrays =
 
 # Main loop:
 for my $aref (@arrays) {
-   say "\narray= (@$aref)";
+   say "\narray = (@$aref)";
    say "Number of moves = ", num_moves $aref;
 }
 
