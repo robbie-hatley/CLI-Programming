@@ -21,11 +21,19 @@
 # Wed Nov 16, 2021: Now using "use common::sense;".
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate.
 # Tue Mar 14, 2023: Added options for local, recursive, quiet, and verbose.
+# Thu Aug 03, 2023: Upgraded from "use v5.32;" to "use v5.36;". Got rid of "common::sense" (antiquated).
+#                   Went from "cwd_utf8" to "d getcwd". Got rid of prototypes. Changed defaults from "verbose"
+#                   and "recurse" to "quiet" and "local".
+#
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
 
 use RH::Util;
@@ -33,19 +41,20 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub process_argv        ();
-sub dedup_newsbin_files ();
-sub print_stats         ();
-sub help_msg            ();
+sub argv  ;
+sub dedup ;
+sub stats ;
+sub help  ;
 
 # ======= VARIABLES: ===================================================================================================
 
 # Debug?
 my $db = 0;
 
-# Settings:
-my $Recurse = 1;  # Recurse subdirectories?   (bool)    Default = 1 (recurse)
-my $Verbose = 1;  # Be verbose                (bool)    Default = 1 (be verbose)
+# Settings:                 Meaning of setting:       Range:   Meaning of default:
+my $Recurse = 0;          # Recurse subdirectories?   bool     Be local.
+my $Verbose = 0;          # Be verbose?               bool     Be quiet.
+my $RegExp  = qr/^.+$/o;  # Which files?              regexp   Process all regular files.
 
 # Counters:
 my $direcount = 0;
@@ -60,58 +69,68 @@ my $failcount = 0;
 
 { # begin main
    my $t0 = time;
-   process_argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\".";
-   $Recurse and RecurseDirs {dedup_newsbin_files} or dedup_newsbin_files;
-   print_stats;
-   my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   my $pname = get_name_from_path($0);
+   argv;
+   if ($Verbose) {
+      say STDERR "\nNow entering program \"$pname\".";
+      say STDERR "Verbose = $Verbose";
+      say STDERR "Recurse = $Recurse";
+      say STDERR "RegExp  = $RegExp";
+   }
+   $Recurse and RecurseDirs {dedup} or dedup;
+   stats;
+   my $ms = 1000 * (time - $t0);
+   if ($Verbose) {
+      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
+   }
    exit 0;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
-sub process_argv ()
-{
-   my $help   = 0;  # Just print help and exit?
-
-   # Get and process options and arguments.
-   # An "option" is "-a" where "a" is any single alphanumeric character, 
-   # or "--b" where "b" is any cluster of 2-or-more printable characters.
-   foreach (@ARGV)
-   {
-      if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-         /^-h$/ || /^--help$/     and $help    = 1;
-         /^-l$/ || /^--local$/    and $Recurse = 0;
-         /^-r$/ || /^--recurse$/  and $Recurse = 1; # DEFAULT
-         /^-q$/ || /^--quiet$/    and $Verbose = 0;
-         /^-v$/ || /^--verbose$/  and $Verbose = 1; # DEFAULT
-      }
+sub argv {
+   # Get options and arguments:
+   my @opts;
+   my @args;
+   for ( @ARGV ) {
+      if (/^-\pL*$|^--[\pL\pM\pN\pP\pS]*$/) {push @opts, $_}
+      else                                  {push @args, $_}
    }
-   if ($help) {help_msg(); exit(777);} # If user wants help, just print help and exit.
-   return 1;
-} # end sub process_argv ()
 
-sub dedup_newsbin_files ()
-{
+   # Process options:
+   for ( @opts ) {
+      /^-\pL*h|^--help$/    and help and exit 777 ;
+      /^-\pL*v|^--verbose$/ and $Verbose =  1     ;
+      /^-\pL*r|^--recurse$/ and $Recurse =  1     ;
+   }
+
+   # Process arguments:
+   my $NA = scalar(@args);
+   if    ( 0 == $NA ) {                              ; } # Use default settings.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o      ; } # Set $RegExp.
+   else               { error($NA); help(); exit 666 ; } # Something evil happened.
+
+   # Return success code 1 to caller:
+   return 1;
+} # end sub argv
+
+sub dedup {
    ++$direcount;
 
    # Get current working directory:
-   my $curdir = cwd_utf8;
+   my $curdir = d getcwd;
 
    # If being verbose, announce directory:
-   say "\nDirectory # $direcount: $curdir\n" if $Verbose;
+   say STDERR "\nDirectory # $direcount: $curdir\n" if $Verbose;
 
    # Get reference to array of references to file records for all regular files
-   # in current directory:
-   my $files = GetFiles($curdir, 'F');
+   # matching $RegExp in current directory:
+   my $files = GetFiles($curdir, 'F', $RegExp);
 
    # Make a hash of references to arrays of references to file records,
    # with the outer hash keyed by name base:
    my %name_groups;
-   foreach my $file (@{$files})
-   {
+   foreach my $file (@{$files}) {
       ++$filecount;
       my $name = $file->{Name};
       my $base = denumerate_file_name($name);
@@ -119,8 +138,7 @@ sub dedup_newsbin_files ()
    }
 
    # Iterate through each name group:
-   BASE: foreach my $base (sort keys %name_groups)
-   {
+   BASE: foreach my $base (sort keys %name_groups) {
       ++$ngrpcount;
 
       # How many files are in this name-base group?
@@ -130,18 +148,16 @@ sub dedup_newsbin_files ()
       next BASE if ($count < 2);
 
       # "FIRST" LOOP: Iterate through all files of current name group except the last:
-      FIRST: for my $i (0..$count-2)
-      {
+      FIRST: for my $i (0..$count-2) {
          # Set $file1 to reference to ith file record:
          my $file1 = $name_groups{$base}->[$i];
 
          # Skip to next first file if ith file has already been deleted:
          next FIRST if $file1->{Name} eq "***DELETED***";
 
-         # "SECOND" LOOP: Iterate through all files of current name group which are 
+         # "SECOND" LOOP: Iterate through all files of current name group which are
          # to the right of file "$i":
-         SECOND: for my $j ($i+1..$count-1)
-         {
+         SECOND: for my $j ($i+1..$count-1) {
             # Set $file2 to reference to jth file record:
             my $file2 = $name_groups{$base}->[$j];
 
@@ -158,32 +174,29 @@ sub dedup_newsbin_files ()
             # Do files have identical content?
             my $identical = FilesAreIdentical($file1->{Name}, $file2->{Name});
 
-            # If FilesAreIdentical didn't die, we successfully compared the current 
+            # If FilesAreIdentical didn't die, we successfully compared the current
             # pair of files, so increment "$compcount":
             ++$compcount;
 
             # If we found no difference between these two files, they're duplicates,
             # so erase the newer file:
-            if ($identical)
-            {
+            if ($identical) {
                # These files are duplicates, so increment $duplcount:
                ++$duplcount;
 
                # If file2 has the more-recent Mtime, erase file2:
-               if ($file2->{Mtime} > $file1->{Mtime})
-               {
+               if ($file2->{Mtime} > $file1->{Mtime}) {
                   unlink(e($file2->{Name})) # Unlink second file.
                      and say "Erased $file2->{Path}"
                      and $file2->{Name} = "***DELETED***"
                      and ++$delecount
-                  or warn("Error in dnf: Failed to unlink $file2->{Path}.\n") 
+                  or warn("Error in dnf: Failed to unlink $file2->{Path}.\n")
                      and ++$failcount;
                   next SECOND;
                }
 
                # Otherwise, erase file1:
-               else
-               {
+               else {
                   unlink(e($file1->{Name})) # Unlink first file.
                      and say "Erased $file1->{Path}"
                      and $file1->{Name} = "***DELETED***"
@@ -197,24 +210,28 @@ sub dedup_newsbin_files ()
       }#end FIRST loop
    }#end BASE loop
    return 1;
-}#end sub dedup_newsbin_files ()
+}#end sub dedup
 
-sub print_stats ()
-{
-   print("\nStatistics for program \"dedup-newsbin-files.pl\":\n");
-   printf("Navigated   %6d directories.\n",              $direcount);
-   printf("Encountered %6d files.\n",                    $filecount);
-   printf("Encountered %6d file name groups.\n",         $ngrpcount);
-   printf("Compaired   %6d pairs of files.\n",           $compcount);
-   printf("Found       %6d pairs of duplicate files.\n", $duplcount);
-   printf("Deleted     %6d duplicate files.\n",          $delecount);
-   printf("Failed      %6d file deletion attempts.\n",   $failcount);
+sub stats {
+   if ($Verbose) {
+      say    STDERR "\nStatistics for program \"dedup-newsbin-files.pl\":";
+      printf STDERR "Navigated   %6d directories.\n",               $direcount;
+      printf STDERR "Encountered %6d files.\n",                     $filecount;
+      printf STDERR "Encountered %6d matching file-name groups.\n", $ngrpcount;
+      printf STDERR "Compaired   %6d pairs of files.\n",            $compcount;
+      printf STDERR "Found       %6d pairs of duplicate files.\n",  $duplcount;
+      printf STDERR "Deleted     %6d duplicate files.\n",           $delecount;
+      printf STDERR "Failed      %6d file deletion attempts.\n",    $failcount;
+   }
    return 1;
-} # end sub print_stats ()
+} # end sub stats
 
-sub help_msg ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to "dedup-newsbin-files.pl", Robbie Hatley's nifty program for
    erasing duplicate files within groups of files having the same base name but
    different "numerators", where a "numerator" is a substring of the form
@@ -231,21 +248,37 @@ sub help_msg ()
    if a "-r" or "--recurse" option is used, it also processes all
    subdirectories of the current working directory as well.
 
+   -------------------------------------------------------------------------------
    Command lines:
+
    dedup-newsbin-files.pl [-h|--help]     (to print this help and exit)
-   dedup-newsbin-files.pl [-r|--recurse]  (to erase duplicates)
+   dedup-newsbin-files.pl [options]       (to erase duplicates)
 
+   -------------------------------------------------------------------------------
    Description of options:
-   Option:              Meaning:
-   "-h" or "--help"     Print this help and exit.
-   "-l" or "--local"    Don't recurse subdirectories.  
-   "-r" or "--recurse"  Recurse subdirectories.        (DEFAULT)
-   "-q" or "--quiet"    Be quiet.
-   "-v" or "--verbose"  Be verbose.                    (DEFAULT)
 
+   Option:            Meaning:
+   -h or --help       Print this help and exit.
+   -r or --recurse    Recurse subdirectories.
+   -v or --verbose    Be verbose.
+
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, to be both recursive and verbose:
+   dedup-newsbin-files.pl -rv
+
+   -------------------------------------------------------------------------------
    Description of arguments:
-   This program ignores all arguments except for the two options mentioned 
-   above.
+
+   In addition to the options above, this program can take one optional argument,
+   which, if present, must be a Perl-Compliant Regular Expression specifying which
+   regular-file groups to dedup. To specify multiple patterns, use the "|"
+   alternation operator. To apply pattern modifier letters, use an Extended
+   RegExp Sequence. For example, if you want to dedup file groups with names
+   containing "cat", "dog", or "horse", title-cased or not, recursively:
+   dedup-newsbin-files -vr '(?i:c)at|(?i:d)og|(?i:h)orse'
+   Be sure to enclose your regexp in 'single quotes', else BASH may replace it
+   with matching names of entities in the current directory and send THOSE to
+   this program, whereas this program needs the raw regexp instead.
 
    Happy duplicate file removing!
    Cheers,
@@ -253,4 +286,4 @@ sub help_msg ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help_msg ()
+} # end sub help

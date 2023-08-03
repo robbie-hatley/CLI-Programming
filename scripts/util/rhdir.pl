@@ -113,7 +113,7 @@ $Targets{A} = "All Directory Entries";
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 1 ) {printf STDERR "Now exiting program \"rhdir.pl\". Execution time was %.3ums.\n", $ms;}
+   if ( $Verbose >= 1 ) {printf STDERR "Now exiting program \"rhdir.pl\". Execution time was %.3fms.\n", $ms;}
    exit 0;
 } # end main
 

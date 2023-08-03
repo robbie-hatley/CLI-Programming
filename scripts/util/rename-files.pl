@@ -107,7 +107,7 @@ $Targets{A} = 'All Directory Entries';
    stats;
    my $ms = 1000 * (time - $t0);
    say    STDERR "\nNow exiting program \"" . get_name_from_path($0) . "\".";
-   printf STDERR "Execution time was %.3ums\n", $ms;
+   printf STDERR "Execution time was %.3fms\n", $ms;
    exit 0;
 } # end main
 
