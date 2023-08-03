@@ -55,6 +55,7 @@
 # Tue Aug 01, 2023: Took file-type counts back OUT and reverted $Verbose back to binary. Just not necessary.
 #                   Corrected "count of files matching predicate is NOT reported by stats" bug.
 #                   Corrected error in help in which the order of Arg1 and Arg2 was presented backwards.
+# Thu Aug 03, 2023: Removed "-l", "--local", "-q", and "--quiet" options, as these are already default.
 ##############################################################################################################
 
 use v5.36;
@@ -141,9 +142,7 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-\pL*h|^--help$/     and help and exit 777 ;
-      /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
       /^-\pL*v|^--verbose$/  and $Verbose =  1     ;
-      /^-\pL*l|^--local$/    and $Recurse =  0     ;
       /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
    }
 
@@ -230,10 +229,8 @@ sub help {
 
    Option:             Meaning:
    -h or --help        Print help and exit.
-   -q or --quiet       DON'T print stats & counts.     (DEFAULT)
-   -v or --verbose      DO   print stats & counts.
-   -l or --local       DON'T recurse subdirectories.   (DEFAULT)
-   -r or --recurse      DO   recurse subdirectories.
+   -v or --verbose     Print stats & counts.
+   -r or --recurse     Recurse subdirectories.
 
    Multiple single-letter options may be piled-up after a single hyphen.
    For example, use -vr to verbosely and recursively search for files.
@@ -304,7 +301,7 @@ sub help {
    directory. Then for each file record matching the regex, the boolean expression
    given by Arg2 (or 1 if no predicate is given) is then evaluated; if it is true,
    the file's path is printed; otherwise, the file is skipped. If recursing, this
-   procedure is also followed for each subdirectory of the the directory;
+   procedure is also followed for each subdirectory of the the current directory;
    otherwise, only the current directory is searched.
 
    For one example, the following would look for all sockets with names containing
@@ -312,12 +309,10 @@ sub help {
    relevant statistics and counts:
    find-files.pl -rv '(?i:p)ig' '(-S)'
 
-   For another example, either of the following would find all block-special and
+   For another example, the following would find all block-special and
    character-special files in the current directory with names containing '435',
-   and would just print the paths, and would NOT print any stats or counts:
-   find-files.pl -lq '435' '(-b || -c)'
-   find-files.pl     '435' '(-b || -c)'
-
+   and would print just the paths, not any stats or counts:
+   find-files.pl '435' '(-b || -c)'
 
    Happy file finding!
    Cheers,

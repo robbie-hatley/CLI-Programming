@@ -53,12 +53,10 @@ my $db = 0;
 # Settings:                      Meaning of setting:        Possible values:    Meaning of default:
 my $Recurse   = 0            ; # Recurse subdirectories?    bool                Don't recurse.
 my $RegExp    = qr/^.+$/o    ; # Regular expression.        regexp              Process all file names.
-my $Predicate = 1            ; # File-type boolean.         bool                Process all file types.
 
 # Counters:
 my $direcount = 0            ; # Count of directories navigated.
 my $filecount = 0            ; # Count of files matching $RegExp.
-my $findcount = 0            ; # Count of files also matching $Predicate.
 
 # Make array of 13 size bins. $size_bins[i] represents number of files
 # with int(floor(log(size)) = i.
@@ -71,7 +69,6 @@ foreach (0..12) {$size_bins[$_] = 0};
    argv;
    say STDERR "\$Recurse   = $Recurse";
    say STDERR "\$RegExp    = $RegExp";
-   say STDERR "\$Predicate = $Predicate";
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    exit 0;
@@ -91,7 +88,6 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-\pL*h|^--help$/     and help and exit 777 ;
-      /^-\pL*l|^--local$/    and $Recurse =  0     ;
       /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
    }
 
@@ -99,7 +95,6 @@ sub argv {
    my $NA = scalar(@args);
       if ( 0 == $NA ) {                            ; } # Do nothing.
    elsif ( 1 == $NA ) { $RegExp    = qr/$args[0]/o ; } # Set $RegExp.
-   elsif ( 2 == $NA ) { $Predicate = $args[1]      ; } # Set $Predicate
    else               { error($NA); help; exit 666 ; } # Something evil happened.
 
    # Return success code 1 to caller:
@@ -122,17 +117,13 @@ sub curdire {
    my $curdir = d getcwd;
 
    # Get list of entries in current directory matching $RegExp:
-   my $curdirfiles = GetFiles($curdir, 'A', $RegExp);
+   my $curdirfiles = GetFiles($curdir, 'F', $RegExp);
 
    # Iterate through all entries in current directory which match $RegExp,
    # incrementing appropriate size_bin counter for each file which also matches $Predicate:
    foreach my $file (@{$curdirfiles}) {
       ++$filecount;
-      local $_ = e $file->{Path};
-      if (eval($Predicate)) {
-         ++$findcount;
-         ++$size_bins[logsize($file)];
-      }
+      ++$size_bins[logsize($file)];
    }
 
    # Return success code 1 to caller:
@@ -143,8 +134,7 @@ sub stats
 {
    say STDERR "File-size statistics for this tree:";
    say STDERR "Navigated $direcount directories.";
-   say STDERR "Found $filecount files matching RegExp \"$RegExp\".";
-   say STDERR "Found $findcount files also matching Predicate \"$Predicate\".";
+   say STDERR "Found $filecount regular files matching RegExp \"$RegExp\".";
    for (0..12)
    {
       printf
@@ -156,7 +146,7 @@ sub stats
 sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
-   Error: You typed $NA arguments, but this program takes 0, 1, or 2 arguments.
+   Error: You typed $NA arguments, but this program takes 0 or 1 arguments.
    Help follows:
    END_OF_ERROR
 } # end sub error ($NA)
@@ -164,65 +154,38 @@ sub error ($NA) {
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
-   Welcome to "file-size-stats.pl". This program prints file-size stats for
-   all files in the current directory (and all subdirectories if a -r or --recurse
-   option is used).
+   Welcome to "file-size-stats.pl". This program prints file-size stats for all
+   regular files in the current directory (and all subdirectories if a -r or
+   --recurse option is used).
 
    Command lines:
-   file-size-stats.pl [-h|--help]               (to print this help and exit)
-   file-size-stats.pl [options] [Arg1] [Arg2]   (to print file-size stats)
+   file-size-stats.pl [-h|--help]         (to print this help and exit)
+   file-size-stats.pl [options] [Arg1]    (to print file-size stats)
 
    -------------------------------------------------------------------------------
    Description of options:
 
    Option:                  Meaning:
    -h or --help             Print help and exit.
-   -l or --local            DON'T recurse subdirectories. (DEFAULT)
-   -r or --recurse           DO   recurse subdirectories.
+   -r or --recurse          Recurse subdirectories.
    Any other options will be ignored.
 
    -------------------------------------------------------------------------------
    Description of arguments:
 
-   This program can take 0, 1, or two arguments.
-
-   Arg1, if present, must be a Perl-Compliant Regular Expression specifying which
-   items to process. To specify multiple patterns, use the | alternation operator.
-   To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to search for items with names containing "cat",
-   "dog", or "horse", title-cased or not, you could use this regexp:
+   In addition to options, this program can take 1 optional argument, which, if
+   present, must be a Perl-Compliant Regular Expression specifying which files to
+   print size stats for. To specify multiple patterns, use the | alternation
+   operator. To apply pattern modifier letters, use an Extended RegExp Sequence.
+   For example, if you want to print size stats for items with names containing
+   "cat", "dog", or "horse", title-cased or not, you could use this regexp:
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
 
-   Arg2, if present, must be a boolean expression using Perl file-test operators.
-   The expression must be enclosed in parentheses (else this program may confuse
-   your file-test operators for options), and then enclosed in single quotes
-   (else the shell won't pass your expression to this program intact). Here are
-   some examples of valid and invalid second arguments:
-
-   '(-d && -l)'  # VALID:   Finds symbolic links to directories
-   '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
-   '(-b)'        # VALID:   Finds block special files
-   '(-c)'        # VALID:   Finds character special files
-   '(-S || -p)'  # VALID:   Finds sockets and pipes.  (S must be CAPITAL S!  )
-
-    '-d && -l'   # INVALID: missing parentheses       (confuses program      )
-    (-d && -l)   # INVALID: missing quotes            (confuses shell        )
-     -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
-
-   (Exception: Technically, you can use an integer as a boolean, and it doesn't
-   need quotes or parentheses; but if you use an integer, any non-zero integer
-   will print all paths and 0 will print no paths, so this isn't very useful.)
-
-   Arguments and options may be freely mixed, but the arguments must appear in
-   the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them
-   backwards, they won't do what you want, as most predicates aren't valid regexps
-   and vice-versa.
-
-   If the number of arguments is not 0, 1, or 2, this program will print an
-   error message and abort.
+   If the number of arguments is not 0 or 1, this program will print an error
+   message and abort.
 
    Cheers,
    Robbie Hatley,

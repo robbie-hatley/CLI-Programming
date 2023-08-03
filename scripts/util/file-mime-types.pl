@@ -12,6 +12,7 @@
 # Edit history:
 # Mon Mar 20, 2023: Wrote it.
 # Thu Aug 03, 2023: Renamed from "file-types.pl" to "file-mime-types.pl". Reduced width from 120 to 110.
+# Thu Aug 03, 2023: Removed "-l", and "--local" options, as these are already default.
 ##############################################################################################################
 
 use v5.36;
@@ -74,7 +75,6 @@ sub argv
       if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
             if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-l' || $_ eq '--local'        ) {$Recurse =  0 ;} # DEFAULT
          elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
 
          # Remove option from @ARGV:
@@ -159,8 +159,7 @@ sub help
 
    Option:                 Meaning:
    "-h" or "--help"        Print this help.
-   "-l" or "--local"       Don't recurse.        (DEFAULT)
-   "-r" or "--recurse"     Do    recurse.
+   "-r" or "--recurse"     Recurse subdirectories.
    All other options are ignored.
 
    -------------------------------------------------------------------------------

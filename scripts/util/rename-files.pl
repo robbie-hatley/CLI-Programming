@@ -35,6 +35,8 @@
 #                   Got rid of "--target=xxxx" options in favor of just "--xxxx".
 #                   Got rid of "--mode=xxxx"   options in favor of just "--xxxx".
 # Tue Aug 01, 2023: Improved help.
+# Thu Aug 03, 2023: Now using "my $curdir = d getcwd" instead of "my $curdir = cwd_utf8;".
+#                   Fixed execution-time bug (wasn't printing "ms"). Improved help.
 ##############################################################################################################
 
 use v5.36;
@@ -43,6 +45,7 @@ use warnings;
 use utf8;
 
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
 
 use RH::Util;
@@ -104,7 +107,7 @@ $Targets{A} = 'All Directory Entries';
    stats;
    my $ms = 1000 * (time - $t0);
    say    STDERR "\nNow exiting program \"" . get_name_from_path($0) . "\".";
-   printf STDERR "Execution time was %.3u\n", $ms;
+   printf STDERR "Execution time was %.3ums\n", $ms;
    exit 0;
 } # end main
 
@@ -167,7 +170,7 @@ sub rename_files {
    ++$dircount;
 
    # Get and announce current working directory:
-   my $curdir = cwd_utf8;
+   my $curdir = d getcwd;
    say STDERR "\nDirectory # $dircount: $curdir" if $Verbose;
 
    # Get list of targeted files in current directory:
@@ -303,12 +306,18 @@ sub error ($NA) {
 sub help {
    print STDERR ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
-   Welcome to "Rename-Files", Robbie Hatley's nifty file-renaming Perl script.
-   This program renames batches of files by replacing matches to a given regular
-   expression with a given replacement string.
+   -------------------------------------------------------------------------------
+   Introduction:
 
-   Command line:
-   rnf [-h] [-p -s -y] [-l -r] [-f -d -b -a] Arg1 Arg2 [Arg3]
+   Welcome to "Rename-Files", Robbie Hatley's nifty file-renaming Perl script.
+   This program renames batches of directory entries by replacing matches to a
+   given regular expression with a given replacement string.
+
+   To print this help and exit:
+   rename-files.pl [-h|--help]
+
+   To rename files:
+   rename-files.pl [-p -s -y] [-l -r] [-f -d -b -a] Arg1 Arg2 [Arg3]
 
    -------------------------------------------------------------------------------
    Description of options:
@@ -322,10 +331,10 @@ sub help {
    -p or --prompt      Prompt before renaming files.                   (DEFAULT)
    -s or --simulate    Simulate renames (don't actually rename files).
    -y or --noprompt    Rename files without prompting.
-   -f or --files       Rename regular files only.
+   -f or --files       Rename regular files only.                      (DEFAULT)
    -d or --dirs        Rename directories only.
    -b or --both        Rename both regular files and directories.
-   -a or --all         Rename all files.                               (DEFAULT)
+   -a or --all         Rename all files.
 
    Multiple single-letter options can be piled-up after a single hyphen.
    For example: "-ldqy" to rename local directories quietly and without prompting.
@@ -395,6 +404,22 @@ sub help {
       (would rename "Dogdog.txt" to "catcat.txt")
 
    -------------------------------------------------------------------------------
+   Directory Navigation:
+
+   By default, RenameFiles will rename files in the current directory only.
+   However, if a "-r" or "--recurse" switch is used, all subdirectories
+   of the current directory will also be processed.
+
+   -------------------------------------------------------------------------------
+   Targets:
+
+   By default, RenameFiles renames regular files only. However, if a "-d" or
+   "--dirs" option is used, it will rename directories instead. If a "-b" or
+   "--both" option is used, it will rename both regular files and directories.
+   And if a "-a" or "--all" switch is use, it will rename ALL directory entries
+   (regular files, directories, links, pipes, sockets, etc, etc, etc).
+
+   -------------------------------------------------------------------------------
    Prompting:
 
    By default, Renamefiles will prompt the user to confirm or reject each rename
@@ -411,22 +436,6 @@ sub help {
    Also, the prompt mode can be changed from "prompt" to "no-prompt" on the fly
    by tapping the 'a' key when prompted.  All remaining renames will then be
    performed automatically without further prompting.
-
-   -------------------------------------------------------------------------------
-   Directory tree traversal:
-
-   By default, RenameFiles will rename files in the current directory only.
-   However, if a "-r" or "--recurse" switch is used, all subdirectories
-   of the current directory will also be processed.
-
-   -------------------------------------------------------------------------------
-   Target selection:
-
-   By default, RenameFiles renames files only, not directories.  However, if a
-   "-d" or "--target=dirs" switch is used, it will rename directories instead.
-   If a "-b" or "--target=both" switch is used, it will rename both.
-   And if a "-a" or "--target=all" switch is use, it will rename ALL files
-   (regular files, directories, links, pipes, sockets, etc, etc, etc).
 
    Happy file renaming!
    Cheers,
