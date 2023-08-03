@@ -22,8 +22,10 @@
 use v5.36;
 use strict;
 use warnings;
+use utf8;
 
 use Sys::Binmode;
+use Cwd;
 
 use RH::Dir;
 
@@ -75,7 +77,7 @@ sub argv {
 
 sub curdire {
    ++$direcount;
-   my $curdir = cwd_utf8;
+   my $curdir = d getcwd;
    my @curdirpaths = glob_regexp_utf8($curdir, 'F');
    foreach my $path (@curdirpaths) {curfile($path)}
    return 1;

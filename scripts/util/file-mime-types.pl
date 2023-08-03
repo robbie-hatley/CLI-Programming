@@ -20,8 +20,9 @@ use warnings;
 use utf8;
 
 use Sys::Binmode;
-use Time::HiRes 'time';
+use Cwd;
 use File::Type;
+use Time::HiRes 'time';
 
 use RH::Dir;
 use RH::Util;
@@ -39,7 +40,7 @@ sub help    ; # Print help and exit.
 
 # Settings:                    Meaning:                     Range:    Default:
 my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (Don't print diagnostics.)
-my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (Recurse.)
+my $Recurse   = 0          ; # Recurse subdirectories?      bool      0 (Don't recurse.)
 my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
 
 # Counters:
@@ -51,15 +52,14 @@ my $filecount = 0          ; # Count of dir entries processed by curfile().
 { # begin main
    my $t0 = time;
    argv;
-   say '';
-   say "Now entering program \"" . get_name_from_path($0) . "\".";
-   say "RegExp  = $RegExp";
-   say "Recurse = $Recurse";
-   say '';
+   say STDERR "Now entering program \"" . get_name_from_path($0) . "\".";
+   say STDERR "RegExp  = $RegExp";
+   say STDERR "Recurse = $Recurse";
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
-   my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   my $ms = 1000 * (time - $t0);
+   print  STDERR "Now exiting program \"" . get_name_from_path($0) . "\".\n";
+   printf STDERR "Execution time was %.3fms.\n", $ms;
    exit 0;
 } # end main
 
@@ -74,8 +74,8 @@ sub argv
       if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
             if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-l' || $_ eq '--local'        ) {$Recurse =  0 ;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;} # DEFAULT
+         elsif ( $_ eq '-l' || $_ eq '--local'        ) {$Recurse =  0 ;} # DEFAULT
+         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
 
          # Remove option from @ARGV:
          splice @ARGV, $i, 1;
@@ -101,8 +101,8 @@ sub curdire
    ++$direcount;
 
    # Get and announce current working directory:
-   my $cwd = cwd_utf8;
-   say "\nDirectory # $direcount: $cwd\n";
+   my $cwd = d getcwd;
+   say STDOUT "\nDirectory # $direcount: $cwd\n";
 
    # Get list of fully-qualified paths of all regular files in current directory matching $RegExp:
    my $curfiles = GetFiles($cwd, 'F', $RegExp);
@@ -124,7 +124,7 @@ sub curdire
 # Print statistics for this program run:
 sub stats
 {
-      say "\nFile-Mime-Types Statistics for this directory tree:";
+   say "\nFile-Mime-Types Statistics for this directory tree:";
    say "Navigated $direcount directories.";
    say "Found $filecount paths matching given regexp.";
    return 1;
@@ -145,6 +145,7 @@ sub error ($err_msg)
 sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "file-mime-types.pl", Robbie Hatley's nifty file MIME types printer.
    This program prints the MIME type of every file in the current directory
    (and all subdirectories if a -r or --recurse option is used).
@@ -153,15 +154,18 @@ sub help
    file-types.pl -h | --help               (to print help and exit)
    file-types.pl [options] [arguments]     (to print MIME types of files)
 
+   -------------------------------------------------------------------------------
    Description of options:
+
    Option:                 Meaning:
    "-h" or "--help"        Print this help.
-   "-q" or "--quiet"       Don't be verbose.
-   "-v" or "--verbose"     Do    be Verbose.     (DEFAULT)
-   "-l" or "--local"       Don't recurse.
-   "-r" or "--recurse"     Do    recurse.        (DEFAULT)
+   "-l" or "--local"       Don't recurse.        (DEFAULT)
+   "-r" or "--recurse"     Do    recurse.
+   All other options are ignored.
 
+   -------------------------------------------------------------------------------
    Description of arguments:
+
    In addition to options, this program can take one optional argument which, if
    present, must be a Perl-Compliant Regular Expression specifying which items to
    process. To specify multiple patterns, use the | alternation operator.

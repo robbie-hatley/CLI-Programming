@@ -272,7 +272,7 @@ sub help {
    file-test operators. The expression must be enclosed in parentheses (else
    this program will confuse your file-test operators for options), and then
    enclosed in single quotes (else the shell won't pass your expression to this
-   program intact). Here are some examples of valid and invalid first arguments:
+   program intact). Here are some examples of valid and invalid second arguments:
 
    '(-d && -l)'  # VALID:   Finds symbolic links to directories
    '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
@@ -290,7 +290,7 @@ sub help {
 
    Arguments and options may be freely mixed, but the arguments must appear in
    the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them
-   backwards, the won't do what you want, as most predicates aren't valid regexps
+   backwards, they won't do what you want, as most predicates aren't valid regexps
    and vice-versa.
 
    If the number of arguments is not 0, 1, or 2, this program will print an
