@@ -1,16 +1,18 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
-# file-types.pl
-# Prints the MIME types of all files in cur dir (and all subdirs if recursing).
+##############################################################################################################
+# file-mime-types.pl
+# Prints the MIME types of all files in the current directory (and all subdirectories if a -r or --recurse
+# option is used).
 # Written by Robbie Hatley.
 # Edit history:
 # Mon Mar 20, 2023: Wrote it.
-########################################################################################################################
+# Thu Aug 03, 2023: Renamed from "file-types.pl" to "file-mime-types.pl". Reduced width from 120 to 110.
+##############################################################################################################
 
 use v5.36;
 use strict;
@@ -24,7 +26,7 @@ use File::Type;
 use RH::Dir;
 use RH::Util;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 sub argv    ; # Process @ARGV.
 sub curdire ; # Process current directory.
@@ -33,7 +35,7 @@ sub stats   ; # Print statistics.
 sub error   ; # Handle errors.
 sub help    ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Settings:                    Meaning:                     Range:    Default:
 my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (Don't print diagnostics.)
@@ -44,7 +46,7 @@ my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o 
 my $direcount = 0          ; # Count of directories processed by curdire().
 my $filecount = 0          ; # Count of dir entries processed by curfile().
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
@@ -61,7 +63,7 @@ my $filecount = 0          ; # Count of dir entries processed by curfile().
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
 sub argv
@@ -103,17 +105,18 @@ sub curdire
    say "\nDirectory # $direcount: $cwd\n";
 
    # Get list of fully-qualified paths of all regular files in current directory matching $RegExp:
-   my @curdirpaths = glob_regexp_utf8($cwd, 'F', $RegExp);
+   my $curfiles = GetFiles($cwd, 'F', $RegExp);
 
    # Set-up a file-typing functor and file-type variable:
    my $typer = File::Type->new();
    my $type  = '';
 
    # Iterate through $curdirpaths and print the MIME type of each file:
-   foreach my $path (sort @curdirpaths)
+   foreach my $file (@$curfiles)
    {
-      $type = $typer->checktype_filename($path);
-      printf("%-95s = %-30s\n", $path, $type);
+      ++$filecount;
+      $type = $typer->checktype_filename($file->{Path});
+      printf("%-95s = %-30s\n", $file->{Name}, $type);
    }
    return 1;
 } # end sub curdire
@@ -121,8 +124,7 @@ sub curdire
 # Print statistics for this program run:
 sub stats
 {
-   say '';
-   say 'Statistics for this directory tree:';
+      say "\nFile-Mime-Types Statistics for this directory tree:";
    say "Navigated $direcount directories.";
    say "Found $filecount paths matching given regexp.";
    return 1;
@@ -143,7 +145,7 @@ sub error ($err_msg)
 sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "file-types.pl", Robbie Hatley's nifty file MIME types printer.
+   Welcome to "file-mime-types.pl", Robbie Hatley's nifty file MIME types printer.
    This program prints the MIME type of every file in the current directory
    (and all subdirectories if a -r or --recurse option is used).
 
@@ -169,7 +171,7 @@ sub help
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Happy type printing!
    Cheers,
