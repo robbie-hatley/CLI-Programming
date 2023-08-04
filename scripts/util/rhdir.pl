@@ -32,7 +32,7 @@
 #                   Sub error() is now single-purpose (on error, help and exit are called from argv instead).
 #                   Multiple single-letter options can now be piled-up after a single hyphen.
 # Mon Jul 31, 2023: Cleaned up formatting and comments. Fine-tuned definitions of "option" and "argument".
-#                   Fixed bug in which $, was being set instead of $" .
+#                   Fixed bug in which $, was being set instead of $" . Improved help.
 #                   Got rid of "--target=xxxx" options in favor of just "--xxxx".
 ##############################################################################################################
 
@@ -326,6 +326,9 @@ sub help
 {
    print STDERR ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to RHDir, Robbie Hatley's Nifty directory listing utility.
    RHDir will list all files and/or folders and/or other objects in
    the current directory (and all subdirectories if a -r or --recurse
@@ -339,6 +342,9 @@ sub help
    6. Name of file.
    If a "-i" or "--inodes" option is used, the inode number,
    recommended block size, and number of blocks are also printed.
+
+   -------------------------------------------------------------------------------
+   Type Letters:
 
    The meanings of the Type letters are as follows:
    B - Broken symbolic link
@@ -356,13 +362,21 @@ sub help
    X - block special file
    Y - character special file
 
-   After the file listings, this program will print basic statistics, unless
-   the verbosity level has been set to 0 using a -q or --quiet option.
-   If the verbosity level has been set to 2 using a -v or --verbose option,
-   counts of all file types are printed after the basic statistics.
-   If neither option is used, stats will be printed but not counts.
+   -------------------------------------------------------------------------------
+   Verbosity levels:
 
+   Unusually for my programs, this program has 3 verbosity levels:
+   Level 0 - "Quiet"
+   Level 1 - "Terse" (DEFAULT)
+   Level 2 - "Verbose"
+
+   At verbosity Level 0, this program will print matching file paths only.
+   At verbosity Level 1, basic statistics will also be printed.
+   At verbosity Level 2, counts of all file types encounters are also printed.
+
+   -------------------------------------------------------------------------------
    Command lines:
+
    rhdir.pl [-h | --help]             (to print this help and exit)
    rhdir.pl [options] [Argument]      (to list files)
 

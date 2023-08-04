@@ -23,7 +23,7 @@
 #                   "Sys::Binmode".
 # Thu Aug 03, 2023: Upgraded from "use v5.32;" to "use v5.36;". Got rid of prototypes and started using
 #                   signatures instead. Renamed from "file-size-statistics.pl" to "file-size-stats.pl".
-#                   Got ride of "common::sense" (antiquated).
+#                   Got ride of "common::sense" (antiquated). Reduced width from 120 to 110. Improved help.
 ##############################################################################################################
 
 use v5.36;
@@ -36,7 +36,7 @@ use Cwd;
 
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 sub argv    ;
 sub curdire ;
@@ -45,7 +45,7 @@ sub stats   ;
 sub error   ;
 sub help    ;
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Debug?
 my $db = 0;
@@ -63,7 +63,7 @@ my $filecount = 0            ; # Count of files matching $RegExp.
 my @size_bins;
 foreach (0..12) {$size_bins[$_] = 0};
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    argv;
@@ -74,7 +74,7 @@ foreach (0..12) {$size_bins[$_] = 0};
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 sub argv {
    # Get options and arguments:
@@ -154,11 +154,16 @@ sub error ($NA) {
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to "file-size-stats.pl". This program prints file-size stats for all
    regular files in the current directory (and all subdirectories if a -r or
    --recurse option is used).
 
+   -------------------------------------------------------------------------------
    Command lines:
+
    file-size-stats.pl [-h|--help]         (to print this help and exit)
    file-size-stats.pl [options] [Arg1]    (to print file-size stats)
 

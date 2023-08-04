@@ -1,10 +1,10 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # dedup-files.pl
 # This program finds and unlinks duplicate files in the current directory (and all of its subdirectories if
 # a -r or --recurse option is used).
@@ -71,40 +71,48 @@
 # Mon Feb 01, 2021: Widened to 120 characters. Cleaned up comments. Simplified padding of file name field.
 # Thu Feb 11, 2021: Got rid of "delete both files" option. Clarified Help. Replaced multiple mode variables
 #                   with "$PromptMode". Clarified comments. Now using "use experimental 'switch';".
-# Fri Nov 05, 2021: Now presents per-directory stats as well as per-tree stats. In order to do this, I had to make most
-#                   functions return result-code strings rather than just return 0 or 1.
+# Fri Nov 05, 2021: Now presents per-directory stats as well as per-tree stats. In order to do this, I had to
+#                   make most functions return result-code strings rather than just return 0 or 1.
 # Tue Nov 16, 2021: Got rid of most of the boilerplate; now using common::sense instead. Also, now putting
 #                   "double quotes" around names of files presented to user for possible unlinking.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "Sys::Binmode".
 # Fri Aug 19, 2022: Clarified comments in spotlight() regarding file-name preferences.
-# Fri Jan 06, 2023: Added ability for user to specify WHICH files to dedup via regular expressions.
-#                   Also, added lots more comments. (Some parts of this program were sorely lacking documentation.)
-########################################################################################################################
+# Fri Jan 06, 2023: Added ability for user to specify WHICH files to dedup via regular expressions. Also added
+#                   lots more comments. (Some parts of this program were sorely lacking documentation.)
+# Thu Aug 03, 2023: Reduced width from 120 to 110. Got rid of "common::sense" (antiquated). Got rid of all
+#                   prototypes; now using signatures instead. Switched from "cwd_utf8" to "d getcwd".
+#                   Replaced all given/when with if/elsif/else. Shortened some sub names. Improved help.
+#                   Dramatically-simplified argv. Changed brace style to "if (test) {".
+##############################################################################################################
 
 use v5.36;
+use strict;
+use warnings;
+use utf8;
+
 use Sys::Binmode;
-use common::sense;
-use feature 'signatures';
+use Cwd;
 use Time::HiRes 'time';
+
 use RH::Util;
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv            :prototype()   ; # Use contents of @ARGV to set settings.
-sub process_curdir  :prototype()   ; # Process the files of the current directory.
-sub dup_prompt      :prototype($$) ; # DupPrompt Mode (asks user what to do).
-sub spotlight       :prototype($$) ; # Spotlight Mode (for processing Microsoft Windows Spotlight scenic photographs).
-sub no_prompt       :prototype($$) ; # NoPromt   Mode (does whatever it damn well pleases, fuck you very much).
-sub erase_newer     :prototype($$) ; # Erases the newer of a pair of identical files by calling unlink_file().
-sub erase_older     :prototype($$) ; # Erases the older of a pair of identical files by calling unlink_file().
-sub unlink_file     :prototype($)  ; # Unlink a file.
-sub print_two_files :prototype($$) ; # Print two file names, with times and dates, aligned.
-sub dire_stats      :prototype()   ; # Print statistics for current directory.
-sub tree_stats      :prototype()   ; # Print statistics for current tree.
-sub help            :prototype()   ; # Print help for this program.
+sub argv        ; # Use contents of @ARGV to set settings.
+sub curdire     ; # Process the files of the current directory.
+sub dup_prompt  ; # DupPrompt Mode (asks user what to do).
+sub spotlight   ; # Spotlight Mode (for processing Microsoft Windows Spotlight photos).
+sub no_prompt   ; # NoPrompt  Mode (does whatever it damn well pleases, fuck you very much).
+sub erase_newer ; # Erases the newer of a pair of identical files by calling unlink_file().
+sub erase_older ; # Erases the older of a pair of identical files by calling unlink_file().
+sub unlink_file ; # Unlink a file.
+sub print_two   ; # Print two file names, with times and dates, aligned.
+sub dire_stats  ; # Print statistics for current directory.
+sub tree_stats  ; # Print statistics for current tree.
+sub help        ; # Print help for this program.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Settings:                 # Meaning of setting:      Meanings of values:
 my $db = 0;                 # Debug?                   0 => don't debug
@@ -117,6 +125,8 @@ my $PromptMode =    0 ;     # Prompting Mode.          0 => DupPrompt (ask user 
                             #                          2 => NoPrompt  (act without prompting user)
 my $PrejudMode =    0 ;     # Prejudice Mode.          0 => Newer     (prejudice against newer files)
                             #                          1 => Older     (prejudice against older files)
+my %PromptHash; $PromptHash{0}='DupPrompt'; $PromptHash{1}='Spotlight'; $PromptHash{2}='NoPrompt';
+my %PrejudHash; $PrejudHash{0}='Newer';     $PrejudHash{1}='Older';
 
 # Note regarding settings:
 
@@ -143,13 +153,13 @@ my $PrejudMode =    0 ;     # Prejudice Mode.          0 => Newer     (prejudice
 # These prejudices don't affect Spotlight Mode or DupPrompt mode.
 
 # SHA1 hash pattern:
-my $shapat = qr(^[0-9a-f]{40}(?:-\(\d{4}\))?(?:\.\w+)?$);
+my $shapat = qr(^[0-9a-f]{40}(?:-\(\d{4}\))?(?:\.\w+)?$)o;
 
 # Gibberish pattern:
-my $gibpat = qr(^[a-z]{8}(?:-\(\d{4}\))?(?:\.\w+)?$);
+my $gibpat = qr(^[a-z]{8}(?:-\(\d{4}\))?(?:\.\w+)?$)o;
 
 # Windows SpotLight pattern:
-my $wslpat = qr(^[0-9a-f]{64}(?:-\(\d{4}\))?(?:\.\w+)?$);
+my $wslpat = qr(^[0-9a-f]{64}(?:-\(\d{4}\))?(?:\.\w+)?$)o;
 
 # Per-Directory Counters:
 my $regfdirec =  0; # Count of regular files processed.
@@ -174,60 +184,65 @@ my $errocount = 0; # Count of errors.
 
 { # begin main
    my $t0 = time;
+   my $pname = get_name_from_path($0);
    argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\".";
-   $Recurse and RecurseDirs {process_curdir} or process_curdir;
+   say STDERR "\nNow entering program \"$pname\".";
+   say STDERR "\$RegExp = $RegExp";
+   say STDERR "prompt    mode = ", $PromptHash{$PromptMode};
+   say STDERR "prejudice mode = ", $PrejudHash{$PrejudMode};
+   $Recurse and RecurseDirs {curdire} or curdire;
    tree_stats;
-   my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   my $ms = 1000 * (time - $t0);
+   printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
    exit 0;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
-sub argv :prototype()
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if ('-h' eq $_ || '--help'      eq $_) {help;   exit 777;                  }
-         elsif ('-l' eq $_ || '--local'     eq $_) {$Recurse    = 0 ;                  } # DEFAULT
-         elsif ('-r' eq $_ || '--recurse'   eq $_) {$Recurse    = 1 ;                  }
-         elsif ('-p' eq $_ || '--prompt'    eq $_) {$PromptMode = 0 ;                  } # DEFAULT
-         elsif ('-s' eq $_ || '--spotlight' eq $_) {$PromptMode = 1 ;                  }
-         elsif ('-n' eq $_ || '--newer'     eq $_) {$PromptMode = 2 ; $PrejudMode = 0 ;}
-         elsif ('-o' eq $_ || '--older'     eq $_) {$PromptMode = 2 ; $PrejudMode = 1 ;}
-
-         # Remove option from @ARGV:
-         splice @ARGV, $i, 1;
-
-         # Move the index 1-left, so that the "++$i" above
-         # moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right
-         # due to deletion of previous element contents:
-         --$i;
-      }
+sub argv {
+   # Get options and arguments:
+   my @opts;
+   my @args;
+   for ( @ARGV ) {
+      if (/^-\pL*$|^--.*$/) {push @opts, $_}
+      else                  {push @args, $_}
    }
-   my $NA = scalar(@ARGV);
-   given ($NA)
-   {
-      when (0) {                       ;} # Do nothing.
-      when (1) {$RegExp = qr/$ARGV[0]/o;} # Set $RegExp.
-      default  {error($NA)             ;} # Print error and help messages then exit 666.
+
+   # Process options:
+   for ( @opts ) {
+      /^-\pL*h|^--help$/      and help and exit 777;
+      /^-\pL*r|^--recurse$/   and $Recurse    = 1;
+      /^-\pL*s|^--spotlight$/ and $PromptMode = 1;
+      /^-\pL*n|^--newer$/     and $PromptMode = 2 and $PrejudMode = 0;
+      /^-\pL*o|^--older$/     and $PromptMode = 2 and $PrejudMode = 1;
    }
+
+   # Process arguments:
+   my $NA = scalar(@args);
+   if    ( 0 == $NA ) {                              ; } # Use default settings.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o      ; } # Set $RegExp.
+   else               { error($NA); help(); exit 666 ; } # Something evil happened.
+
+   # Return success code 1 to caller:
    return 1;
-} # end sub process_argv :prototype()
+} # end sub argv
 
 # Process current directory:
-sub process_curdir :prototype()
-{
+sub curdire {
    # We just entered a new directory, so increment directory counter:
    ++$direcount;
 
+   # Zero all per-directory counters here so they don't accumulate garbage between calls to curdire:
+   $regfdirec = 0; # Count of regular files processed.
+   $compdirec = 0; # Count of comparisons of file pairs.
+   $dupldirec = 0; # Count of duplicate file pairs found.
+   $ignodirec = 0; # Count of ignored duplicate file pairs.
+   $deledirec = 0; # Count of deleted files.
+   $faildirec = 0; # Count of failed attempts at deleting files.
+   $errodirec = 0; # Count of errors.
+
    # Get and announce current working directory:
-   my $curdir = cwd_utf8;
+   my $curdir = d getcwd;
    say "\nDir # $direcount: \"$curdir\"\n";
 
    # Get hash of arrays of file records for for all regular files
@@ -240,8 +255,7 @@ sub process_curdir :prototype()
 
    # Iterate through the keys of the hash, in inverse order of size:
    my @sizes = sort {$b<=>$a} keys %{$curdirfiles};
-   SIZE: foreach my $size (@sizes)
-   {
+   SIZE: foreach my $size (@sizes) {
       # How many files in this size group?
       my $count = scalar @{$curdirfiles->{$size}};
 
@@ -249,8 +263,7 @@ sub process_curdir :prototype()
       next SIZE if ($count < 2);
 
       # "FIRST" LOOP: Iterate through all files of current size except last:
-      FIRST: foreach my $i (0..$count-2)
-      {
+      FIRST: foreach my $i (0..$count-2) {
          # Set $file1 to reference to first file record:
          my $file1 = $curdirfiles->{$size}->[$i];
 
@@ -258,8 +271,7 @@ sub process_curdir :prototype()
 
          # "SECOND" LOOP: Iterate through all files of current size which are
          # to the right of file "$i":
-         SECOND: foreach my $j ($i+1..$count-1)
-         {
+         SECOND: foreach my $j ($i+1..$count-1) {
             #
             # Skip to next FIRST file if $file1 has already been deleted.
             #
@@ -272,13 +284,11 @@ sub process_curdir :prototype()
             # situations which have ALREADY been noted and acted-on.
             # Only print anything if debugging:
             #
-            if ( $file1->{Name} eq '***DELETED***' )
-            {
+            if ( $file1->{Name} eq '***DELETED***' ) {
                say "FIRST file was deleted. Name = ", $file1->{Name} if $db;
                next FIRST;
             }
-            if ( $file1->{Name} eq '***FAILED***' )
-            {
+            if ( $file1->{Name} eq '***FAILED***' ) {
                say "FIRST file was failed. Name = ", $file1->{Name} if $db;
                next FIRST;
             }
@@ -296,13 +306,11 @@ sub process_curdir :prototype()
             # situations which have ALREADY been noted and acted-on.
             # Only print anything if debugging:
             #
-            if ( $file2->{Name} eq '***DELETED***' )
-            {
+            if ( $file2->{Name} eq '***DELETED***' ) {
                say "SECOND file was deleted. Name = ", $file2->{Name} if $db;
                next SECOND;
             }
-            if ( $file2->{Name} eq '***FAILED***' )
-            {
+            if ( $file2->{Name} eq '***FAILED***' ) {
                say "SECOND file was failed. Name = ", $file2->{Name} if $db;
                next SECOND;
             }
@@ -323,17 +331,15 @@ sub process_curdir :prototype()
             # then they're duplicates. If in no-prompt mode, erase
             # the newer file without prompting; otherwise, present
             # options to user:
-            if ($identical)
-            {
+            if ($identical) {
                # Announce identicality:
                printf("\nThese two files are identical:\n");
 
                # Print info on both files, aligned:
-               print_two_files($file1,$file2);
+               print_two($file1,$file2);
 
                # Warn user if files are empty:
-               if (0 == $file1->{Size})
-               {
+               if (0 == $file1->{Size}) {
                   say "Note: Files contain 0 bytes of data.";
                }
 
@@ -345,80 +351,65 @@ sub process_curdir :prototype()
                my $result = '';
 
                # Call appropriate subroutine (depending on value of $PromptMode) and store result in $result:
-               given ($PromptMode)
-               {
-                  # If in DupPrompt mode, call dup_prompt:
-                  when (0)
-                  {
-                     $result = dup_prompt($file1, $file2);
-                  }
-                  # If in Spotlight mode, call spotlight:
-                  when (1)
-                  {
-                     $result = spotlight($file1, $file2);
-                  }
+               # If in DupPrompt mode, call dup_prompt:
+               if (0 == $PromptMode) {
+                  $result = dup_prompt($file1, $file2);
+               }
+               # If in Spotlight mode, call spotlight:
+               elsif (1 == $PromptMode) {
+                  $result = spotlight($file1, $file2);
+               }
 
-                  # If in NoPrompt mode, call no_prompt:
-                  when (2)
-                  {
-                     $result = no_prompt($file1, $file2);
-                  }
+               # If in NoPrompt mode, call no_prompt:
+               elsif (2 == $PromptMode) {
+                  $result = no_prompt($file1, $file2);
+               }
 
-                  # Otherwise, we're in an unknown mode:
-                  default
-                  {
-                     say "Error in \"dedup-files.pl\": unknown mode $PromptMode";
-                     $result = "error";
-                  }
-               } # end given ($PromptMode)
+               # Otherwise, we're in an unknown mode:
+               else {
+                  say "Error in \"dedup-files.pl\": unknown mode $PromptMode";
+                  $result = "error";
+               }
 
                # We just finished processing a pair of identical files.
                # The result of that was "ignored", "deleted", "failed", "error", or "exit".
                # Increment counters (and maybe exit program) accordingly:
-               given ($result)
-               {
-                  when ('ignored')
-                  {
-                     ++$ignodirec;
-                     ++$ignocount;
-                  }
-                  when ('deleted')
-                  {
-                     ++$deledirec;
-                     ++$delecount;
-                  }
-                  when ('failed')
-                  {
-                     ++$faildirec;
-                     ++$failcount;
-                  }
-                  when ('error')
-                  {
-                     ++$errodirec;
-                     ++$errocount;
-                  }
-                  when ('exit')
-                  {
-                     dire_stats;
-                     tree_stats;
-                     exit 0;
-                  }
-               } # end given (result of processing pair of duplicate files)
+               if ('ignored' eq $result) {
+                  ++$ignodirec;
+                  ++$ignocount;
+               }
+               elsif ('deleted' eq $result) {
+                  ++$deledirec;
+                  ++$delecount;
+               }
+               elsif ('failed' eq $result) {
+                  ++$faildirec;
+                  ++$failcount;
+               }
+               elsif ('error' eq $result) {
+                  ++$errodirec;
+                  ++$errocount;
+               }
+               elsif ('exit' eq $result) {
+                  dire_stats;
+                  tree_stats;
+                  exit 0;
+               }
+               else {
+                  warn "Invalid result in curdire.";
+               }
             } # end if identical
-            else # if not identical
-            {
-               say("\nThese two files are same-size but different:");
-               print_two_files($file1,$file2);
+            else { # if not identical
+               say "\nThese two files are same-size but different:";
+               print_two($file1,$file2);
             } # end if not identical
          } # end SECOND file loop
       } # end FIRST file loop
    } # end SIZE group loop
 
-   if ($db)
-   {
+   if ($db) {
       # Did we ACTUALLY mark any files as being deleted or failed?
-      foreach my $size (sort {$b<=>$a} keys %{$curdirfiles})
-      {
+      foreach my $size (sort {$b<=>$a} keys %{$curdirfiles}) {
          # Say the names of all of the files in this size group:
          say '';
          say "Files of size $size:";
@@ -428,17 +419,12 @@ sub process_curdir :prototype()
    }
    dire_stats;
    return 1;
-} # end sub process_curdir :prototype()
+} # end sub curdire
 
 # Mode 0 (DupPrompt = "Ask user what to do."):
-sub dup_prompt :prototype($$)
-{
-   my ($file1, $file2) = @_;
-   my $char = '\x{00}';
-
+sub dup_prompt ($file1, $file2) {
    # Get a keystroke from user:
-   while (42)
-   {
+   while (42) {
       # Ask user what to do:
       print("Type 1 to unlink \"$file1->{Name}\"\n");
       print("Type 2 to unlink \"$file2->{Name}\"\n");
@@ -446,71 +432,57 @@ sub dup_prompt :prototype($$)
       print("Type 4 to enter no-prompt mode and unlink all newer duplicates\n");
       print("Type 5 to enter no-prompt mode and unlink all older duplicates\n");
       print("Type 6 to end program and return to bash\n");
-      $char = RH::Util::get_character;
-      given ($char)
-      {
-         when ('1') # DELETE FIRST FILE
-         {
-            return unlink_file($file1); # Unlink first file.
-         }
+      my $char = RH::Util::get_character;
+      if ('1' eq $char) { # DELETE FIRST FILE
+         return unlink_file($file1); # Unlink first file.
+      }
 
-         when ('2') # DELETE SECOND FILE
-         {
-            return unlink_file($file2); # Unlink second file.
-         }
+      elsif ('2' eq $char) { # DELETE SECOND FILE
+         return unlink_file($file2); # Unlink second file.
+      }
 
-         when ('3') # IGNORE THIS PAIR OF DUPLICATES
-         {
-            say "Ignoring these duplicates.";
-            return 'ignored';
-         }
+      elsif ('3' eq $char) { # IGNORE THIS PAIR OF DUPLICATES
+         say "Ignoring these duplicates.";
+         return 'ignored';
+      }
 
-         when ('4') # ERASE ALL NEWER DUPLICATES WITHOUT PROMPTING
-         {
-            say "Entering no-prompt mode and erasing all newer duplicates.";
-            $PromptMode = 2;
-            $PrejudMode = 0;
-            return erase_newer ($file1, $file2);
-         }
+      elsif ('4' eq $char) { # ERASE ALL NEWER DUPLICATES WITHOUT PROMPTING
+         say "Entering no-prompt mode and erasing all newer duplicates.";
+         $PromptMode = 2;
+         $PrejudMode = 0;
+         return erase_newer ($file1, $file2);
+      }
 
-         when ('5') # ERASE ALL OLDER DUPLICATES WITHOUT PROMPTING
-         {
-            say "Entering no-prompt mode and erasing all older duplicates.";
-            $PromptMode = 2;
-            $PrejudMode = 1;
-            return erase_older ($file1, $file2);
-         }
+      elsif ('5' eq $char) { # ERASE ALL OLDER DUPLICATES WITHOUT PROMPTING
+         say "Entering no-prompt mode and erasing all older duplicates.";
+         $PromptMode = 2;
+         $PrejudMode = 1;
+         return erase_older ($file1, $file2);
+      }
 
-         when ('6') # COMPUTER, END PROGRAM
-         {
-            say "Ending program, by your command.";
-            return 'exit';
-         }
+      elsif ('6' eq $char) { # COMPUTER, END PROGRAM
+         say "Ending program, by your command.";
+         return 'exit';
+      }
 
-         when (undef)
-         {
-            say "Error in \"dedup-files.pl\":\n"
-              . "get_character returned undef.\n"
-              . "$!\n"
-              . "Continuing execution, but if this keeps happening,\n"
-              . "consider aborting the program using Ctrl-C.";
-            return 'error';
-         }
+      elsif ( ! defined $char ) { # OOPSIE!
+         warn "Error in \"dedup-files.pl\":\n"
+            . "get_character returned undef.\n"
+            . "$!\n"
+            . "Continuing execution, but if this keeps happening,\n"
+            . "consider aborting the program using Ctrl-C.\n";
+         return 'error';
+      }
 
-         default
-         {
-            say "Invalid key.";
-            # NOTE: Don't return here; that way execution continues at top of while() loop.
-         }
-      } # end given ($char)
+      else {
+         say "Invalid key.";
+         # NOTE: Don't return here; that way execution continues at top of while() loop.
+      }
    } # end while (42) {get keystroke from user}
-} # end sub dup_prompt :prototype($$) (MODE 0)
+} # end sub dup_prompt (MODE 0)
 
 # Mode 1 (Spotlight = "Process Microsoft Windows Spotlight scenic photographs."):
-sub spotlight :prototype($$)
-{
-   my ($file1, $file2) = @_;
-
+sub spotlight ($file1, $file2) {
    # Prefered order of names for Windows 10 Spotlight scenic photographs is
    # 1. Descriptive names
    # 2. SHA1-hash names (40 hexadecimal digits)
@@ -522,116 +494,90 @@ sub spotlight :prototype($$)
    # and if all else fails, ask user what to do:
 
    # WSL + NON-WSL:
-   if ($file1->{Name} =~ $wslpat && $file2->{Name} !~ $wslpat)
-   {
+   if ($file1->{Name} =~ $wslpat && $file2->{Name} !~ $wslpat) {
       return unlink_file($file1); # Unlink first file.
    }
 
    # NON-WSL + WSL:
-   elsif ($file1->{Name} !~ $wslpat && $file2->{Name} =~ $wslpat)
-   {
+   elsif ($file1->{Name} !~ $wslpat && $file2->{Name} =~ $wslpat) {
       return unlink_file($file2); # Unlink second file.
    }
 
    # GIB + NON-GIB:
-   elsif ($file1->{Name} =~ $gibpat && $file2->{Name} !~ $gibpat)
-   {
+   elsif ($file1->{Name} =~ $gibpat && $file2->{Name} !~ $gibpat) {
       return unlink_file($file1); # Unlink first file.
    }
 
    # NON-GIB + GIB:
-   elsif ($file1->{Name} !~ $gibpat && $file2->{Name} =~ $gibpat)
-   {
+   elsif ($file1->{Name} !~ $gibpat && $file2->{Name} =~ $gibpat) {
       return unlink_file($file2); # Unlink second file.
    }
 
    # SHA + NON-SHA:
-   elsif ($file1->{Name} =~ $shapat && $file2->{Name} !~ $shapat)
-   {
+   elsif ($file1->{Name} =~ $shapat && $file2->{Name} !~ $shapat) {
       return unlink_file($file1); # Unlink first file.
    }
 
    # NON-SHA + SHA:
-   elsif ($file1->{Name} !~ $shapat && $file2->{Name} =~ $shapat)
-   {
+   elsif ($file1->{Name} !~ $shapat && $file2->{Name} =~ $shapat) {
       return unlink_file($file2); # Unlink second file.
    }
 
    # OTHER + OTHER:
-   else
-   {
+   else {
       say 'Neither file has a gib, wsl, or sha1 name, so entering user-intervention mode.';
       return dup_prompt($file1, $file2);
    }
-} # end sub spotlight :prototype($$) (MODE 1)
+} # end sub spotlight (MODE 1)
 
 # Mode 2 (NoPrompt = "Erase a duplicate file automatically without prompting the user."):
-sub no_prompt :prototype($$)
-{
-   my ($file1, $file2) = @_;
-   if ( 1 == $PrejudMode )
-   {
+sub no_prompt ($file1, $file2) {
+   if ( 1 == $PrejudMode ) {
       return erase_older($file1, $file2);
    }
    else
    {
       return erase_newer($file1, $file2);
    }
-} # end sub no_prompt :prototype($$) (MODE 2)
+} # end sub no_prompt (MODE 2)
 
 # Erase the newer of a pair of duplicate files (by calling unlink_file()):
-sub erase_newer :prototype($$)
-{
-   my ($file1, $file2) = @_;
-   if ($file1->{Mtime} > $file2->{Mtime})
-   {
-      return unlink_file($file1); # Unlink first file.
+sub erase_newer ($file1, $file2) {
+   if ( $file1->{Mtime} > $file2->{Mtime} ) { # If file1 is newer,
+      return unlink_file($file1);             # unlink file1;
    }
-   else
-   {
-      return unlink_file($file2); # Unlink second file.
+   else {                                     # otherwise,
+      return unlink_file($file2);             # unlink file2.
    }
-} # end sub erase_newer :prototype($$)
+} # end sub erase_newer
 
 # Erase the older of a pair of duplicate files (by calling unlink_file()):
-sub erase_older :prototype($$)
-{
-   my ($file1, $file2) = @_;
-   if ($file1->{Mtime} < $file2->{Mtime})
-   {
-      return unlink_file($file1); # Unlink first file.
+sub erase_older ($file1, $file2) {
+   if ( $file1->{Mtime} < $file2->{Mtime} ) { # If file1 is older,
+      return unlink_file($file1);             # unlink file1;
    }
-   else
-   {
-      return unlink_file($file2); # Unlink second file.
+   else {                                     # otherwise,
+      return unlink_file($file2);             # unlink file2.
    }
-} # end sub erase_older :prototype($$)
+} # end sub erase_older
 
 # Unlink a file (leave the data in-situ, but remove this hard link from this directory):
-sub unlink_file :prototype($)
-{
-   my $file = shift;
+sub unlink_file ($file) {
    my $success = unlink e $file->{Name};
-   if ( $success )
-   {
+   if ( $success ) {
       say "Successfully unlinked $file->{Name}";
       $file->{Name} = "***DELETED***";
       return 'deleted';
    }
-   else
-   {
+   else {
       warn("Failed to unlink $file->{Name}\n$!\n");
       $file->{Name} = "***FAILED***";
       return 'failed';
    }
-} # end sub unlink_file :prototype($)
+} # end sub unlink_file
 
 # Print two file names, with times and dates, aligned:
-sub print_two_files :prototype($$)
-{
-   my $file1 = shift;
-   my $file2 = shift;
-
+sub print_two ($file1, $file2) {
    # Get time and date strings for both files:
    my $time1 = time_from_mtime $file1->{Mtime};
    my $time2 = time_from_mtime $file2->{Mtime};
@@ -644,25 +590,16 @@ sub print_two_files :prototype($$)
    my $fnw = $nl2 > $nl1 ? $nl2 + 2 : $nl1 + 2 ; # fnw = File-Name Width.
 
    # Print first file:
-   printf
-   (
-      "%-${fnw}s%-18s%-10s%d bytes\n",
-      $file1->{Name}, $date1, $time1, $file1->{Size}
-   );
+   printf "%-${fnw}s%-18s%-10s%d bytes\n", $file1->{Name}, $date1, $time1, $file1->{Size};
 
    # Print second file:
-   printf
-   (
-      "%-${fnw}s%-18s%-10s%d bytes\n",
-      $file2->{Name}, $date2, $time2, $file2->{Size}
-   );
+   printf "%-${fnw}s%-18s%-10s%d bytes\n", $file2->{Name}, $date2, $time2, $file2->{Size};
 
    return 1;
-} # end sub print_two_files :prototype($$)
+} # end sub print_two
 
 # Print statistics for current directory:
-sub dire_stats :prototype()
-{
+sub dire_stats {
    say '';
    say 'Statistics for this directory:';
    printf("Processed %6d files.\n",                    $regfdirec);
@@ -672,20 +609,11 @@ sub dire_stats :prototype()
    printf("Deleted   %6d files.\n",                    $deledirec);
    printf("Failed    %6d file deletion attempts.\n",   $faildirec);
    printf("Suffered  %6d errors.\n",                   $errodirec);
-   # Zero all per-directory counters here so they don't accumulate garbage between calls to process_curdir:
-   $regfdirec = 0; # Count of regular files processed.
-   $compdirec = 0; # Count of comparisons of file pairs.
-   $dupldirec = 0; # Count of duplicate file pairs found.
-   $ignodirec = 0; # Count of ignored duplicate file pairs.
-   $deledirec = 0; # Count of deleted files.
-   $faildirec = 0; # Count of failed attempts at deleting files.
-   $errodirec = 0; # Count of errors.
    return 1;
-} # end sub dire_stats :prototype()
+} # end sub dire_stats
 
 # Print statistics for current tree:
-sub tree_stats :prototype()
-{
+sub tree_stats {
    say '';
    say 'Statistics for this tree:';
    printf("Navigated %6d directories.\n",              $direcount);
@@ -706,41 +634,50 @@ sub tree_stats :prototype()
    $failcount = 0; # Count of failed attempts at deleting files.
    $errocount = 0; # Count of errors.
    return 1;
-} # end sub tree_stats :prototype()
+} # end sub tree_stats
 
 # Print help for this program:
-sub help :prototype()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to dedup-files, Robbie Hatley's nifty duplicate-file
-   finding and removing program.
 
-   Command line:
-   dedup-files.pl [options]
+   -------------------------------------------------------------------------------
+   Introduction:
 
-   Description of options:
+   Welcome to "dedup-files.pl", Robbie Hatley's nifty duplicate-file deleter.
+
+   -------------------------------------------------------------------------------
+   Command Lines:
+
+   dedup-files.pl [-h|--help]    (to print this help and exit)
+   dedup-files.pl [options]      (to find and delete duplicate files)
+
+   -------------------------------------------------------------------------------
+   Description of Options:
 
    Option:               Meaning:
    "-h" or "--help"      Print help and exit.
-   "-l" or "--local"     Don't traverse subdirectories.               (DEFAULT)
    "-r" or "--recurse"   Traverse subdirectories.
-   "-p" or "--prompt"    Enter DupPrompt mode (ask user what to do).  (DEFAULT)
    "-s" or "--spotlight" Enter Spotlight mode (erase gibberish names).
    "-n" or "--newer"     Enter NoPrompt  mode (don't prompt user)
                          and be prejudiced against newer duplicates.
    "-o" or "--older"     Enter NoPrompt  mode (don't prompt user)
                          and be prejudiced against older duplicates.
 
-   All other options are ignored. If contradictory options are given,
-   the right-most prevails (eg, "-n -o" is the same as "-o").
+   All options not listed above are ignored.
 
-   By default, dedup-files is in "DupPrompt" (interactive) mode and does not
+   Single-letter options may be piled-up after a single hyphen.
+
+   If contradictory separate options are given, the right-most prevails.
+   (Eg, "-n -o" is the same as "-o".)
+
+   If contradictory single-letter options are piled-up after a single colon,
+   the following descending order of operations prevail: honsr
+
+   -------------------------------------------------------------------------------
+   Modes of Operation:
+
+   By default, dedup-files starts in "DupPrompt" (interactive) mode and does not
    automatically unlink any file without first asking you what to do.
-   Using a "-p" or "--prompt" option explicitly sets this mode, but this
-   is normally unnecessary, except for contradicing modes set to-the-left on the
-   command line.(In case of contradiction between two options, the further-right
-   prevails.)
-
    In interactive mode, for each pair of duplicates files found, dedup-files
    gives you these 6 choices:
 
@@ -753,12 +690,12 @@ sub help :prototype()
 
    So, using dedup-files you can trim duplicates from your file collection with
    surgical precision, if that's what you want to do. (Or, you can bludgeon them
-   to death with a fucking sledgehammer if THAT'S what you want to do. Read on.)
+   to death with a sledgehammer if THAT'S what you want to do. Read on.)
 
    If you use a "-s" or "--spotlight" option, dedup-files goes into "Spotlight"
    mode and automatically unlinks duplicate files in cases where one of a pair
    of duplicate files has a name which is clearly less-preferred than the other.
-   WSL names are preffered over GIB names; SHA names are preffered over WSL
+   WSL names are preffered over GIB names; SHA1 names are preffered over WSL
    names; and descriptive names are prefered over SHA1 names. If dedup-files
    can't figure out what to do while in Spotlight mode, it switches to DupPrompt
    mode and asks you what to do.
@@ -777,6 +714,7 @@ sub help :prototype()
    a large number of files without stopping to ask for your permission. If that's
    not what you want to do, it's better to run dedup-files in interactive mode.
 
+   -------------------------------------------------------------------------------
    Description of arguments:
 
    In addition to options, this program can take one optional argument which, if
@@ -796,4 +734,4 @@ sub help :prototype()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help :prototype()
+} # end sub help

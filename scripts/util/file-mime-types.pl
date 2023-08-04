@@ -12,7 +12,7 @@
 # Edit history:
 # Mon Mar 20, 2023: Wrote it.
 # Thu Aug 03, 2023: Renamed from "file-types.pl" to "file-mime-types.pl". Reduced width from 120 to 110.
-# Thu Aug 03, 2023: Removed "-l", and "--local" options, as these are already default.
+#                   Removed "-l", and "--local" options, as these are already default. Improved help.
 ##############################################################################################################
 
 use v5.36;
@@ -146,11 +146,16 @@ sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to "file-mime-types.pl", Robbie Hatley's nifty file MIME types printer.
    This program prints the MIME type of every file in the current directory
    (and all subdirectories if a -r or --recurse option is used).
 
+   -------------------------------------------------------------------------------
    Command lines:
+
    file-types.pl -h | --help               (to print help and exit)
    file-types.pl [options] [arguments]     (to print MIME types of files)
 

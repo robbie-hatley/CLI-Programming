@@ -39,7 +39,7 @@
 #                   Fixed the "$Quiet" vs "$Verbose" variable conflict. Improved "argv". Improved "help".
 #                   Put 'use feature "signatures";' after 'use common::sense;" to fix conflict between
 #                   common::sense and signatures.
-# Fri Jul 28, 2023: Reduced width from to 110 with Github in-mind. Got rid of "common::sense" (antiquated).
+# Fri Jul 28, 2023: Reduced width from 120 to 110 for Github. Got rid of "common::sense" (antiquated).
 #                   Multiple single-letter options can now be piled-up after a single hyphen.
 # Sat Jul 29, 2023: Got rid of print-out of stats for directory entries encountered per-directory or per-tree,
 #                   as that info isn't relevant to finding specific files. Set defaults to local and quiet.
@@ -56,6 +56,7 @@
 #                   Corrected "count of files matching predicate is NOT reported by stats" bug.
 #                   Corrected error in help in which the order of Arg1 and Arg2 was presented backwards.
 # Thu Aug 03, 2023: Removed "-l", "--local", "-q", and "--quiet" options, as these are already default.
+#                   Improved help.
 ##############################################################################################################
 
 use v5.36;
@@ -126,17 +127,8 @@ sub argv {
    my @opts;
    my @args;
    for ( @ARGV ) {
-      # Single-hyphen options may contain letters only. (That way, "-5" is an argument, not an option.)
-      # Double-hyphen options may contain letters, combining marks, numbers, punctuation, and symbols.
       if (/^-\pL*$|^--[\pL\pM\pN\pP\pS]*$/) {push @opts, $_}
       else                                  {push @args, $_}
-   }
-   if ( $db ) {
-      say STDERR "options   = (@opts)";
-      say STDERR 'num opts  = ', scalar(@opts);
-      say STDERR "arguments = (@args)";
-      say STDERR 'num args  = ', scalar(@args);
-      exit 555;
    }
 
    # Process options:
@@ -208,6 +200,9 @@ sub error ($NA) {
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to "find-files.pl", Robbie Hatley's excellent file-finding utility!
    This program finds directory entries in the current directory (and all
    subdirectories if a -r or --recurse option is used) which match a given
@@ -220,7 +215,9 @@ sub help {
    you want, so I suggest using options and arguments to specify what you're
    looking for.
 
+   -------------------------------------------------------------------------------
    Command lines:
+
    find-files-by-type.pl [-h|--help]              (to print help)
    find-files-by-type.pl [options] [Arg1] [Arg2]  (to find files)
 
@@ -252,7 +249,7 @@ sub help {
    "find-files-by-type.pl" takes 0, 1, or 2 arguments.
 
    Providing no arguments will result in this program returning the paths of all
-   entries in the current directories, which probably not what you want.
+   entries in the current directory, which is probably not what you want.
 
    Arg1 (OPTIONAL), if present, must be a Perl-Compliant Regular Expression
    specifying which file names to look for. To specify multiple patterns, use the

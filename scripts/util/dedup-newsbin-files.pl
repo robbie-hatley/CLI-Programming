@@ -1,15 +1,16 @@
 #! /bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # /rhe/scripts/util/dedup-newsbin-files.pl
 # "DeDup Newsbin Files"
-# Gets rid of duplicate files within file name groups having same base name but different numerators. (By "numerator",
-# I mean a substring of the form "-(3856)" at the end of the prefix of a file name. By "base", I mean the name as it
-# would be if it had no numerators; for example, the "base" of file name "Fred-(8874).jpg" is "Fred.jpg".)
+# Gets rid of duplicate files within file name groups having same base name but different "numerators", where
+# a "numerator" is a substring of the form "-(3856)" at the end of the prefix of a file name, and where a
+# "base" is a name as it would be if it had no numerators. For example, the "base" of file name
+# "Fred-(8874).jpg" is "Fred.jpg".
 # Edit history:
 # Mon Jun 08, 2015: Wrote it.
 # Fri Jul 17, 2015: Upgraded for utf8.
@@ -23,9 +24,10 @@
 # Tue Mar 14, 2023: Added options for local, recursive, quiet, and verbose.
 # Thu Aug 03, 2023: Upgraded from "use v5.32;" to "use v5.36;". Got rid of "common::sense" (antiquated).
 #                   Went from "cwd_utf8" to "d getcwd". Got rid of prototypes. Changed defaults from "verbose"
-#                   and "recurse" to "quiet" and "local".
-#
-########################################################################################################################
+#                   and "recurse" to "quiet" and "local". Reduced width from 120 to 110. Shortened sub names.
+#                   Got rid of "-l", "--local", "-q", and "--quiet" options as they're already default.
+#                   Improved help.
+##############################################################################################################
 
 use v5.36;
 use strict;
@@ -39,14 +41,14 @@ use Time::HiRes 'time';
 use RH::Util;
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 sub argv  ;
 sub dedup ;
 sub stats ;
 sub help  ;
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Debug?
 my $db = 0;
@@ -65,7 +67,7 @@ my $duplcount = 0;
 my $delecount = 0;
 my $failcount = 0;
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
@@ -86,7 +88,7 @@ my $failcount = 0;
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 sub argv {
    # Get options and arguments:

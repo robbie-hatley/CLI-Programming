@@ -16,7 +16,7 @@
 # Thu Aug 03, 2023: Upgraded from "use v5.32;" to "use v5.36;". Changed name from "file-type-statistics.pl"
 #                   to "file-extension-stats.pl". Got rid of "use common::sense;" (antiquated). Reduced
 #                   width from 120 to 110 for github. Shortened sub names. Got rid of prototypes and started
-#                   using signatures instead.
+#                   using signatures instead. Improved help.
 ##############################################################################################################
 
 use v5.36;
@@ -54,7 +54,7 @@ my $filecount = 0; # Count of    files    processed by process_current_file().
 # File types counter hash (how many files have we seen of each type?):
 my %file_types;
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    argv;
@@ -63,7 +63,7 @@ my %file_types;
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 sub argv {
    foreach (@ARGV)
@@ -115,11 +115,15 @@ sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to "file-extension-stats.pl". This program prints how many files of
    each name-extension ("*.jpg", "*.avi", etc) exist in the current directory
    (and all subdirectories if a -r or --recurse option is used).
 
-   Command line:
+   -------------------------------------------------------------------------------
+   Command lines:
    file-types-statistics.pl [-h|--help]   (to print this help and exit)
    file-types-statistics.pl [options]     (to print file-extension stats)
 

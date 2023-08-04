@@ -309,9 +309,14 @@ sub help {
    -------------------------------------------------------------------------------
    Introduction:
 
-   Welcome to "Rename-Files", Robbie Hatley's nifty file-renaming Perl script.
-   This program renames batches of directory entries by replacing matches to a
-   given regular expression with a given replacement string.
+   Welcome to "rename-files.pl", Robbie Hatley's nifty file-renaming Perl script.
+   This program renames batches of directory entries in the current working
+   directory (and all of its subdirectories if a -r or --recurse option is used)
+   by replacing matches to a given regular expression with a given replacement
+   string.
+
+   -------------------------------------------------------------------------------
+   Command lines:
 
    To print this help and exit:
    rename-files.pl [-h|--help]
@@ -375,7 +380,18 @@ sub help {
    Rename-Files would rename "dogdog" to "catdog", but if Arg3 is 'g' then the
    result will be "catcat" instead.
 
-   The arguments should be   enclosed in 'single quotes'. Failure to do this may
+   Examples of argument usage:
+
+   rnf -f 'dog' 'cat'
+   (would rename "Dogdog.txt" to "Dogcat.txt")
+
+   rnf -f '(?i:dog)' 'cat'
+   (would rename "Dogdog.txt" to "catdog.txt")
+
+   rnf -f '(?i:dog)' 'cat' 'g'
+   (would rename "Dogdog.txt" to "catcat.txt")
+
+   The arguments should be enclosed in 'single quotes'. Failure to do this may
    cause the shell to decompose an argument to a list of entries in the current
    directory and send THOSE to Rename-Files, whereas Rename-Files needs the raw
    arguments.
@@ -390,18 +406,6 @@ sub help {
    should be OK. As a workaround, you can use '^--help$' as your regexp
    instead of '--help' if you feel that you absolutely MUST give a file such a
    pathological name.
-
-   -------------------------------------------------------------------------------
-   Example command lines:
-
-   rnf -f 'dog' 'cat'
-      (would rename "Dogdog.txt" to "Dogcat.txt")
-
-   rnf -f '(?i:dog)' 'cat'
-      (would rename "Dogdog.txt" to "catdog.txt")
-
-   rnf -f '(?i:dog)' 'cat' 'g'
-      (would rename "Dogdog.txt" to "catcat.txt")
 
    -------------------------------------------------------------------------------
    Directory Navigation:
