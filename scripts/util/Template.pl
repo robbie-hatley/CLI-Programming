@@ -51,6 +51,7 @@
 # Mon Jul 31, 2023: Cleaned up formatting and comments. Fine-tuned definitions of "option" and "argument".
 #                   Fixed bug in which $, was being set instead of $" .
 #                   Got rid of "--target=xxxx" options in favor of just "--xxxx".
+# Sat Aug 05, 2023: Command-line item "--" now means "all further items are arguments, not options".
 ##############################################################################################################
 
 ##############################################################################################################
