@@ -11,18 +11,19 @@
 # Edit history:
 # Mon Feb 24, 2020: Wrote it.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Fri Aug 04, 2023: Updated from "v5.32" to "v5.36". Got rid of "common::sense" (antiquated). Moved to "filters".
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+
 use Sys::Binmode;
-
 use Digest::BubbleBabble 'bubblebabble';
-
-use RH::WinChomp;
 
 while(<>)
 {
-   winchomp;
+   s/\s+$//;
    say(bubblebabble(Digest=>$_));
 }

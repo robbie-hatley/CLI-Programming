@@ -124,17 +124,8 @@ sub argv {
    my @opts;
    my @args;
    for ( @ARGV ) {
-      # Single-hyphen options may contain letters only. (That way, "-5" is an argument, not an option.)
-      # Double-hyphen options may contain letters, combining marks, numbers, punctuation, and symbols.
-      if (/^-\pL*$|^--[\pL\pM\pN\pP\pS]*$/) {push @opts, $_}
-      else                                  {push @args, $_}
-   }
-   if ( $db ) {
-      say STDERR "options   = (@opts)";
-      say STDERR 'num opts  = ', scalar(@opts);
-      say STDERR "arguments = (@args)";
-      say STDERR 'num args  = ', scalar(@args);
-      exit 555;
+      if (/^-\pL*$|^--.*$/) {push @opts, $_}
+      else                  {push @args, $_}
    }
 
    # Process options:
@@ -151,6 +142,8 @@ sub argv {
       /^-\pL*a|^--all$/      and $Target  = 'A'    ;
       /^-\pL*i|^--inodes$/   and $Inodes  =  1     ;
    }
+
+   # Process arguments
    my $NA = scalar(@args);
       if ( 0 == $NA ) {                            ; } # Do nothing.
    elsif ( 1 == $NA ) { $Regexp = qr/$args[0]/o    ; } # Set $Regexp.
@@ -358,7 +351,7 @@ sub help
    S - Symbolic link to directory
    T - opens to a Tty
    U - Unknown
-   W - symbolic link to something other than a regular file or directory
+   W - symbolic link to something Weird (not a regular file or directory)
    X - block special file
    Y - character special file
 

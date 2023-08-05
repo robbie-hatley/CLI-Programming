@@ -1,202 +1,206 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # age.pl
-# Lists files in current directory (and all subdirs if -r or --recurse is used) in increasing order of age,
+# Lists files in current directory (and all subdirs if -r or --recurse is used) in decreasing order of age,
 # and prints age in days for each file.
 #
 # Edit history:
 # Mon Jul 05, 2021: Wrote it.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-########################################################################################################################
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
+# Fri Aug 04, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". Got rid of
+#                   "common::sense" (antiquated). Now using "strict", "warnings", "utf8". Got rid of all
+#                   prototypes (now using signatures instead). Shortened name of sub "tree_stats" to "stats".
+#                   Now using "d getcwd" instead of "cwd_utf8". Changed "--target=xxxx" to just "--xxxx".
+#                   Put headers in help.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
+
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv       ()  ;
-sub curdire    ()  ;
-sub curfile    ($) ;
-sub tree_stats ()  ;
-sub error      ($) ;
-sub help       ()  ;
+sub argv    ;
+sub curdire ;
+sub stats   ;
+sub error   ;
+sub help    ;
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Use debugging? (Ie, print extra diagnostics?)
 my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 
-# Settings:                  Meaning:                  Range:    Default:
-my $Recurse = 0          ; # Recurse subdirectories?   bool      0 (don't recurse)
-my $Target  = 'A'        ; # Target                    F|D|B|A   A (print directory entries of all types)
-my $RegExp  = qr/^.+$/o  ; # Regular Expression.       regexp    qr/^.+$/o (matches all strings)
+# Settings:   Default:       Meaning of setting:       Range:    Meaning of default:
+my $Recurse = 0          ; # Recurse subdirectories?   bool      don't recurse
+my $Target  = 'F'        ; # Target                    F|D|B|A   regular files only
+my $RegExp  = qr/^.+$/o  ; # Regular Expression.       regexp    all file names
 
 # Counts of events in this program:
 my $direcount = 0; # Count of directories processed.
 my $filecount = 0; # Count of files processed.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
+   my $pname = get_name_from_path($0);
    argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\".";
-   say "Recurse = $Recurse";
-   say "Target  = $Target";
-   say "RegExp  = $RegExp";
+   say STDERR "\nNow entering program \"$pname\".";
+   say STDERR "Recurse = $Recurse";
+   say STDERR "Target  = $Target";
+   say STDERR "RegExp  = $RegExp";
    $Recurse and RecurseDirs {curdire} or curdire;
-   tree_stats;
-   my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   stats;
+   my $ms = 1000 * ($t0 - time);
+   printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
-sub argv ()
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
-         elsif ( $_ eq '-f' || $_ eq '--target=files' ) {$Target  = 'F';}
-         elsif ( $_ eq '-d' || $_ eq '--target=dirs'  ) {$Target  = 'D';}
-         elsif ( $_ eq '-b' || $_ eq '--target=both'  ) {$Target  = 'B';}
-         elsif ( $_ eq '-a' || $_ eq '--target=all'   ) {$Target  = 'A';}
-         splice @ARGV, $i, 1;
-         --$i;
-      }
+sub argv {
+   # Get options and arguments:
+   my @opts;
+   my @args;
+   for ( @ARGV ) {
+      if (/^-\pL*$|^--/) {push @opts, $_}
+      else               {push @args, $_}
    }
-   my $NA = scalar(@ARGV);
-   given ($NA)
-   {
-      when (0) {                       ;} # Do nothing.
-      when (1) {$RegExp = qr/$ARGV[0]/o;} # Set $RegExp.
-      default  {error($NA)             ;} # Print error and help messages then exit 666.
+
+   # Process options:
+   for ( @opts ) {
+      /^-\pL*h|^--help$/     and help and exit 777 ;
+      /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
+      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
+      /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
+      /^-\pL*b|^--both$/     and $Target  = 'B'    ;
+      /^-\pL*a|^--all$/      and $Target  = 'A'    ;
    }
+
+   # Process arguments:
+   my $NA = scalar(@args);
+   if    ( 0 == $NA ) {                                                } # Use default settings.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o                        } # Set $RegExp.
+   else               { error($NA); help; exit 666                     } # Something evil happened.
+
+   # Return success code 1 to caller:
    return 1;
-} # end sub argv ()
+} # end sub argv
 
 # Process current directory:
-sub curdire ()
-{
+sub curdire {
    # Increment directory counter:
    ++$direcount;
 
    # Get and announce current working directory:
-   my $cwd = cwd_utf8;
-   say "\nDirectory # $direcount: $cwd\n";
+   my $cwd = d getcwd;
+   say STDOUT "\nDirectory #$direcount: $cwd\n";
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
 
-   # Make array to hold re-ordered list of files:
+   # Make array of refs to file-info hashes, sorted in order of increasing age:
    my @Files = sort {$b->{Mtime} <=> $a->{Mtime}} @{$curdirfiles};
 
    # Print header:
-   say '   Age  File  Size      # of   Name   ';
-   say '(days)  Type  (bytes)   Links  of file';
+   say STDOUT '   Age  File  Size      # of   Name   ';
+   say STDOUT '(days)  Type  (bytes)   Links  of file';
 
-   # Iterate through $Files and send each file to curfile():
+   # Iterate through $Files and print info for each file in order of d:
    foreach my $file (@Files)
    {
-      curfile($file);
+      ++$filecount;
+      my $age = (time() - $file->{Mtime}) / 86400;
+      printf STDOUT " %5u    %-1s   %-8.2E  %5u  %-s\n",
+         $age, $file->{Type}, $file->{Size}, $file->{Nlink}, $file->{Name};
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-# Process current file:
-sub curfile ($)
-{
-   ++$filecount;
-   my $file = shift;
-   my $age = (time() - $file->{Mtime}) / 86400;
-   printf
-   (
-      " %5u    %-1s   %-8.2E  %5u  %-s\n", 
-      $age, 
-      $file->{Type},
-      $file->{Size},
-      $file->{Nlink},
-      $file->{Name}
-   );
-   return 1;
-} # end sub curfile ($)
-
-sub tree_stats ()
-{
+sub stats {
    say "Navigated $direcount directories.";
    say "Processed $filecount files.";
    return 1;
-} # end sub tree_stats ()
+} # end sub stats
 
-sub error ($)
-{
-   my $NA = shift;
+sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: you typed $NA arguments, but this program takes at most 1 argument,
    which, if present, must be a Perl-Compliant Regular Expression specifying
    which directory entries to process. Help follows:
-
    END_OF_ERROR
-   help;
-   exit 666;
-} # end sub error ($)
+} # end sub error
 
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "age.pl", Robbie Hatley's Nifty list-files-by-age utility.
-   This program will list all files in the current directory (and all
-   subdirectories if a -r or --recurse option is used) in increasing
-   order of age. Each listing line will give the following pieces
-   of information about a file:
+
+   -------------------------------------------------------------------------------
+   Introduction:
+
+   Welcome to "age.pl", Robbie Hatley's Nifty list-files-by-age utility. This
+   program will list all files in the current directory (and all subdirectories if
+   a -r or --recurse option is used) in increasing order of age. Each listing line
+   will give the following pieces of information about a file:
    1. Age of file in days.
    2. Type of file (single-letter code, one of NTYXOPSLMDHFU).
    3. Size of file in format #.##E+##
    4. Name of file.
 
-   The meanings of the Type letters are as follows:
-   N - object is nonexistent
-   T - object opens to a TTY
-   Y - object is a character special file
-   X - object is a block special file
-   O - object is a socket
-   P - object is a pipe
-   S - object is a symbolic link to a directory ("SYMLINKD")
-   L - object is a symbolic link to a file
-   M - object is a directory with multiple hard links
-   D - object is a directory
-   H - object is a regular file with multiple hard links
-   F - object is a regular file
-   U - object is of unknown type
+   -------------------------------------------------------------------------------
+   Meanings of Type Letters:
 
-   Command line:
-   rhdir.pl [options] [Argument]
+   B - Broken symbolic link
+   D - Directory
+   F - regular File
+   H - regular file with multiple Hard links
+   L - symbolic Link to regular file
+   N - Nonexistent
+   O - sOcket
+   P - Pipe
+   S - Symbolic link to directory
+   T - opens to a Tty
+   U - Unknown
+   W - symbolic link to something Weird (not a regular file or directory)
+   X - block special file
+   Y - character special file
 
-   Description of options:
-   Option:                      Meaning:
-   "-h" or "--help"             Print help and exit.
-   "-r" or "--recurse"          Recurse subdirectories.
-   "-f" or "--target=files"     List files only.
-   "-d" or "--target=dirs"      List directories only.
-   "-b" or "--target=both"      List files and directories.
-   "-a" or "--target=all"       List everything.
+   -------------------------------------------------------------------------------
+   Command Lines:
+
+   age.pl [-h|--help]             (to print this help and exit)
+   age.pl [options] [Argument]    (to list files by increasing age)
+
+   -------------------------------------------------------------------------------
+   Description of Options:
+
+   Option:           Meaning:
+   -h or --help      Print help and exit.
+   -r or --recurse   Recurse subdirectories.
+   -f or --files     List files only.
+   -d or --dirs      List directories only.
+   -b or --both      List files and directories.
+   -a or --all       List everything.
    (Defaults are: no help, no recurse, list files only.)
 
-   Description of arguments:
+   -------------------------------------------------------------------------------
+   Description of Arguments:
+
    In addition to options, this program can take one optional argument which, if
    present, must be a Perl-Compliant Regular Expression specifying which items to
    process. To specify multiple patterns, use the | alternation operator.
@@ -206,12 +210,15 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
-   Happy file age listing!
+   A number of arguments other than 0 or 1 will cause this program to print an
+   error message and abort.
+
+   Happy files-by-age listing!
    Cheers,
    Robbie Hatley,
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help

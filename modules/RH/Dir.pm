@@ -659,17 +659,16 @@ sub RecurseDirs (&)
 
    #my $fst = fstype($curdir);
 
-   # If $curdir is (or is in) a critical Linux system directory, die:
+   # If $curdir is a critical (or huge) Linux system directory, die:
    if ( 'Linux' eq $ENV{PLATFORM} ) {
       if
       (
-            $curdir eq '/'                  # Too huge!
+            $curdir =~ m#/lost+found$#      # We're not allowed in here.
+         || $curdir eq '/proc'              # Trying to navigate within here causes errors.
+         || $curdir eq '/'                  # Too huge!
          || $curdir eq '/home'              # Too huge!
          || $curdir eq '/home/aragorn'      # Too huge!
-         || $curdir eq '/home/aragorn/Data' # Too huge!
          || $curdir eq '/mnt'               # May be huge, depending on what's mounted there.
-         || $curdir =~ m#^/proc#            # Trying to navigate within here causes errors.
-         || $curdir =~ m#^/lost+found#      # We're not allowed in here.
       )
       {
          die  "Error in RecurseDirs: Can't recurse this problematic Linux directory:\n" .

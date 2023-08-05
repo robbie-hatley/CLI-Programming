@@ -1,153 +1,115 @@
 #! /bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # canonicalize-permissions.pl
 # Canonicalizes permissions in current directory tree.
 # Written by Robbie Hatley.
 # Edit history:
-# Sun Mar 05, 2023: Wrote it.
-########################################################################################################################
+# Sun Mar 05, 2023: Wrote stub. (NOT YET FUNCTIONAL.)
+# Thu Aug 04, 2023: Reduced width from 120 to 100. Got rid of all prototypes (using signatures instead).
+#                   Got rid of cwd_utf8 (using "d getcwd" instead). Got rid of file-type counters.
+#                   Got rid of "--debug=no", "--local", "--quiet" (already defaults).
+#                   Changed "--debug=yes" to just "--debug". Now using "my $pname = get_name_from_path($0);".
+#                   Elapsed time is now in milliseconds.
+##############################################################################################################
 
 use v5.36;
 use strict;
 use warnings;
+use utf8;
 
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
 
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv    :prototype()  ; # Process @ARGV.
-sub curdire :prototype()  ; # Process current directory.
-sub curfile :prototype($) ; # Process current file.
-sub stats   :prototype()  ; # Print statistics.
-sub error   :prototype($) ; # Handle errors.
-sub help    :prototype()  ; # Print help and exit.
+sub argv    ; # Process @ARGV.
+sub curdire ; # Process current directory.
+sub curfile ; # Process current file.
+sub stats   ; # Print statistics.
+sub error   ; # Handle errors.
+sub help    ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
-# Settings:                    Meaning:                     Range:    Default:
-my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
-my $Verbose   = 0          ; # Be wordy?                    bool      0 (don't be verbose)
-my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (recurse)
-my $Target    = 'A'        ; # Files, dirs, both, all?      F|D|B|A   A (process all directory entries)
-my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
+# Settings:     Default:       Meaning of setting:          Range:    Meaning of default:
+my $db        = 0          ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
+my $Recurse   = 0          ; # Recurse subdirectories?      bool      Don't recurse.
+my $Target    = 'A'        ; # Files, dirs, both, all?      F|D|B|A   Process all file types.
+my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    Process all file names.
 
 # Counters:
 my $direcount = 0          ; # Count of directories processed by curdire().
 my $filecount = 0          ; # Count of dir entries processed by curfile().
 
-# Accumulations of counters from RH::Dir::GetFiles():
-my $totfcount = 0          ; # Count of all targeted directory entries matching regexp and verified by GetFiles().
-my $noexcount = 0          ; # Count of all nonexistent files encountered.
-my $ottycount = 0          ; # Count of all tty files.
-my $cspccount = 0          ; # Count of all character special files.
-my $bspccount = 0          ; # Count of all block special files.
-my $sockcount = 0          ; # Count of all sockets.
-my $pipecount = 0          ; # Count of all pipes.
-my $slkdcount = 0          ; # Count of all symbolic links to directories.
-my $linkcount = 0          ; # Count of all symbolic links to non-directories.
-my $multcount = 0          ; # Count of all directories with multiple hard links.
-my $sdircount = 0          ; # Count of all directories.
-my $hlnkcount = 0          ; # Count of all regular files with multiple hard links.
-my $regfcount = 0          ; # Count of all regular files.
-my $unkncount = 0          ; # Count of all unknown files.
-
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
-
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 { # begin main
    my $t0 = time;
+   my $pname = get_name_from_path($0);
    argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\".";
-   say "Target  = $Target";
-   say "RegExp  = $RegExp";
-   say "Recurse = $Recurse";
-   say "Verbose = $Verbose";
+   say STDERR "\nNow entering program \"$pname\".";
+   say STDERR "Target  = $Target";
+   say STDERR "RegExp  = $RegExp";
+   say STDERR "Recurse = $Recurse";
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
-   my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   my $ms = 1000 * (time - $t0);
+   printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
-sub argv :prototype()
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-
-         elsif ( $_ eq '-l' || $_ eq '--local'        ) {$Recurse =  0 ;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;} # Default
-
-         elsif ( $_ eq '-f' || $_ eq '--target=files' ) {$Target  = 'F';}
-         elsif ( $_ eq '-d' || $_ eq '--target=dirs'  ) {$Target  = 'D';}
-         elsif ( $_ eq '-b' || $_ eq '--target=both'  ) {$Target  = 'B';}
-         elsif ( $_ eq '-a' || $_ eq '--target=all'   ) {$Target  = 'A';} # Default.
-
-         elsif ( $_ eq '-q' || $_ eq '--quiet'        ) {$Verbose =  0 ;} # Default
-         elsif ( $_ eq '-v' || $_ eq '--verbose'      ) {$Verbose =  1 ;}
-
-         elsif ( $_ eq '-y' || $_ eq '--debug=yes'    ) {$db      =  1 ;}
-         elsif ( $_ eq '-n' || $_ eq '--debug=no'     ) {$db      =  0 ;} # Default
-
-         # Remove option from @ARGV:
-         splice @ARGV, $i, 1;
-
-         # Move the index 1-left, so that the "++$i" above moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right due to deletion of previous element contents:
-         --$i;
-      }
+sub argv {
+   # Get options and arguments:
+   my @opts;
+   my @args;
+   for ( @ARGV ) {
+      if (/^-\pL*$|^--.*$/) {push @opts, $_}
+      else                  {push @args, $_}
    }
-   my $NA = scalar(@ARGV);
-   if    ( 0 == $NA ) {                          } # Do nothing.
-   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/o   } # Set $RegExp.
-   else               {error($NA); help; exit 666} # Print error and help messages then exit 666.
+
+   # Process options:
+   for ( @opts ) {
+      /^-\pL*h|^--help$/     and help and exit 777 ;
+      /^-\pL*e|^--debug$/    and $db      =  1     ;
+      /^-\pL*l|^--local$/    and $Recurse =  0     ;
+      /^-\pL*r|^--recurse$/  and $Recurse =  1     ; # DEFAULT
+      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
+      /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
+      /^-\pL*b|^--both$/     and $Target  = 'B'    ;
+      /^-\pL*a|^--all$/      and $Target  = 'A'    ; # DEFAULT
+   }
+
+   # Process arguments:
+   my $NA = scalar(@args);
+   if    ( 0 == $NA ) {                                  } # Use default settings.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o          } # Set $RegExp.
+   else               { error($NA) and help and exit 666 } # Something evil happened.
+
+   # Return success code 1 to caller:
    return 1;
-} # end sub argv :prototype()
+} # end sub argv
 
 # Process current directory:
-sub curdire :prototype()
-{
+sub curdire {
    # Increment directory counter:
    ++$direcount;
 
    # Get and announce current working directory:
-   my $cwd = cwd_utf8;
+   my $cwd = d getcwd;
    say "\nDirectory # $direcount: $cwd\n";
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
-
-   # If being verbose, also accumulate all counters from RH::Dir:: to main:
-   if ($Verbose)
-   {
-      $totfcount += $RH::Dir::totfcount; # all directory entries found
-      $noexcount += $RH::Dir::noexcount; # nonexistent files
-      $ottycount += $RH::Dir::ottycount; # tty files
-      $cspccount += $RH::Dir::cspccount; # character special files
-      $bspccount += $RH::Dir::bspccount; # block special files
-      $sockcount += $RH::Dir::sockcount; # sockets
-      $pipecount += $RH::Dir::pipecount; # pipes
-      $slkdcount += $RH::Dir::slkdcount; # symbolic links to directories
-      $linkcount += $RH::Dir::linkcount; # symbolic links to non-directories
-      $multcount += $RH::Dir::multcount; # directories with multiple hard links
-      $sdircount += $RH::Dir::sdircount; # directories
-      $hlnkcount += $RH::Dir::hlnkcount; # regular files with multiple hard links
-      $regfcount += $RH::Dir::regfcount; # regular files
-      $unkncount += $RH::Dir::unkncount; # unknown files
-   }
 
    # Iterate through $curdirfiles and send each file to curfile():
    foreach my $file (@{$curdirfiles})
@@ -155,102 +117,153 @@ sub curdire :prototype()
       curfile($file);
    }
    return 1;
-} # end sub curdire :prototype()
+} # end sub curdire
 
 # Process current file:
-sub curfile :prototype($)
-{
+sub curfile ($file) {
    # Increment file counter:
    ++$filecount;
 
-   # Get file and path:
-   my $file   = shift;
-   my $path   = $file->{Path};
+   my $suf = get_suffix($file->{Name});
+   my $lsuf = lc $suf;
+   my $encpath = e $file->{Path};
+   my $hd4 = `head -c4 '$encpath'`;
 
-   # Announce path:
-   say $path;
+   if    ( 'D' eq $file->{Type} ) {         # Directories need to be navigable.
+      chmod 0775, $encpath;
+   }
+   elsif ( 'F' eq $file->{Type} ) {         # Regular files, however, are a mixed bag
+      if
+      (
+            '.apl'  eq $lsuf
+         || '.awk'  eq $lsuf
+         || '.pl'   eq $lsuf
+         || '.py'   eq $lsuf
+         || '.raku' eq $lsuf
+         || '.sed'  eq $lsuf
+         || '.sh'   eq $lsuf
+      )
+      {
+         chmod 0775, $encpath;              # Scripts in known languages DO need to be executable.
+      }
+      elsif
+      (
+            '.txt'  eq $lsuf
+         || '.doc'  eq $lsuf
+         || '.pdf'  eq $lsuf
+         || '.htm'  eq $lsuf
+         || '.html' eq $lsuf
+      )
+      {
+         chmod 0664, $encpath;              # Text doesn't need to be executable.
+      }
+      elsif
+      (
+            '.jpg'  eq $lsuf
+         || '.jpeg' eq $lsuf
+         || '.tif'  eq $lsuf
+         || '.tiff' eq $lsuf
+         || '.bmp'  eq $lsuf
+         || '.gif'  eq $lsuf
+         || '.png'  eq $lsuf
+      )
+      {
+         chmod 0664, $encpath;              # Pictures don't need to be executable.
+      }
+      elsif
+      (
+            '.mp3'  eq $lsuf
+         || '.ogg'  eq $lsuf
+         || '.flac' eq $lsuf
+         || '.wav'  eq $lsuf
+      )
+      {
+         chmod 0664, $encpath;              # Sounds don't need to be executable.
+      }
+      elsif
+      (
+            '.mpg'  eq $lsuf
+         || '.mpeg' eq $lsuf
+         || '.mp4'  eq $lsuf
+         || '.mov'  eq $lsuf
+         || '.avi'  eq $lsuf
+         || '.flv'  eq $lsuf
+      )
+      {
+         chmod 0664, $encpath;              # Videos don't need to be executable.
+      }
+      elsif ( '#!' eq substr($hd4,0,2) ) {
+         chmod 0775, $encpath;              # Shebang scripts DO need to be executable.
+      }
+      elsif ( 'ELF' eq substr($hd4,1,3) ) {
+         chmod 0775, $encpath;              # Binary native programs DO need to be executable.
+      }
+      else {
+         ;                                  # For other random regular files, do nothing.
+      }
+   }
+   else {                                   # And for things OTHER THAN regular files and directories,
+      ;                                     # do nothing.
+   }
 
-   # We're done, so scram:
+   # Return success code 1 to caller:
    return 1;
-} # end sub curfile :prototype($)
+} # end sub curfile ($file)
 
 # Print statistics for this program run:
-sub stats :prototype()
-{
-   say '';
-   say 'Statistics for this directory tree:';
-   say "Target  = $Target";
-   say "RegExp  = $RegExp";
-   say "Navigated $direcount directories.";
-   say "Found $filecount paths matching given target and regexp.";
-
-   if ($Verbose)
-   {
-      say '';
-      say 'Directory entries encountered in this tree included:';
-      printf("%7u total files\n",                            $totfcount);
-      printf("%7u nonexistent files\n",                      $noexcount);
-      printf("%7u tty files\n",                              $ottycount);
-      printf("%7u character special files\n",                $cspccount);
-      printf("%7u block special files\n",                    $bspccount);
-      printf("%7u sockets\n",                                $sockcount);
-      printf("%7u pipes\n",                                  $pipecount);
-      printf("%7u symbolic links to directories\n",          $slkdcount);
-      printf("%7u symbolic links to non-directories\n",      $linkcount);
-      printf("%7u directories with multiple hard links\n",   $multcount);
-      printf("%7u directories\n",                            $sdircount);
-      printf("%7u regular files with multiple hard links\n", $hlnkcount);
-      printf("%7u regular files\n",                          $regfcount);
-      printf("%7u files of unknown type\n",                  $unkncount);
-   }
+sub stats {
+   say STDERR "\nStatistics for this directory tree:";
+   say STDERR "Navigated $direcount directories.";
+   say STDERR "Set permissions on $filecount entries.";
    return 1;
-} # end sub stats :prototype()
+} # end sub stats
 
 # Handle errors:
-sub error :prototype($)
-{
-   my $NA = shift;
+sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: you typed $NA arguments, but this program takes at most 1 argument,
    which, if present, must be a Perl-Compliant Regular Expression specifying
    which directory entries to process. Help follows:
-
    END_OF_ERROR
-   help;
-   exit 666;
-} # end sub error ($)
+} # end sub error
 
 # Print help:
-sub help :prototype()
+sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "canoperm.pl". This program canonicalizes the permissions of
-   all directories and files in the current directory tree. Directory permissions
-   are set to "drwxrwxr-x", things which should be executable are set to
-   "-rwxrwxr-x", and everything else is set to "-rw-rw-r--".
 
-   Command lines:
+   -------------------------------------------------------------------------------
+   Introduction:
+
+   Welcome to "canoperm.pl". This program canonicalizes the permissions of
+   directory entries. Permissions for directories are set to "rwxrwxr-x"; things
+   which should be executable are set to "rwxrwxr-x"; text, pictures, sounds, and
+   videos are set to "-rw-rw-r--"; and everything else (links, sockets, etc) is
+   left unaltered.
+
+   By default, this
+
+   -------------------------------------------------------------------------------
+   Command Lines:
+
    canoperm.pl -h | --help            (to print this help and exit)
    canoperm.pl [options] [arguments]  (to canonicalize permissions)
 
-   Description of options:
-   Option:                      Meaning:
-   "-h" or "--help"             Print help and exit.
+   -------------------------------------------------------------------------------
+   Description of Options:
 
-   "-l" or "--local"            Don't recurse subdirectories.
-   "-r" or "--recurse"          Recurse subdirectories (but not links). (Default.)
+   Option:           Meaning:
+   -h or --help      Print help and exit.
+   -e or --debug     Print diagnostics.
+   -l or --local     DON'T recurse subdirectories (but not links).  (DEFAULT)
+   -r or --recurse   DO    recurse subdirectories (but not links).
+   -f or --files     Target files only.                             (DEFAULT)
+   -d or --dirs      Target directories only.
+   -b or --both      Target both files and directories.
+   -a or --all       Target all directory entries.
 
-   "-f" or "--target=files"     Target files only.
-   "-d" or "--target=dirs"      Target directories only.
-   "-b" or "--target=both"      Target both files and directories.
-   "-a" or "--target=all"       Target all files, directory entries.    (Default.)
-
-   "-q" or "--quiet"            Be quiet.                               (Default.)
-   "-v" or "--verbose"          Print lots of extra statistics.
-
-   "-n" or "--debug=no"         Don't print diagnostics.                (Default.)
-   "-y" or "--debug=yes"        Do    print diagnostics.
-
+   -------------------------------------------------------------------------------
    Description of arguments:
    In addition to options, this program can take one optional argument which, if
    present, must be a Perl-Compliant Regular Expression specifying which items to
@@ -269,4 +282,4 @@ sub help :prototype()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help :prototype()
+} # end sub help

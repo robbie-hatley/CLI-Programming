@@ -150,19 +150,16 @@ my $unkncount = 0 ; # Count of all unknown files.
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts;
-   my @args;
+   my @opts; my @args; my $nomo = 0;
    for ( @ARGV ) {
-      # Single-hyphen options may contain letters only. (That way, "-5" is an argument, not an option.)
-      # Double-hyphen options may contain letters, combining marks, numbers, punctuation, and symbols.
-      if (/^-\pL*$|^--[\pL\pM\pN\pP\pS]*$/) {push @opts, $_}
-      else                                  {push @args, $_}
+      /^-\pL*e|^--debug$/ and $db = 1;
+      /^--$/ and $nomo = 1 and next;
+      if ( !$nomo && /^-\pL*$|^--.+$/) {push @opts, $_}
+      else                             {push @args, $_}
    }
-   if ( $db ) {
-      say STDERR "options   = (@opts)";
-      say STDERR 'num opts  = ', scalar(@opts);
-      say STDERR "arguments = (@args)";
-      say STDERR 'num args  = ', scalar(@args);
+   if ($db) {
+      say STDERR "opts = (@opts)";
+      say STDERR "args = (@args)";
       exit 555;
    }
 
@@ -182,9 +179,9 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar(@args);
-   if    ( 0 == $NA ) {                                                } # Use default settings.
-   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o                        } # Set $RegExp.
-   else               { error($NA); help; exit 666                     } # Something evil happened.
+   if    ( 0 == $NA ) {                                  } # Use default settings.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o          } # Set $RegExp.
+   else               { error($NA) and help and exit 666 } # Something evil happened.
 
    # Return success code 1 to caller:
    return 1;
