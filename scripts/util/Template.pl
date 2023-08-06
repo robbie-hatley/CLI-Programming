@@ -102,6 +102,7 @@ my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
 my $RegExp    = qr/^.+$/o    ; # Regular Expression.         regexp     Process all file names.
 my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Process all file types.
+my $Predicate = 1            ; # Boolean predicate.          bool       Means whatever you want it to.
 
 # Counters:
 my $direcount = 0 ; # Count of directories processed by curdire().
@@ -132,10 +133,11 @@ my $unkncount = 0 ; # Count of all unknown files.
    if ( $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"" . get_name_from_path($0) . "\".";
-      say STDERR "Verbose = $Verbose";
-      say STDERR "Recurse = $Recurse";
-      say STDERR "RegExp  = $RegExp";
-      say STDERR "Target  = $Target";
+      say STDERR "Verbose   = $Verbose";
+      say STDERR "Recurse   = $Recurse";
+      say STDERR "RegExp    = $RegExp";
+      say STDERR "Target    = $Target";
+      say STDERR "Predicate = $Predicate";
    }
    $db and exit 555;
    $Recurse and RecurseDirs {curdire} or curdire;
@@ -281,9 +283,9 @@ sub stats
 sub error ($err_msg)
 {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
-   Error: you typed $err_msg arguments, but this program takes at most 1 argument,
-   which, if present, must be a Perl-Compliant Regular Expression specifying
-   which directory entries to process.
+
+   Error: you typed $err_msg arguments, but this program takes at most
+   # arguments, which must be blah blah blah. Help follows:
    END_OF_ERROR
    return 1;
 } # end sub error
@@ -292,6 +294,7 @@ sub error ($err_msg)
 sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "[insert Program Name here]". This program does blah blah blah
    to all files in the current directory (and all subdirectories if a -r or
    --recurse option is used).
