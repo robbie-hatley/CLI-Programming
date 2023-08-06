@@ -137,6 +137,7 @@ my $unkncount = 0 ; # Count of all unknown files.
       say STDERR "RegExp  = $RegExp";
       say STDERR "Target  = $Target";
    }
+   $db and exit 555;
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $ms = 1000 * (time - $t0);
@@ -151,22 +152,16 @@ my $unkncount = 0 ; # Count of all unknown files.
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts; my @args; my $nomo = 0;
+   my @opts = (); my @args = (); my $end_of_options = 0;
    for ( @ARGV ) {
-      /^-\pL*e|^--debug$/ and $db = 1;
-      /^--$/ and $nomo = 1 and next;
-      if ( !$nomo && /^-\pL*$|^--.+$/) {push @opts, $_}
-      else                             {push @args, $_}
-   }
-   if ($db) {
-      say STDERR "opts = (@opts)";
-      say STDERR "args = (@args)";
-      exit 555;
+      /^--$/ and $end_of_options = 1 and next;
+      !$end_of_options && /^-\pL*$|^--.+$/ and push @opts, $_ or push @args, $_;
    }
 
    # Process options:
    for ( @opts ) {
       /^-\pL*h|^--help$/     and help and exit 777 ;
+      /^-\pL*e|^--debug$/    and $db      =  1     ;
       /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
       /^-\pL*t|^--terse$/    and $Verbose =  1     ;
       /^-\pL*v|^--verbose$/  and $Verbose =  2     ;
@@ -177,12 +172,18 @@ sub argv {
       /^-\pL*b|^--both$/     and $Target  = 'B'    ;
       /^-\pL*a|^--all$/      and $Target  = 'A'    ;
    }
+   if ($db) {say STDERR "opts = (@opts)\nargs = (@args)";}
 
-   # Process arguments:
-   my $NA = scalar(@args);
-   if    ( 0 == $NA ) {                                  } # Use default settings.
-   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o          } # Set $RegExp.
-   else               { error($NA) and help and exit 666 } # Something evil happened.
+   # Count args:
+   my $NA = scalar @args;
+
+   # Use all arguments as RegExps?
+   # my $re; $NA >= 1 and $re = join '|', @args and $RegExp = qr/$re/o;
+
+   # Use positional arguments instead?
+   $NA >= 1 and $RegExp = qr/$args[0]/o;                   # Set $RegExp.
+   $NA >= 2 and $Predicate = $args[1];                     # Set $Predicate.
+   $NA >= 3 && !$db and error($NA) and help and exit 666;  # Something evil happened.
 
    # Return success code 1 to caller:
    return 1;
