@@ -124,15 +124,14 @@ sub curfile ($file) {
    # Increment file counter:
    ++$filecount;
 
-   my $suf = get_suffix($file->{Name});
-   my $lsuf = lc $suf;
-   my $encpath = e $file->{Path};
-   my $hd4 = `head -c4 '$encpath'`;
-
    if    ( 'D' eq $file->{Type} ) {         # Directories need to be navigable.
-      chmod 0775, $encpath;
+      chmod 0775, e($file->{Path});
    }
    elsif ( 'F' eq $file->{Type} ) {         # Regular files, however, are a mixed bag
+      my $suf = get_suffix($file->{Name});
+      my $lsuf = lc $suf;
+      my $hd4 = `head -c4 '${\e($file->{Path})}'`;
+      return 0 if !defined($hd4) || length($hd4)<4;
       if
       (
             '.apl'  eq $lsuf
@@ -144,7 +143,7 @@ sub curfile ($file) {
          || '.sh'   eq $lsuf
       )
       {
-         chmod 0775, $encpath;              # Scripts in known languages DO need to be executable.
+         chmod 0775, e($file->{Path});      # Scripts in known languages DO need to be executable.
       }
       elsif
       (
@@ -155,7 +154,7 @@ sub curfile ($file) {
          || '.html' eq $lsuf
       )
       {
-         chmod 0664, $encpath;              # Text doesn't need to be executable.
+         chmod 0664, e($file->{Path});      # Text doesn't need to be executable.
       }
       elsif
       (
@@ -168,7 +167,7 @@ sub curfile ($file) {
          || '.png'  eq $lsuf
       )
       {
-         chmod 0664, $encpath;              # Pictures don't need to be executable.
+         chmod 0664, e($file->{Path});      # Pictures don't need to be executable.
       }
       elsif
       (
@@ -178,7 +177,7 @@ sub curfile ($file) {
          || '.wav'  eq $lsuf
       )
       {
-         chmod 0664, $encpath;              # Sounds don't need to be executable.
+         chmod 0664, e($file->{Path});      # Sounds don't need to be executable.
       }
       elsif
       (
@@ -190,13 +189,13 @@ sub curfile ($file) {
          || '.flv'  eq $lsuf
       )
       {
-         chmod 0664, $encpath;              # Videos don't need to be executable.
+         chmod 0664, e($file->{Path});      # Videos don't need to be executable.
       }
       elsif ( '#!' eq substr($hd4,0,2) ) {
-         chmod 0775, $encpath;              # Shebang scripts DO need to be executable.
+         chmod 0775, e($file->{Path});      # Shebang scripts DO need to be executable.
       }
       elsif ( 'ELF' eq substr($hd4,1,3) ) {
-         chmod 0775, $encpath;              # Binary native programs DO need to be executable.
+         chmod 0775, e($file->{Path});      # Binary native programs DO need to be executable.
       }
       else {
          ;                                  # For other random regular files, do nothing.
