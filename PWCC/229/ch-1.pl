@@ -27,7 +27,7 @@ Example 2:  Input: @str = ("yxz", "cba", "mon")  Output: 2
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I'll take the approach of writing subs to sort strings forward and backward, then comparing each string to
+I'll take the approach of writing a sub to sort strings forward and backward, then comparing each string to
 its forward and backward version, erasing each string which does not match at least one, and counting those
 deletions.
 
