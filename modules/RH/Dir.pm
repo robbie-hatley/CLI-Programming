@@ -710,6 +710,7 @@ sub RecurseDirs (&)
       # Avoid certain specific miscellaneous problematic directories:
       next SUBDIR if $subdir eq '.';                            # Windows/Linux/Cygwin: Hard link to self.
       next SUBDIR if $subdir eq '..';                           # Windows/Linux/Cygwin: Hard link to parent.
+      next SUBDIR if $subdir eq '.git';                         # Windows/Linux/Cygwin: git files.
       next SUBDIR if $subdir eq 'System Volume Information';    # Windows: System volume information.
       next SUBDIR if $subdir eq 'MapData';                      # Windows: Microsoft Maps Data.
       next SUBDIR if $subdir eq 'lost+found';                   # Linux: Lost & Found Dept.
