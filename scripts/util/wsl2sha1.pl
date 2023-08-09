@@ -1,11 +1,11 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
-# wsl-to-sha1.pl
+##############################################################################################################
+# wsl2sha1.pl
 # Renames each file in the current directory (and all subdirectories if a -r or --recurse option is used)
 # which has a 64-character "Windows Spotlight"-style file name to a name consisting of the sha1 hash of
 # the data in the file followed by the original file name extension.
@@ -13,25 +13,32 @@
 # Edit history:
 # Wed Nov 11, 2020: Wrote "gib-to-sha1.pl".
 # Mon Dec 21, 2020: Now also has recursion available.
-#                   "wsl-to-sha1.pl" handles wsl only, with no extension discrimination.
-########################################################################################################################
+# Tue Aug 08, 2023: Upgraded from "v5.32" to "v5.36". Renamed from "wsl-to-sha1.pl" to "wsl2sha1.pl".
+#                   Reduced width from 120 to 110.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => "utf8";
 use Sys::Binmode;
+use Time::HiRes 'time';
+
 use Digest::SHA1 qw(sha1_hex);
+
 use RH::Util;
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub process_argv               ()   ;
-sub process_current_directory  ()   ;
-sub process_current_file       (_)  ;
-sub print_stats                ()   ;
-sub help                       ()   ;
+sub argv    ;
+sub curdire ;
+sub curfile ;
+sub stats   ;
+sub help    ;
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Debug?
 my $db = 0;
@@ -43,47 +50,44 @@ my $wsl = qr(^[0-9a-z]{64}(?:-\(\d{4}\))?(?:\.[a-zA-Z]+)?$);
 my $Recurse = 0; # Recurse subdirectories?
 
 # Counters:
-my $direcount = 0; # Count of directories processed by process_current_directory().
+my $direcount = 0; # Count of directories processed by curdire().
 my $filecount = 0; # Count of wsl file names found.
 my $renacount = 0; # Count of files renamed.
 my $failcount = 0; # Count of failed file-rename attempts.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
-   process_argv;
-   $Recurse ? RecurseDirs {process_current_directory} : process_current_directory;
-   print_stats;
+   argv;
+   $Recurse and RecurseDirs {curdire} or curdire;
+   stats;
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
-sub process_argv ()
-{
+sub argv {
    my $help;
-   for (@ARGV)
-   {
+   for (@ARGV) {
       if ('-h' eq $_ || '--help'    eq $_) {$help    = 1;}
       if ('-r' eq $_ || '--recurse' eq $_) {$Recurse = 1;}
    }
    if ($help) {help; exit 777;}
    return 1;
-} # end sub process_argv ()
+} # end sub argv
 
-sub process_current_directory ()
-{
+sub curdire {
    ++$direcount;
    my $curdir = cwd_utf8;
    say "\nDir # $direcount: \"$curdir\"\n";
-   process_current_file for glob_regexp_utf8($curdir, 'F', $wsl);
+   for my $path ( glob_regexp_utf8($curdir, 'F', $wsl) ) {
+      curfile($path);
+   }
    return 1;
-} # end sub process_current_directory ()
+} # end sub curdire
 
-sub process_current_file (_)
-{
+sub curfile ($path) {
    ++$filecount;
-   my $path     = shift;
    my $name     = get_name_from_path($path);
    my $new_name = hash($path, 'sha1', 'name');
    rename_file($name, $new_name)
@@ -93,29 +97,28 @@ sub process_current_file (_)
    or  ++$failcount
    and warn "FAILED to rename \"$name\" to \"$new_name\"\n"
    and return 0;
-} # end sub process_current_file (_)
+} # end sub curfile ($path)
 
-sub print_stats ()
-{
-   print("\nStats for \"wsl-to-sha1.pl\":\n");
+sub stats {
+   print("\nStats for \"wsl2sha1.pl\":\n");
    printf("Navigated %6u directories.\n",           $direcount);
    printf("Found     %6u files with wsl names.\n",  $filecount);
    printf("Renamed   %6u files.\n",                 $renacount);
    printf("Failed    %6u file-rename attempts.\n",  $failcount);
    return 1;
-} # end sub print_stats ()
+} # end sub stats
 
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "wsl-to-sha1.pl". This program renames all regular files in the
+
+   Welcome to "wsl2sha1.pl". This program renames all regular files in the
    current directory (and all subdirectories if a -r or --recurse option is used)
    which have 64-character Windows-Spotlight-style file names
    to names consisting of the SHA-1 hash of the data in the file
    followed by the file name extension of the original file.
 
    Command line:
-   wsl-to-sha1.pl [options]
+   wsl2sha1.pl [options]
 
    Description of options:
    Option:                      Meaning:
@@ -130,4 +133,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help

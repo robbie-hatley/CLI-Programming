@@ -21,6 +21,7 @@ use v5.36;
 use strict;
 use warnings;
 use utf8;
+use warnings FATAL => "utf8";
 
 use Sys::Binmode;
 use Cwd;
@@ -48,6 +49,11 @@ my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    Process al
 # Counters:
 my $direcount = 0          ; # Count of directories processed by curdire().
 my $filecount = 0          ; # Count of dir entries processed by curfile().
+my $opencount = 0          ; # Count of all regular files we could    open.
+my $noopcount = 0          ; # Count of all regular files we couldn't open.
+my $readcount = 0          ; # Count of all regular files we could    read.
+my $nordcount = 0          ; # Count of all regular files we couldn't read.
+my $permcount = 0          ; # Count of all permissions set.
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 { # begin main
@@ -126,12 +132,12 @@ sub curfile ($file) {
 
    if    ( 'D' eq $file->{Type} ) {         # Directories need to be navigable.
       chmod 0775, e($file->{Path});
+      say "Set directory \"$file->{Name}\" to navigable.";
+      ++$permcount;
    }
-   elsif ( 'F' eq $file->{Type} ) {         # Regular files, however, are a mixed bag
+   elsif ( 'F' eq $file->{Type} ) {         # Regular files, however, are a mixed bag.
       my $suf = get_suffix($file->{Name});
       my $lsuf = lc $suf;
-      my $hd4 = `head -c4 '${\e($file->{Path})}'`;
-      return 0 if !defined($hd4) || length($hd4)<4;
       if
       (
             '.apl'  eq $lsuf
@@ -143,7 +149,25 @@ sub curfile ($file) {
          || '.sh'   eq $lsuf
       )
       {
-         chmod 0775, e($file->{Path});      # Scripts in known languages DO need to be executable.
+         chmod 0775, e($file->{Path}); # Scripts in known languages DO need to be executable.
+         say "Set file \"$file->{Name}\" to executable.";
+         ++$permcount;
+      }
+      elsif
+      (
+            '.c'       eq $lsuf
+         || '.cpp'     eq $lsuf
+         || '.cppism'  eq $lsuf
+         || '.h'       eq $lsuf
+         || '.hpp'     eq $lsuf
+         || '.cppismh' eq $lsuf
+         || '.a'       eq $lsuf
+         || '.pm'      eq $lsuf
+      )
+      {
+         chmod 0664, e($file->{Path}); # Source, header, library, & module files DON'T need to be executable.
+         say "Set file \"$file->{Name}\" to NOT-executable.";
+         ++$permcount;
       }
       elsif
       (
@@ -154,7 +178,9 @@ sub curfile ($file) {
          || '.html' eq $lsuf
       )
       {
-         chmod 0664, e($file->{Path});      # Text doesn't need to be executable.
+         chmod 0664, e($file->{Path}); # Text doesn't need to be executable.
+         say "Set file \"$file->{Name}\" to NOT-executable.";
+         ++$permcount;
       }
       elsif
       (
@@ -167,7 +193,9 @@ sub curfile ($file) {
          || '.png'  eq $lsuf
       )
       {
-         chmod 0664, e($file->{Path});      # Pictures don't need to be executable.
+         chmod 0664, e($file->{Path}); # Pictures don't need to be executable.
+         say "Set file \"$file->{Name}\" to NOT-executable.";
+         ++$permcount;
       }
       elsif
       (
@@ -177,7 +205,9 @@ sub curfile ($file) {
          || '.wav'  eq $lsuf
       )
       {
-         chmod 0664, e($file->{Path});      # Sounds don't need to be executable.
+         chmod 0664, e($file->{Path}); # Sounds don't need to be executable.
+         say "Set file \"$file->{Name}\" to NOT-executable.";
+         ++$permcount;
       }
       elsif
       (
@@ -189,20 +219,45 @@ sub curfile ($file) {
          || '.flv'  eq $lsuf
       )
       {
-         chmod 0664, e($file->{Path});      # Videos don't need to be executable.
+         chmod 0664, e($file->{Path}); # Videos don't need to be executable.
+         say "Set file \"$file->{Name}\" to NOT-executable.";
+         ++$permcount;
       }
-      elsif ( '#!' eq substr($hd4,0,2) ) {
-         chmod 0775, e($file->{Path});      # Shebang scripts DO need to be executable.
-      }
-      elsif ( 'ELF' eq substr($hd4,1,3) ) {
-         chmod 0775, e($file->{Path});      # Binary native programs DO need to be executable.
-      }
+
+      # If we couldn't make a decision regarding the permissions of this file based on its file-name suffix,
+      # resort to opening the file and looking at the first 4 bytes of its contents:
       else {
-         ;                                  # For other random regular files, do nothing.
-      }
-   }
-   else {                                   # And for things OTHER THAN regular files and directories,
-      ;                                     # do nothing.
+         my $fh;
+         my $buffer;
+         if ( open $fh, "< :raw", e $file->{Path} ) {
+            ++$opencount;
+            if ( read($fh, $buffer, 4) && 4 == length($buffer) ) {
+               ++$readcount;
+               if ( '#!' eq substr($buffer, 0, 2) ) {
+                  chmod 0775, e($file->{Path}); # Shebang scripts need to be executable.
+                  say "Set file \"$file->{Name}\" to executable.";
+                  ++$permcount;
+               }
+               elsif ( "\x{7F}ELF" eq substr($buffer, 0, 4) ) {
+                  chmod 0775, e($file->{Path}); # Binary native programs need to be executable.
+                  say "Set file \"$file->{Name}\" to executable.";
+                  ++$permcount;
+               }
+            } # end could read
+            else {
+               ++$nordcount;
+            }
+            close($fh);
+         } # end could open
+         else {
+            ++$noopcount;
+         }
+      } # end unknown extension or no extension
+   } # end regular file
+
+   # For things OTHER THAN regular files and directories, do nothing:
+   else {
+      ;
    }
 
    # Return success code 1 to caller:
@@ -213,7 +268,12 @@ sub curfile ($file) {
 sub stats {
    say STDERR "\nStatistics for this directory tree:";
    say STDERR "Navigated $direcount directories.";
-   say STDERR "Set permissions on $filecount entries.";
+   say STDERR "Processed $filecount directory entries.";
+   say STDERR "Was able to open $opencount regular files with unknown or missing file-name extensions.";
+   say STDERR "Failed $noopcount file-open attempts.";
+   say STDERR "Was able to read $readcount regular files with unknown or missing file-name extensions.";
+   say STDERR "Failed $nordcount file-read attempts.";
+   say STDERR "Set $permcount permissions.";
    return 1;
 } # end sub stats
 

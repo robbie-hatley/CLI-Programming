@@ -67,9 +67,10 @@ use v5.36;
 use strict;
 use warnings;
 use utf8;
-
+use warnings FATAL => "utf8";
 use Sys::Binmode;
 use Time::HiRes 'time';
+
 use charnames qw( :full :short );
 use Unicode::Normalize qw( NFD NFC );
 use Unicode::Collate;
