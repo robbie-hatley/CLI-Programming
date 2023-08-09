@@ -2030,52 +2030,54 @@ sub is_large_image :prototype($) {
 } # end sub is_large_image
 
 sub get_suffix_from_type :prototype($) ($type) {
-   my $reg = '(?i:x(?:-|.))';
-   if ( ! defined $type                                                 ) {return '.unk'  }
-   if ($type =~ m[video/$reg?msvideo]                                   ) {return '.avi'  }
-   if ($type =~ m[image/$reg?bmp]                                       ) {return '.bmp'  }
-   if ($type =~ m[application/$reg?freearc]                             ) {return '.arc'  }
-   if ($type =~ m[text/$reg?css]                                        ) {return '.css'  }
-   if ($type =~ m[text/$reg?csv]                                        ) {return '.csv'  }
-   if ($type =~ m[application/$reg?msword]                              ) {return '.doc'  }
-   if ($type =~ m[application/$reg?epub+zip]                            ) {return '.epub' }
-   if ($type =~ m[image/$reg?gif]                                       ) {return '.gif'  }
-   if ($type =~ m[text/$reg?html]                                       ) {return '.html' }
-   if ($type =~ m[image/$reg?vnd.microsoft.icon]                        ) {return '.ico'  }
-   if ($type =~ m[application/$reg?java-archive]                        ) {return '.jar'  }
-   if ($type =~ m[image/$reg?jpeg]                                      ) {return '.jpg'  }
-   if ($type =~ m[text/$reg?javascript]                                 ) {return '.js'   }
-   if ($type =~ m[application/$reg?json]                                ) {return '.json' }
-   if ($type =~ m[audio/$reg?midi]                                      ) {return '.mid'  }
-   if ($type =~ m[audio/$reg?mpeg]                                      ) {return '.mp3'  }
-   if ($type =~ m[video/$reg?mpeg]                                      ) {return '.mpg'  }
-   if ($type =~ m[application/$reg?vnd.oasis.opendocument.presentation] ) {return '.odp'  }
-   if ($type =~ m[application/$reg?vnd.oasis.opendocument.spreadsheet]  ) {return '.ods'  }
-   if ($type =~ m[application/$reg?vnd.oasis.opendocument.text]         ) {return '.odt'  }
-   if ($type =~ m[audio/$reg?ogg]                                       ) {return '.ogg'  }
-   if ($type =~ m[font/$reg?otf]                                        ) {return '.otf'  }
-   if ($type =~ m[image/$reg?png]                                       ) {return '.png'  }
-   if ($type =~ m[application/$reg?pdf]                                 ) {return '.pdf'  }
-   if ($type =~ m[application/$reg?httpd-php]                           ) {return '.php'  }
-   if ($type =~ m[application/$reg?vnd.ms-powerpoint]                   ) {return '.ppt'  }
-   if ($type =~ m[application/$reg?vnd.rar]                             ) {return '.rar'  }
-   if ($type =~ m[application/$reg?rtf]                                 ) {return '.rtf'  }
-   if ($type =~ m[application/$reg?sh]                                  ) {return '.sh'   }
-   if ($type =~ m[image/$reg?svg+xml]                                   ) {return '.svg'  }
-   if ($type =~ m[application/$reg?tar]                                 ) {return '.tar'  }
-   if ($type =~ m[image/$reg?tiff]                                      ) {return '.tiff' }
-   if ($type =~ m[font/$reg?ttf]                                        ) {return '.ttf'  }
-   if ($type =~ m[text/$reg?plain]                                      ) {return '.txt'  }
-   if ($type =~ m[audio/$reg?wav]                                       ) {return '.wav'  }
-   if ($type =~ m[audio/$reg?webm]                                      ) {return '.weba' }
-   if ($type =~ m[video/$reg?webm]                                      ) {return '.webm' }
-   if ($type =~ m[image/$reg?webp]                                      ) {return '.webp' }
-   if ($type =~ m[application/$reg?vnd.ms-excel]                        ) {return '.xls'  }
-   if ($type =~ m[text/$reg?xml]                                        ) {return '.xml'  }
-   if ($type =~ m[application/$reg?vnd.mozilla.xul+xml]                 ) {return '.xul'  }
-   if ($type =~ m[application/$reg?zip]                                 ) {return '.zip'  }
-   if ($type =~ m[application/$reg?7z-compressed]                       ) {return '.7z'   }
-   return '.unk';
+   my $x = '(?i:x(?:-|.))'; # unregistered?
+   !defined $type and return '.unk'; # $type is undefined
+   for ($type) {
+      /^video\/$reg?msvideo$/                                   and return '.avi'  ;
+      /^image\/$reg?bmp$/                                       and return '.bmp'  ;
+      /^application\/$reg?freearc$/                             and return '.arc'  ;
+      /^text\/$reg?css$/                                        and return '.css'  ;
+      /^text\/$reg?csv$/                                        and return '.csv'  ;
+      /^application\/$reg?msword$/                              and return '.doc'  ;
+      /^application\/$reg?epub+zip$/                            and return '.epub' ;
+      /^image\/$reg?gif$/                                       and return '.gif'  ;
+      /^text\/$reg?html$/                                       and return '.html' ;
+      /^image\/$reg?vnd.microsoft.icon$/                        and return '.ico'  ;
+      /^application\/$reg?java-archive$/                        and return '.jar'  ;
+      /^image\/$reg?jpeg$/                                      and return '.jpg'  ;
+      /^text\/$reg?javascript$/                                 and return '.js'   ;
+      /^application\/$reg?json$/                                and return '.json' ;
+      /^audio\/$reg?midi$/                                      and return '.mid'  ;
+      /^audio\/$reg?mpeg$/                                      and return '.mp3'  ;
+      /^video\/$reg?mpeg$/                                      and return '.mpg'  ;
+      /^application\/$reg?vnd.oasis.opendocument.presentation$/ and return '.odp'  ;
+      /^application\/$reg?vnd.oasis.opendocument.spreadsheet$/  and return '.ods'  ;
+      /^application\/$reg?vnd.oasis.opendocument.text$/         and return '.odt'  ;
+      /^audio\/$reg?ogg$/                                       and return '.ogg'  ;
+      /^font\/$reg?otf$/                                        and return '.otf'  ;
+      /^image\/$reg?png$/                                       and return '.png'  ;
+      /^application\/$reg?pdf$/                                 and return '.pdf'  ;
+      /^application\/$reg?httpd-php$/                           and return '.php'  ;
+      /^application\/$reg?vnd.ms-powerpoint$/                   and return '.ppt'  ;
+      /^application\/$reg?vnd.rar$/                             and return '.rar'  ;
+      /^application\/$reg?rtf$/                                 and return '.rtf'  ;
+      /^application\/$reg?sh$/                                  and return '.sh'   ;
+      /^image\/$reg?svg+xml$/                                   and return '.svg'  ;
+      /^application\/$reg?tar$/                                 and return '.tar'  ;
+      /^image\/$reg?tiff$/                                      and return '.tiff' ;
+      /^font\/$reg?ttf$/                                        and return '.ttf'  ;
+      /^text\/$reg?plain$/                                      and return '.txt'  ;
+      /^audio\/$reg?wav$/                                       and return '.wav'  ;
+      /^audio\/$reg?webm$/                                      and return '.weba' ;
+      /^video\/$reg?webm$/                                      and return '.webm' ;
+      /^image\/$reg?webp$/                                      and return '.webp' ;
+      /^application\/$reg?vnd.ms-excel$/                        and return '.xls'  ;
+      /^text\/$reg?xml$/                                        and return '.xml'  ;
+      /^application\/$reg?vnd.mozilla.xul+xml$/                 and return '.xul'  ;
+      /^application\/$reg?zip$/                                 and return '.zip'  ;
+      /^application\/$reg?7z-compressed$/                       and return '.7z'   ;
+   }
+   return '.unk'; # $type is unknown
 } # end sub get_suffix_from_type ($)
 
 # Convert a fully-qualified Cygwin path to Windows:
