@@ -67,6 +67,7 @@
 # Tue Aug 08, 2023: Updated from "v5.32" to "v5.36". Inserted many instances of ":prototype" before every
 #                   prototype, both in all subroutine predeclarations AND all subroutine definitions.
 #                   Converted bracing to C-style (no left braces on their own lines).
+# Thu Aug 09, 2023: Added *.mp4 type, and set "$type = lc $type".
 ##############################################################################################################
 
 # ======= PACKAGE: ===========================================================================================
@@ -2030,8 +2031,9 @@ sub is_large_image :prototype($) {
 } # end sub is_large_image
 
 sub get_suffix_from_type :prototype($) ($type) {
-   my $x = '(?i:x(?:-|.))'; # unregistered?
    !defined $type and return '.unk'; # $type is undefined
+   $type = lc $type;
+   my $x = '(x(-|.))'; # unregistered?
    for ($type) {
       /^video\/$x?msvideo$/                                   and return '.avi'  ;
       /^image\/$x?bmp$/                                       and return '.bmp'  ;
@@ -2050,6 +2052,7 @@ sub get_suffix_from_type :prototype($) ($type) {
       /^audio\/$x?midi$/                                      and return '.mid'  ;
       /^audio\/$x?mpeg$/                                      and return '.mp3'  ;
       /^video\/$x?mpeg$/                                      and return '.mpg'  ;
+      /^video\/$x?mp4$/                                       and return '.mp4'  ;
       /^application\/$x?vnd.oasis.opendocument.presentation$/ and return '.odp'  ;
       /^application\/$x?vnd.oasis.opendocument.spreadsheet$/  and return '.ods'  ;
       /^application\/$x?vnd.oasis.opendocument.text$/         and return '.odt'  ;
