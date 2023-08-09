@@ -15,6 +15,8 @@
 #                   Got rid of "--debug=no", "--local", "--quiet" (already defaults).
 #                   Changed "--debug=yes" to just "--debug". Now using "my $pname = get_name_from_path($0);".
 #                   Elapsed time is now in milliseconds.
+# Wed Aug 09, 2023: Dramatically symplified permission-setting. Created new subs "dir_nav", "set_exec", and
+#                   "set_noex". Added several new suffixes. Now handles makefiles (noex).
 ##############################################################################################################
 
 use v5.36;
@@ -43,7 +45,7 @@ sub help    ; # Print help and exit.
 # Settings:     Default:       Meaning of setting:          Range:    Meaning of default:
 my $db        = 0          ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
 my $Recurse   = 0          ; # Recurse subdirectories?      bool      Don't recurse.
-my $Target    = 'A'        ; # Files, dirs, both, all?      F|D|B|A   Process all file types.
+my $Target    = 'F'        ; # Files, dirs, both, all?      F|D|B|A   Process regular files only.
 my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    Process all file names.
 
 # Counters:
@@ -125,140 +127,105 @@ sub curdire {
    return 1;
 } # end sub curdire
 
+# Set a directory to "navigable":
+sub dir_nav ($file) {
+   chmod 0775, e($file->{Path});
+   say "Set directory \"$file->{Name}\" to navigable.";
+   ++$permcount;
+}
+
+# Set a file to "executable":
+sub set_exec ($file) {
+   chmod 0775, e($file->{Path});
+   say "Set file \"$file->{Name}\" to executable.";
+   ++$permcount;
+}
+
+# Set a file to "not executable":
+sub set_noex ($file) {
+   chmod 0664, e($file->{Path});
+   say "Set file \"$file->{Name}\" to NOT-executable.";
+   ++$permcount;
+}
+
 # Process current file:
 sub curfile ($file) {
    # Increment file counter:
    ++$filecount;
 
-   if    ( 'D' eq $file->{Type} ) {         # Directories need to be navigable.
-      chmod 0775, e($file->{Path});
-      say "Set directory \"$file->{Name}\" to navigable.";
-      ++$permcount;
+   if    ( 'D' eq $file->{Type} ) { # Directories need to be navigable.
+      dir_nav($file);
    }
-   elsif ( 'F' eq $file->{Type} ) {         # Regular files, however, are a mixed bag.
+   elsif ( 'F' eq $file->{Type} ) { # Regular files, however, are a mixed bag.
       my $suf = get_suffix($file->{Name});
-      my $lsuf = lc $suf;
-      if
-      (
-            '.apl'  eq $lsuf
-         || '.awk'  eq $lsuf
-         || '.pl'   eq $lsuf
-         || '.py'   eq $lsuf
-         || '.raku' eq $lsuf
-         || '.sed'  eq $lsuf
-         || '.sh'   eq $lsuf
-      )
-      {
-         chmod 0775, e($file->{Path}); # Scripts in known languages DO need to be executable.
-         say "Set file \"$file->{Name}\" to executable.";
-         ++$permcount;
-      }
-      elsif
-      (
-            '.c'       eq $lsuf
-         || '.cpp'     eq $lsuf
-         || '.cppism'  eq $lsuf
-         || '.h'       eq $lsuf
-         || '.hpp'     eq $lsuf
-         || '.cppismh' eq $lsuf
-         || '.a'       eq $lsuf
-         || '.pm'      eq $lsuf
-      )
-      {
-         chmod 0664, e($file->{Path}); # Source, header, library, & module files DON'T need to be executable.
-         say "Set file \"$file->{Name}\" to NOT-executable.";
-         ++$permcount;
-      }
-      elsif
-      (
-            '.txt'  eq $lsuf
-         || '.doc'  eq $lsuf
-         || '.pdf'  eq $lsuf
-         || '.htm'  eq $lsuf
-         || '.html' eq $lsuf
-      )
-      {
-         chmod 0664, e($file->{Path}); # Text doesn't need to be executable.
-         say "Set file \"$file->{Name}\" to NOT-executable.";
-         ++$permcount;
-      }
-      elsif
-      (
-            '.jpg'  eq $lsuf
-         || '.jpeg' eq $lsuf
-         || '.tif'  eq $lsuf
-         || '.tiff' eq $lsuf
-         || '.bmp'  eq $lsuf
-         || '.gif'  eq $lsuf
-         || '.png'  eq $lsuf
-      )
-      {
-         chmod 0664, e($file->{Path}); # Pictures don't need to be executable.
-         say "Set file \"$file->{Name}\" to NOT-executable.";
-         ++$permcount;
-      }
-      elsif
-      (
-            '.mp3'  eq $lsuf
-         || '.ogg'  eq $lsuf
-         || '.flac' eq $lsuf
-         || '.wav'  eq $lsuf
-      )
-      {
-         chmod 0664, e($file->{Path}); # Sounds don't need to be executable.
-         say "Set file \"$file->{Name}\" to NOT-executable.";
-         ++$permcount;
-      }
-      elsif
-      (
-            '.mpg'  eq $lsuf
-         || '.mpeg' eq $lsuf
-         || '.mp4'  eq $lsuf
-         || '.mov'  eq $lsuf
-         || '.avi'  eq $lsuf
-         || '.flv'  eq $lsuf
-      )
-      {
-         chmod 0664, e($file->{Path}); # Videos don't need to be executable.
-         say "Set file \"$file->{Name}\" to NOT-executable.";
-         ++$permcount;
-      }
+      if ( 0 != length $suf ) { # File name DOES have a suffix.
+         my $lsuf = lc substr $suf, 1;
+         for ( $lsuf ) {
 
-      # If we couldn't make a decision regarding the permissions of this file based on its file-name suffix,
+            # Scripts in in known languages DO need to be executable:
+            /^(apl|awk|pl|perl|py|raku|sed|sh)$/ and set_exec($file);
+
+            # Source, header, library, and module files DON'T need to be executable:
+            /^(c|cpp|cppism|h|hpp|cppismh|a|pm)$/ and set_noex($file);
+
+            # Document files DON'T need to be executable:
+            /^(chm|doc|epub|txt|pdf|htm|html|doc|odt|ods|ion|eml|log)$/ and set_noex($file);
+
+            # Picture files DON'T need to be executable:
+            /^(jpg|jpeg|tif|tiff|bmp|gif|png|xcf)$/ and set_noex($file);
+
+            # Archive files DON'T need to be executable:
+            /^(zip|rar|tar|tgz|bmp|gif|png|xcf)$/ and set_noex($file);
+
+            # Sound files DON'T need to be executable:
+            /^(mp3|ogg|flac|wav)$/ and set_noex($file);
+
+            # Video files DON'T need to be executable:
+            /^(mpg|mpeg|mp4|mov|avi|flv)$/ and set_noex($file);
+         }
+      } # end if (suffix)
+
+      # Make files DON'T need to be executable:
+      elsif ( (lc $file->{Name}) =~ m/^make(file|tail)$/ ) {
+         set_noex($file);
+      } # end elsif (make file)
+
+      # If we couldn't make a decision regarding the permissions of this file based on its name,
       # resort to opening the file and looking at the first 4 bytes of its contents:
-      else {
+      else { # File name DOESN'T have a suffix.
          my $fh;
          my $buffer;
          if ( open $fh, "< :raw", e $file->{Path} ) {
+            # We WERE able to open this file:
             ++$opencount;
             if ( read($fh, $buffer, 4) && 4 == length($buffer) ) {
+               # We WERE able to read this file:
                ++$readcount;
-               if ( '#!' eq substr($buffer, 0, 2) ) {
-                  chmod 0775, e($file->{Path}); # Shebang scripts need to be executable.
-                  say "Set file \"$file->{Name}\" to executable.";
-                  ++$permcount;
-               }
-               elsif ( "\x{7F}ELF" eq substr($buffer, 0, 4) ) {
-                  chmod 0775, e($file->{Path}); # Binary native programs need to be executable.
-                  say "Set file \"$file->{Name}\" to executable.";
-                  ++$permcount;
-               }
+
+               # Shebang scripts DO need to be executable:
+               '#!' eq substr($buffer, 0, 2) and set_exec($file);
+
+               # Linux "ELF" ("Executable & Linkable Format") programs DO need to be executable:
+               "\x{7F}ELF" eq substr($buffer, 0, 4) and set_exec($file);
+
             } # end could read
             else {
+               # We WEREN'T able to read this file:
                ++$nordcount;
-            }
+            } # end couldn't read
             close($fh);
          } # end could open
          else {
+            # We WEREN'T able to open this file:
             ++$noopcount;
-         }
-      } # end unknown extension or no extension
+         } # end couldn't open
+      } # end else (no suffix)
    } # end regular file
 
    # For things OTHER THAN regular files and directories, do nothing:
    else {
-      ;
-   }
+      ; # Do nothing.
+   } # end else (neither dir nor file)
 
    # Return success code 1 to caller:
    return 1;
@@ -295,13 +262,14 @@ sub help
    -------------------------------------------------------------------------------
    Introduction:
 
-   Welcome to "canoperm.pl". This program canonicalizes the permissions of
-   directory entries. Permissions for directories are set to "rwxrwxr-x"; things
-   which should be executable are set to "rwxrwxr-x"; text, pictures, sounds, and
-   videos are set to "-rw-rw-r--"; and everything else (links, sockets, etc) is
-   left unaltered.
+   Welcome to "canononicalize-permissions.pl". This program canonicalizes the
+   permissions of directory entries. Permissions for directories are set to
+   "rwxrwxr-x"; things which should be executable are set to "rwxrwxr-x";
+   text, pictures, sounds, and videos are set to "-rw-rw-r--"; and everything else
+   (links, sockets, etc) is left unaltered.
 
-   By default, this
+   By default, this program acts on regular files only and in the current working
+   directory only, but this can be altered (see "Description of Option" below).
 
    -------------------------------------------------------------------------------
    Command Lines:
@@ -321,6 +289,8 @@ sub help
    -d or --dirs      Target directories only.
    -b or --both      Target both files and directories.
    -a or --all       Target all directory entries.
+   Multiple single-letter options can be piled-up after a single hyphen.
+   For example, use "-ar" to process ALL entires in ALL subdirectories.
 
    -------------------------------------------------------------------------------
    Description of arguments:
@@ -328,7 +298,7 @@ sub help
    present, must be a Perl-Compliant Regular Expression specifying which items to
    process. To specify multiple patterns, use the | alternation operator.
    To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to search for items with names containing "cat",
+   For example, if you want to process items with names containing "cat",
    "dog", or "horse", title-cased or not, you could use this regexp:
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
