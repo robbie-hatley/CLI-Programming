@@ -34,11 +34,11 @@
 #include <list>
 #include <algorithm>
 #include <functional>
-
 #include <sys/types.h>
-
 #include <assert.h>
 #include <errno.h>
+
+#include <cstdint>
 
 #include "rhdefines.h"
 
@@ -285,7 +285,7 @@ class StringToUpper_Functor : public std::unary_function<std::string &, void>
          {
             if (std::islower(*i))
             {
-               (*i) = char(toupper(*i)); 
+               (*i) = char(toupper(*i));
             }
          }
          return;
@@ -316,7 +316,7 @@ struct NoCase
       {
          ; // do nothing                                               // Take no action in loop.
       }
-      if ( j == b.end() ) 
+      if ( j == b.end() )
       {
          return false;
          // (If b    ended    before    a, then a  > b, so "a < b" is false.)
@@ -324,9 +324,9 @@ struct NoCase
       }
       else
       {
-         if ( i == a.end() ) 
+         if ( i == a.end() )
          {
-            return true;  
+            return true;
             // (a ended before b, therefore a < b, so "a < b" is true.)
          }
          else
@@ -501,7 +501,7 @@ InVec
 //                                                                    //
 ////////////////////////////////////////////////////////////////////////
 
-int 
+int
 atoint(const char *idx);
 // (defined in rhutil.cpp)
 
@@ -513,7 +513,7 @@ atoint(const char *idx);
 //                                                                    //
 ////////////////////////////////////////////////////////////////////////
 
-long long int 
+long long int
 atoll(const char *idx);
 // (defined in rhutil.cpp)
 

@@ -36,15 +36,15 @@
  * Instructions:
  *
  * Instructions for compiling this library:
- * Compile using GNU g++, or other C++ compiler which has the GNU "__attribute__ ((packed))" extention 
- * available, as 3 of the structs in this library use packing. Make sure that "rhbitmap.h" is in the 
- * compiler's search path. Set the compiler to produce object file "rhbitmap.o" only. Do not link. 
- * Leave symbol table intact if you want to do debugging. Archive object "rhbitmap.o" into library 
+ * Compile using GNU g++, or other C++ compiler which has the GNU "__attribute__ ((packed))" extention
+ * available, as 3 of the structs in this library use packing. Make sure that "rhbitmap.h" is in the
+ * compiler's search path. Set the compiler to produce object file "rhbitmap.o" only. Do not link.
+ * Leave symbol table intact if you want to do debugging. Archive object "rhbitmap.o" into library
  * "librh.a", because my programs will be looking for it there. Typical command lines:
  * g++ -I /rhe/include -Wall -std=gnu++14 -Og -c /rhe/src/librh/rhbitmap.cpp -o /rhe/lib/rhbitmap.o
  * ar -r /rhe/lib/librh.a /rhe/lib/rhbitmap.o
  * rm /rhe/lib/rhbitmap.o
- * 
+ *
  * Instructions for using this library in a program:
  *   Include the following at the start of the program:
  *     #include "../lib/bitmap.h"
@@ -54,7 +54,7 @@
  *
  * Using "Color" objects:
  *   Objects of class "Color" contain four uint8_t elements named "red", "green", "blue", and "dummy".
- *   The "red", "green", and "blue" bytes are intensity numbers from 0 to 255, with 0 = zero intensity and 
+ *   The "red", "green", and "blue" bytes are intensity numbers from 0 to 255, with 0 = zero intensity and
  *   255 = maximum intensity. (The "dummy" byte is functionless padding required by the "bmp" standard.)
  *   Hence if red=130, green=120, blue=120, the color is reddish-grey.
  *   The default color of a Color object is cream (240, 230, 220).
@@ -100,9 +100,9 @@
  *     mymap.filewrite("H:\Gallery\Mypics\foobar.bmp");
  *
  * Rows, Pixels, and Colors:
- *   The pixels of a bitmap are stored in horizontal rows (raster lines), not vertical columns. 
- *   The raster lines are stored FROM BOTTOM TO TOP (***NOT*** TOP TO BOTTOM). 
- *   The pixels within each line are stored from left to right. 
+ *   The pixels of a bitmap are stored in horizontal rows (raster lines), not vertical columns.
+ *   The raster lines are stored FROM BOTTOM TO TOP (***NOT*** TOP TO BOTTOM).
+ *   The pixels within each line are stored from left to right.
  *
  *   That makes bitmap objects and files especially useful for graphing mathematical equations, because the
  *   pixel arrangement is like Quadrant I of a graph, with the origin (x,y)=(0,0) at the lower-left corner.
@@ -181,25 +181,25 @@
  * in structs little-endian-ly, as the BMP file specs demand.  If other compilers are used, the code may
  * have to be altered to compensate.  (One approach would be to write to the struct one byte at a time,
  * using pointer arithmetic, then write from struct to hard disk the same way.)
- * 
+ *
  * Color storage issues:
- * 
+ *
  * For 24-bit images, each pixel is stored as a triplet of bytes, one byte indicating the intensity of each
  * of the three primary colors (red, green, blue). The color bytes within each pixel are stored in the order
  * (blue, green, red), NOT (red, green, blue) as you might expect.  This is because DOS and Windows use
  * little-endian rather than big-endian BYTE order. (But the BIT order within each byte is big-endian.)
  * Example: a bright orange pixel with HTML color description #FF8020 (Red=0xFF, Green = 0x80, Blue = 0x20)
- * would look like 0x2080FF in a RAM or disk dump. Also note that unlike in the color table, pixels in the 
- * main bitmap data area of a 24-bit bitmap do not have fourth, "dummy" bytes. All pixels are stored as 
- * 3-byte sequences, Blue-Green-Red. The ends of rows, however, do need to be zero-padded as necessary to 
+ * would look like 0x2080FF in a RAM or disk dump. Also note that unlike in the color table, pixels in the
+ * main bitmap data area of a 24-bit bitmap do not have fourth, "dummy" bytes. All pixels are stored as
+ * 3-byte sequences, Blue-Green-Red. The ends of rows, however, do need to be zero-padded as necessary to
  * make rows end on 4-byte boundaries.
  *
  * For 8-bit images, each 8-bit data byte is an index to a table of 256 colors.
- * 
+ *
  * For 4-bit images, each 4-bit data nybble is an index to a table of 16 colors.
  *
  * For 1-bit images, each data bit is an index to a table of 2 colors.
- * 
+ *
  * Constant-Size Color Table:
  * The color table in class "Bitmap" in is always 256 colors, regardless of the actual color depth.
  * Either 0, or 2, or 16, or all 256 of these may be written to a file by Bitmap::filewrite().
@@ -214,6 +214,8 @@
 #include <iomanip>
 #include <vector>
 #include <string>
+
+#include <cstdint>
 
 #include "rhdefines.h"
 
@@ -267,7 +269,7 @@ inline std::ostream& operator<<(std::ostream& s, const Color& c)
 // written as 000154F5(hex), but the little-endian image in RAM is F5540100, NOT 5F451000. And the image on
 // hard disk is the same as in RAM, so you'd also see F5540100 if you opened the file in HxD.
 
-// Note: The next two structs are "packed", that is, they have no "padding" between elements. This is 
+// Note: The next two structs are "packed", that is, they have no "padding" between elements. This is
 // necessary because objects of these structs will be written to the headers of "*.bmp" files as-is,
 // and that file format demands these elements, in this order, at these offsets, and any padding would
 // invalidate the stated "offset" fields, hence padding cannot be allowed, hence the structs are "packed".
@@ -604,7 +606,7 @@ class Fractal : public Graph
  *    I did a massive cleanup of the "Instructions" and "Technical Notes" sections at the top of this file.
  *    I especially added info on pixel storage order and techniques for setting the colors of the pixels
  *    without buffer overruns resulting in segmentation faults. Also, many changes have been made to this
- *    file 2004-2018 that didn't get put into these notes. These changes include a massive re-write of 
+ *    file 2004-2018 that didn't get put into these notes. These changes include a massive re-write of
  *    everything due to upgrading from Windows-XP to Windows-10 and from DJGPP to Cygwin64+Mintty+Bash+Gnu.
  *    Everything in this file should now be compatible with use on Linux; just recompile for that OS.
 \************************************************************************************************************/

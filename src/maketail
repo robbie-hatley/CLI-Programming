@@ -77,7 +77,7 @@
 #                     gnu11 & gnu++14 as of Feb 7, 2020, which is exactly what I want.
 #   Sat Jan 15, 2022: Restructured for use with Linux + Windows.
 #   Tue Jan 18, 2022: Updated paths to start with "/d/", and clarified instructions & comments.
-#
+#   Fri Aug 11, 2023: Updated due to splitting rhe into rhe, rhe2, rhe3.
 
 # ======================================================================================================================
 # SET DIRECTORIES:
@@ -85,12 +85,12 @@
    INCDIR    := /d/rhe/include
    LIBSRCDIR := /d/rhe/src/librh
 ifeq ($(PLATFORM),Win64)
-   EXEDIR    := /d/rhe/bin_cyg/$(EXSUFF)
-   LIBDIR    := /d/rhe/lib_cyg
+   EXEDIR    := /d/rhe2/bin_cyg/$(EXSUFF)
+   LIBDIR    := /d/rhe2/lib_cyg
    MACROS    := -DPLATFORM_IS_WIN64 -D_GNU_SOURCE
 else ifeq ($(PLATFORM),Linux)
-   EXEDIR    := /d/rhe/bin_lin/$(EXSUFF)
-   LIBDIR    := /d/rhe/lib_lin
+   EXEDIR    := /d/rhe2/bin_lin/$(EXSUFF)
+   LIBDIR    := /d/rhe2/lib_lin
    MACROS    := -DPLATFORM_IS_LINUX -D_GNU_SOURCE
 else
    $(error Error: Unknown PLATFORM)

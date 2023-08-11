@@ -5,6 +5,8 @@
 "rhexperimental.hpp"
 */
 
+#include <cstdint>
+
 #include "rhdefines.h"
 
 template<class T, class F>

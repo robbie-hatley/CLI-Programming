@@ -27,6 +27,7 @@
 #include <cstring>
 #include <cmath>
 #include <cctype>
+#include <cstdint>
 
 // GNU headers:
 #include <unistd.h>
@@ -85,14 +86,14 @@ using std::setw;
 // AppendFileToContainer  throws FileIOException "up" on file stream going bad.
 // AppendContainerToFile  throws FileIOException "up" on failure to open file.
 // AppendContainerToFile  throws FileIOException "up" on file stream going bad.
-// 
+//
 // Note: rhdir::RenameFile() does not throw exceptions because it does not open files or even attempt to
 // directly rename them.  It uses djgpp non-std library function rename() from libc.a (in header <cstdio>
 // or <stdio.h>) to do the actual renaming.  That function returns a result code which is 0 if no error, or
 // non-zero error code if error.  If an error occurs, rhdir::RenameFile() presents an english interpretation
 // of the error code received from rename(), then calls abort() in order to prevent further destruction of
 // files.
-// 
+//
 // Note: rhdir::GetFullCurrPath() does not throw exceptions because if one is not even able to get one's full
 // current path, then the program and/or OS and/or hardware is totally hosed, so rhdir::GetFullCurrPath
 // prints an error message to cerr and exits the program with code 666.
@@ -628,12 +629,12 @@ PrintFileList
 // Load a list of all files, directories, or objects in current directory matching a wildcard into a
 // vector, deque, or list of rhdir::FileRecord objects:
 template<class Container>
-Container& 
+Container&
 LoadFileList
    (
       Container& C,                          // vector, deque, or list of FileRecord's
       const std::string& Wildcard  = "*",    // Default is "all names"
- 
+
       int EntityCode               = 1,      // 1 => Regular files only (default).
                                              // 2 => Directories only.
                                              // 3 => All file-system objects.
@@ -704,20 +705,20 @@ LoadFileList
       BLAT("At top of LoadFileList() while loop.")
       BLAT("EntPtr->d_name = " << EntPtr->d_name)
 
-      // First of all, what kind of object is "EntPtr->d_name"? Ie, is it a regular file, directory, 
+      // First of all, what kind of object is "EntPtr->d_name"? Ie, is it a regular file, directory,
       // or something else? To find out, get stats for current file:
       BLAT("About to run lstat() for file " << EntPtr->d_name)
       ErrorFlag = lstat(EntPtr->d_name, &FileStats);
       if (ErrorFlag)
       {
-         cerr 
+         cerr
             << "Error in LoadFileList: lstat failed for file " << EntPtr->d_name << endl
             << "errno = " << errno << "  Error description: " << strerror(errno) << endl
             << "Continuing to next file."                                        << endl;
          continue;
       }
 
-      // Now, what kind of entities is user looking for? This will be indicated by parameter 
+      // Now, what kind of entities is user looking for? This will be indicated by parameter
       // "EntityCode".
       switch (EntityCode)
       {
@@ -755,7 +756,7 @@ LoadFileList
       if (".." == std::string(EntPtr->d_name)) continue;
 
       // Continue if this file does not match wildcard:
-      // ECHIDNA : I need to find a way to implement this which works with file names in Japanese, 
+      // ECHIDNA : I need to find a way to implement this which works with file names in Japanese,
       // Vietnamese, Bengali. Function fnmatch() doesn't work for those. (ASCII only?)
       if (0 != fnmatch(Wild.c_str(), EntPtr->d_name, 0))
       {
@@ -770,7 +771,7 @@ LoadFileList
          continue;
       }
 
-      // If we get to here, we've ruled-out any reasons *not* to include the current file in our list of 
+      // If we get to here, we've ruled-out any reasons *not* to include the current file in our list of
       // files, so let's construct a FileRecord for it and push it onto the right end of our container.
 
       // Construct a FileRecord object:
@@ -787,7 +788,7 @@ LoadFileList
 }
 
 
-// Load sizes and file record of all files in current directory into 
+// Load sizes and file record of all files in current directory into
 // a multimap of file records keyed by size:
 typedef std::multimap<size_t, rhdir::FileRecord> Flubber;
 Flubber & LoadFileMap
@@ -1137,7 +1138,7 @@ CursDirs
    using std::endl;
 
    // Automatic (reentrant) variables, on stack, initialized on each entry and released on each return:
-   
+
    bool ErrorFlag;
    std::string DirLine;
    std::string FileName;
