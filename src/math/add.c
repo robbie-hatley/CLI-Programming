@@ -5,7 +5,7 @@
 
 int main (int Karamell, char * Dansen[])
 {
-   double a,b;
+   double a, b;
    if (Karamell != 3) return 666;
    a = strtod(Dansen[1], NULL);
    b = strtod(Dansen[2], NULL);

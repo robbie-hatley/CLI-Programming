@@ -21,17 +21,18 @@
  *
 \************************************************************************************************************/
 
-#include <cstdlib>
-#include <cmath>
-#include <ctime>
-#include <cstring>
-
 #include <iostream>
 #include <vector>
 #include <list>
 #include <sstream>
 #include <utility>
 #include <limits>
+
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
+#include <cstring>
+#include <cstdint>
 
 #include "rhdefines.h"
 
@@ -389,7 +390,7 @@ namespace rhmath
    //                                                                       //
    ///////////////////////////////////////////////////////////////////////////
 
-   // Now renamed "RepresentInBase" and completely rewritten in C for numbers of type "uint64_t" only, 
+   // Now renamed "RepresentInBase" and completely rewritten in C for numbers of type "uint64_t" only,
    // and moved from module "rhmath" to module "rhmathc".
 
 

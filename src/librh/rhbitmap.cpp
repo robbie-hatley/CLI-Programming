@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
+#include <cstdint>
 
 #undef NDEBUG
 //#define NDEBUG
@@ -42,10 +43,10 @@ typedef std::vector<uint8_t>::size_type vec_size_t;
 
 // Parameterized constructor for class rhbitmap::Color :
 // (Note no return value, not even void -- earmark of a constructor.)
-rhbitmap::Color::Color 
+rhbitmap::Color::Color
 (
-   int const & r, 
-   int const & g, 
+   int const & r,
+   int const & g,
    int const & b
 )
 {
@@ -70,11 +71,11 @@ rhbitmap::Color::Color
 
 
 // rhbitmap::Color set() method (sets the R, G, B numbers of a Color object):
-void 
-rhbitmap::Color::set 
+void
+rhbitmap::Color::set
 (
-   int const & r, 
-   int const & g, 
+   int const & r,
+   int const & g,
    int const & b
 )
 {
@@ -98,9 +99,9 @@ rhbitmap::Color::set
 } // end rhbitmap::Color set() method
 
 
-// class rhbitmap::Bitmap parameterized constructor 
+// class rhbitmap::Bitmap parameterized constructor
 // (makes a bitmap with given width, height, bitcount, and compression)
-rhbitmap::Bitmap::Bitmap 
+rhbitmap::Bitmap::Bitmap
 (int w, int h, int b, bool c)
 {
    // Constructor for Bitmap.
@@ -110,13 +111,13 @@ rhbitmap::Bitmap::Bitmap
    if
       (
          w < 10 || w > 10001
-         || 
+         ||
          h < 10 || h > 10001
          ||
          !( 1 == b || 4 == b || 8 == b || 24 == b )
       )
    {
-      cerr 
+      cerr
          << "Error in Bitmap parameterized constructor:"              << endl
          << "width and height must be at least 10 and at most 10001," << endl
          << "and bitcount must be 1, 4, 8, or 24."                    << endl;
@@ -159,7 +160,7 @@ rhbitmap::Bitmap::Bitmap
          colortablesize = 64; // 16 4-byte colors (RGBD)
          if (c)               // If user asks for compression:
             compression = 2;     // use 4-bit RLE compression;
-         else                 // otherwise, 
+         else                 // otherwise,
             compression = 0;     // use no compression
          // Each pixel is represented by one nybble, so number of bytes used for data is
          // the ceiling of half the number of nybbles:
@@ -297,7 +298,7 @@ rhbitmap::Bitmap::Bitmap
 
 
 // class rhbitmap::Bitmap destructor:
-rhbitmap::Bitmap::~Bitmap 
+rhbitmap::Bitmap::~Bitmap
 (void)
 {
    for ( int j = 0 ; j < height ; ++j )
@@ -310,8 +311,8 @@ rhbitmap::Bitmap::~Bitmap
 
 
 // Set the color setcolor() for 1-, 4-, and 8-bit bitmaps:
-void 
-rhbitmap::Bitmap::setcolor 
+void
+rhbitmap::Bitmap::setcolor
    (
       int i, // Horizontal index
       int j, // Vertical   index
@@ -390,8 +391,8 @@ rhbitmap::Bitmap::setcolor
 
 
 // setcolor() for 24-bit bitmaps:
-void 
-rhbitmap::Bitmap::setcolor 
+void
+rhbitmap::Bitmap::setcolor
 (
    int i,
    int j,
@@ -422,8 +423,8 @@ rhbitmap::Bitmap::setcolor
 
 
 // getcolor() for all bitmaps:
-rhbitmap::Color 
-rhbitmap::Bitmap::getcolor 
+rhbitmap::Color
+rhbitmap::Bitmap::getcolor
 (
    int i,
    int j
@@ -476,8 +477,8 @@ rhbitmap::Bitmap::getcolor
 
 
 // settable():
-void 
-rhbitmap::Bitmap::settable 
+void
+rhbitmap::Bitmap::settable
 (
    int i,
    Color  c
@@ -498,8 +499,8 @@ if (i < 0 || i > colors-1)
 
 
 // Return width in pixels:
-int 
-rhbitmap::Bitmap::getwidth 
+int
+rhbitmap::Bitmap::getwidth
 (void)
 {
    return int(width);
@@ -514,7 +515,7 @@ int rhbitmap::Bitmap::getheight (void)
 
 
 // gettable():
-rhbitmap::Color 
+rhbitmap::Color
 rhbitmap::Bitmap::gettable
 (
    int i
@@ -533,7 +534,7 @@ rhbitmap::Bitmap::gettable
 
 
 // filewrite():
-void 
+void
 rhbitmap::Bitmap::filewrite
 (
    std::string path
@@ -685,8 +686,8 @@ rhbitmap::Bitmap::filewrite
       {
          // To avoid comparing int index variable i in the inner for loop to a possibly-too-long value of the
          // current row's vector size, I first store the vector size in a temporary variable and "assert()"
-         // that it's < 28000. VECTOR SIZES THAT LARGE SHOULD BE IMPOSSIBLE, but it's good to "assert()" 
-         // here and there in one's code that "impossible" things are not, in fact, occuring. 
+         // that it's < 28000. VECTOR SIZES THAT LARGE SHOULD BE IMPOSSIBLE, but it's good to "assert()"
+         // here and there in one's code that "impossible" things are not, in fact, occuring.
          // Of course, I could evade this issue by changing the index variable from "int" to "unsigned long",
          // but I'm loathe to do that, because the int *should* be big enough. But since "rlematrix[j].size()"
          // is technically capable of returning numbers over 18 quintillion, I feel compelled to make *sure*
@@ -730,8 +731,8 @@ rhbitmap::Bitmap::filewrite
 
 
 // 4-bit RLE compression routine:
-void 
-rhbitmap::Bitmap::RLE4 
+void
+rhbitmap::Bitmap::RLE4
 (
    void
 )
@@ -740,14 +741,14 @@ rhbitmap::Bitmap::RLE4
    int i = 0;
    int j = 0;
 
-   // Resize rlematrix to contain exactly height elements. (After doing 4-bit RLE encoding, 
+   // Resize rlematrix to contain exactly height elements. (After doing 4-bit RLE encoding,
    // file size should be 70 plus the sum of the sizes of the rows.)
    rlematrix.resize(height);
 
    // Declare a buffer to hold RLE-compressed version of a row of pixels:
    vector<uint8_t> Buffer;
 
-   // Set RowLimit and MatrixLimit variables to limit row lengths to 2*width bytes and total 
+   // Set RowLimit and MatrixLimit variables to limit row lengths to 2*width bytes and total
    // compressed matrix to 2*width*height bytes. This this SHOULD be 4x overkill, because each
    // pixel SHOULD take less (hopefully FAR less) than 1/2 byte. But I'm making allowance in case of
    // pathological situations which cause the compressed file to be LARGER than the uncompressed file:
@@ -758,7 +759,7 @@ rhbitmap::Bitmap::RLE4
    Buffer.reserve(RowLimit);
 
    // Make sure Buffer starts out empty (Buffer.end() == Buffer.begin()):
-   Buffer.clear();          
+   Buffer.clear();
 
    // Declare a byte counter to tally all bytes of encoded data, one byte at a time:
    vec_size_t ByteCounter = 0;
@@ -784,7 +785,7 @@ rhbitmap::Bitmap::RLE4
       << "Now performing 4-bit run-length encoding...." << endl;
 
    // Set "far" marker to the beginning of the last full 4-byte block of each row of actual data bytes
-   // (ignore padding bytes; these are not written to compressed bitmap). NOTE INTEGER DIVISION width/2. 
+   // (ignore padding bytes; these are not written to compressed bitmap). NOTE INTEGER DIVISION width/2.
    // Eg, for 101 pixels (nybbles), truncates 101/2 from 50.5 to 50.
 
    //far = (width/2 - ((width/2)%4)) - 4; // 577 -> 288-0-4=284
@@ -810,7 +811,7 @@ rhbitmap::Bitmap::RLE4
       // change segment state to "run" in the "ruf" section below.)
       SegmentState = ruf;
 
-      // Now, divide this row up into rough ("ruf") and/or smooth ("run") segments.  This kind of division 
+      // Now, divide this row up into rough ("ruf") and/or smooth ("run") segments.  This kind of division
       // is best done by a finite state machine.  Now where did I put that?  AH!  Here it is:
 
       /***************************************************************************************************\
@@ -824,7 +825,7 @@ rhbitmap::Bitmap::RLE4
          {
             case ruf:
                // If we get to here, we have reason to believe (or are just guessing, if this is the
-               // leftmost pixel of a raster-row of pixels) that the next 4 1-byte pixel-pairs are dissimilar. 
+               // leftmost pixel of a raster-row of pixels) that the next 4 1-byte pixel-pairs are dissimilar.
                // Or, they may be similar TO EACH OTHER, but not to the previous 4 pixel-pairs.
 
                // Let's start by examining the 4-byte "words" beyond current segment end. For each "word",
@@ -869,8 +870,8 @@ rhbitmap::Bitmap::RLE4
                break; // end case ruf
 
             case run:
-               // If we get to here, we have reason to believe that the next 4 1-byte pixel-pairs are 
-               // identical. 
+               // If we get to here, we have reason to believe that the next 4 1-byte pixel-pairs are
+               // identical.
 
                // Let's start by examining the 4-byte "words" beyond current segment end. For each "word",
                // if it consists of of 4 identical 1-byte pixels pairs, increase segment size by 4 so that
@@ -990,7 +991,7 @@ rhbitmap::Bitmap::RLE4
    BLAT("ByteCounter    = " << ByteCounter)
    BLAT("matrixsize     = " << matrixsize )
 
-   // Assert that ByteCounter, RowSizeCounter, and matrixsize are equal and not excessively large; 
+   // Assert that ByteCounter, RowSizeCounter, and matrixsize are equal and not excessively large;
    // if not, abort:
    assert ( matrixsize == ByteCounter );
    assert ( matrixsize <= MatrixLimit );
@@ -1008,8 +1009,8 @@ rhbitmap::Bitmap::RLE4
 
 
 // 8-bit run-length-encoding routine:
-void 
-rhbitmap::Bitmap::RLE8 
+void
+rhbitmap::Bitmap::RLE8
 (
    void
 )
@@ -1018,14 +1019,14 @@ rhbitmap::Bitmap::RLE8
    int i = 0;
    int j = 0;
 
-   // Resize rlematrix to contain exactly height elements. (After doing 8-bit RLE encoding, 
+   // Resize rlematrix to contain exactly height elements. (After doing 8-bit RLE encoding,
    // file size should be 310 plus the sum of the sizes of the rows.)
    rlematrix.resize(height);
 
    // Declare a buffer to hold RLE-compressed version of a row of pixels:
    vector<uint8_t> Buffer;
 
-   // Set RowLimit and MatrixLimit variables to limit row lengths to 4*width bytes and total 
+   // Set RowLimit and MatrixLimit variables to limit row lengths to 4*width bytes and total
    // compressed matrix to 4*width*height bytes. This this SHOULD be 4x overkill, because each
    // pixel SHOULD take less (hopefully FAR less) than 1 byte. But I'm making allowance in case of
    // pathological situations which cause the compressed file to be LARGER than the uncompressed file:
@@ -1036,7 +1037,7 @@ rhbitmap::Bitmap::RLE8
    Buffer.reserve(RowLimit);
 
    // Make sure Buffer starts out empty (Buffer.end() == Buffer.begin()):
-   Buffer.clear();          
+   Buffer.clear();
 
    // Declare a byte counter to tally all bytes of encoded data, one byte at a time:
    vec_size_t ByteCounter = 0;
@@ -1081,7 +1082,7 @@ rhbitmap::Bitmap::RLE8
       // change segment state to "run" in the "ruf" section below.)
       SegmentState = ruf;
 
-      // Now, divide this row up into rough ("ruf") and/or smooth ("run") segments.  This kind of division 
+      // Now, divide this row up into rough ("ruf") and/or smooth ("run") segments.  This kind of division
       // is best done by a finite state machine.  Now where did I put that?  AH!  Here it is:
 
       /***************************************************************************************************\
@@ -1095,8 +1096,8 @@ rhbitmap::Bitmap::RLE8
          {
             case ruf:
                // If we get to here, we have reason to believe (or are just guessing, if this is the
-               // leftmost pixel of a raster-row of pixels) that the next 4 1-byte pixels are dissimilar. 
-               // Or, they may be similar TO EACH OTHER, but not to the previous 4 bytes. 
+               // leftmost pixel of a raster-row of pixels) that the next 4 1-byte pixels are dissimilar.
+               // Or, they may be similar TO EACH OTHER, but not to the previous 4 bytes.
 
                // Let's start by examining the 4-byte "words" beyond current segment end. For each "word",
                // if it consists of of 4 dissimilar bytes, increase segment size by 4 so that this segment
@@ -1250,7 +1251,7 @@ rhbitmap::Bitmap::RLE8
    BLAT("ByteCounter    = " << ByteCounter)
    BLAT("matrixsize     = " << matrixsize )
 
-   // Assert that ByteCounter, RowSizeCounter, and matrixsize are equal and not excessively large; 
+   // Assert that ByteCounter, RowSizeCounter, and matrixsize are equal and not excessively large;
    // if not, abort:
    assert ( matrixsize == ByteCounter );
    assert ( matrixsize <= MatrixLimit );
@@ -1266,8 +1267,8 @@ rhbitmap::Bitmap::RLE8
    return;
 } // end RLE8()
 
-void 
-rhbitmap::Bitmap::FileWriteInvalidParams 
+void
+rhbitmap::Bitmap::FileWriteInvalidParams
 (void)
 {
       cerr
@@ -1320,7 +1321,7 @@ rhbitmap::Graph::Graph
 }
 
 double
-rhbitmap::Graph::getx 
+rhbitmap::Graph::getx
 (int i)
 {
    double x = 0.0;
@@ -1331,7 +1332,7 @@ rhbitmap::Graph::getx
 }
 
 double
-rhbitmap::Graph::gety 
+rhbitmap::Graph::gety
 (int j)
 {
    double y = 0.0;
@@ -1341,8 +1342,8 @@ rhbitmap::Graph::gety
    return y;
 }
 
-int 
-rhbitmap::Graph::geti 
+int
+rhbitmap::Graph::geti
 (double x)
 {
    // If x is less than x_min, blat and bail:
@@ -1388,8 +1389,8 @@ rhbitmap::Graph::geti
    return ii;
 }
 
-int 
-rhbitmap::Graph::getj 
+int
+rhbitmap::Graph::getj
 (double y)
 {
    // If y is less than y_min, blat and bail:
@@ -1435,11 +1436,11 @@ rhbitmap::Graph::getj
    return jj;
 }
 
-int 
+int
 rhbitmap::Graph::plotpoint
    (
-      double const & x, 
-      double const & y, 
+      double const & x,
+      double const & y,
       int    const & colorselect
    )
 {
@@ -1462,11 +1463,11 @@ rhbitmap::Graph::plotpoint
    }
 }
 
-int 
+int
 rhbitmap::Graph::plotpoint
    (
-      double const & x, 
-      double const & y, 
+      double const & x,
+      double const & y,
       Color  const & color
    )
 {
@@ -1489,8 +1490,8 @@ rhbitmap::Graph::plotpoint
    }
 }
 
-int 
-rhbitmap::Graph::plotpixel 
+int
+rhbitmap::Graph::plotpixel
    (int const & i, int const & j, int const & colorselect)
 {
    // 1,4,8-bit version of pixel-ploting function.
@@ -1507,11 +1508,11 @@ rhbitmap::Graph::plotpixel
    }
 }
 
-int 
+int
 rhbitmap::Graph::plotpixel
    (
-      int   const & i, 
-      int   const & j, 
+      int   const & i,
+      int   const & j,
       Color const & color
    )
 {

@@ -11,6 +11,7 @@ Header for my collection of math routines in C (not C++).
 
 #include <stdint.h>
 #include <stdbool.h>
+
 #include <gmp.h>
 
 #include "rhdefines.h"
@@ -28,7 +29,7 @@ extern const uint64_t Wheel[48];
 // integer power:
 uint64_t IntPow (uint64_t a, unsigned b);
 
-// integer square root: 
+// integer square root:
 uint64_t IntSqrt (uint64_t n);
 
 // Is given integer a prime number?
@@ -50,17 +51,17 @@ bool IsPrimePair (uint64_t a, uint64_t b);
 uint64_t ReverseNumber (uint64_t n);
 
 #if 0
-// Rotate a number rightward: 
+// Rotate a number rightward:
 mpz_t RotateNumberRight (mpz_t x);
 
-// Rotate a number leftward: 
+// Rotate a number leftward:
 mpz_t RotateNumberLeft (mpz_t x);
 #endif
 
 // Is a given number palindromic?
 bool IsPalindrome (uint64_t n);
 
-// Determine number of digits necessary to represent 
+// Determine number of digits necessary to represent
 // given number in given base:
 unsigned NumberOfDigits
    (

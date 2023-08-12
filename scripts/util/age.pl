@@ -18,6 +18,7 @@
 #                   prototypes (now using signatures instead). Shortened name of sub "tree_stats" to "stats".
 #                   Now using "d getcwd" instead of "cwd_utf8". Changed "--target=xxxx" to just "--xxxx".
 #                   Put headers in help.
+# Fri Aug 11, 2023: Added end-of-options marker. Added debug option.
 ##############################################################################################################
 
 use v5.36;
@@ -37,18 +38,17 @@ use RH::Dir;
 sub argv    ;
 sub curdire ;
 sub stats   ;
-sub error   ;
 sub help    ;
 
 # ======= VARIABLES: =========================================================================================
 
-# Use debugging? (Ie, print extra diagnostics?)
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
-
-# Settings:   Default:       Meaning of setting:       Range:    Meaning of default:
-my $Recurse = 0          ; # Recurse subdirectories?   bool      don't recurse
-my $Target  = 'F'        ; # Target                    F|D|B|A   regular files only
-my $RegExp  = qr/^.+$/o  ; # Regular Expression.       regexp    all file names
+# Settings:   Default:        Meaning of setting:       Range:    Meaning of default:
+   $"       = ', '        ; # Quoted-array formatting.  string    Comma space.
+my $db      = 0           ; # Debug?                    bool      Don't debug.
+my $Verbose = 0           ; # Be verbose?               bool      Shhhh!! Be quiet!!
+my $Recurse = 0           ; # Recurse subdirectories?   bool      Don't recurse.
+my $Target  = 'F'         ; # Target                    F|D|B|A   Regular files only.
+my @RegExps = (qr/^.+$/o) ; # Regular Expressions.      regexps   All file names.
 
 # Counts of events in this program:
 my $direcount = 0; # Count of directories processed.
@@ -60,14 +60,19 @@ my $filecount = 0; # Count of files processed.
    my $t0 = time;
    my $pname = get_name_from_path($0);
    argv;
-   say STDERR "\nNow entering program \"$pname\".";
-   say STDERR "Recurse = $Recurse";
-   say STDERR "Target  = $Target";
-   say STDERR "RegExp  = $RegExp";
+   if ( $Verbose >= 1 ) {
+      say STDERR "\nNow entering program \"$pname\".";
+      say STDERR "Recurse = $Recurse";
+      say STDERR "Target  = $Target";
+      say STDERR "RegExps = (@RegExps)";
+      say STDERR "Verbose = $Verbose";
+   }
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $ms = 1000 * ($t0 - time);
-   printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
+   if ( $Verbose >= 1 ) {
+      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
+   }
    exit 0;
 } # end main
 
@@ -76,28 +81,30 @@ my $filecount = 0; # Count of files processed.
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts;
-   my @args;
+   my @opts = (); my @args = (); my $end_of_opts = 0;
    for ( @ARGV ) {
-      if (/^-\pL*$|^--/) {push @opts, $_}
-      else               {push @args, $_}
+      /^--$/ and $end_of_opts = 1 and next;
+      if   (/^-\pL*$|^--/) {push @opts, $_ }
+      else                 {push @args, $_ }
    }
 
    # Process options:
    for ( @opts ) {
       /^-\pL*h|^--help$/     and help and exit 777 ;
+      /^-\pL*e|^--debug$/    and $db      =  1     ;
+      /^-\pL*q|^--quiet$/    and $Verbose =  0     ; # DEFAULT
+      /^-\pL*v|^--verbose$/  and $Verbose =  1     ;
+      /^-\pL*l|^--local$/    and $Recurse =  0     ; # DEFAULT
       /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
-      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
+      /^-\pL*f|^--files$/    and $Target  = 'F'    ; # DEFAULT
       /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
       /^-\pL*b|^--both$/     and $Target  = 'B'    ;
       /^-\pL*a|^--all$/      and $Target  = 'A'    ;
    }
 
-   # Process arguments:
-   my $NA = scalar(@args);
-   if    ( 0 == $NA ) {                                                } # Use default settings.
-   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o                        } # Set $RegExp.
-   else               { error($NA); help; exit 666                     } # Something evil happened.
+   # Interpret all arguments (if any) as being Perl-Compliant Regular Expressions specifying
+   # which file names to process:
+   @args and @RegExps = @args;
 
    # Return success code 1 to caller:
    return 1;
@@ -113,10 +120,26 @@ sub curdire {
    say STDOUT "\nDirectory #$direcount: $cwd\n";
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
-   my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
+   my @combined_files = ();
+   for my $RegExp ( @RegExps ) {
+      my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
+      push @combined_files, @$curdirfiles;
+   }
 
    # Make array of refs to file-info hashes, sorted in order of increasing age:
-   my @Files = sort {$b->{Mtime} <=> $a->{Mtime}} @{$curdirfiles};
+   my @Files = sort {$b->{Mtime} <=> $a->{Mtime}} @combined_files;
+
+   # Get rid of file-info packets with duplicate paths. Since we just sorted files by age, any two duplicate
+   # files should have the same age and hence be adjacent, so we need only look for adjacent duplicates.
+   # (Duplicate searching is necessary because if user uses multiple regexps, there may be some overlap
+   # in their matches, and it would be very confusing to the user to see duplicate files in the printout.)
+   for ( my $i = 0 ; $i <= $#Files - 1 ; ++$i ) {
+      my $j = $i + 1;
+      # While i and j are duplicates, get rid of j:
+      while ( $j <= $#Files && $Files[$i]->{Path} eq $Files[$j]->{Path} ) {
+         splice @Files, $j, 1;
+      }
+   }
 
    # Print header:
    say STDOUT '   Age  File  Size      # of   Name   ';
@@ -134,19 +157,12 @@ sub curdire {
 } # end sub curdire
 
 sub stats {
-   say "Navigated $direcount directories.";
-   say "Processed $filecount files.";
+   if ( $Verbose >= 1 ) {
+      say "Navigated $direcount directories.";
+      say "Processed $filecount files.";
+   }
    return 1;
 } # end sub stats
-
-sub error ($NA) {
-   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
-
-   Error: you typed $NA arguments, but this program takes at most 1 argument,
-   which, if present, must be a Perl-Compliant Regular Expression specifying
-   which directory entries to process. Help follows:
-   END_OF_ERROR
-} # end sub error
 
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
@@ -192,6 +208,7 @@ sub help {
 
    Option:           Meaning:
    -h or --help      Print help and exit.
+   -e or --debug     Print diagnostics and exit.
    -r or --recurse   Recurse subdirectories.
    -f or --files     List files only.
    -d or --dirs      List directories only.
@@ -202,16 +219,16 @@ sub help {
    -------------------------------------------------------------------------------
    Description of Arguments:
 
-   In addition to options, this program can take one optional argument which, if
-   present, must be a Perl-Compliant Regular Expression specifying which items to
-   process. To specify multiple patterns, use the | alternation operator.
-   To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to search for items with names containing "cat",
-   "dog", or "horse", title-cased or not, you could use this regexp:
-   '(?i:c)at|(?i:d)og|(?i:h)orse'
-   Be sure to enclose your regexp in 'single quotes', else BASH may replace it
-   with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead.
+   In addition to options, this program can take one-or-more optional arguments,
+   which, if present, will be interpreted as Perl-Compliant Regular Expressions
+   specifying which items to process. To apply pattern modifier letters, use an
+   Extended RegExp Sequence. For example, if you want to search for items with
+   names containing "cat", "dog", or "horse", title-cased or not, you could use
+   this regexp: '(?i:c)at|(?i:d)og|(?i:h)orse'
+
+   Be sure to enclose your regexp(s) in 'single quotes', else BASH may replace
+   them with matching names of entities in the current directory and send THOSE
+   to this program, whereas this program needs the raw regexp(s) instead.
 
    A number of arguments other than 0 or 1 will cause this program to print an
    error message and abort.

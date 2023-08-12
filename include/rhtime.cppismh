@@ -11,6 +11,8 @@
  * Date written: Wednesday March 23, 2016.
 \************************************************************************************************************/
 
+#include <cstdint>
+
 // Get local date from time_t time:
 std::string GetDate
    (

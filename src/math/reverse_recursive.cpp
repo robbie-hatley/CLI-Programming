@@ -1,6 +1,7 @@
 // reverse_recursive.cpp
 #include <iostream>
 #include <cstdlib>
+#include <cstdint>
 using namespace std;
 uint64_t reverse (uint64_t fwd, uint64_t rev)
 {

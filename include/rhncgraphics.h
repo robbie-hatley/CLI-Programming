@@ -7,11 +7,11 @@
 /*****************************************************************************\
  * rhncgraphics.h
  * Provides functions for writing text to specified locations on a screen,
- * by using the "ncurses" library. 
- * Originally written by Robbie Hatley on Wed. June 26, 2002, for DJGPP and 
+ * by using the "ncurses" library.
+ * Originally written by Robbie Hatley on Wed. June 26, 2002, for DJGPP and
  * Windows DOS console. Rewritten by Robbie Hatley on Thu Feb 22, 2018,
  * now using ncurses.
- * 
+ *
  * Edit history:
  *   Wed Jun 26, 2002: Wrote original (DOS) version.
  *   Tue Jun 07, 2005: Re-wrote using enum instead of #define for constants.
@@ -20,15 +20,18 @@
  *                     refactored enums and pair-inits using meta-programming.
 \*****************************************************************************/
 
-#include "rhdefines.h"
+#include <stdint.h>
+
 #include <curses.h>
+
+#include "rhdefines.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define PAIR_NAME(FORE,BACK)  \
-   FORE ## _ ## BACK , 
+   FORE ## _ ## BACK ,
 
 #define PAIR_NAMES_BACK(BACK) \
 PAIR_NAME(BLACK   , BACK)     \

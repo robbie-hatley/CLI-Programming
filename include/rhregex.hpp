@@ -14,10 +14,12 @@
 \************************************************************************************************************/
 
 // Note: to turn-on BLAT for any code which may be inside any of my personal
-// library headers, #define BLAT_ENABLE then #include <rhdefines.h> or any of 
+// library headers, #define BLAT_ENABLE then #include <rhdefines.h> or any of
 // my other headers (which all include this one).
 
 #include <string>
+
+#include <cstdint>
 
 #include "rhdefines.h"
 
@@ -63,7 +65,7 @@ struct RegExException
 //  SubstituteCPP() does not alter its arguments.                                       //
 //                                                                                      //
 //////////////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 SubstituteCPP
    (
       std::string const & Pattern,
@@ -108,7 +110,7 @@ SubstituteC
       std::string const & Replacement,
       std::string const & Text,
       std::string const & Flags = "" // Contains 'g' means "global".
-   ); 
+   );
 // (Defined in rhregex.cpp .)
 
 
