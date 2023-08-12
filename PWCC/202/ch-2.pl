@@ -38,11 +38,11 @@ $"=", ";
 # DEFAULT INPUT:
 my @arrays =
 (
-   [1, 5, 5, 2, 8], 
-   [2, 6, 8, 5], 
-   [9, 8, 13, 13, 2, 2, 15, 17], 
-   [2, 1, 2, 1, 3], 
-   [1, 3, 3, 2, 1, 2, 3, 3, 2]
+   [1, 5, 5, 2, 8],
+   [2, 6, 8, 5],
+   [9, 8, 13, 13, 2, 2, 15, 17],
+   [2, 1, 2, 1, 3],
+   [1, 3, 3, 2, 1, 2, 3, 3, 2],
 );
 
 # NON-DEFAULT INPUT:
@@ -58,7 +58,7 @@ for (@arrays){
    my @valley  = ();     # Left-most widest valley found so far.
    my $idx     = 0;      # Elevation index.
    my $begin   = 0;      # Beginning index of current valley.
-   
+
    # For each elevation change, decide what to do, based valley-wall state
    # and on whether we've reached the last elevation yet:
    for ( $idx = 1 ; $idx <= $#array ; ++$idx ){
