@@ -2,6 +2,7 @@
 // Written Fri Sep 25, 2020 by Robbie Hatley
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <math.h>
 #include <errno.h>
 #include <error.h>
@@ -18,8 +19,8 @@ int64_t A (int64_t m, int64_t n)
    {
       error
       (
-         EXIT_FAILURE, 
-         ERANGE, 
+         EXIT_FAILURE,
+         ERANGE,
          "Error in A(): Recursion is out-of-range:\n"
          "Recursion = %ld ; MaxRecursion = %ld .\n",
          Recursion, MaxRecursion
@@ -29,8 +30,8 @@ int64_t A (int64_t m, int64_t n)
    {
       error
       (
-         EXIT_FAILURE, 
-         EDOM, 
+         EXIT_FAILURE,
+         EDOM,
          "Error in A(): m and/or n is out-of-range:\n"
          "m = %ld and n = %ld .\n",
          m, n
@@ -63,8 +64,8 @@ int main (int Beren, char ** Luthien)
    {
       error
       (
-         EXIT_FAILURE, 
-         EINVAL, 
+         EXIT_FAILURE,
+         EINVAL,
          "Error in main(): This program takes two arguments, which must be\n"
          "integers in the 0-9 range, but you typed %d arguments.\n",
          Beren

@@ -16,10 +16,14 @@
 # Thu Apr 02, 2015: Wrote it.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Thu Nov 25, 2021: Simplified and synchronized comments.
+# Fri Aug 11, 2023: Upgraded to "v5.36". Got rid of "common::sense".
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
 use Sys::Binmode;
 
 my @names = `ls -1`; # Doesn't need d! Due to piping from ls's STDOUT to this program's STDIN?
