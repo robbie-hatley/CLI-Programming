@@ -25,46 +25,12 @@ use warnings FATAL => 'utf8';
 use Sys::Binmode;
 use Time::HiRes 'time';
 
-use RH::Dir;
-
-sub help;
-
 my $db        = 0;
 my @Fields    = ();
 my $NumFields = 0;
 my %Ab        = ();
 
-{ # begin main body of program
-   for (@ARGV) {
-      /^-\pL*h|^--help$/ and help and exit 777;
-   }
-   while ( <> ) {
-      s/[\pC\pZ\s]+$//;                            # Snip trailing control, separator, and space characters.
-      if ($db) {
-         say "In word-abundance, in while(), near top;";
-         say "raw incoming text line = \"$_\".";
-      }
-      @Fields = ();                             # Clear the Fields array for receiving data.
-      for my $Field (split /[\pC\pZ\s]+/, $_) { # Split on clusters of control, separator, or space chars
-         $Field =~ s/\W//g;                     # Get rid of non-word characters
-         $Field = fc $Field;                    # Fold Case.
-         next if $Field eq '';                  # Skip field if empty.
-         next if $Field =~ m/^[\pC\pZ\s]+$/;    # Skip field if white-space-only.
-         push @Fields, $Field;                  # Push field onto array.
-      }
-      $NumFields = scalar(@Fields);
-      if ($db) {
-         say "In word-abundance, in while(), near bottom;";
-         say "number of fields = $NumFields.";
-      }
-      map {++$Ab{$_}} @Fields;                       # Increment hash elements (autovivify if necessary).
-   }
-   for my $key (sort {$Ab{$b}<=>$Ab{$a}} keys %Ab) { # Index hash by reverse order of abundance.
-      say "$key => $Ab{$key}";                       # Display how many strings were received for each key.
-   }
-   exit;
-} # end main body of program
-
+# Help function:
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
@@ -81,7 +47,9 @@ sub help {
    word-abundance.pl < MyFile.txt > MyOutput.txt
    MyProgram | word-abundance.pl  > MyOutput.txt
 
-   No other options or arguments are recognized.
+   All options other than -h or --help are ignored.
+
+   All arguments are ignored.
 
    Cheers,
    Robbie Hatley,
@@ -89,3 +57,42 @@ sub help {
    END_OF_HELP
    return 1;
 } # end sub help
+
+# If user requested help, run help function and exit 777:
+for (@ARGV) {
+   /^-\pL*h|^--help$/ and help and exit 777;
+}
+
+# Process input:
+while ( <> ) {
+   s/[\pC\pZ\s]+$//;                         # Snip trailing control, separator, and space characters.
+   if ($db) {
+      say "In word-abundance, in while(), near top;";
+      say "raw incoming text line = \"$_\".";
+   }
+   @Fields = ();                             # Clear the Fields array for receiving data.
+   for my $Field (split /[\pC\pZ\s]+/, $_) { # Split on clusters of control, separator, or space chars
+      $Field =~ s/\W//g;                     # Get rid of non-word characters
+      $Field = fc $Field;                    # Fold Case.
+      next if $Field eq '';                  # Skip field if empty.
+      next if $Field =~ m/^[\pC\pZ\s]+$/;    # Skip field if white-space-only.
+      push @Fields, $Field;                  # Push field onto array.
+   }
+   $NumFields = scalar(@Fields);
+   if ($db) {
+      say "In word-abundance, in while(), near bottom;";
+      say "number of fields = $NumFields.";
+   }
+   map {++$Ab{$_}} @Fields;                       # Increment hash elements (autovivify if necessary).
+}
+
+# Print word abundances:
+for my $key (sort {$Ab{$b}<=>$Ab{$a}} keys %Ab) { # Index hash by reverse order of abundance.
+   say "$key => $Ab{$key}";                       # Display how many strings were received for each key.
+}
+
+# We be done, so exit 0:
+exit 0;
+
+# As Nelly Furtado once said, "All good things come to an end."
+__END__

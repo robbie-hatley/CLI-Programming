@@ -1,12 +1,15 @@
 #! /bin/perl
 
-use v5.32;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+use Sys::Binmode;
 
 $, = ' ';
 
-sub string_partitions
-{
-   my $string = shift;
+sub string_partitions ($string) {
    my @partitions;
    my $size = length($string);
    if ( 0 == $size )
@@ -24,7 +27,7 @@ sub string_partitions
          for (@partials) {unshift @$_, $first;}
          push @partitions, @partials;
       }
-      
+
    }
    return @partitions;
 }

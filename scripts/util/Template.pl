@@ -67,10 +67,10 @@ use v5.36;
 use strict;
 use warnings;
 use utf8;
-use warnings FATAL => "utf8";
+use warnings FATAL => 'utf8';
 use Sys::Binmode;
-use Time::HiRes 'time';
 
+use Time::HiRes 'time';
 use charnames qw( :full :short );
 use Unicode::Normalize qw( NFD NFC );
 use Unicode::Collate;
@@ -102,13 +102,14 @@ sub help    ; # Print help and exit.
 my $db        = 0            ; # Debug?                      bool       Don't debug.
 my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
-my $RegExp    = qr/^.+$/o    ; # Regular Expression.         regexp     Process all file names.
+my $RegExp    = qr/^.+$/o    ; # Regular expression.         regexp     Process all file names.
 my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Process all file types.
 my $Predicate = 1            ; # Boolean predicate.          bool       Means whatever you want it to.
 
 # Counters:
 my $direcount = 0 ; # Count of directories processed by curdire().
-my $filecount = 0 ; # Count of dir entries processed by curfile().
+my $filecount = 0 ; # Count of files found which match file-name regexp.
+my $findcount = 0 ; # Count of files found which also match file-type predicate.
 
 # Accumulations of counters from RH::Dir::GetFiles():
 my $totfcount = 0 ; # Count of all directory entries matching regexp & target.
@@ -131,22 +132,23 @@ my $unkncount = 0 ; # Count of all unknown files.
 
 { # begin main
    my $t0 = time;
+   my $pname = get_name_from_path($0);
    argv;
    if ( $Verbose >= 1 ) {
       say STDERR '';
-      say STDERR "Now entering program \"" . get_name_from_path($0) . "\".";
-      say STDERR "Verbose   = $Verbose";
-      say STDERR "Recurse   = $Recurse";
-      say STDERR "RegExp    = $RegExp";
-      say STDERR "Target    = $Target";
-      say STDERR "Predicate = $Predicate";
+      say STDERR "Now entering program \"$pname\". ";
+      say STDERR "Verbose   = $Verbose             ";
+      say STDERR "Recurse   = $Recurse             ";
+      say STDERR "RegExp    = $RegExp              ";
+      say STDERR "Target    = $Target              ";
+      say STDERR "Predicate = $Predicate           ";
    }
    $db and exit 555;
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $ms = 1000 * (time - $t0);
    if ( $Verbose >= 1 ) {
-      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.\n", get_name_from_path($0), $ms;
+      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
    }
    exit 0;
 } # end main
@@ -176,7 +178,7 @@ sub argv {
       /^-\pL*b|^--both$/     and $Target  = 'B'    ;
       /^-\pL*a|^--all$/      and $Target  = 'A'    ;
    }
-   if ($db) {say STDERR "opts = (@opts)\nargs = (@args)";}
+   $db and say STDERR "opts = (@opts)\nargs = (@args)";
 
    # Count args:
    my $NA = scalar @args;
@@ -185,9 +187,9 @@ sub argv {
    # my $re; $NA >= 1 and $re = join '|', @args and $RegExp = qr/$re/o;
 
    # Use positional arguments instead?
-   $NA >= 1 and $RegExp = qr/$args[0]/o;                   # Set $RegExp.
-   $NA >= 2 and $Predicate = $args[1];                     # Set $Predicate.
-   $NA >= 3 && !$db and error($NA) and help and exit 666;  # Something evil happened.
+   $NA >= 1 and $RegExp = qr/$args[0]/o;                  # Set $RegExp.
+   $NA >= 2 and $Predicate = $args[1];                    # Set $Predicate.
+   $NA >= 3 && !$db and error($NA) and help and exit 666; # Something evil happened.
 
    # Return success code 1 to caller:
    return 1;
@@ -250,13 +252,13 @@ sub curfile ($file)
 } # end sub curfile
 
 # Print statistics for this program run:
-sub stats
-{
+sub stats {
    if ( $Verbose >= 1 ) {
       say    STDERR '';
       say    STDERR 'Statistics for this directory tree:';
       say    STDERR "Navigated $direcount directories.";
-      say    STDERR "Found $filecount paths matching given target and regexp.";
+      say    STDERR "Found $filecount files matching regexp \"$RegExp\" and target \"$Target\".";
+      say    STDERR "Found $findcount files which also match predicate \"$Predicate\".";
    }
 
    if ( $Verbose >= 2) {
@@ -302,14 +304,15 @@ sub help
    --recurse option is used).
 
    Command lines:
-   program-name.pl -h | --help            (to print help and exit)
-   program-name.pl [options] [arguments]  (to [perform funciton] )
+   program-name.pl -h | --help                       (to print this help and exit)
+   program-name.pl [options] [Arg1] [Arg2] [Arg3]    (to [perform funciton] )
 
    -------------------------------------------------------------------------------
    Description of options:
 
    Option:             Meaning:
    -h or --help        Print help and exit.
+   -e or --debug       Print diagnostics and exit.
    -q or --quiet       Be quiet.                       (DEFAULT)
    -t or --terse       Be terse.
    -v or --verbose     Be verbose.
@@ -320,22 +323,57 @@ sub help
    -b or --both        Target Both.
    -a or --all         Target All.                     (DEFAULT)
 
-   All single-letter options are stackable (eg: "-qlf").
-   All options other than those shown above are ignored.
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, use -vr to verbosely and recursively process items.
+
+   If multiple conflicting separate options are given, later overrides earlier.
+
+   If multiple conflicting single-letter options are piled after a single colon,
+   the result is determined by this descending order of precedence: heabdfrlvtq.
+
+   All options not listed above are ignored.
 
    -------------------------------------------------------------------------------
    Description of arguments:
 
-   In addition to options, this program can take one optional argument which, if
-   present, must be a Perl-Compliant Regular Expression specifying which items to
-   process. To specify multiple patterns, use the | alternation operator.
-   To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to search for items with names containing "cat",
-   "dog", or "horse", title-cased or not, you could use this regexp:
-   '(?i:c)at|(?i:d)og|(?i:h)orse'
+   In addition to options, this program can take 1 or 2 optional arguments.
+
+   Arg1 (OPTIONAL), if present, must be a Perl-Compliant Regular Expression
+   specifying which file names to process. To specify multiple patterns, use the
+   | alternation operator. To apply pattern modifier letters, use an Extended
+   RegExp Sequence. For example, if you want to process items with names
+   containing "cat", "dog", or "horse", title-cased or not, you could use this
+   regexp: '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
+
+   Arg2 (OPTIONAL), if present, must be a boolean expression using Perl
+   file-test operators. The expression must be enclosed in parentheses (else
+   this program will confuse your file-test operators for options), and then
+   enclosed in single quotes (else the shell won't pass your expression to this
+   program intact). Here are some examples of valid and invalid second arguments:
+
+   '(-d && -l)'  # VALID:   Finds symbolic links to directories
+   '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
+   '(-b)'        # VALID:   Finds block special files
+   '(-c)'        # VALID:   Finds character special files
+   '(-S || -p)'  # VALID:   Finds sockets and pipes.  (S must be CAPITAL S   )
+    '-d && -l'   # INVALID: missing parentheses       (confuses program      )
+    (-d && -l)   # INVALID: missing quotes            (confuses shell        )
+     -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
+
+   (Exception: Technically, you can use an integer as a boolean, and it doesn't
+   need quotes or parentheses; but if you use an integer, any non-zero integer
+   will process all paths and 0 will process no paths, so this isn't very useful.)
+
+   Arguments and options may be freely mixed, but the arguments must appear in
+   the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them
+   backwards, they won't do what you want, as most predicates aren't valid regexps
+   and vice-versa.
+
+   If the number of arguments is not 0, 1, or 2, this program will print an
+   error message and abort.
 
    Happy item processing!
    Cheers,
