@@ -1,25 +1,15 @@
 #! /bin/perl -CSDA
 
-# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
-# set-extenstions.pl
-# Sets file name extensions on files, based on File::Type and scrutiny of file contents.
-#
+# get.pl
+# Gets file name extensions on files, based on File::Type and on scrutiny of file contents.
+# Written by Robbie Hatley.
 # Edit history:
-# Mon May 04, 2015: Wrote first draft.
-# Wed May 13, 2015: Updated and changed Help to "Here Document" format.
-# Fri Jul 17, 2015: Upgraded for utf8.
-# Sun Feb 07, 2015: Made minor improvements.
-# Sat Apr 16, 2016: Now using -CSDA.
-# Tue Dec 19, 2017: Adjusted formatting, comments, err_msg, help_msg.
-# Sun Jan 03, 2021: Edited.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
-#                   "Sys::Binmode".
-# Sat Aug 12, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.38". Got rid of
-#                   "common::sense" (antiquated). Got rid of all prototypes. Now using signatures.
+# Sat Aug 12, 2023: Wrote it. (STUBB!!!)
 ##############################################################################################################
 
 use v5.38;

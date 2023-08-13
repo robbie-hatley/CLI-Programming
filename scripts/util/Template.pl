@@ -1,6 +1,6 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
@@ -53,6 +53,7 @@
 #                   Got rid of "--target=xxxx" options in favor of just "--xxxx".
 # Sat Aug 05, 2023: Command-line item "--" now means "all further items are arguments, not options".
 # Sun Aug 06, 2023: Improvements to argv, error, and help. Added $Predicate.
+# Sat Aug 12, 2023: Fixed wrong width in colophon.
 ##############################################################################################################
 
 ##############################################################################################################
@@ -132,8 +133,8 @@ my $unkncount = 0 ; # Count of all unknown files.
 
 { # begin main
    my $t0 = time;
-   my $pname = get_name_from_path($0);
    argv;
+   my $pname = get_name_from_path($0);
    if ( $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\". ";
@@ -284,8 +285,7 @@ sub stats {
 } # end sub stats
 
 # Handle errors:
-sub error ($err_msg)
-{
+sub error ($err_msg) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
    Error: you typed $err_msg arguments, but this program takes at most

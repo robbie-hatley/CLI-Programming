@@ -2031,54 +2031,56 @@ sub is_large_image :prototype($) {
 } # end sub is_large_image
 
 sub get_suffix_from_type :prototype($) ($type) {
-   !defined $type and return '.unk'; # $type is undefined
-   $type = lc $type;
-   my $x = '(x(-|.))'; # unregistered?
-   for ($type) {
-      /^video\/$x?msvideo$/                                   and return '.avi'  ;
-      /^image\/$x?bmp$/                                       and return '.bmp'  ;
-      /^application\/$x?freearc$/                             and return '.arc'  ;
-      /^text\/$x?css$/                                        and return '.css'  ;
-      /^text\/$x?csv$/                                        and return '.csv'  ;
-      /^application\/$x?msword$/                              and return '.doc'  ;
-      /^application\/$x?epub+zip$/                            and return '.epub' ;
-      /^image\/$x?gif$/                                       and return '.gif'  ;
-      /^text\/$x?html$/                                       and return '.html' ;
-      /^image\/$x?vnd.microsoft.icon$/                        and return '.ico'  ;
-      /^application\/$x?java-archive$/                        and return '.jar'  ;
-      /^image\/$x?jpeg$/                                      and return '.jpg'  ;
-      /^text\/$x?javascript$/                                 and return '.js'   ;
-      /^application\/$x?json$/                                and return '.json' ;
-      /^audio\/$x?midi$/                                      and return '.mid'  ;
-      /^audio\/$x?mpeg$/                                      and return '.mp3'  ;
-      /^video\/$x?mpeg$/                                      and return '.mpg'  ;
-      /^video\/$x?mp4$/                                       and return '.mp4'  ;
-      /^application\/$x?vnd.oasis.opendocument.presentation$/ and return '.odp'  ;
-      /^application\/$x?vnd.oasis.opendocument.spreadsheet$/  and return '.ods'  ;
-      /^application\/$x?vnd.oasis.opendocument.text$/         and return '.odt'  ;
-      /^audio\/$x?ogg$/                                       and return '.ogg'  ;
-      /^font\/$x?otf$/                                        and return '.otf'  ;
-      /^image\/$x?png$/                                       and return '.png'  ;
-      /^application\/$x?pdf$/                                 and return '.pdf'  ;
-      /^application\/$x?httpd-php$/                           and return '.php'  ;
-      /^application\/$x?vnd.ms-powerpoint$/                   and return '.ppt'  ;
-      /^application\/$x?vnd.rar$/                             and return '.rar'  ;
-      /^application\/$x?rtf$/                                 and return '.rtf'  ;
-      /^application\/$x?sh$/                                  and return '.sh'   ;
-      /^image\/$x?svg+xml$/                                   and return '.svg'  ;
-      /^application\/$x?tar$/                                 and return '.tar'  ;
-      /^image\/$x?tiff$/                                      and return '.tiff' ;
-      /^font\/$x?ttf$/                                        and return '.ttf'  ;
-      /^text\/$x?plain$/                                      and return '.txt'  ;
-      /^audio\/$x?wav$/                                       and return '.wav'  ;
-      /^audio\/$x?webm$/                                      and return '.weba' ;
-      /^video\/$x?webm$/                                      and return '.webm' ;
-      /^image\/$x?webp$/                                      and return '.webp' ;
-      /^application\/$x?vnd.ms-excel$/                        and return '.xls'  ;
-      /^text\/$x?xml$/                                        and return '.xml'  ;
-      /^application\/$x?vnd.mozilla.xul+xml$/                 and return '.xul'  ;
-      /^application\/$x?zip$/                                 and return '.zip'  ;
-      /^application\/$x?7z-compressed$/                       and return '.7z'   ;
+   !defined $type and return '.unk';       # If $type is undefined, use extension ".unk".
+   $type = lc $type;                       # Lower-case the type.
+   $type =~ s%/x(-|.)%/%;                  # Get rid of "unregistered "markers ("x-" and variants).
+   $type =~ s%\+\pL+$%%;                   # Get rid of alternate type interpretations (eg, xml for svg).
+   for ($type) {                           # Match normalized type against known types and choose extension:
+      m%^video/msvideo$%                                   and return '.avi'  ;
+      m%^image/bmp$%                                       and return '.bmp'  ;
+      m%^application/freearc$%                             and return '.arc'  ;
+      m%^text/css$%                                        and return '.css'  ;
+      m%^text/csv$%                                        and return '.csv'  ;
+      m%^application/msword$%                              and return '.doc'  ;
+      m%^application/epub$%                                and return '.epub' ; # Also epub+zip
+      m%^image/gif$%                                       and return '.gif'  ;
+      m%^application/gzip$%                                and return '.gzip' ;
+      m%^text/html$%                                       and return '.html' ;
+      m%^image/vnd.microsoft.icon$%                        and return '.ico'  ;
+      m%^application/java-archive$%                        and return '.jar'  ;
+      m%^image/jpeg$%                                      and return '.jpg'  ;
+      m%^text/javascript$%                                 and return '.js'   ;
+      m%^application/json$%                                and return '.json' ;
+      m%^audio/midi$%                                      and return '.mid'  ;
+      m%^audio/mp3$%                                       and return '.mp3'  ;
+      m%^video/mp4$%                                       and return '.mp4'  ;
+      m%^video/mpeg$%                                      and return '.mpg'  ;
+      m%^application/vnd.oasis.opendocument.presentation$% and return '.odp'  ;
+      m%^application/vnd.oasis.opendocument.spreadsheet$%  and return '.ods'  ;
+      m%^application/vnd.oasis.opendocument.text$%         and return '.odt'  ;
+      m%^audio/ogg$%                                       and return '.ogg'  ;
+      m%^font/otf$%                                        and return '.otf'  ;
+      m%^image/png$%                                       and return '.png'  ;
+      m%^application/pdf$%                                 and return '.pdf'  ;
+      m%^application/httpd-php$%                           and return '.php'  ;
+      m%^application/vnd.ms-powerpoint$%                   and return '.ppt'  ;
+      m%^application/vnd.rar$%                             and return '.rar'  ;
+      m%^application/rtf$%                                 and return '.rtf'  ;
+      m%^application/sh$%                                  and return '.sh'   ;
+      m%^image/svg$%                                       and return '.svg'  ; # Also svg+xml
+      m%^application/tar$%                                 and return '.tar'  ;
+      m%^image/tiff$%                                      and return '.tiff' ;
+      m%^font/ttf$%                                        and return '.ttf'  ;
+      m%^text/plain$%                                      and return '.txt'  ;
+      m%^audio/wav$%                                       and return '.wav'  ;
+      m%^audio/webm$%                                      and return '.weba' ;
+      m%^video/webm$%                                      and return '.webm' ;
+      m%^image/webp$%                                      and return '.webp' ;
+      m%^application/vnd.ms-excel$%                        and return '.xls'  ;
+      m%^text/xml$%                                        and return '.xml'  ;
+      m%^application/vnd.mozilla.xul$%                     and return '.xul'  ; # Also zul+xml
+      m%^application/zip$%                                 and return '.zip'  ;
+      m%^application/7z-compressed$%                       and return '.7z'   ;
    }
    return '.unk'; # $type is unknown
 } # end sub get_suffix_from_type ($)
