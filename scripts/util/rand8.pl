@@ -13,10 +13,12 @@
 # Edit History:
 # Wed Oct 28, 2020: Wrote it.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Mon Aug 14, 2023: Upgraded from "v5.32" to "v5.38". Got ride of "common::sense".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
+use strict;
+use warnings;
 use Sys::Binmode;
 
 use RH::Util;

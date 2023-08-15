@@ -68,6 +68,9 @@
 #                   prototype, both in all subroutine predeclarations AND all subroutine definitions.
 #                   Converted bracing to C-style (no left braces on their own lines).
 # Thu Aug 09, 2023: Added *.mp4 type, and set "$type = lc $type".
+# Sun Aug 12, 2023: Re-enabled "use Filesys::Type;".
+# Mon Aug 14, 2023: Morphed "get_suffix_from_type" into "get_correct_suffix".
+# Tue Aug 15, 2023: Re-DIS-abled "use Filesys::Type;"; it's too slow and buggy.
 ##############################################################################################################
 
 # ======= PACKAGE: ===========================================================================================
@@ -95,14 +98,14 @@ use open         OUT => ':encoding(UTF-8)';
 use parent 'Exporter';
 use POSIX 'floor', 'ceil', 'strftime';
 use Cwd;
-use Digest::MD5 qw( md5_hex );
-use Digest::SHA qw( sha1_hex sha224_hex sha256_hex sha384_hex sha512_hex );
-use Encode qw( :DEFAULT encode decode :fallbacks :fallback_all );
+use Digest::MD5   qw( md5_hex );
+use Digest::SHA   qw( sha1_hex sha224_hex sha256_hex sha384_hex sha512_hex );
+use Encode        qw( :DEFAULT encode decode :fallbacks :fallback_all );
 use File::Type;
 use File::Copy;
 use Image::Size;
-use List::Util qw( sum0 );
-use Time::HiRes qw( time );
+use List::Util    qw( sum0 );
+use Time::HiRes   qw( time );
 #use Filesys::Type qw( fstype );
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
@@ -153,7 +156,7 @@ sub annotate_file_name     :prototype($$)   ; # Annotate a file name (with a not
 sub find_avail_enum_name   :prototype($;$)  ; # Find available enumerated file name for given name root and directory.
 sub find_avail_rand_name   :prototype($$$)  ; # Find available   random   file name for given dir & suffix.
 sub is_large_image         :prototype($)    ; # Does a file contain a large image?
-sub get_suffix_from_type   :prototype($)    ; # Return file-name suffix for a given file type.
+sub get_correct_suffix     :prototype($)    ; # Return correct file-name suffix for file at given path.
 sub cyg2win                :prototype($)    ; # Convert Cygwin  path to Windows path.
 sub win2cyg                :prototype($)    ; # Convert Windows path to Cygwin  path.
 sub hash                   :prototype($$;$) ; # Return hash or hash-based file-name of a file.
@@ -181,7 +184,7 @@ our @EXPORT =
       get_prefix              get_suffix              get_dir_from_path
       get_name_from_path      path                    denumerate_file_name
       enumerate_file_name     annotate_file_name      find_avail_enum_name
-      find_avail_rand_name    is_large_image          get_suffix_from_type
+      find_avail_rand_name    is_large_image          get_correct_suffix
       cyg2win                 win2cyg                 hash
       shorten_sl_names        is_data_file            is_valid_qual_dir
    );
@@ -643,7 +646,9 @@ sub RecurseDirs :prototype(&) {
    # If we FAILED to get current working directory, something is very wrong!!!
    if ( ! defined $curdir ){die "Fatal error in RecurseDirs: Can't get current directory!\n$!\n"}
 
-   #my $fst = fstype($curdir);
+   # # Announce file-system type:
+   # my $fst = fstype($curdir);
+   # if ( $recursion == 0 ) {say "File-system type: $fst";}
 
    # If $curdir is a critical (or huge) Linux system directory, die:
    if ( 'Linux' eq $ENV{PLATFORM} ) {
@@ -1544,10 +1549,11 @@ sub random_name :prototype() {
    return $name;
 }
 
-# Is a referred-to text encoded in ASCII?
-sub is_ascii :prototype($) {
-   my $text = shift;
+# Is a line of text encoded in ASCII?
+sub is_ascii :prototype($) ($text) {
+   my $is_ascii = 1;
    foreach my $ord (map {ord} split //, $text) {
+      if ($db) {say STDERR "In is_ascii(), at top of foreach. \$ord = $ord"}
       next if (  9 == $ord ); # HT
       next if ( 10 == $ord ); # LF
       next if ( 11 == $ord ); # VT
@@ -1555,15 +1561,52 @@ sub is_ascii :prototype($) {
       next if ( 32 == $ord ); # SP
       next if ( $ord >=  33
              && $ord <= 126); # ASCII glyph
-      # If we get to here, all of the above tests failed, which means that
-      # our current character is neither commonly-used ASCII whitespace
-      # nor an ASCII glyphical character, so return 0:
-      return 0;
+      # If we get to here, all of the above tests failed, which means that our current character
+      # is neither commonly-used ASCII whitespace nor an ASCII glyphical character,
+      # so set $is_ascii to 0 and break from loop:
+      $is_ascii = 0;
+      last;
    }
-   # If we get to here, all characters are either ASCII whitespace or
-   # ASCII glyphs, so return 1:
-   return 1;
-} # end sub is_ascii
+   if ($db) {say STDERR "In is_ascii(), about to return. \$is_ascii = $is_ascii"}
+   return $is_ascii;
+} # end sub is_ascii :prototype($) ($text)
+
+# Is a line of text encoded in iso-8859-1?
+sub is_iso_8859_1 :prototype($) ($text) {
+   my $is_iso = 1;
+   foreach my $ord (map {ord} split //, $text) {
+      if ($db) {say STDERR "In is_iso_8859_1(), at top of foreach. \$ord = $ord"}
+      next if (  9 == $ord ); # HT
+      next if ( 10 == $ord ); # LF
+      next if ( 11 == $ord ); # VT
+      next if ( 13 == $ord ); # CR
+      next if ( 32 == $ord ); # SP
+      next if ( $ord >=  33
+             && $ord <= 126); # ASCII glyph
+      next if ( $ord >= 160
+             && $ord <= 255); # iso-8859-1 character
+      # If we get to here, all of the above tests failed, which means that our current character
+      # is neither commonly-used iso-8859-1 whitespace nor an iso-8859-1 glyphical character,
+      # so set $is_iso to 0 and break from loop:
+      $is_iso = 0;
+      last;
+   }
+   if ($db) {say STDERR "In is_iso_8859_1(), about to return. \$is_iso = $is_iso"}
+   return $is_iso;
+} # end sub is_iso_8859_1 :prototype($) ($text)
+
+# Is a line of text transformed to UTF-8?
+sub is_utf8 :prototype($) ($text) {
+   my $is_utf8;
+   if ( eval {decode('UTF-8', $text, DIE_ON_ERR|LEAVE_SRC)} ) {
+      $is_utf8 = 1;
+   }
+   else {
+      $is_utf8 = 0;
+   }
+   if ($db) {say STDERR "In is_utf8(), about to return. \$is_utf8 = $is_utf8"}
+   return $is_utf8;
+}
 
 # ======= SECTION 3, UTF-8 SUBROUTINES: ======================================================================
 
@@ -1849,9 +1892,7 @@ sub get_dir_from_path :prototype($) {
 } # end sub get_dir_from_path
 
 # Return the name part of a file path:
-sub get_name_from_path :prototype($) {
-   my $path = shift;
-
+sub get_name_from_path :prototype($) ($path) {
    # If $path does not contain "/", then consider $path to be an unqualified
    # file name, so return $path:
    if (-1 == rindex($path,'/')) {
@@ -2030,12 +2071,46 @@ sub is_large_image :prototype($) {
    return 1;
 } # end sub is_large_image
 
-sub get_suffix_from_type :prototype($) ($type) {
-   !defined $type and return '.unk';       # If $type is undefined, use extension ".unk".
-   $type = lc $type;                       # Lower-case the type.
-   $type =~ s%/x(-|.)%/%;                  # Get rid of "unregistered "markers ("x-" and variants).
-   $type =~ s%\+\pL+$%%;                   # Get rid of alternate type interpretations (eg, xml for svg).
-   for ($type) {                           # Match normalized type against known types and choose extension:
+# Get the correct suffix for the name of a file at a given path, ignoring the existing suffix (if any) and
+# basing our type determination on the "checktype_filename" method of modules "File::Type" and/or on direct
+# examination of the contents of the file. If we are unable to determine the correct suffix through these
+# methods, then return the existing suffix (if any), or return '.unk' if there is no existing suffix,
+# or return '***ERROR***' if an error occurs (no file, not-data-file, file open/read/close error, perms, etc).
+sub get_correct_suffix :prototype($) ($path) {
+   if ($db) {
+      say STDERR '';
+      say STDERR "In get_correct_suffix(), at top.";
+      say STDERR "\$path = $path";
+   }
+
+   # Return an error code unless $path points to an existing data file:
+   return '***ERROR***' unless is_data_file($path);
+
+   # Try to determine the correct suffix using the checktype_filename() method from module "File::Type":
+   my $name  = get_name_from_path($path);
+   my $suff  = get_suffix($name);
+   my $typer = File::Type->new(); # File-typing functor.
+   my $type  = $typer->checktype_filename($path); # Get media-type of file at $path.
+
+   # If checktype_filename() crashed, either the file is corrupt or we don't have permission to access it;
+   # either way, it's an error:
+   return '***ERROR***' unless defined $type;
+
+   # If we get to here, we've successfully obtained the media type of the file at $path.
+   # Now lets "normalize" that type, converting it to all-lower-case and getting rid of cruft:
+   $type = lc $type;      # Lower-case the type.
+   $type =~ s%/x(-|.)%/%; # Get rid of "unregistered "markers ("x-" and variants).
+   $type =~ s%\+\pL+%%;  # Get rid of alternate type interpretations (eg, xml for svg).
+
+   # Announce type if debugging:
+   if ( $db ) {
+      say STDERR '';
+      say STDERR "In get_correct_suffix(), just got type.";
+      say STDERR "\$type = $type";
+   }
+
+   # Match normalized type against known types and choose extension if possible:
+   for ($type) {
       m%^video/msvideo$%                                   and return '.avi'  ;
       m%^image/bmp$%                                       and return '.bmp'  ;
       m%^application/freearc$%                             and return '.arc'  ;
@@ -2050,6 +2125,7 @@ sub get_suffix_from_type :prototype($) ($type) {
       m%^application/java-archive$%                        and return '.jar'  ;
       m%^image/jpeg$%                                      and return '.jpg'  ;
       m%^text/javascript$%                                 and return '.js'   ;
+      m%^application/javascript$%                          and return '.js'   ;
       m%^application/json$%                                and return '.json' ;
       m%^audio/midi$%                                      and return '.mid'  ;
       m%^audio/mp3$%                                       and return '.mp3'  ;
@@ -2069,21 +2145,76 @@ sub get_suffix_from_type :prototype($) ($type) {
       m%^application/sh$%                                  and return '.sh'   ;
       m%^image/svg$%                                       and return '.svg'  ; # Also svg+xml
       m%^application/tar$%                                 and return '.tar'  ;
+      m%^text/plain$%                                      and return '.txt'  ; # Never actually comes up.
       m%^image/tiff$%                                      and return '.tiff' ;
       m%^font/ttf$%                                        and return '.ttf'  ;
-      m%^text/plain$%                                      and return '.txt'  ;
       m%^audio/wav$%                                       and return '.wav'  ;
       m%^audio/webm$%                                      and return '.weba' ;
       m%^video/webm$%                                      and return '.webm' ;
       m%^image/webp$%                                      and return '.webp' ;
       m%^application/vnd.ms-excel$%                        and return '.xls'  ;
       m%^text/xml$%                                        and return '.xml'  ;
-      m%^application/vnd.mozilla.xul$%                     and return '.xul'  ; # Also zul+xml
+      m%^application/vnd.mozilla.xul$%                     and return '.xul'  ; # Also xul+xml
       m%^application/zip$%                                 and return '.zip'  ;
       m%^application/7z-compressed$%                       and return '.7z'   ;
    }
-   return '.unk'; # $type is unknown
-} # end sub get_suffix_from_type ($)
+
+   # If we get to here, we haven't returned a suffix yet, which means that checktype_filename() from CPAN
+   # module "File::Type" was NOT able to determine the type of this file. So we'll have to use other methods.
+
+   # If this file is at-least 32 bytes in size, let's grab AT-LEAST the first 32 bytes of its contents,
+   # up to a max of 1048576 bytes, and examine the contents for clues as to what kind of file this is,
+   # or if we CAN'T read at least 32 bytes, return "***ERROR***":
+   my $size = -s e $path;
+   my $buffer = '';
+   if ( $size >= 32 ) {
+      my $fh = undef;
+      open($fh, '< :raw', e $path)                    or return '***ERROR***' ; # File can't be opened.
+      read($fh, $buffer, 1048576)                     or return '***ERROR***' ; # File can't be read.
+      close($fh)                                      or return '***ERROR***' ; # File can't be closed.
+      my $bytes = length($buffer);
+      $bytes >= 32                                    or return '***ERROR***' ; # Didn't read 32 bytes.
+
+      if ( $db ) {
+         say STDERR '';
+         say STDERR "In get_correct_suffix(), just loaded \$buffer.";
+         say STDERR "\$size  = $size";
+         say STDERR "\$bytes = $bytes";
+      }
+
+      # Pore over the contents of $buffer and try to glean clues as to what type of file this is:
+      if ( $type eq 'application/octet-stream' ) {
+         'wOFF' eq substr($buffer,0,4)                     and return '.woff' ; # Web Open Font Format
+         is_ascii($buffer)                                 and return '.txt'  ; # ASCII      text file.
+         is_iso_8859_1($buffer)                            and return '.txt'  ; # ISO-8859-1 text file.
+         is_utf8($buffer)                                  and return '.txt'  ; # UTF-8      text file.
+      }
+      "AVI" eq substr($buffer, 8, 3)                       and return '.avi'  ; # AVI (Windows video)
+      pack('C4',195,202,4,193) eq substr($buffer,0,4)      and return '.ccf'  ; # CCF (Chrome Cache File)
+      'fLaC' eq substr($buffer,0,4)                        and return '.flac' ; # fLaC (high-quality sound)
+      'FLV' eq substr($buffer,0,3)                         and return '.flv'  ; # FLV (FLash Video)
+      'GIF' eq substr($buffer,0,3)                         and return '.gif'  ; # GIF (lo-color grphcs; anim)
+      $buffer =~ m%^<!DOCTYPE HTML%                        and return '.html' ; # HTML (markup)
+      '\xFF\xD8\xFF' eq substr($buffer,0,3)                and return '.jpg'  ; # JPG (lossy compression)
+      'ftypmp4' eq substr($buffer,4,7)                     and return '.mp4'  ; # MP4 (good video format)
+      'PAR2' eq substr($buffer,0,4)                        and return '.par2' ; # PAR2 (checksum)
+      'PDF' eq substr($buffer,1,3)                         and return '.pdf'  ; # PDF (Portable Document Fmt.)
+      'PNG' eq substr($buffer,1,3)                         and return '.png'  ; # PNG (Portable Network Grph.)
+      'Rar' eq substr($buffer,0,3)                         and return '.rar'  ; # RAR (compressed archive)
+      'WAVEfmt' eq substr($buffer,8,7)                     and return '.wav'  ; # WAV (lossless sound)
+      pack('C[16]',  48,  38, 178, 117, 142, 102, 207,  17,
+                    166, 217,   0, 170,   0,  98, 206, 108)
+         eq substr($buffer,0,16)                           and return '.wma'  ; # WMA (Windows Media Audio)
+      '\x30\x26\xB2\x75\x8E\x66\xCF\x11'.
+      '\xA6\xD9\x00\xAA\x00\x62\xCE\x6C'
+         eq substr($buffer,0,16)                           and return '.wmv'  ; # WMV (Windows Media Video)
+   }
+
+   # If we get to here, we've failed to definitively determine the correct suffix for-sure, so return the
+   # original suffix, unless it was blank, in which case return '.unk':
+   $suff eq ''                                             and return '.unk'    # File of unknown type.
+                                                            or return $suff   ; # Return original suffix.
+} # end sub get_correct_suffix :prototype($) ($path)
 
 # Convert a fully-qualified Cygwin path to Windows:
 sub cyg2win :prototype($) {
@@ -2108,17 +2239,19 @@ sub win2cyg :prototype($) {
 # Optional argument:
 #    $mode   (Options are: "name" (hash-based file name, eg "9e5a...b071.txt")
 #                       or "hash" (default: just the hash).)
-sub hash :prototype($$;$) {
-   my $path = shift;                                           # Path to source file.
-   my $type = shift;                                           # What type of hash?
-   my $mode = @_ ? shift : 'hash';                             # Return raw hash, or hash-based file name?
-   my $name = get_name_from_path($path);                       # Get name        of source file.
-   my $suff = get_suffix($name);                               # Get suffix      of source file.
-   my $fh;                                                     # File handle (initially undefined).
-   my $hash;                                                   # Hash of file contents
-   my $FileTyper = File::Type->new();                          # File-typing functor.
-   my $FileType  = '';                                         # File type.
+sub hash :prototype($$;$)
+(
+   $path,                                                      # Path to source file.
+   $hash_type,                                                 # What type of hash?
+   $operation_mode = 'hash'                                    # Return raw hash, or hash-based file name?
+)
+{
+   return '***ERROR***' unless is_data_file($path);            # Bail unless file at $path is a data file.
+   my $name = get_name_from_path($path);                       # Get name of source file.
+   my $suff = get_suffix($name);                               # Get suffix of source file.
    local $/ = undef;                                           # Sets input record separator to EOF.
+
+   my $fh;                                                     # File handle (initially undefined).
    open($fh, '< :raw', e($path))                               # Try to open the file for reading;
    or warn "Error in sub \"hash()\" in module \"Dir.pm\":\n".  # if file-open failed for any reason,
            "Couldn't open file \"$path\" for reading.\n"       # warn user
@@ -2130,8 +2263,9 @@ sub hash :prototype($$;$) {
    and return '***ERROR***';                                   # and return '***ERROR***'.
    close($fh);                                                 # Close file.
 
-   # Take different actions depending on which hash type user requested:
-   for ($type) {
+   # Set $hash to the hash type user requested:
+   my $hash;                                                   # Hash of file contents
+   for ($hash_type) {
       if ( /^md5$/ ) {
          $hash = md5_hex($data);                               # Get MD-5 file hash.
       }
@@ -2155,28 +2289,41 @@ sub hash :prototype($$;$) {
       }
    } # end for ($type)
 
-   # Take different actions depending on what mode we're in:
-   for ($mode) {
-      if ( /^hash$/ ) {                                        # If in "hash" mode:
+   # Take different actions depending on what mode-of-operation we're in:
+   for ($operation_mode) {
+      if ( /^hash$/ ) {                                        # If mode-of-operation is "hash":
          return $hash;                                         # Return hash.
       }
-      elsif ( /^name$/ ) {                                     # If in "name" mode:
-         if ('' eq $suff) {                                    # If suffix is blank,
-            $FileType = $FileTyper->checktype_filename($path); # get mime type of original file,
-            if ($db) {
-               say STDERR "In hash(). Type = $FileType";
-            }
-            $suff = get_suffix_from_type($FileType);           # then get suffix from type;
-         }                                                     # else leave suffix as it was.
+      elsif ( /^name$/ ) {                                     # If mode-of-operation is "name":
+         if
+         (
+               ''     eq $suff                                 # If suffix is blank,
+            || '.unk' eq $suff                                 # or suffix is '.unk' (unknown type),
+            || '.xyz' eq $suff                                 # or suffix is '.xyz' (type placeholder),
+         ) {
+            $suff = get_correct_suffix($path);                 # then try to get correct suffix for file,
+         }
+         else {
+            ;                                                  # else leave suffix as it was.
+         }
          return $hash . $suff;                                 # Return hash with suffix tacked on.
       }
-      else {                                                   # If $mode is invalid:
+      else {                                                   # If $operation_mode is invalid:
          return '***ERROR***';                                 # Return "***ERROR***".
       }
    } # end for ($mode)
-   say "And he tapped with his whip on the shutters,";         # We can't possibly get here. But if we do,
-   say "but all was locked and barred.";                       # then print some cryptic shit
-   return 'We\'re in the fucking Twilight Zone, baby.';        # and return suitable error message.
+   print STDERR                                                # Here, we can't possibly arrive.
+   "Over the cobbles he clattered and clashed\n".              # But if we somehow do,
+   "in the dark inn-yard.\n".                                  # then we should studiously strive
+   "He tapped with his whip on the shutters,\n".               # some cryptic words to spew.
+   "but all was locked and barred.\n".                         # Love is not a victory march!
+   "He whistled a tune to the window,\n".                      # It is a cold and broken hallelujah!
+   "and who should be waiting there\n".                        # This is a dangerous meeting;
+   "But the landlord’s black-eyed daughter,\n".                # danger of death it brings.
+   "    Bess, the landlord’s daughter,\n".                     # But love is intoxicating (though fleeting);
+   "Plaiting a dark red love-knot\n".                          # so joyfully his heart sings.
+   "into her long black hair.\n";                              # A dimension not of sight and sound,
+   return 'We\'re in the Twilight Zone now, baby.';            # but of pure imagination.
 } # end sub hash($$;$)
 
 # Shorten directory and file names for Spotlight:
@@ -2211,24 +2358,23 @@ sub shorten_sl_names :prototype($$$$) {
 } # end sub shorten_sl_names ($$$$)
 
 # Return 1 if-and-only-if a given string is a path to a data file (a regular file that is not a link or dir).
-sub is_data_file :prototype($) {
-   my $path = shift;
+sub is_data_file :prototype($) ($path) {
    my $name = get_name_from_path($path);
    return 0 if $name eq '.';
    return 0 if $name eq '..';
    return 0 if $name =~ m/^\.sync.ffs_db/;
-   return 0 if $name =~ m/^\.directory/;
+   return 0 if $name =~ m/^\.directory$/;
    return 0 if $name =~ m/^desktop.*\.ini$/i;
    return 0 if $name =~ m/^thumbs.*\.db$/i;
    return 0 if $name =~ m/^pspbrwse.*\.jbf$/i;
    return 0 if $name =~ m/ID-Token/i;
-   return 0 if ! -e e $path;
+   return 0 unless -e e $path;
    lstat e $path;
-   return 0 if ! -f _ ;
-   return 0 if   -l _ ;
-   return 0 if   -d _ ;
+   return 0 unless -f _ ;
+   return 0 if     -l _ ;
+   return 0 if     -d _ ;
    return 1;
-} # end sub is_data_file ($)
+} # end sub is_data_file :prototype($) ($path)
 
 # Return 1 if-and-only-if a given string is a fully-qualified path to a valid directory.
 sub is_valid_qual_dir :prototype($) {

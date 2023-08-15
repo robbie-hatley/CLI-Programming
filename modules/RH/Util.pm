@@ -38,6 +38,7 @@ use open         OUT => ':encoding(UTF-8)';
 
 # CPAN modules:
 use Sys::Binmode;
+use Encode qw( :DEFAULT encode decode :fallbacks :fallback_all );
 use parent 'Exporter';
 use POSIX 'floor', 'ceil', 'strftime';
 use Term::ReadKey 'ReadMode', 'ReadKey';
@@ -117,7 +118,7 @@ sub get_character ()
 } # end sub get_character
 
 
-# Is a referred-to text encoded in ASCII?
+# Is a line of text encoded in ASCII?
 sub is_ascii ($)
 {
    my $text = shift;
@@ -141,9 +142,8 @@ sub is_ascii ($)
 } # end sub is_ascii
 
 
-# Is a referred-to array of text lines encoded in iso-8859-1?
-sub is_iso_8859_1 ($)
-{
+# Is a line of text encoded in iso-8859-1?
+sub is_iso_8859_1 ($) {
    my $text = shift;
    foreach my $ord (map {ord} split //, $text)
    {
@@ -167,6 +167,16 @@ sub is_iso_8859_1 ($)
    return 1;
 } # end sub is_iso_859_1
 
+# Is a line of text transformed to UTF-8?
+sub is_utf8 ($) {
+   my $text = shift;
+   if ( eval {decode('UTF-8', $text, DIE_ON_ERR|LEAVE_SRC)} ) {
+      return 1;
+   }
+   else {
+      return 0;
+   }
+}
 
 # Title Case:
 sub tc

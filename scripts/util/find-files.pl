@@ -57,6 +57,7 @@
 #                   Corrected error in help in which the order of Arg1 and Arg2 was presented backwards.
 # Thu Aug 03, 2023: Improved help. Re-instated "$Target". Re-instated "--local" and "--quiet".
 #                   Now using "$pname" for program name to clean-up main body of program.
+# Tue Aug 15, 2023: Disabled "Filesys::Type": slow, buggy, and unnecessary.
 ##############################################################################################################
 
 use v5.36;
@@ -66,6 +67,7 @@ use utf8;
 
 use Sys::Binmode;
 use Cwd;
+#use Filesys::Type 'fstype';
 use Time::HiRes 'time';
 
 use RH::Util;
@@ -168,8 +170,14 @@ sub curdire {
    # Get current working directory:
    my $curdir = d getcwd;
 
+#  # Get file-system type:
+#  my $fst = fstype("'$curdir'");
+
    # Announce $curdir if being verbose:
-   say STDERR "\nDir # $direcount: $curdir\n" if $Verbose;
+   if ( $Verbose >= 1 ) {
+      say STDERR "\nDir # $direcount: $curdir";
+#     say STDERR "File-system type: $fst\n";
+   }
 
    # Get ref to array of file-info packets for all files in current directory matching 'A' and $RegExp:
    my $curdirfiles = GetFiles($curdir, $Target, $RegExp);

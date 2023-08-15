@@ -299,6 +299,9 @@ sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to "[insert Program Name here]". This program does blah blah blah
    to all files in the current directory (and all subdirectories if a -r or
    --recurse option is used).
