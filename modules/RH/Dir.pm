@@ -22,7 +22,7 @@
 #                   also added some comments; also v5.30.3.
 # Tue Sep 15, 2020: Clarified comments in GetFiles about the return values from glob_utf8(). Also replaced
 #                   "copy" with "cp" in clone_file() as copy was smashing timestamps.
-# Tue Oct 27, 2020: Added subs random_name and find_available_random.
+# Tue Oct 27, 2020: Added subs eight_rand_lc_letters and find_available_random.
 # Thu Dec 31, 2020: Increased width of this file to 110 characters. Got rid of subs "copy_wide_jpgs",
 #                   "directory_exists", "aggregate_file", "clone_file", and "merge_file". Added subs
 #                   "copy_large_images_verbatim", "copy_large_images_sha1", "is_large_image", "copy_file",
@@ -122,8 +122,10 @@ sub move_files             :prototype($$;@) ; # Move files  from a source direct
 
 # Section 2, Private subroutines (NOT exported):
 sub rand_int               :prototype($$)   ; # Get a random integer in closed interval [arg1, arg2].
-sub random_name            :prototype()     ; # Get a random string of 8 lower-case English letters.
-sub is_ascii               :prototype($)    ; # Is a given text string pure ASCII?
+sub is_ascii               :prototype($)    ; # Is a given text string encoded in ASCII?
+sub is_iso_8859_1          :prototype($)    ; # Is a given text string encoded in ASCII?
+sub is_utf8                :prototype($)    ; # Is a given text string encoded in ASCII?
+sub eight_rand_lc_letters  :prototype()     ; # Get a random string of 8 lower-case English letters.
 
 # Section 3, UTF-8-related subroutines:
 sub d                                       ; # utf8-decode.
@@ -1517,10 +1519,7 @@ sub move_files :prototype($$;@) {
 # This subroutine insures that the probability of the two end points (m and n)
 # to occur is the same as the probability of any of the intermediate integers
 # to occur.
-sub rand_int :prototype($$) {
-   my $min = shift;
-   my $max = shift;
-
+sub rand_int :prototype($$) ($min, $max) {
    $min =~ m/^-?\d+$/
    or die "Error in rand_int: first argument not integer.\n";
 
@@ -1538,16 +1537,6 @@ sub rand_int :prototype($$) {
 
    return floor($min+rand($max-$min+1));
 } # end sub rand_int
-
-# Return a string of 8 random lower-case English letters:
-sub random_name :prototype() {
-   my $chrs = 'abcdefghijklmnopqrstuvwxyz';
-   my $name = "";
-   for ( my $i = 1 ; $i <= 8 ; ++$i ) {
-      $name = $name . substr($chrs, rand_int(0, 25),1);
-   }
-   return $name;
-}
 
 # Is a line of text encoded in ASCII?
 sub is_ascii :prototype($) ($text) {
@@ -1595,7 +1584,7 @@ sub is_iso_8859_1 :prototype($) ($text) {
    return $is_iso;
 } # end sub is_iso_8859_1 :prototype($) ($text)
 
-# Is a line of text transformed to UTF-8?
+# Is a line of text encoded in Unicode then transformed to UTF-8?
 sub is_utf8 :prototype($) ($text) {
    my $is_utf8;
    if ( eval {decode('UTF-8', $text, DIE_ON_ERR|LEAVE_SRC)} ) {
@@ -1606,6 +1595,11 @@ sub is_utf8 :prototype($) ($text) {
    }
    if ($db) {say STDERR "In is_utf8(), about to return. \$is_utf8 = $is_utf8"}
    return $is_utf8;
+}
+
+# Return a string of 8 random lower-case English letters:
+sub eight_rand_lc_letters :prototype() {
+   return join '', map {chr(rand_int(97, 122))} (1..8);
 }
 
 # ======= SECTION 3, UTF-8 SUBROUTINES: ======================================================================
@@ -2021,7 +2015,7 @@ sub find_avail_rand_name :prototype($$$) {
    # Make up to 100 attempts to find a random file name with given prefix
    # and suffix that doesn't already exist in given directory:
    for ( $attempts = 0, $name_success = 0 ; $attempts < 100 ; ++$attempts ) {
-      $random = random_name();
+      $random = eight_rand_lc_letters;
       $new_name   = $prefix . $random . $suffix;
       if ( ! -e e path($dir, $new_name) ) {
          $name_success = 1;

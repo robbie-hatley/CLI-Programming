@@ -30,5 +30,5 @@ $num = $ARGV[0] if scalar(@ARGV) > 0
                 && $ARGV[0] <= 1000;
 for (my $i = 0; $i < $num; ++$i)
 {
-   say(random_name());
+   say(eight_rand_lc_letters());
 }
