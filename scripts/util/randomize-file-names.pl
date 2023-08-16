@@ -194,30 +194,27 @@ sub curfile ($file) {
    say "\$prelen = $prelen" if $db;
    say "\$suffix = $suffix" if $db;
 
-   # Skip certain files:
-      $name =~ m/^desktop.*\.ini$/i  || $name =~ m/^thumbs.*\.db$/i
-   || $name =~ m/^pspbrwse.*\.jbf$/i || $name =~ m/ID-Token/i
+   # Skip desktop, thumbs, pspb, and id files:
+   is_data_file($path) && $name =~ m/^desktop.*\.ini$|^thumbs.*\.db$|^pspbrwse.*\.jbf$|id-token/i
    and ++$skipcount and say "Skipped file \"$name\" (dsktp, thumbs, pspb, or ID.)" and return 1;
 
-   # Skip this file rename if the "Nine" feature is turned on and
-   # the prefix length is < 9:
+   # Skip this file if the "Nine" feature is turned on and the prefix length is < 9:
    $Nine && $prelen < 9
    and ++$ninecount and say "Skipped file \"$name\" because prefix length < 9." and return 1;
 
-   # Skip this file rename if in "Spotlight" mode and file doesn't match sl:
+   # Skip this file if in "Spotlight" mode and file doesn't match sl:
    $Spotlight && !$Firefox && $prefix !~ m/[0-9a-f]{64}/
    and ++$nomacount and say "Skipped file \"$name\" because not Spotlight." and return 1;
 
-   # Skip this file rename if in "Firefox" mode and file doen't match ff:
+   # Skip this file if in "Firefox" mode and file doen't match ff:
    $Firefox && !$Spotlight && $prefix !~ m/[0-9A-F]{40}/
    and ++$nomacount and say "Skipped file \"$name\" because not Firefox." and return 1;
 
-   # Skip this file rename if in "Spotfire" mode and file doesn't match sl or ff:
+   # Skip this file if in "Spotfire" mode and file doesn't match sl or ff:
    $Spotlight && $Firefox && $prefix !~ m/[0-9a-f]{64}/ && $prefix !~ m/[0-9A-F]{40}/
    and ++$nomacount and say "Skipped file \"$name\" because not Spotlight or Firefox." and return 1;
 
-   # Abort this file rename if in  "NoReRan" mode and
-   # file already has randomized name:
+   # Skip this file if in  "NoReRan" mode and file name is already randomized:
    $NoReRan && $prefix =~ m/\p{Ll}{8}/
    and ++$norecount and say "Skipped file \"$name\" because already random." and return 1;
 
