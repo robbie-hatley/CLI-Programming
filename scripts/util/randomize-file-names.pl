@@ -60,7 +60,7 @@ sub help    ; # Print help and exit.
 # Settings:                   Meaning of setting:          Range:    Meaning of default:
    $"         = ', '      ; # Quoted-array formatting.     string    comma space
 my $db        = 0         ; # Debug?                       bool      Don't debug.
-my $Verbose   = 1         ; # Quiet, Terse, or Verbose?    0,1,2     Print dirs and some stats.
+my $Verbose   = 0         ; # Quiet or Verbose?            0,1       Be quiet.
 my $Recurse   = 0         ; # Recurse subdirectories?      bool      Don't recurse.
 my $Target    = 'F'       ; # Type of files to target      FDBA      Process regular files only.
 my $Yes       = 0         ; # Proceed without prompting?   bool      Don't skip prompting.
@@ -80,6 +80,7 @@ my $skipcount = 0; # Count of files skipped because they're ini, db, jbf.
 my $ninecount = 0; # Count of files skipped because prefix length < 9.
 my $nomacount = 0; # Count of files skipped because NOt MAtching sl or ff.
 my $norecount = 0; # Count of files skipped because their names are already randomized.
+my $emulcount = 0; # Count of file renames emulated.
 my $renacount = 0; # Count of files renamed.
 my $failcount = 0; # Count of failed attempts to rename files.
 
@@ -88,14 +89,17 @@ my $failcount = 0; # Count of failed attempts to rename files.
 { # begin main
    my $t0 = time;
    argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\".";
-   say "Recurse    = $Recurse  ";
-   say "Target     = $Target   ";
-   say "Yes        = $Yes      ";
-   say "Emulate    = $Emulate  ";
-   say "Nine       = $Nine     ";
-   say "Spotlight  = $Spotlight";
-   say "Regexp     = $Regexp   ";
+   my $pname = get_name_from_path($0)
+   if ( $Verbose >= 1 ) {
+      say STDERR "\nNow entering program \"$pname\".";
+      say STDERR "Recurse    = $Recurse  ";
+      say STDERR "Target     = $Target   ";
+      say STDERR "Yes        = $Yes      ";
+      say STDERR "Emulate    = $Emulate  ";
+      say STDERR "Nine       = $Nine     ";
+      say STDERR "Spotlight  = $Spotlight";
+      say STDERR "Regexp     = $Regexp   ";
+   }
    unless ($Yes)
    {
       say 'WARNING: THIS PROGRAM RENAMES ALL TARGETED FILES IN THE CURRENT DIRECTORY';
@@ -111,8 +115,10 @@ my $failcount = 0; # Count of failed attempts to rename files.
    }
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
-   my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   my $ms = 1000 * (time - $t0);
+   if ( $Verbose >= 1 ) {
+      printf STDERR "\nNow exiting program \"$pname\". Execution time was %.3fms.\n", $ms;
+   }
    exit 0;
 } # end main
 
@@ -131,8 +137,7 @@ sub argv {
       /^-\pL*h|^--help$/      and help and exit 777   ;
       /^-\pL*e|^--debug$/     and $db        =  1     ;
       /^-\pL*q|^--quiet$/     and $Verbose   =  0     ;
-      /^-\pL*t|^--terse$/     and $Verbose   =  1     ;
-      /^-\pL*v|^--verbose$/   and $Verbose   =  2     ;
+      /^-\pL*v|^--verbose$/   and $Verbose   =  1     ;
       /^-\pL*l|^--local$/     and $Recurse   =  0     ;
       /^-\pL*r|^--recurse$/   and $Recurse   =  1     ;
       /^-\pL*f|^--files$/     and $Target    = 'F'    ;
@@ -226,7 +231,7 @@ sub curfile ($file) {
    and warn("skipping to next file.\n") and return 0;
 
    # If debugging or simulating, just go through the motions then return 1:
-   $db || $Emulate and say "Simulated Rename: $name => $new_name" and return 1;
+   $db || $Emulate and ++$emulcount and say "Simulated Rename: $name => $new_name" and return 1;
 
    # Otherwise, attempt rename:
    rename_file($name, $new_name)
@@ -235,18 +240,17 @@ sub curfile ($file) {
 } # end sub curfile ($file)
 
 sub stats {
-   print("\nStatistics for program \"randomize-file-names.pl\":\n");
-   if ($Emulate)
-   {
-      say('Note: in simulation mode; no renames were actually attempted.');
+   if ( $Verbose >= 1 ) {
+      print("\nStatistics for program \"randomize-file-names.pl\":\n");
+      say "Navigated $direcount directories.";
+      say "Found $filecount files matching target \"$Target\" and regexp \"$Regexp\".";
+      say "Skipped $skipcount files because they're dsktp, thumbs, pspb, or ID.";
+      $Nine and say "Skipped $ninecount files with prefix length < 9.";
+      $Spotlight || $Firefox and say "Skipped $nomacount files not matching sl and/or ff pattern.";
+      $Emulate and say "Emulated $emulcount file renames."
+      or  say "Successfully randomized the names of $renacount files.";
+      and say "Tried but failed to randomize the names of $failcount files.";
    }
-   say "Navigated $direcount directories.";
-   say "Found $filecount files matching target \"$Target\" and regexp \"$Regexp\".";
-   say "Skipped $skipcount files because they're ini, db, or jbf.";
-   if ($Nine) {say "Skipped $ninecount files with prefix length < 9.";}
-   if ($Spotlight || $Firefox) {say "Skipped $nomacount files not matching sl and/or ff pattern.";}
-   say "Successfully randomized the names of $renacount files.";
-   say "Tried but failed to randomize the names of $failcount files.";
    return 1;
 } # end sub stats
 
@@ -307,8 +311,7 @@ sub help {
    Option:              Meaning:
    -h or --help         Print help and exit.
    -e or --debug        Print diagnostics and exit.
-   -q or --quiet        Be quiet.
-   -t or --terse        Be terse.                       (DEFAULT)
+   -q or --quiet        Be quiet.                       (DEFAULT)
    -v or --verbose      Be verbose.
    -l or --local        DON'T recurse subdirectories.   (DEFAULT)
    -r or --recurse       DO   recurse subdirectories.
