@@ -1865,9 +1865,7 @@ sub get_suffix :prototype($) {
 } # end sub get_suffix
 
 # Return the directory part of a file path:
-sub get_dir_from_path :prototype($) {
-   my $path = shift;
-
+sub get_dir_from_path :prototype($) ($path) {
    # If $path contains no "/", we have no idea of what directory we're in, so return an empty string:
    if (-1 == rindex($path,'/')) {
       return '';

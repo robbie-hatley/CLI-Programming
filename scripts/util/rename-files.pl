@@ -37,6 +37,10 @@
 # Tue Aug 01, 2023: Improved help.
 # Thu Aug 03, 2023: Now using "my $curdir = d getcwd" instead of "my $curdir = cwd_utf8;".
 #                   Fixed execution-time bug (wasn't printing "ms"). Improved help.
+# Tue Aug 15, 2023: Added "--debug" option. Renamed "rename_files()" to "curdire()". Created sub "curfile()".
+#                   All normal-operations printing is now to STDOUT, and all stats, diagnostics, and
+#                   unrecoverable errors are to STDERR. Got rid of variable "$Success" (now testing return
+#                   of "rename_file" in if() instead).
 ##############################################################################################################
 
 use v5.36;
@@ -53,11 +57,12 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv         ;
-sub rename_files ;
-sub stats        ;
-sub error        ;
-sub help         ;
+sub argv    ;
+sub curdire ;
+sub curfile ;
+sub stats   ;
+sub error   ;
+sub help    ;
 
 # ======= VARIABLES: =========================================================================================
 
@@ -75,7 +80,8 @@ my $Verbose   = 0            ; # Print directories?                  bool       
 # Counters:
 my $dircount  = 0; # Count of directories processed.
 my $filecount = 0; # Count of files matching target and regexp.
-my $samecount = 0; # Count of files bypassed because NewName == OldName.
+my $samecount = 0; # Count of files for which NewName eq OldName.
+my $diffcount = 0; # Count of files for which NewName ne OldName.
 my $skipcount = 0; # Count of files skipped at user's request.
 my $renacount = 0; # Count of files successfully renamed.
 my $failcount = 0; # Count of failed rename attempts.
@@ -96,18 +102,23 @@ $Targets{A} = 'All Directory Entries';
 { # begin main
    my $t0 = time;
    argv;
-   say    STDERR "\nNow entering program \"" . get_name_from_path($0) . "\".";
-   say    STDERR 'Directory-printing is ' . ($Verbose ? 'on' : 'off') . ".";
-   say    STDERR 'Recursion is '          . ($Recurse ? 'on' : 'off') . ".";
-   say    STDERR 'Target is '             . $Targets{$Target}         . ".";
-   say    STDERR 'Mode is '               . $Modes{$Mode}             . ".";
-   say    STDERR "Regular Expression = $RegExp";
-   say    STDERR "Replacement String = $Replace";
-   $Recurse ? RecurseDirs {rename_files} : rename_files;
+   my $pname = get_name_from_path($0);
+   if ( $Verbose >= 1 ) {
+      say STDERR "\nNow entering program \"$pname\".";
+      say STDERR 'Verbosity is ' . ($Verbose ? 'on' : 'off') . '.';
+      say STDERR 'Recursion is ' . ($Recurse ? 'on' : 'off') . '.';
+      say STDERR 'Target    is ' . $Targets{$Target}         . '.';
+      say STDERR 'Mode      is ' . $Modes{$Mode}             . '.';
+      say STDERR "Regular Expression = $RegExp";
+      say STDERR "Replacement String = $Replace";
+      say STDERR "Modifier Flags     = $Flags";
+   }
+   $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $ms = 1000 * (time - $t0);
-   say    STDERR "\nNow exiting program \"" . get_name_from_path($0) . "\".";
-   printf STDERR "Execution time was %.3fms\n", $ms;
+   if ( $Verbose >= 1 ) {
+      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms\n", $pname, $ms;
+   }
    exit 0;
 } # end main
 
@@ -115,25 +126,20 @@ $Targets{A} = 'All Directory Entries';
 
 sub argv {
    # Get options and arguments:
-   my @opts;
-   my @args;
+   my @opts = (); my @args = (); my $end_of_options = 0;
    for ( @ARGV ) {
-      # Single-hyphen options may contain letters only. (That way, "-5" is an argument, not an option.)
-      # Double-hyphen options may contain letters, combining marks, numbers, punctuation, and symbols.
-      if (/^-\pL*$|^--[\pL\pM\pN\pP\pS]*$/) {push @opts, $_}
-      else                                  {push @args, $_}
-   }
-   if ( $db ) {
-      say STDERR "options   = (@opts)";
-      say STDERR 'num opts  = ', scalar(@opts);
-      say STDERR "arguments = (@args)";
-      say STDERR 'num args  = ', scalar(@args);
-      exit 555;
+      /^--$/
+      and $end_of_options = 1
+      and next;
+      !$end_of_options && /^-\pL*$|^--.+$/
+      and push @opts, $_
+      or  push @args, $_;
    }
 
    # Process options:
    for ( @opts ) {
       /^-\pL*h|^--help$/     and help and exit 777 ;
+      /^-\pL*e|^--debug$/    and $db      =  1     ;
       /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
       /^-\pL*v|^--verbose$/  and $Verbose =  1     ;
       /^-\pL*l|^--local$/    and $Recurse =  0     ;
@@ -146,6 +152,7 @@ sub argv {
       /^-\pL*s|^--simulate$/ and $Mode    = 'S'    ;
       /^-\pL*y|^--noprompt$/ and $Mode    = 'Y'    ;
    }
+   $db and say STDERR "opts = (@opts)\nargs = (@args)";
 
    # Process arguments:
    my $NA = scalar @args;
@@ -158,20 +165,24 @@ sub argv {
       $Replace =    $args[1];
       $Flags   =    $args[2];
    }
-   else               {
-      error($NA);help;exit 666; # Wrong number of arguments, so print error and help messages and exit.
+   else {         # Wrong number of arguments,
+      error($NA); # so print error message,
+      help;       # print help message
+      exit 666;   # and exit, returning The Number Of The Beast to caller, because something evil happened.
    }
 
    # Return success code to caller:
    return 1;
 } # end sub argv
 
-sub rename_files {
+sub curdire {
    ++$dircount;
 
    # Get and announce current working directory:
    my $curdir = d getcwd;
-   say STDERR "\nDirectory # $dircount: $curdir" if $Verbose;
+   if ( $Verbose >= 1 ) {
+      say STDERR "\nDirectory # $dircount: $curdir\n";
+   }
 
    # Get list of targeted files in current directory:
    my $curdirfiles = GetFiles($curdir, $Target, $RegExp);
@@ -181,114 +192,124 @@ sub rename_files {
    # Iterate through these files, possibly renaming some depending on
    # the arguments and options the user gave on the command line,
    # and on the names of the files in the current directory:
-   FILE: foreach (@{$curdirfiles})
-   {
-      # Increment "files processed" counter:
-      ++$filecount;
+   for my $file ( @{$curdirfiles} ) {
+      curfile ($file);
+   }
 
-      # Make variables for old and new names and paths:
-      my $OldName = $_->{Name};
-      my $OldPath = $_->{Path};
-      my $NewName = $OldName;
-      eval('$NewName' . " =~ s/$RegExp/$Replace/$Flags");
-      my $NewPath = path($curdir, $NewName);
+   # Return success code 1 to caller:
+   return 1;
+} # end sub curdire
 
-      # Announce path and old and new file names:
-      say STDERR '';
-      say STDOUT "$OldPath";
-      say STDERR "OldName = $OldName";
-      say STDERR "NewName = $NewName";
+sub curfile ($file) {
+   # Increment "files processed" counter:
+   ++$filecount;
 
-      # Skip to next file if new name is same as old:
-      if ($OldName eq $NewName) {
-         ++$samecount;
-         say STDERR "NewName is same as OldName. Moving on to next file.";
-         next FILE;
-      }
+   # Make variables for old and new names and paths:
+   my $OldPath = $file->{Path};
+   my $OldName = $file->{Name};
+   my $OldDire = get_dir_from_path($OldPath);
+   my $NewName = $OldName;
+   eval('$NewName' . " =~ s/$RegExp/$Replace/$Flags");
+   my $NewPath = path($OldDire, $NewName);
 
-      # What Mode are we in?
+   # Skip to next file if new name is same as old:
+   if ($OldName eq $NewName) {
+      ++$samecount;
+      return 1;
+   }
+   else {
+      ++$diffcount;
+   }
 
-      # Prompt Mode:
-      if ( 'P' eq $Mode ) {
-         say STDERR 'Rename? (Type y for yes, n for no, q to quit, '.
-               'or a to rename all).';
-         GETCHAR: my $c = get_character;
-         if ( 'a' eq $c || 'A' eq $c ) {
-            $Mode = 'Y';
-            $Success = rename_file($OldPath, $NewPath);
-            if ($Success) {
-               ++$renacount;
-               say STDERR "File successfully renamed.";
-            }
-            else {
-               ++$failcount;
-               say STDERR "Error in rnf: File rename attempt failed.";
-            }
-         }
-         elsif ( 'y' eq $c || 'Y' eq $c ) {
-            $Success = rename_file($OldPath, $NewPath);
-            if ($Success) {
-               ++$renacount;
-               say STDERR "File successfully renamed.";
-            }
-            else {
-               ++$failcount;
-               say STDERR "Error in rnf: File rename attempt failed.";
-            }
-         }
-         elsif ( 'n' eq $c || 'N' eq $c ) {
-            ++$skipcount;
-            say STDERR "File skipped.";
-            next FILE;
-         }
-         elsif ( 'q' eq $c || 'Q' eq $c ) {
-            say STDERR "Quitting application.";
-            stats;
-            exit 0;
-         }
-         else {
-            say STDERR 'Invalid keystroke!';
-            say STDERR 'Rename? (Type y for yes, n for no, q to quit, '.
-                  'or a to rename all).';
-            goto GETCHAR;
-         }
-      } # end if (current mode is 'P')
+   # Announce path and old and new file names:
+   say STDOUT '';
+   say STDOUT "Old Path = $OldPath";
+   say STDOUT "Old Name = $OldName";
+   say STDOUT "New Name = $NewName";
 
-      # No-Prompt Mode:
-      elsif ( 'Y' eq $Mode ) {
-         $Success = rename_file($OldPath, $NewPath);
-         if ($Success) {
+   # Take different actions depending on what mode we're in:
+
+   # Prompt Mode:
+   if ( 'P' eq $Mode ) {
+      say STDOUT 'Rename? (Type y for yes, n for no, q to quit, or a to rename all).';
+      GETCHAR: my $c = get_character;
+      if ( 'a' eq $c || 'A' eq $c ) {
+         $Mode = 'Y';
+         if ( rename_file($OldPath, $NewPath) ) {
             ++$renacount;
-            say STDERR "File successfully renamed.";
+            say STDOUT "File successfully renamed.";
          }
          else {
             ++$failcount;
-            say STDERR "Error: File rename attempt failed.";
+            say STDOUT "File rename attempt failed.";
          }
-      } # end if (current mode is 'Y')
-
-      # Simulation Mode:
-      elsif ( 'S' eq $Mode ) {
-         say STDERR "Simulation: Would have renamed file file from \"$OldName\" to \"$NewName\".";
       }
-
-      # Unknown Mode:
+      elsif ( 'y' eq $c || 'Y' eq $c ) {
+         if ( rename_file($OldPath, $NewPath) ) {
+            ++$renacount;
+            say STDOUT "File successfully renamed.";
+         }
+         else {
+            ++$failcount;
+            say STDOUT "File rename attempt failed.";
+         }
+      }
+      elsif ( 'n' eq $c || 'N' eq $c ) {
+         ++$skipcount;
+         say STDOUT "File skipped.";
+         return 1;
+      }
+      elsif ( 'q' eq $c || 'Q' eq $c ) {
+         say STDOUT "Quitting application.";
+         stats;
+         exit 0;
+      }
       else {
-         say STDERR "FATAL ERROR in \"rename-files.pl\": unknown mode \"$Mode\".";
-         exit 666; # Something evil happened.
-      } # end else (unknown mode)
-   } # end foreach file
+         say STDOUT 'Invalid keystroke!';
+         say STDOUT 'Rename? (Type y for yes, n for no, q to quit, or a to rename all).';
+         goto GETCHAR;
+      }
+   } # end if (current mode is 'P')
+
+   # No-Prompt Mode:
+   elsif ( 'Y' eq $Mode ) {
+      if ( rename_file($OldPath, $NewPath) ) {
+         ++$renacount;
+         say STDOUT "File successfully renamed.";
+      }
+      else {
+         ++$failcount;
+         say STDOUT "File rename attempt failed.";
+      }
+   } # end if (current mode is 'Y')
+
+   # Simulation Mode:
+   elsif ( 'S' eq $Mode ) {
+      say STDOUT "Simulation: Would have renamed file from old name to new name.";
+   }
+
+   # Unknown Mode:
+   else {
+      die "FATAL ERROR in \"rename-files.pl\": unknown mode \"$Mode\".\n$!\n";
+   } # end else (unknown mode)
+
+   # Return success code 1 to caller:
    return 1;
-} # end sub rename_files
+} # end sub curfile
 
 sub stats {
-   printf STDERR "\n";
-   printf STDERR "Processed %5d directories.\n",                                 $dircount;
-   printf STDERR "Found     %5d files matching target and regexp.\n",            $filecount;
-   printf STDERR "Bypassed  %5d files because new name was same as old name.\n", $samecount;
-   printf STDERR "Skipped   %5d files at user's request.\n",                     $skipcount;
-   printf STDERR "Renamed   %5d files.\n",                                       $renacount;
-   printf STDERR "Failed    %5d file rename attempts.\n",                        $failcount;
+   if ( $Verbose >= 1 ) {
+      printf STDERR "\n";
+      printf STDERR "Processed %5d directories.\n",                                          $dircount;
+      printf STDERR "Found     %5d files matching target and regexp.\n",                     $filecount;
+      printf STDERR "Bypassed  %5d files because new name was same as old name.\n",          $samecount;
+      printf STDERR "Examined  %5d files for which new name was different from old name.\n", $diffcount;
+      printf STDERR "Skipped   %5d files at user's request.\n",                              $skipcount;
+      printf STDERR "Renamed   %5d files.\n",                                                $renacount;
+      printf STDERR "Failed    %5d file rename attempts.\n",                                 $failcount;
+   }
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub stats
 
@@ -301,6 +322,9 @@ sub error ($NA) {
    Failure to do this can send dozens (or hundreds, or thousands) of arguments
    to RenameFiles, instead of the required 2 or 3 arguments. Help follows:
    END_OF_ERROR
+
+   # Return success code 1 to caller:
+   return 1;
 } # end sub error ($NA)
 
 sub help {
@@ -329,8 +353,9 @@ sub help {
 
    Option:             Meaning:
    -h or --help        Print help and exit.
-   -q or --quiet       Don't print directories.                        (DEFAULT)
-   -v or --verbose     Print directories.
+   -e or --debug       Print diagnostics.
+   -q or --quiet       DON'T print directories and stats               (DEFAULT)
+   -v or --verbose      DO   print directories and stats.
    -l or --local       Rename files in current directory only.         (DEFAULT)
    -r or --recurse     Recurse subdirectories.
    -p or --prompt      Prompt before renaming files.                   (DEFAULT)
@@ -446,5 +471,8 @@ sub help {
    Robbie Hatley,
    programmer.
    END_OF_HELP
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub help
+__END__
