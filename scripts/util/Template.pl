@@ -232,10 +232,17 @@ sub curdire
       $unkncount += $RH::Dir::unkncount; # unknown files
    }
 
-   # Iterate through $curdirfiles and send each file to curfile():
+   # Process each path that matches $RegExp, $Target, and $Predicate:
    foreach my $file (@{$curdirfiles}) {
-      curfile($file);
+      ++$filecount;
+      local $_ = e $file->{Path};
+      if (eval($Predicate)) {
+         ++$findcount;
+         say STDOUT "$file->{Path}";
+      }
    }
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub curdire
 

@@ -182,7 +182,7 @@ sub curdire {
    # Get ref to array of file-info packets for all files in current directory matching 'A' and $RegExp:
    my $curdirfiles = GetFiles($curdir, $Target, $RegExp);
 
-   # Print each path that matches $RegExp, $Target, and $Predicate:
+   # Process each path that matches $RegExp, $Target, and $Predicate:
    foreach my $file (@{$curdirfiles}) {
       ++$filecount;
       local $_ = e $file->{Path};
