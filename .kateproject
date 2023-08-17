@@ -1,0 +1,30 @@
+{
+   "name": "Programming",
+   "projects":
+   [
+      {
+         "name": "Euler",
+         "files": [ { "directory": "Euler", "filters": ["*"], "recursive": 1 } ]
+      },
+
+      {
+         "name": "include",
+         "files": [ { "directory": "include", "filters": ["*"], "recursive": 1 } ]
+      },
+
+      {
+         "name": "notes",
+         "files": [ { "directory": "notes", "filters": ["*"], "recursive": 1 } ]
+      },
+
+      {
+         "name": "scripts",
+         "files": [ { "directory": "scripts", "filters": ["*"], "recursive": 1 } ]
+      },
+
+      {
+         "name": "src",
+         "files": [ { "directory": "src", "filters": ["*"], "recursive": 1 } ]
+      }
+   ]
+}
