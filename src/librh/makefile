@@ -14,13 +14,13 @@
 COLLECTION := Robbie Hatley\'s Library
 
 # Set the exe directory suffix (dummy; not actually used because we're not making executables):
-EXSUFF := humor
+EXSUFF := librh
 
 # Set source vpath directories so that make can find the c and cpp files for this collection:
 vpath %.c   /d/rhe/src/librh
 vpath %.cpp /d/rhe/src/librh
 
-# Since we're compiling and archiving object modules, NOT exe files, 
+# Since we're compiling and archiving object modules, NOT exe files,
 # set variable ALL to a list of all library objects,
 # NOT to a list of exe files:
 ALL = $(LIBRARY_OBJECTS_C) $(LIBRARY_OBJECTS_X)
