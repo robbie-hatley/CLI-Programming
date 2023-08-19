@@ -1,51 +1,68 @@
 #! /bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # file-hashes.pl
-# Prints various hashes of the contents of all regular files in current directory (and all subdirectories as well, if
-# a -r or --recurse option is used).
+# Prints various hashes of the contents of all regular files in current directory (and all subdirectories as
+# well, if a -r or --recurse option is used).
 # Edit history:
 # Thu Jan 14, 2021: Wrote it.
 # Sat Nov 13, 2021: Added ARGV processing, recursion, stats, etc.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
 # Thu Nov 25, 2021: Simplified: got rid of unnecessary variables and warnings.
 # Sun Nov 28, 2021: Added comments, simplified getting file name, and now printing UTF-8 header lines to avoid
 #                   text editors mistakenly thinking that index files are ASCII when they're actually UTF-8.
 #                   Also now prints name of program and author, and time and date of index-file generation.
 # Sat Jun 18, 2022: Removed printing of [???]. [Note, 2022-08-19: this comment was never completed.]
 # Fri Aug 19, 2022: Changed name from "index.pl" back to "file-hashes.pl", which is a much better description.
-########################################################################################################################
+# Thu Aug 17, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". No longer using CPAN
+#                   module "common::sense" (antiquated). Sub error is now single-purpose (doesn't call
+#                   help or exit). Put headings in help. Subs error and help now print initial blank line.
+#                   Got rid of all prototypes and now using signatures. Now skips all "meta" files
+#                   (hidden, desk, thumbs, browse, id). Updated sub argv to my latest tech.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+# Boilerplate:
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
 use Sys::Binmode;
+
+# CPAN modules:
 use Time::HiRes 'time';
 use Digest::MD5 qw( md5_hex );
 use Digest::SHA qw( sha1_hex sha224_hex sha256_hex sha384_hex sha512_hex );
+
+# Homebrew modules:
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv    ()  ; # Process @ARGV.
-sub curdire ()  ; # Process current directory.
-sub curfile ($) ; # Process current file.
-sub stats   ()  ; # Print statistics.
-sub error   ($) ; # Handle errors.
-sub help    ()  ; # Print help and exit.
+sub argv    ; # Process @ARGV.
+sub curdire ; # Process current directory.
+sub curfile ; # Process current file.
+sub stats   ; # Print statistics.
+sub error   ; # Handle errors.
+sub help    ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Use debugging? (Ie, print extra diagnostics?)
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 
-# Settings:                  Meaning:                  Range:   Default:
-my $Help    = 0          ; # Print help and exit?      0,1      0
-my $Recurse = 0          ; # Recurse subdirectories?   bool     0
-my $RegExp  = qr/^.+$/o  ; # Regular Expression.       regexp   qr/^.+$/o (matches all strings)
+# Settings:                  Meaning:                  Range:   Meaning of default:
+   $"       = ', '       ; # quoted-array formatting   string   comma-space
+   $,       = ', '       ; # listed-array formatting   string   comma-space
+my $db      = 0          ; # debug?                    bool     Don't debug.
+my $Help    = 0          ; # Print help and exit?      0,1      Don't print help.
+my $Verbose = 0          ; # Print intro and stats?    0,1      Don't print intro or stats.
+my $Recurse = 0          ; # Recurse subdirectories?   bool     Don't recurse.
+my $RegExp  = qr/^.+$/o  ; # Regular Expression.       regexp   Process all file names.
 
 # Counters:
 my $direcount = 0; # Count of directories processed by curdire().
@@ -54,82 +71,83 @@ my $hashcount = 0; # Count of files successfully hashed.
 my $errocount = 0; # Count of errors encountered.
 my $skipcount = 0; # Count of files skipped.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    argv;
-   if ($Help)
-   {
-      help;
+   my $cwd = cwd_utf8;
+   if ( $Verbose >= 1 ) {
+      say "File Hashes For All Files Matching $RegExp";
+      say "In Directory \"$cwd\"";
+      say "(And All Subdirectories Thereof)" if $Recurse;
+      say "This is a UTF-8-transformed Unicode text file.";
+      say "This file was generated by program \"file-hashes.pl\" by Robbie Hatley.";
    }
-   else
-   {
-	   my $cwd = cwd_utf8;
-	   say "File Hashes For All Files In Directory \"$cwd\".";
-	   say "This is a UTF-8-transformed Unicode text file.";
-	   say "This file was generated by program \"file-hashes.pl\" by Robbie Hatley.";
-	   say "Recurse = $Recurse";
-	   say "RegExp  = $RegExp";
-	   if ($Recurse) {RecurseDirs {curdire}} else {curdire};
-	   stats;
+   $Recurse and RecurseDirs {curdire} or curdire;
+   if ( $Verbose >= 1 ) {
+      stats;
    }
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
-sub argv ()
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-         if (/^-h$/ || /^--help$/   ) {$Help    = 1;}
-         if (/^-r$/ || /^--recurse$/) {$Recurse = 1;}
-         splice @ARGV, $i, 1;
-         --$i;
-      }
+sub argv {
+   # Get options and arguments:
+   my @opts = (); my @args = (); my $end_of_options = 0;
+   for ( @ARGV ) {
+      /^--$/ and $end_of_options = 1 and next;
+      !$end_of_options && /^-\pL*$|^--.+$/ and push @opts, $_ or push @args, $_;
    }
-   my $NA = scalar(@ARGV);
-   given ($NA)
-   {
-      when (0) {                       ;} # Do nothing.
-      when (1) {$RegExp = qr/$ARGV[0]/o;} # Set $RegExp.
-      default  {error($NA)             ;} # Print error and help messages then exit 666.
+
+   # Process options:
+   for ( @opts ) {
+      /^-\pL*h|^--help$/    and help and exit 777 ;
+      /^-\pL*e|^--debug$/   and $db      =  1     ;
+      /^-\pL*q|^--quiet$/   and $Verbose =  0     ;
+      /^-\pL*v|^--verbose$/ and $Verbose =  1     ;
+      /^-\pL*l|^--local$/   and $Recurse =  0     ;
+      /^-\pL*r|^--recurse$/ and $Recurse =  1     ;
    }
+   $db
+   and print STDERR "\@opts = " and say STDERR map {"'".$_."'"} @opts
+   and print STDERR "\@args = " and say STDERR map {"'".$_."'"} @args;
+
+   # Count args:
+   my $NA = scalar @args;
+
+   # Use positional arguments instead?
+   $NA >= 1 and $RegExp = qr/$args[0]/o;                  # Set $RegExp.
+   $NA >= 2 && !$db and error($NA) and help and exit 666; # Something evil happened.
+
+   # Return success code 1 to caller:
    return 1;
-} # end sub argv ()
+} # end sub argv
 
-sub curdire ()
-{
+sub curdire {
    # Increment directory counter:
    ++$direcount;
 
    # Get and announce current working directory:
    my $cwd = cwd_utf8;
-   say "\nDirectory # $direcount: $cwd\n";
+   say "\nDirectory # $direcount: $cwd";
 
-   # Get list of all entries in $cwd:
-   my $dh = undef;
-   opendir($dh, e $cwd)       or die "Error in curdire() in \"file-hashes.pl\": couldn't open  dir \"$cwd\".\n$!\n";
-   my @paths = d readdir($dh) or die "Error in curdire() in \"file-hashes.pl\": couldn't read  dir \"$cwd\".\n$!\n";
-   closedir($dh)              or die "Error in curdire() in \"file-hashes.pl\": couldn't close dir \"$cwd\".\n$!\n";
+   # Get list of all regular-file entries in $cwd:
+   my @paths = glob_regexp_utf8($cwd, 'F', $RegExp);
 
    # Send data-file paths to curfile(), and increment skip counter for non-data-file paths:
-   foreach my $path (@paths)
-   {
-      if (is_data_file($path)) {curfile($path);}
-      else                     {++$skipcount       ;}
+   foreach my $path (@paths) {
+      unless (is_data_file($path)) {++$skipcount;next;} # Skip all but existing non-d non-l regular files.
+      if     (is_meta_file($path)) {++$skipcount;next;} # Skip hidden, desk, thumbs, browse, id.
+      curfile($path);
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
 # Process current file:
-sub curfile ($)
+sub curfile ($path)
 {
    ++$filecount;
-   my $path = shift;                     # Get current path.
    my $name = get_name_from_path($path); # Get name of current file.
 
    # Don't bother check for existence, regular-file-hood, data-file-ness, etc, here,
@@ -160,10 +178,9 @@ sub curfile ($)
    say "SHA512 = ", sha512_hex($data);         # Print SHA512 file hash.
    ++$hashcount;                               # Increment success counter.
    return 1;                                   # Return success code.
-} # end sub curfile ($)
+} # end sub curfile ($path)
 
-sub stats ()
-{
+sub stats {
    say '';
    say 'Program "file-hashes.pl" has finished processing this directory tree.';
    say "Navigated $direcount directories.";
@@ -172,45 +189,52 @@ sub stats ()
    say "Tried-but-failed to hash $errocount files.";
    say "Skipped $skipcount files.";
    return 1;
-} # end sub stats ()
+} # end sub stats
 
-sub error ($)
-{
-   my $NA = shift;
+sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: you typed $NA arguments, but this program takes at most 1 argument,
    which, if present, must be a Perl-Compliant Regular Expression specifying
    which directory entries to process. Help follows:
-
    END_OF_ERROR
-   help;
-   exit 666;
 } # end sub error ($)
 
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
    Intro:
+
    Welcome to "file-hashes.pl". This program prints various hashes of the contents
    of all files in the current directory (and all subdirectories if a -r or
    --recurse option is used) which are regular data files, except for files with
    names matching 'desktop.ini', 'thumbs.db', 'pspbrwse.jbf', or 'ID-Token'.
 
-   Purpose:
    The primary purpose of this program is to generate index files for image
    collections, but it can also be used to generate hashes for any other types
    of data files which one wants to hash.
 
+   -------------------------------------------------------------------------------
    Command lines:
+
    program-name.pl -h | --help              (to print help and exit)
    program-name.pl [options] [arguments]    (to print file hashes  )
 
+   -------------------------------------------------------------------------------
    Description of options:
-   Option:                   Meaning:
-   "-h" or "--help"          Print help and exit.
-   "-r" or "--recurse"       Recurse subdirectories.
 
+   Option:               Meaning:
+   -h or --help          Print help and exit.
+   -e or --debug         Print diagnostics.
+   -q or --quiet         DON'T print intro and stats.
+   -v or --verbose        DO   print intro and stats.
+   -l or --local         DON'T recurse subdirectories.
+   -r or --recurse        DO   recurse subdirectories.
+
+   -------------------------------------------------------------------------------
    Description of arguments:
+
    In addition to options, this program can take one optional argument which, if
    present, must be a Perl-Compliant Regular Expression specifying which items to
    process. To specify multiple patterns, use the | alternation operator.
@@ -229,4 +253,5 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help
+__END__

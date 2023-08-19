@@ -99,7 +99,7 @@ sub help    ; # Print help and exit.
 # ======= VARIABLES: =========================================================================================
 
 # Setting:      Default Value:   Meaning of Setting:         Range:     Meaning of Default:
-   $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma space.
+   $"         = ' '          ; # Quoted-array formatting.    string     Separate elements with spaces.
 my $db        = 0            ; # Debug?                      bool       Don't debug.
 my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
@@ -135,7 +135,8 @@ my $unkncount = 0 ; # Count of all unknown files.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Verbose >= 1 ) {
+
+   if ( $db || $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\". ";
       say STDERR "Verbose   = $Verbose             ";
@@ -145,12 +146,15 @@ my $unkncount = 0 ; # Count of all unknown files.
       say STDERR "Predicate = $Predicate           ";
    }
    $db and exit 555;
+
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
+
    my $ms = 1000 * (time - $t0);
    if ( $Verbose >= 1 ) {
       printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
    }
+
    exit 0;
 } # end main
 
@@ -179,7 +183,9 @@ sub argv {
       /^-\pL*b|^--both$/     and $Target  = 'B'    ;
       /^-\pL*a|^--all$/      and $Target  = 'A'    ;
    }
-   $db and say STDERR "opts = (@opts)\nargs = (@args)";
+   $db
+   and say STDERR "opts = ", qw("@opts")
+   and say STDERR "args = ", qw("@args");
 
    # Count args:
    my $NA = scalar @args;
@@ -233,7 +239,7 @@ sub curdire
    }
 
    # Process each path that matches $RegExp, $Target, and $Predicate:
-   foreach my $file (@{$curdirfiles}) {
+   foreach my $file (@$curdirfiles) {
       ++$filecount;
       local $_ = e $file->{Path};
       if (eval($Predicate)) {

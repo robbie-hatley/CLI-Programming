@@ -27,11 +27,11 @@
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
 #                   "Sys::Binmode".
 # Mon Nov 22, 2021: Changed "find_available_random" to "find_avail_rand_name".
-# Mon Nov 29, 2021: Refactored. Now using GetFiles, which dramatically simplifies curdire().
+# Mon Nov 29, 2021: Simplified curdire().
 # Wed Aug 16, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36".
 #                   Got rid of "common::sense" (antiquated). Got rid of prototypes. Now using signatures.
 #                   Shorted target options from "--target=xxxxx" to just "--xxxxx". Upgraded sub argv.
-#                   Made sub error single-purpose.
+#                   Made sub error single-purpose. Shortened curfile() by using "and" and "or".
 ##############################################################################################################
 
 use v5.36;
@@ -41,6 +41,7 @@ use utf8;
 use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
 
 use RH::Util;
@@ -57,30 +58,35 @@ sub help    ; # Print help and exit.
 
 # ======= GLOBAL VARIABLES ===================================================================================
 
-# Settings:                   Meaning of setting:          Range:    Meaning of default:
-   $"         = ', '      ; # Quoted-array formatting.     string    comma space
-my $db        = 0         ; # Debug?                       bool      Don't debug.
-my $Verbose   = 0         ; # Quiet or Verbose?            0,1       Be quiet.
-my $Recurse   = 0         ; # Recurse subdirectories?      bool      Don't recurse.
-my $Target    = 'F'       ; # Type of files to target      FDBA      Process regular files only.
-my $Yes       = 0         ; # Proceed without prompting?   bool      Don't skip prompting.
-my $Emulate   = 0         ; # Merely simulate renames?     bool      Don't simulate
-my $Nine      = 0         ; # Ignore files with PreLen<9?  bool      Don't skip short-name-length files.
-my $Spotlight = 0         ; # Ignore all but Spotlight?    bool      Don't skip all-but-spotlight.
-my $Firefox   = 0         ; # Ignore all but Firefox?      bool      Don't skip all-but-firefox.
-my $NoReRan   = 0         ; # Ignore ran-name files?       bool      Don't skip random-named files.
-my $Regexp    = qr/^.+$/o ; # Regexp.                      regexp    Process all file names.
-my $Prefix    = ''        ; # Prefix.                      string    ''
-my $Suffix    = ''        ; # Suffix.                      string    ''
+# Setting:      Default Value:   Meaning of setting:         Range:     Meaning of default:
+   $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma-space.
+   $,         = ', '         ; # Listed-array formatting.    string     Separate elements with comma-space.
+my $db        = 0            ; # Debug?                      bool       Don't debug.
+my $Verbose   = 0            ; # Quiet or Verbose?           0,1        Be quiet.
+my $Recurse   = 0            ; # Recurse subdirectories?     bool       Don't recurse.
+my $RegExp    = qr/^.+$/o    ; # Regexp.                     regexp     Process all file names.
+my $Target    = 'F'          ; # Type of files to target     F|D|B|A    Process regular files only.
+my $Predicate = 1            ; # Predicate.                  bool       Process all file types.
+my $Yes       = 0            ; # Proceed without prompting?  bool       Don't skip prompting.
+my $Simulate  = 0            ; # Merely simulate renames?    bool       Don't simulate
+my $Nine      = 0            ; # Ignore files with PreLen<9? bool       Don't skip short-name-length files.
+my $Spotlight = 0            ; # Ignore all but Spotlight?   bool       Don't skip all-but-spotlight.
+my $Firefox   = 0            ; # Ignore all but Firefox?     bool       Don't skip all-but-firefox.
+my $NoReRan   = 0            ; # Ignore ran-name files?      bool       Don't skip random-named files.
+my $Prefix    = ''           ; # Prefix.                     string     Prefix is empty string.
+my $Suffix    = ''           ; # Suffix.                     string     Suffix is empty string.
 
 # Counts of events:
 my $direcount = 0; # Count of directories processed by curdire.
-my $filecount = 0; # Count of    files    processed by curfile.
+my $filecount = 0; # Count of files matching $RegExp.
+my $findcount = 0; # Count of files also matching $Predicate.
 my $skipcount = 0; # Count of files skipped because they're ini, db, jbf.
 my $ninecount = 0; # Count of files skipped because prefix length < 9.
 my $nomacount = 0; # Count of files skipped because NOt MAtching sl or ff.
 my $norecount = 0; # Count of files skipped because their names are already randomized.
-my $emulcount = 0; # Count of file renames emulated.
+my $candcount = 0; # Count of candidates for renaming.
+my $nonacount = 0; # Count of candidates for which no suitable name could be found.
+my $simucount = 0; # Count of file renames simulated.
 my $renacount = 0; # Count of files renamed.
 my $failcount = 0; # Count of failed attempts to rename files.
 
@@ -89,36 +95,50 @@ my $failcount = 0; # Count of failed attempts to rename files.
 { # begin main
    my $t0 = time;
    argv;
-   my $pname = get_name_from_path($0)
-   if ( $Verbose >= 1 ) {
-      say STDERR "\nNow entering program \"$pname\".";
-      say STDERR "Recurse    = $Recurse  ";
-      say STDERR "Target     = $Target   ";
-      say STDERR "Yes        = $Yes      ";
-      say STDERR "Emulate    = $Emulate  ";
-      say STDERR "Nine       = $Nine     ";
-      say STDERR "Spotlight  = $Spotlight";
-      say STDERR "Regexp     = $Regexp   ";
+   my $pname = get_name_from_path($0);
+
+   if ( $Verbose ) {
+      say STDERR '';
+      say STDERR "Now entering program \"$pname\". ";
+      say STDERR "Debug     = $db                  ";
+      say STDERR "Verbose   = $Verbose             ";
+      say STDERR "Recurse   = $Recurse             ";
+      say STDERR "RegExp    = $RegExp              ";
+      say STDERR "Target    = $Target              ";
+      say STDERR "Predicate = $Predicate           ";
+      say STDERR "Yes       = $Yes                 ";
+      say STDERR "Simulate  = $Simulate            ";
+      say STDERR "Nine      = $Nine                ";
+      say STDERR "Spotlight = $Spotlight           ";
+      say STDERR "Firefox   = $Firefox             ";
+      say STDERR "NoReRan   = $NoReRan             ";
+      say STDERR "Prefix    = \'$Prefix\'          ";
+      say STDERR "Suffix    = \'$Suffix\'          ";
    }
-   unless ($Yes)
-   {
-      say 'WARNING: THIS PROGRAM RENAMES ALL TARGETED FILES IN THE CURRENT DIRECTORY';
-      say '(AND IN ALL SUBDIRECTORIES IF -r OR --recurse IS USED) TO RANDOM STRINGS OF';
-      say '8 lower-case LETTERS. ALL INFORMATION CONTAINED IN THE FILE NAMES WILL BE LOST,';
-      say 'AND ONLY THE FILE BODIES WILL REMAIN, WITH GIBBERISH NAMES.';
-      say '';
-      say 'ARE YOU SURE THAT THAT IS WHAT YOU REALLY WANT TO DO??? ';
-      say '';
-      say 'Press ":" (shift-semicolon) to continue or any other key to abort.';
+
+   unless ( $Yes ) {
+      say STDERR '';
+      say STDERR 'WARNING: THIS PROGRAM RENAMES ALL TARGETED FILES IN THE CURRENT DIRECTORY';
+      say STDERR '(AND IN ALL SUBDIRECTORIES IF -r OR --recurse IS USED) TO RANDOM STRINGS OF';
+      say STDERR '8 lower-case LETTERS. ALL INFORMATION CONTAINED IN THE FILE NAMES WILL BE LOST,';
+      say STDERR 'AND ONLY THE FILE BODIES WILL REMAIN, WITH GIBBERISH NAMES.';
+      say STDERR '';
+      say STDERR 'ARE YOU SURE THAT THAT IS WHAT YOU REALLY WANT TO DO???';
+      say STDERR '';
+      say STDERR 'Press ":" (shift-semicolon) to continue or any other key to abort.';
       my $char = get_character;
       exit 0 unless ':' eq $char;
    }
+
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
+
    my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 1 ) {
-      printf STDERR "\nNow exiting program \"$pname\". Execution time was %.3fms.\n", $ms;
+   if ( $Verbose ) {
+      say    STDERR '';
+      printf STDERR "Now exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
    }
+
    exit 0;
 } # end main
 
@@ -131,7 +151,6 @@ sub argv {
       /^--$/ and $end_of_options = 1 and next;
       !$end_of_options && /^-\pL*$|^--.+$/ and push @opts, $_ or push @args, $_;
    }
-
    # Process options:
    for ( @opts ) {
       /^-\pL*h|^--help$/      and help and exit 777   ;
@@ -145,22 +164,38 @@ sub argv {
       /^-\pL*b|^--both$/      and $Target    = 'B'    ;
       /^-\pL*a|^--all$/       and $Target    = 'A'    ;
       /^-\pL*y|^--yes$/       and $Yes       =  1     ;
-      /^-\pL*m|^--emulate$/   and $Emulate   =  1     ;
+      /^-\pL*s|^--simulate$/  and $Simulate  =  1     ;
       /^-\pL*i|^--nine$/      and $Nine      =  1     ;
       /^-\pL*n|^--noreran$/   and $NoReRan   =  1     ;
-      /^-\pL*s|^--spotlight$/ and $Spotlight =  1     ;
+      /^-\pL*p|^--spotlight$/ and $Spotlight =  1     ;
       /^-\pL*x|^--firefox$/   and $Firefox   =  1     ;
-      /^-\pL*z|^--spotfire$/  and $Spotlight =  1 and $Firefox = 1;
+      /^-\pL*t|^--spotfire$/  and $Spotlight =  1 and $Firefox = 1;
       length($_) > 9 && substr($_, 0, 9) eq '--prefix=' and $Prefix = substr($_, 9);
       length($_) > 9 && substr($_, 0, 9) eq '--suffix=' and $Suffix = substr($_, 9);
    }
-   $db and say STDERR "opts = (@opts)\nargs = (@args)";
+   if ( $db ) {
+      say   STDERR '';
+      print STDERR "opts = "; say STDERR map {'\''.$_.'\''} @opts;
+      print STDERR "args = "; say STDERR map {'\''.$_.'\''} @args;
+   }
 
    # Process arguments:
    my $NA = scalar @args;
-   $NA >= 1 and $RegExp = qr/$args[0]/o;                  # Set $RegExp.
-   $NA >= 2 and $Predicate = $args[1];                    # Set $Predicate.
-   $NA >= 3 && !$db and error($NA) and help and exit 666; # Too many args.
+   if ( 0 == $NA ) {              # $NA == 0:
+      ;                           # Do nothing.
+   }
+   elsif ( 1 == $NA ) {           # $NA == 1:
+      $RegExp = qr/$args[0]/o;    # Set $RegExp.
+   }
+   elsif ( 2 == $NA ) {           # $NA == 2:
+      $RegExp = qr/$args[0]/o;    # Set $RegExp.
+      $Predicate = $args[1];      # Set $Predicate.
+   }
+   else {                         # $NA < 0 or $NA > 2:
+      error($NA);                 # Print error message.
+      help;                       # Print help  message.
+      exit 666;                   # Exit program and return The Number Of The Beast to OS.
+   }
 
    # Return success code 1 to caller:
    return 1;
@@ -168,94 +203,129 @@ sub argv {
 
 sub curdire {
    ++$direcount;
-   my $cwd = cwd_utf8;
-   say "\nDir # $direcount: $cwd\n";
-   my $files = GetFiles($cwd, $Target, $Regexp);
-   foreach my $file (@{$curdirfiles}) {
+   my $cwd = d getcwd;
+   say STDOUT "\nDir # $direcount: $cwd\n";
+   my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
+   foreach my $file (@$curdirfiles) {
       ++$filecount;
       local $_ = e $file->{Path};
       if (eval($Predicate)) {
          ++$findcount;
-         say STDOUT "$file->{Path}";
+         curfile($file);
       }
    }
    return 1;
 } # end sub curdire
 
 sub curfile ($file) {
-   ++$filecount;
    my $path          = $file->{Path};
    my $dire          = get_dir_from_path($path);
    my $name          = $file->{Name};
    my $prefix        = get_prefix($name);
    my $prelen        = length($prefix);
    my $suffix        = get_suffix($name);
-   my $new_prefix;
-   my $new_name;
 
    # Announce file name info if debugging:
-   say "\$name   = $name"   if $db;
-   say "\$prefix = $prefix" if $db;
-   say "\$prelen = $prelen" if $db;
-   say "\$suffix = $suffix" if $db;
+   if ( $db ) {
+      say STDERR '';
+      say STDERR "In curfile(), near top. Just set initial variables:";
+      say STDERR "\$path   = $path";
+      say STDERR "\$dire   = $dire";
+      say STDERR "\$name   = $name";
+      say STDERR "\$prefix = $prefix";
+      say STDERR "\$prelen = $prelen";
+      say STDERR "\$suffix = $suffix";
+   }
 
-   # Skip desktop, thumbs, pspb, and id files:
-   is_data_file($path) && $name =~ m/^desktop.*\.ini$|^thumbs.*\.db$|^pspbrwse.*\.jbf$|id-token/i
-   and ++$skipcount and say "Skipped file \"$name\" (dsktp, thumbs, pspb, or ID.)" and return 1;
+   # Skip hidden files and directories:
+   $name =~ m/^\./
+   and ++$skipcount
+   and say STDOUT "Skipped file \"$name\" (hidden)."
+   and return 1;
+
+   # Skip desktop, thumbs, browse, and id-token files:
+   is_data_file($path)
+   && $name =~ m/^desktop.*\.ini$|^thumbs.*\.db$|^pspbrwse.*\.jbf$|id-token|^\..+$/i
+   and ++$skipcount
+   and say STDOUT "Skipped file \"$name\" (desktop, thumbs, browse, or id-token)."
+   and return 1;
 
    # Skip this file if the "Nine" feature is turned on and the prefix length is < 9:
    $Nine && $prelen < 9
-   and ++$ninecount and say "Skipped file \"$name\" because prefix length < 9." and return 1;
+   and ++$ninecount
+   and say STDOUT "Skipped file \"$name\" because prefix length < 9."
+   and return 1;
 
    # Skip this file if in "Spotlight" mode and file doesn't match sl:
    $Spotlight && !$Firefox && $prefix !~ m/[0-9a-f]{64}/
-   and ++$nomacount and say "Skipped file \"$name\" because not Spotlight." and return 1;
+   and ++$nomacount
+   and say STDOUT "Skipped file \"$name\" because not Spotlight."
+   and return 1;
 
    # Skip this file if in "Firefox" mode and file doen't match ff:
    $Firefox && !$Spotlight && $prefix !~ m/[0-9A-F]{40}/
-   and ++$nomacount and say "Skipped file \"$name\" because not Firefox." and return 1;
+   and ++$nomacount
+   and say STDOUT "Skipped file \"$name\" because not Firefox."
+   and return 1;
 
    # Skip this file if in "Spotfire" mode and file doesn't match sl or ff:
    $Spotlight && $Firefox && $prefix !~ m/[0-9a-f]{64}/ && $prefix !~ m/[0-9A-F]{40}/
-   and ++$nomacount and say "Skipped file \"$name\" because not Spotlight or Firefox." and return 1;
+   and ++$nomacount
+   and say STDOUT "Skipped file \"$name\" because not Spotlight or Firefox."
+   and return 1;
 
    # Skip this file if in  "NoReRan" mode and file name is already randomized:
    $NoReRan && $prefix =~ m/\p{Ll}{8}/
-   and ++$norecount and say "Skipped file \"$name\" because already random." and return 1;
+   and ++$norecount
+   and say STDOUT "Skipped file \"$name\" because already random."
+   and return 1;
+
+   # If we get to here, we're about to either simulate a rename or attempt a rename, provided that we can
+   # find a suitable name, so increment the candidate counter:
+   ++$candcount;
 
    # Try to find a random file name that doesn't already exist in file's directory:
-   $new_name = find_avail_rand_name($dire, $Prefix, $Suffix . $suffix);
-   say "NewName = $new_name" if $db;
-   '***ERROR***' eq $new_name
-   and warn("Unable to find nonexisting randomized new name for file \"$name\";\n")
-   and warn("skipping to next file.\n") and return 0;
+   my $new_name = find_avail_rand_name($dire, $Prefix, $Suffix . $suffix);
+   $db and say STDERR "In curfile(); \$new_name = $new_name";
 
-   # If debugging or simulating, just go through the motions then return 1:
-   $db || $Emulate and ++$emulcount and say "Simulated Rename: $name => $new_name" and return 1;
+   # Check to see if find_avail_rand_name returned an error code:
+   '***ERROR***' eq $new_name
+   and ++$nonacount
+   and say STDERR "Unable to find nonexisting randomized new name for this file."
+   and say STDERR "Rejecting this candidate and skipping to next file."
+   and return 0;
+
+   # If simulating, just go through the motions then return 1:
+   $Simulate
+   and ++$simucount and say STDOUT "Simulated Rename: $name => $new_name" and return 1;
 
    # Otherwise, attempt rename:
    rename_file($name, $new_name)
-   and ++$renacount and say "Renamed: $name => $new_name" and return 1
-   or  ++$failcount and say "Failed:  $name => $new_name" and return 0;
+   and ++$renacount and say STDOUT "Renamed: $name => $new_name" and return 1
+   or  ++$failcount and say STDOUT "Failed:  $name => $new_name" and return 0;
 } # end sub curfile ($file)
 
 sub stats {
-   if ( $Verbose >= 1 ) {
-      print("\nStatistics for program \"randomize-file-names.pl\":\n");
-      say "Navigated $direcount directories.";
-      say "Found $filecount files matching target \"$Target\" and regexp \"$Regexp\".";
-      say "Skipped $skipcount files because they're dsktp, thumbs, pspb, or ID.";
-      $Nine and say "Skipped $ninecount files with prefix length < 9.";
-      $Spotlight || $Firefox and say "Skipped $nomacount files not matching sl and/or ff pattern.";
-      $Emulate and say "Emulated $emulcount file renames."
-      or  say "Successfully randomized the names of $renacount files.";
-      and say "Tried but failed to randomize the names of $failcount files.";
+   if ( $Verbose ) {
+      say STDERR '';
+      say STDERR "Statistics for program \"randomize-file-names.pl\":";
+      say STDERR "Navigated $direcount directories.";
+      say STDERR "Found $filecount files matching target \"$Target\" and regexp \"$RegExp\".";
+      say STDERR "Found $findcount files also matching predicate \"$Predicate\".";
+      say STDERR "Skipped $skipcount files because they're dsktp, thumbs, pspb, or ID.";
+      $Nine and say STDERR "Skipped $ninecount files with prefix length < 9.";
+      $Spotlight || $Firefox and say STDERR "Skipped $nomacount files not matching sl and/or ff pattern.";
+      $NoReRan and say STDERR "Skipped $norecount files because they already had randomized names.";
+      say STDERR "Nominated $candcount candidates for renaming.";
+      say STDERR "Rejected $nonacount rename candidates because no suitable names could be found.";
+      $Simulate and say STDERR "Simulated $simucount file renames."
+      or  say STDERR "Successfully randomized the names of $renacount files."
+      and say STDERR "Tried but failed to randomize the names of $failcount files.";
    }
    return 1;
 } # end sub stats
 
-sub error ($NA)
-{
+sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
    Error: you typed $NA arguments, but this program takes at most 1 argument,
@@ -320,12 +390,12 @@ sub help {
    -b or --both         Target Both.
    -a or --all          Target All.
    -y or --yes          Randomize file names without prompting.
-   -m or --emulate      Merely simulate renames.
+   -s or --simulate     Merely simulate renames.
    -i or --nine         Ignore files with prefix length < 9.
    -n or --noreran      Ignore files with names that are already randomized
-   -s or --spotlight    Ignore all file names other than spotlight photo names
+   -p or --spotlight    Ignore all file names other than spotlight photo names
    -x or --firefox      Ignore all file names other than firefox cache names
-   -z or --spotfire     Ignore all file names other than spotlight or firefox
+   -t or --spotfire     Ignore all file names other than spotlight or firefox
    --prefix=NamePrefix  Tack NamePrefix on beginning of file name
    --suffix=NameSuffix  Tack NameSuffix on end of file name before type suffix
 
@@ -385,32 +455,6 @@ sub help {
    If the number of arguments is not 0, 1, or 2, this program will print an
    error message and abort.
 
-   Happy item processing!
-   Cheers,
-   Robbie Hatley,
-   programmer.
-   END_OF_HELP
-   return 1;
-
-
-
-
-   print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-
-
-   Command line:
-
-   Description of options:
-   Option:                  Meaning:
-   All other options are ignored.
-
-   Description of arguments:
-   In addition to options, this program can take one optional argument which, if
-   present, must be a Perl-Compliant Regular Expression (PCRE) specifying which
-   file names to randomize. For example, if you want to randomize names of png
-   files only, you could type:
-
-      randomize-file-names.pl '^.+\.png$'
 
    Happy file-name randomizing!
 
@@ -420,3 +464,4 @@ sub help {
    END_OF_HELP
    return 1;
 } # end help
+__END__

@@ -134,14 +134,14 @@ sub chdir_utf8             :prototype($)    ; # utf8 version of "chdir".
 sub cwd_utf8               :prototype()     ; # utf8 version of "get curr dir".
 sub glob_utf8              :prototype($)    ; # utf8 version of "glob".
 sub link_utf8              :prototype($$)   ; # utf8 version of "unlink".
-sub mkdir_utf8             :prototype($)    ; # utf8 version of "mkdir".
+sub mkdir_utf8             :prototype($;$)  ; # utf8 version of "mkdir".
 sub open_utf8              :prototype($$$)  ; # utf8 version of "open". WOMBAT: Won't work with bareword filehandles.
 sub opendir_utf8           :prototype($$)   ; # utf8 version of "opendir".
 sub readdir_utf8           :prototype($)    ; # utf8 version of "readdir".
 sub readlink_utf8          :prototype($)    ; # utf8 version of "unlink".
 sub rmdir_utf8             :prototype($)    ; # utf8 version of "rmdir".
 sub symlink_utf8           :prototype($$)   ; # utf8 version of "unlink".
-sub unlink_utf8            :prototype($)    ; # utf8 version of "unlink".
+sub unlink_utf8            :prototype(@)    ; # utf8 version of "unlink".
 sub glob_regexp_utf8       :prototype(;$$$) ; # Regexp file globber using readdir_utf8.
 
 # Section 4, Minor Subroutines (code is (relatively) short and simple):
@@ -164,6 +164,7 @@ sub win2cyg                :prototype($)    ; # Convert Windows path to Cygwin  
 sub hash                   :prototype($$;$) ; # Return hash or hash-based file-name of a file.
 sub shorten_sl_names       :prototype($$$$) ; # Shorten directory and file names for Spotlight.
 sub is_data_file           :prototype($)    ; # Return 1 if a given string is a path to a non-link non-dir regular file.
+sub is_meta_file           :prototype($)    ; # Return 1 if a given string is a path to a meta-data file.
 sub is_valid_qual_dir      :prototype($)    ; # Is a given string a fully-qualified path to an existing directory?
 
 # ======= VARIABLES: =========================================================================================
@@ -188,7 +189,8 @@ our @EXPORT =
       enumerate_file_name     annotate_file_name      find_avail_enum_name
       find_avail_rand_name    is_large_image          get_correct_suffix
       cyg2win                 win2cyg                 hash
-      shorten_sl_names        is_data_file            is_valid_qual_dir
+      shorten_sl_names        is_data_file            is_meta_file
+      is_valid_qual_dir
    );
 
 # Symbols which it is OK to export by request:
@@ -242,10 +244,10 @@ our $unkncount = 0; # Count of all unknown files.
 # D = Directories only (but not SYMLINKDs).
 # B = Both regular files and directories (but not SYMLINKDs).
 # A = All files (regular, directories, links, SYMLINKDs, pipes, etc, etc, etc)
-sub GetFiles :prototype(;$$$) {
-   my $dir    = @_ ? shift(@_) : cwd_utf8; # What directory does user want a list of file-info packets for?
-   my $target = @_ ? shift(@_) : 'A';      # 'F' = 'Files'; 'D' = 'Directories'; 'B' = 'Both'; 'A' = 'All'.
-   my $regexp = @_ ? shift(@_) : '^.+$';   # What regular expression should we use for selecting files?
+sub GetFiles :prototype(;$$$) ($dir = d(getcwd), $target = 'A', $regexp = '^.+$') {
+   # "$dir"     =  What directory does user want a list of file-info packets for?
+   # "$target"  =  'F' = 'Files'; 'D' = 'Directories'; 'B' = 'Both'; 'A' = 'All'.
+   # "$regexp"  =  What regular expression should we use for selecting files?
 
    # If debugging, print diagnostics:
    if ($db) {
@@ -415,10 +417,9 @@ sub GetFiles :prototype(;$$$) {
 # making decisions regarding copying or deleting of files. To make such comparisons FAST, this sub stores
 # files records in same-file-size arrays and does not collect any stats other than $totfcount and $regfcount
 # (which will be equal).
-sub GetRegularFilesBySize :prototype(;$) {
+sub GetRegularFilesBySize :prototype(;$) ($regexp = '^.+$') {
    my $cwd    = cwd_utf8                                   ; # Current Working Directory.
    my $target = 'F'                                        ; # Target is "regular files only".
-   my $regexp = @_ ? shift(@_) : '^.+$'                    ; # Regexp.
    my $path   = ''                                         ; # Path for a file.
    my $name   = ''                                         ; # Name for a file.
    my @filepaths   = ()                                    ; # Array of file paths.
@@ -504,10 +505,9 @@ sub GetRegularFilesBySize :prototype(;$) {
 # Compare the contents of two files;
 # return 1 if files are identical;
 # return 0 if files are different.
-sub FilesAreIdentical :prototype($$) {
+sub FilesAreIdentical :prototype($$) ($filepath1, $filepath2) {
    # Get path of first file, make sure it exists, get its stats, make sure it's a regular file,
    # and get its size:
-   my $filepath1 = shift;
    if ( ! -e e $filepath1 ) {
       warn "Error in FilesAreIdentical: \"$filepath1\" does not exist.\n";
       return 0;
@@ -520,7 +520,6 @@ sub FilesAreIdentical :prototype($$) {
 
    # Get path of second file, make sure it exists, get its stats, make sure it's a regular file,
    # and get its size:
-   my $filepath2 = shift;
    if ( ! -e e $filepath2 ) {
       warn "Error in FilesAreIdentical: \"$filepath2\" does not exist.\n";
       return 0;
@@ -625,7 +624,13 @@ sub FilesAreIdentical :prototype($$) {
 } # end sub FilesAreIdentical
 
 # Navigate a directory tree recursively, applying code at each node on the tree:
-sub RecurseDirs :prototype(&) {
+sub RecurseDirs :prototype(&) ($f) {
+   # Die if f is not a ref to some code (block or sub):
+   if ('CODE' ne ref $f) {
+      die '\nFatal error in RecurseDirs: This subroutine takes 1 argument which must be a\n'.
+          '{code block} or a reference to a subroutine.\n\n';
+   }
+
    # This is a recursive function, being used in a chaotic and unpredictable environment with an unknown file
    # system, so it is VERY possible for runaway recursion to occur. So, to keep track of recursion, we
    # use this variable, which is initialized to zero once only, the first time this function is called during
@@ -633,56 +638,48 @@ sub RecurseDirs :prototype(&) {
    # exceeds 50 levels of recursion:
    state $recursion = 0;
 
-   # Store incoming code reference in variable $f:
-   my $f = \&{shift @_};
-
-   # Die if f is not a ref to some code (block or sub):
-   if ('CODE' ne ref $f) {
-      die '\nFatal error in RecurseDirs: This subroutine takes 1 argument which must be a\n'.
-          '{code block} or a reference to a subroutine.\n\n';
-   }
-
    # Get current directory:
    my $curdir = d getcwd;
 
    # If we FAILED to get current working directory, something is very wrong!!!
    if ( ! defined $curdir ){die "Fatal error in RecurseDirs: Can't get current directory!\n$!\n"}
 
-   # # Announce file-system type:
-   # my $fst = fstype($curdir);
-   # if ( $recursion == 0 ) {say "File-system type: $fst";}
-
-   # If $curdir is a critical (or huge) Linux system directory, die:
-   if ( 'Linux' eq $ENV{PLATFORM} ) {
+   # If starting directory is huge, or a critical Linux system directory, die:
+   if ( 0 == $recursion && 'Linux' eq $ENV{PLATFORM} ) {
       if
       (
-            $curdir =~ m#/lost+found$#      # We're not allowed in here.
-         || $curdir eq '/proc'              # Trying to navigate within here causes errors.
-         || $curdir eq '/'                  # Too huge!
-         || $curdir eq '/home'              # Too huge!
-         || $curdir eq '/home/aragorn'      # Too huge!
-         || $curdir eq '/mnt'               # May be huge, depending on what's mounted there.
-      ) {
-         die  "Error in RecurseDirs: Can't recurse this problematic Linux directory:\n" .
-              "$curdir\nAborting program.\n$!\n";
+            $curdir eq '/'               # Too huge, and contains system files, and we don't have permissions.
+         || $curdir eq '/home'           # Too huge, and we don't have permissions.
+         || $curdir eq '/mnt'            # May be huge, depending on what's mounted there.
+         || $curdir eq '/proc'           # Trying to navigate within here causes errors.
+         || $curdir =~ m%/lost\+found$%  # We're not allowed in here.
+      )
+      {
+         die "Error in RecurseDirs: Can't recurse this problematic Linux directory:\n" .
+             "$curdir\n".
+             "Aborting program.\n".
+             "$!\n";
       }
    }
 
    # Try to open current directory; if that fails, print warning and return 1:
    my $dh = undef;
-   opendir $dh, e $curdir;
-   if ( ! defined $dh ) {
-      warn "Warning from RecurseDirs: Couldn't open directory \"$curdir\".\n".
-           "Moving on to next directory.";
-      return 1; # This allows directory-tree-walking to continue.
-   }
+   opendir $dh, e $curdir
+   or warn "Error in RecurseDirs: Couldn't open this directory:\n".
+           "\"$curdir\"\n".
+           "Moving on to next directory.\n"
+   and return 1; # This allows directory-tree-walking to continue.
 
    # Try to read current directory; if that fails, print warning and return 1:
    my @subdirs = d readdir $dh;
    if ( scalar(@subdirs) < 2 ) {
-      warn "Warning from RecurseDirs: Couldn't read directory \"$curdir\".\n".
-           "Moving on to next directory.";
-      closedir $dh or die "Fatal error in RecurseDirs: Couldn't close directory \"$curdir\".\n$!\n";
+      warn "Error in RecurseDirs: Couldn't read this directory:\n".
+           "\"$curdir\"\n".
+           "Moving on to next directory.\n";
+      closedir $dh
+      or die "Fatal error in RecurseDirs: Couldn't close this directory:\n".
+             "\"$curdir\"\n".
+             "$!\n";
       return 1; # This allows directory-tree-walking to continue.
    }
 
@@ -693,14 +690,14 @@ sub RecurseDirs :prototype(&) {
 
    # Navigate immediate subdirs (if any) of this instance's current directory:
    SUBDIR: foreach my $subdir (@subdirs) {
+
       # ========== SUBDIR NAME CHECKS: =======================================================================
 
-      # Avoid certain specific miscellaneous problematic directories:
+      # Avoid certain specific problematic directories:
       next SUBDIR if $subdir eq '.';                            # Windows/Linux/Cygwin: Hard link to self.
       next SUBDIR if $subdir eq '..';                           # Windows/Linux/Cygwin: Hard link to parent.
-      next SUBDIR if $subdir eq '.git';                         # Windows/Linux/Cygwin: git files.
+      next SUBDIR if $subdir eq '.git';                         # Windows/Linux/Cygwin: git files; no touch.
       next SUBDIR if $subdir eq 'System Volume Information';    # Windows: System volume information.
-      next SUBDIR if $subdir eq 'MapData';                      # Windows: Microsoft Maps Data.
       next SUBDIR if $subdir eq 'lost+found';                   # Linux: Lost & Found Dept.
 
       # Avoid rooting in trash bins:
@@ -709,19 +706,6 @@ sub RecurseDirs :prototype(&) {
       next SUBDIR if $subdir =~ m/^Recyler$/i;                  # Windows trash bins.
       next SUBDIR if $subdir eq 'Trash';                        # Linux trash bins.
       next SUBDIR if $subdir =~ m/^\.Trash/;                    # Linux trash bins.
-
-      # Don't mess with IDE files in rhe:
-      if ( $curdir =~ m[/rhe$] ) {
-         next SUBDIR if $subdir eq 'BASIC';                        # Windows/Linux/Cygwin: IDE files.
-         next SUBDIR if $subdir eq 'CodeBlocks-Projects';          # Windows/Linux/Cygwin: IDE files.
-         next SUBDIR if $subdir eq 'CVI';                          # Windows/Linux/Cygwin: IDE files.
-         next SUBDIR if $subdir eq 'DevCpp-Projects';              # Windows/Linux/Cygwin: IDE files.
-         next SUBDIR if $subdir eq 'Fluid-Projects';               # Windows/Linux/Cygwin: IDE files.
-         next SUBDIR if $subdir eq 'Java';                         # Windows/Linux/Cygwin: IDE files.
-         next SUBDIR if $subdir eq 'qt';                           # Windows/Linux/Cygwin: IDE files.
-         next SUBDIR if $subdir eq 'ResEdit-x64-Projects';         # Windows/Linux/Cygwin: IDE files.
-         next SUBDIR if $subdir eq 'Visual-Studio';                # Windows/Linux/Cygwin: IDE files.
-      }
 
       # Avoid problematic subdirectories of bootable Windows partitions:
       if
@@ -834,11 +818,15 @@ sub RecurseDirs :prototype(&) {
 # All other arguments are ignored.
 # Note: if contradictory arguments are given (eg, 'sha1', 'rename=Fred'), later arguments override previous.
 # Returns 0 for error, 1 for success, 2 for "skipped file because duplicate exists in destination".
-sub copy_file :prototype($$;@) {
-   my $spath    = shift;                      # Path of   source    file, full  version.
+sub copy_file :prototype($$;@)
+(
+   $spath, # Path of source file.
+   $dst,   # Destination directory.
+   @args   # Additional arguments, if any, go in here.
+)
+{
    my $dpath    = '';                         # Path of destination file, full  version.
-   my $src      = get_dir_from_path ($spath); # Directory of   source    file.
-   my $dst      = shift;                      # Directory of destination file.
+   my $src      =  get_dir_from_path($spath); # Directory of   source    file.
    my $sname    = get_name_from_path($spath); #   Name    of   source    file.
    my $dname    = '';                         #   Name    of destination file. (Defaults to $sname.)
    my $mode     = 'reg';                      # Naming Mode: nrm = normal, sha = sha1, ren = rename.
@@ -850,7 +838,7 @@ sub copy_file :prototype($$;@) {
       say STDERR "In copy_file, at top. ";
       say STDERR "\$spath = \"$spath\"  ";
       say STDERR "\$dst   = \"$dst\"    ";
-      say STDERR "\@_     = (@_)        ";
+      say STDERR "\@arg     = (@args)   ";
       say STDERR "                      ";
    }
 
@@ -877,7 +865,7 @@ sub copy_file :prototype($$;@) {
    }
 
    # Process remaining arguments:
-   foreach (@_) {
+   foreach (@args) {
       if ( $_ eq 'sha1' ) {        # if SHA1-ing file
          $mode = 'sha';            # set $mode to 'sha' (SHA-1 Mode)
       }
@@ -997,11 +985,15 @@ sub copy_file :prototype($$;@) {
 # All other arguments are ignored.
 # Note: if contradictory arguments are given (eg, 'sha1', 'rename=Fred'), later arguments override previous.
 # Returns 0 for error, 1 for success, 2 for "skipped file because duplicate exists in destination".
-sub move_file :prototype($$;@) {
-   my $spath    = shift;                      # Path of   source    file, full  version.
+sub move_file :prototype($$;@)
+(
+   $spath, # Path of source file.
+   $dst,   # Destination directory.
+   @args   # Additional arguments, if any, go in here.
+)
+{
    my $dpath    = '';                         # Path of destination file, full  version.
    my $src      = get_dir_from_path ($spath); # Directory of   source    file.
-   my $dst      = shift;                      # Directory of destination file.
    my $sname    = get_name_from_path($spath); #   Name    of   source    file.
    my $dname    = '';                         #   Name    of destination file. (Defaults to $sname.)
    my $mode     = 'reg';                      # Naming Mode: nrm = normal, sha = sha1, ren = rename.
@@ -1013,7 +1005,7 @@ sub move_file :prototype($$;@) {
       say STDERR "In move_file, at top. ";
       say STDERR "\$spath = \"$spath\"  ";
       say STDERR "\$dst   = \"$dst\"    ";
-      say STDERR "\@_     = (@_)        ";
+      say STDERR "\@args  = (@args)     ";
       say STDERR "                      ";
    }
 
@@ -1040,7 +1032,7 @@ sub move_file :prototype($$;@) {
    }
 
    # Process remaining arguments:
-   foreach (@_) {
+   foreach (@args) {
       if ( $_ eq 'sha1' ) {        # if SHA1-ing file
          $mode = 'sha';            # set $mode to 'sha' (SHA-1 Mode)
       }
@@ -1162,10 +1154,14 @@ sub move_file :prototype($$;@) {
 #    large             (Copy only image files which are at least 1200px wide and 600px tall.)
 #    sha1              (Use the SHA-1 hash of each source file as its destination name root.)
 # All arguments will also be passed-on to copy_file(), which may take further actions based on them.
-sub copy_files :prototype($$;@) {
+sub copy_files :prototype($$;@)
+(
+   $src, # Source directory.
+   $dst, # Destination directory.
+   @args # Additional arguments, if any, go in here.
+)
+{
    # Settings:
-   my $src      = shift                 ; # $src      = source directory
-   my $dst      = shift                 ; # $dst      = destination directory
    my $target   = 'F'                   ; # $target   = target (always "regular Files only")
    my $regexp   = '^.+$'                ; # $regexp   = regular expression
    my $sl       = 0                     ; # $sl       = Shorten names for Spotlight?
@@ -1190,12 +1186,12 @@ sub copy_files :prototype($$;@) {
            "Dst dir = \"$dst\".   \n",
            "Target  = \"$target\".\n",
            "Args    =             \n",
-           join "\n", @_             ,
+           join "\n", @args          ,
            "\n";
    }
 
    # Process only those arguments we need (some will be simply passed-on to copy_file):
-   foreach (@_) {
+   foreach (@args) {
          if (/^regexp=(.+)$/) {$regexp = $1 ;} # Copy only files matching regexp.
       elsif (/^sl$/         ) {$sl     = 1  ;} # Shorten names for Spotlight.
       elsif (/^unique$/     ) {$unique = 1  ;} # Copy only files for which duplicates don't exist in dest.
@@ -1298,7 +1294,7 @@ sub copy_files :prototype($$;@) {
             }
 
             # Attempt to copy this file from $src to $dst:
-            my $result = copy_file($sfile->{Path}, $dst, @_);
+            my $result = copy_file($sfile->{Path}, $dst, @args);
             if (0 == $result) {++$err_cnt;}
             if (1 == $result) {++$cpy_cnt;}
          } # end foreach file in current size group
@@ -1320,7 +1316,7 @@ sub copy_files :prototype($$;@) {
          }
 
          # Attempt to copy this file from $src to $dst:
-         copy_file($spath, $dst, @_) and ++$cpy_cnt or  ++$err_cnt;
+         copy_file($spath, $dst, @args) and ++$cpy_cnt or  ++$err_cnt;
       } # end for each path in source directory
    } # end else if (!$unique)
    say "Copied $cpy_cnt files from \"$srcdsh\" to \"$dstdsh\".";
@@ -1340,10 +1336,14 @@ sub copy_files :prototype($$;@) {
 #    large             (Move only image files which are at least 1200px wide and 600px tall.)
 #    sha1              (Use the SHA-1 hash of each source file as its destination name root.)
 # All arguments will also be passed-on to move_file(), which may take further actions based on them.
-sub move_files :prototype($$;@) {
+sub move_files :prototype($$;@)
+(
+   $src, # Source directory.
+   $dst, # Destination directory.
+   @args # Additional arguments, if any, go in here.
+)
+{
    # Settings:
-   my $src      = shift                 ; # $src      = source directory
-   my $dst      = shift                 ; # $dst      = destination directory
    my $target   = 'F'                   ; # $target   = target (always "regular Files only")
    my $regexp   = '^.+$'                ; # $regexp   = regular expression
    my $sl       = 0                     ; # $sl       = shorten names for Spotlight?
@@ -1368,12 +1368,12 @@ sub move_files :prototype($$;@) {
       say STDERR "Src dir = \"$src\".              ";
       say STDERR "Dst dir = \"$dst\".              ";
       say STDERR "Target  = \"$target\".           ";
-      say STDERR "Args    = (@_)                   ";
+      say STDERR "Args    = (@args)                ";
       say STDERR "                                 ";
    }
 
    # Process only those arguments we need (most will be simply passed-on to move_file):
-   foreach (@_) {
+   foreach (@args) {
          if (/^regexp=(.+)$/) {$regexp = $1 ;} # Move only files matching regexp.
       elsif (/^sl$/         ) {$sl     = 1  ;} # Shorten names for Spotlight.
       elsif (/^unique$/     ) {$unique = 1  ;} # Move only files for which duplicates don't exist in dest.
@@ -1477,7 +1477,7 @@ sub move_files :prototype($$;@) {
                }
             }
             # Attempt to move this file from $src to $dst:
-            my $result = move_file($sfile->{Path}, $dst, @_);
+            my $result = move_file($sfile->{Path}, $dst, @args);
             if (0 == $result) {++$err_cnt;}
             if (1 == $result) {++$mov_cnt;}
          } # end foreach file in current size group
@@ -1499,7 +1499,7 @@ sub move_files :prototype($$;@) {
          }
 
          # Attempt to move this file from $src to $dst:
-         my $result = move_file($spath, $dst, @_);
+         my $result = move_file($spath, $dst, @args);
          if (0 == $result) {++$err_cnt;}
          if (1 == $result) {++$mov_cnt;}
       } # end for each path in source directory
@@ -1512,31 +1512,6 @@ sub move_files :prototype($$;@) {
 } # end sub move_files
 
 # ======= SECTION 2, PRIVATE SUBROUTINES: ====================================================================
-
-# Subroutine rand_int returns a random integer in the range [m,n] inclusive,
-# where n and m are any two integers with n > m, and with n and m being greater
-# than -1e190,000,000,000,000,000,000 and less than +1,000,000,000,000,000,000.
-# This subroutine insures that the probability of the two end points (m and n)
-# to occur is the same as the probability of any of the intermediate integers
-# to occur.
-sub rand_int :prototype($$) ($min, $max) {
-   $min =~ m/^-?\d+$/
-   or die "Error in rand_int: first argument not integer.\n";
-
-   $max =~ m/^-?\d+$/
-   or die "Error in rand_int: second argument not integer.\n";
-
-   $min > -9.223e+18 && $min < 1.844e+19
-   or die "Error in rand_int: first argument out-of-range.\n";
-
-   $max > -9.223e+18 && $max < 1.844e+19
-   or die "Error in rand_int: second argument out-of-range.\n";
-
-   $min < $max
-   or die "Error in rand_int: second argument not greater than first.\n";
-
-   return floor($min+rand($max-$min+1));
-} # end sub rand_int
 
 # Is a line of text encoded in ASCII?
 sub is_ascii :prototype($) ($text) {
@@ -1597,6 +1572,11 @@ sub is_utf8 :prototype($) ($text) {
    return $is_utf8;
 }
 
+# Return a random integer in the range [m,n] inclusive:
+sub rand_int :prototype($$) ($min, $max) {
+   return floor($min+rand($max-$min+1));
+} # end sub rand_int
+
 # Return a string of 8 random lower-case English letters:
 sub eight_rand_lc_letters :prototype() {
    return join '', map {chr(rand_int(97, 122))} (1..8);
@@ -1608,92 +1588,83 @@ sub eight_rand_lc_letters :prototype() {
 use constant EFLAGS => RETURN_ON_ERR | WARN_ON_ERR | LEAVE_SRC;
 
 # Decode from UTF-8 to Unicode:
-sub d
-{
-      if (0 == scalar @_) {return Encode::decode('UTF-8', $_,    EFLAGS);}
-   elsif (1 == scalar @_) {return Encode::decode('UTF-8', $_[0], EFLAGS);}
-   else              {return map {Encode::decode('UTF-8', $_,    EFLAGS)} @_ };
+sub d :prototype(@) (@args) {
+      if (0 == scalar @args) {return Encode::decode('UTF-8', $_,       EFLAGS);}
+   elsif (1 == scalar @args) {return Encode::decode('UTF-8', $args[0], EFLAGS);}
+   else                 {return map {Encode::decode('UTF-8', $_,       EFLAGS)} @args };
 } # end sub d
 
 # Encode from Unicode to UTF-8:
-sub e
-{
-      if (0 == scalar @_) {return Encode::encode('UTF-8', $_,    EFLAGS);}
-   elsif (1 == scalar @_) {return Encode::encode('UTF-8', $_[0], EFLAGS);}
-   else              {return map {Encode::encode('UTF-8', $_,    EFLAGS)} @_ };
+sub e :prototype(@) (@args) {
+      if (0 == scalar @args) {return Encode::encode('UTF-8', $_,       EFLAGS);}
+   elsif (1 == scalar @args) {return Encode::encode('UTF-8', $args[0], EFLAGS);}
+   else                 {return map {Encode::encode('UTF-8', $_,       EFLAGS)} @args };
 } # end sub e
 
 # chdir, but using UTF-8:
-sub chdir_utf8 :prototype($) {
-   return chdir(e($_[0]));
-}
+sub chdir_utf8 :prototype($) ($dir) {return chdir(e($dir))}
 
 # cwd, but using UTF-8:
-sub cwd_utf8 :prototype() {
-   return d(getcwd());
-}
+sub cwd_utf8 :prototype() {return d(getcwd)}
 
 # file glob, but using UTF-8:
-sub glob_utf8 :prototype($) {
-   my $wc = shift;
-   if (wantarray) {return map {d($_)} glob(e($wc));}
-   else           {return d(glob(e($wc)));         }
+sub glob_utf8 :prototype($) ($wildcard) {
+   if (wantarray) {return map {d($_)} glob(e($wildcard)) ;}
+   else           {return      d     (glob(e($wildcard)));}
 }
 
 # UTF-8 version of link:
-sub link_utf8 :prototype($$) {
-   return link(e($_[0]), e($_[1]));
+sub link_utf8 :prototype($$) ($target, $linkname) {
+   return link(e($target), e($linkname));
 }
 
 # mkdir, but using UTF-8:
-sub mkdir_utf8 :prototype($) {
-   return mkdir(e($_[0]));
+sub mkdir_utf8 :prototype($;$) ($dirname, $mask = 0777) {
+   return mkdir(e($dirname),$mask);
 }
 
 # utf8 version of open:
-# WOMBAT : won't work with bareword handles;
+# WOMBAT : Doesn't work with bareword handles;
 # for those, use this instead: open(HND, '<', e $filepath);
-# WOMBAT : Only works with 3-arg version of open.
-sub open_utf8 :prototype($$$) {
-   return open($_[0], $_[1], e($_[2]));
+# WOMBAT : Only works with the "FileHandle, Mode, FilePath" version of open.
+sub open_utf8 :prototype($$$) ($fh, $mode, $path) {
+   return open($fh, $mode, e($path));
 }
 
 # opendir, but using UTF-8:
 # WOMBAT : won't work with bareword handles;
 # for those, use this instead: opendir(HND, e $dirpath);
-# WOMBAT : only works with 2-arg version of opendir.
-sub opendir_utf8 :prototype($$) {
-   return opendir($_[0], e($_[1]));
+sub opendir_utf8 :prototype($$) ($dh, $path) {
+   return opendir($dh, e($path));
 }
 
 # readdir, but using UTF-8:
-sub readdir_utf8 :prototype($) {
-   my $dh = shift;
+sub readdir_utf8 :prototype($) ($dh) {
    if (wantarray) {return map {d($_)} readdir($dh);}
    else           {return d(readdir($dh));         }
 }
 
 # UTF-8 version of readlink:
-sub readlink_utf8 :prototype($) {
-   return d(readlink(e($_[0])));
+sub readlink_utf8 :prototype($) ($link) {
+   return d(readlink(e($link)));
 }
 
 # rmdir, but using UTF-8:
-sub rmdir_utf8 :prototype($) {
-   return rmdir(e($_[0]));
+sub rmdir_utf8 :prototype($) ($dir) {
+   return rmdir(e($dir));
 }
 
 # UTF-8 version of symlink:
-sub symlink_utf8 :prototype($$) {
-   return symlink(e($_[0]), e($_[1]));
+sub symlink_utf8 :prototype($$) ($target, $linkname) {
+   return symlink(e($target), e($linkname));
 }
 
 # UTF-8 version of unlink:
-sub unlink_utf8 :prototype($) {
-   return unlink(e($_[0]));
+sub unlink_utf8 :prototype(@) (@args) {
+   return unlink(e(@args));
 }
 
-sub glob_regexp_utf8 :prototype(;$$$) {
+sub glob_regexp_utf8 :prototype(;$$$) ($dir = d(getcwd), $target = 'A', $regexp = '^.+$') {
    # This sub is like glob(), but using UTF-8, a given directory, a target type, and a regular expression
    # instead of a csh-style wildcard as input, and returning matching fully-qualified paths as output, with
    # '.' and '..' stripped-out.
@@ -1705,47 +1676,45 @@ sub glob_regexp_utf8 :prototype(;$$$) {
    # IF THE CALLING PROGRAM ATTEMPTS TO PROCESS FILE NAMES IN ANY LANGUAGE OTHER THAN ENGLISH.
    # (NAMES SUCH AS "Говорю Русский", "ॐ नमो भगवते वासुदेवाय", "看的星星，知道你是爱。" WOULD CRASH HORRIBLY.)
 
-   my $dir    = @_ ? shift(@_) : cwd_utf8;
-   my $target = @_ ? shift(@_) : 'A';
-   my $regex  = @_ ? shift(@_) : '^.+$';
-   my $re     = qr/$regex/o;
-
    # If debugging, announce inputs:
    if ($db) {
       say STDERR "                                       ";
       say STDERR "In sub \"glob_regexp_utf8\", near top. ";
       say STDERR "\$dir    = $dir                        ";
       say STDERR "\$target = $target                     ";
-      say STDERR "\$regex  = $regex                      ";
+      say STDERR "\$regex  = $regexp                     ";
       say STDERR "                                       ";
    }
 
-   # Try to open $dir; if that fails, print warning and return empty path list:
+   # But do those inputs even make any sense?? Let's check now!
+   if ( !-e(e($dir)) || !-d(e($dir)) ) {
+      die "Fatal error in glob_regexp_utf8: Invalid directory \'$dir\'.\n$!\n";
+   }
+   if ( $target !~ m/^[FDBA]$/ ) {
+      die "Fatal error in glob_regexp_utf8: Invalid target \'$target\'.\n$!\n";
+   }
+   my $re;
+   if ( !eval {$re = qr/$regexp/o} ) {
+      die "Fatal error in glob_regexp_utf8: Invalid regular expression \'$regexp\'.\n$!\n";
+   }
+
+   # Try to open, read, and close $dir; if any of those operations fail, die:
    my $dh = undef;
-   if ( ! opendir $dh, e $dir ) {
-      warn "Warning from glob_regexp_utf8: Couldn't open  directory \"$dir\".\n".
-           "Returning empty path list.";
-      return ();
-   }
+   opendir $dh, e $dir
+   or die "Fatal error in glob_regexp_utf8: Couldn't open  directory \"$dir\".\n$!\n";
 
-   # Try to read $dir into @names; @names should now contain at least 2 entries ('.' and '..');
-   # if it doesn't, then something went very wrong!!!
    my @names = d readdir $dh;
-   if ( scalar(@names) < 2 ) {
-      warn "Warning from glob_regexp_utf8: Couldn't read  directory \"$dir\".\n".
-           "Returning empty path list.";
-      closedir $dh or die "Fatal Error in glob_regexp_utf8: Couldn't close directory \"$dir\".\n$!\n";
-      return ();
-   }
+   scalar(@names) < 2 # $dir should contain at least '.' and '..'!
+   and die "Fatal error in glob_regexp_utf8: Couldn't read  directory \"$dir\".\n$!\n";
 
-   # Try to close $dir; if that fails, abort program:
-   closedir $dh or die "Error in RecurseDirs: Couldn't close directory \"$dir\".\n$!\n";
+   closedir $dh
+   or die "Fatal Error in glob_regexp_utf8: Couldn't close directory \"$dir\".\n$!\n";
 
    # Riffle through @names. Skip '.', '..', and names not matching $regex, construct paths from names,
    # skip paths that don't exist if target is F or D or B, skip paths to objects of types not matching target,
    # and push remaining paths onto @paths:
-   my @paths;
    my $path;
+   my @paths;
    foreach my $name (@names) {
       say "IN glob_regexp_utf8. NAME FROM readdir_utf8: $name" if $db;
       next if $name eq '.';
@@ -1759,10 +1728,10 @@ sub glob_regexp_utf8 :prototype(;$$$) {
 
       # Don't test for existence here unless target is 'F', 'D', or 'B'. For target 'A',we want GetFiles
       # (or other caller) to be able to note any non-existent directory entries and flag them "noex":
-      if    ($target eq 'F') {next if ! -e e $path; lstat e $path; next if ! -f _           }
-      elsif ($target eq 'D') {next if ! -e e $path; lstat e $path; next if           ! -d _ }
-      elsif ($target eq 'B') {next if ! -e e $path; lstat e $path; next if ! -f _ && ! -d _ }
-      else {;} # Else do nothing.
+      if    ($target ne 'A') {next if ! -e e $path; lstat e $path;}
+      if    ($target eq 'F') {next if  -l _ || !-f _ ||  -d _ }
+      elsif ($target eq 'D') {next if  -l _ ||  -f _ || !-d _ }
+      elsif ($target eq 'B') {next if  -l _ || !-f _ && !-d _ }
       push @paths, $path;
    }
 
@@ -1780,9 +1749,7 @@ sub glob_regexp_utf8 :prototype(;$$$) {
 # ======= SECTION 4, MINOR SUBROUTINES: ======================================================================
 
 # Rename a file, with more error-checking than unwrapped rename() :
-sub rename_file :prototype($$) {
-   my $OldPath = shift;
-   my $NewPath = shift;
+sub rename_file :prototype($$) ($OldPath, $NewPath) {
    my $OldName = get_name_from_path($OldPath);
    my $NewName = get_name_from_path($NewPath);
    my $OldDir  = get_dir_from_path($OldPath);
@@ -1834,21 +1801,20 @@ sub rename_file :prototype($$) {
    return rename(e($OldPath), e($NewPath));
 } # end sub rename_file
 
-sub time_from_mtime :prototype($) {
-   my $TimeDate = scalar localtime shift;
+sub time_from_mtime :prototype($) ($mtime) {
+   my $TimeDate = scalar localtime $mtime;
    my $Time = substr ($TimeDate, 11, 8);
    return $Time;
 } # end sub time_from_mtime
 
-sub date_from_mtime :prototype($) {
-   my $TimeDate = scalar localtime shift;
+sub date_from_mtime :prototype($) ($mtime) {
+   my $TimeDate = scalar localtime $mtime;
    my $Date = substr ($TimeDate, 0, 10) . ', ' . substr ($TimeDate, 20, 4);
    return $Date;
 } # end sub date_from_mtime
 
 # Given any string, return all characters before last dot:
-sub get_prefix :prototype($) {
-   my $string = shift;
+sub get_prefix :prototype($) ($string) {
    my $dotindex = rindex($string, '.');
    return $string if -1 == $dotindex;
    return ''      if  0 == $dotindex;
@@ -1856,8 +1822,7 @@ sub get_prefix :prototype($) {
 } # end sub get_prefix
 
 # Given any string, return last dot and following characters:
-sub get_suffix :prototype($) {
-   my $string = shift;
+sub get_suffix :prototype($) ($string) {
    my $dotindex = rindex($string, '.');
    return ''      if -1 == $dotindex;
    return $string if  0 == $dotindex;
@@ -1905,10 +1870,8 @@ sub get_name_from_path :prototype($) ($path) {
 } # end sub get_name_from_path
 
 # Paste-together dir & name to get path, while watching out for root and current:
-sub path :prototype($$) {
-   my $dir  = shift;
-   my $nam  = shift;
-   my $path = undef;
+sub path :prototype($$) ($dir, $nam) {
+   my $path;
 
    # If $dir is '/', then the path is just the name with '/' appended to its left:
    if ( $dir eq '/' ) {
@@ -1929,16 +1892,14 @@ sub path :prototype($$) {
    return $path;
 }
 
-sub denumerate_file_name :prototype($) {
-   my $name = shift;
+sub denumerate_file_name :prototype($) ($name) {
    my $prefix = get_prefix($name);
    my $suffix = get_suffix($name);
    $prefix =~ s/-\(\d\d\d\d\)//g;
    return $prefix . $suffix;
 } # end sub denumerate_file_name
 
-sub enumerate_file_name :prototype($) {
-   my $name = shift;
+sub enumerate_file_name :prototype($) ($name) {
    my $prefix = get_prefix($name);
    my $suffix = get_suffix($name);
    $prefix =~ s/-\(\d\d\d\d\)$//g;
@@ -1948,18 +1909,18 @@ sub enumerate_file_name :prototype($) {
 } # end sub enumerate_file_name
 
 # Annotate a file's name (with a parenthetical note):
-sub annotate_file_name :prototype($$) {
-   my $oldname = shift;  # Original file name.
-   my $note    = shift;  # Note to be appended (NOT including the (parentheses)!).
+sub annotate_file_name :prototype($$) ($oldname, $note) {
+   # $oldname  =  Original file name.
+   # $note     =  Note to be appended, NOT including the (parentheses)!
    my $oldpref = get_prefix($oldname);
    my $oldsuff = get_suffix($oldname);
    return $oldpref . '(' . $note . ')' . $oldsuff;
 } # end sub annotate_file_name
 
 # Find an enumerated version of a file name which is NOT the name of any file in a given directory:
-sub find_avail_enum_name :prototype($;$) {
-   my $name = shift                    ; # A valid file name.
-   my $dir  = @_ ? shift : cwd_utf8    ; # An existing directory, defaulting to current directory.
+sub find_avail_enum_name :prototype($;$) ($name, $dir = d(getcwd)) {
+   # $name  =  A valid file name.
+   # $dir   =  An existing directory, defaulting to current working directory.
    my $prefix    =  get_prefix($name)  ; # Prefix of name.
       $prefix    =~ s/-\(\d\d\d\d\)//g ; # Denumerate prefix in-situ.
    my $suffix    =  get_suffix($name)  ; # Suffix of name.
@@ -2000,11 +1961,7 @@ sub find_avail_enum_name :prototype($;$) {
 } # end sub find_avail_enum_name
 
 # Make up to 100 attempts to find an available random name in given directory with given prefix and suffix:
-sub find_avail_rand_name :prototype($$$) {
-   # Get file info:
-   my $dir           = shift;
-   my $prefix        = shift;
-   my $suffix        = shift;
+sub find_avail_rand_name :prototype($$$) ($dir, $prefix, $suffix) {
    my $random        = '';
    my $new_name      = '';
    my $attempts      = 0;
@@ -2029,9 +1986,7 @@ sub find_avail_rand_name :prototype($$$) {
 } # sub find_avail_rand_name ($$$)
 
 # Is a given path a path to a file containing a large image?
-sub is_large_image :prototype($) {
-   my $path = shift;
-
+sub is_large_image :prototype($) ($path) {
    # File-typing variables:
    my $FileTyper = File::Type->new(); # File-typing functor.
    my $FileType  = '';                # File type.
@@ -2209,16 +2164,14 @@ sub get_correct_suffix :prototype($) ($path) {
 } # end sub get_correct_suffix :prototype($) ($path)
 
 # Convert a fully-qualified Cygwin path to Windows:
-sub cyg2win :prototype($) {
-   my $path = shift;
+sub cyg2win :prototype($) ($path) {
    $path =~ s#^/cygdrive/(\p{Ll})#\U$1\E:#;
    $path =~ s#/#\\#g;
    return $path;
 } # end sub cyg2win ($)
 
 # Convert a fully-qualified Windows path to Cygwin:
-sub win2cyg :prototype($) {
-   my $path = shift;
+sub win2cyg :prototype($) ($path) {
    $path =~ s#^(\p{Lu}):#/cygdrive/\L$1\E#;
    $path =~ s#\\#/#g;
    return $path;
@@ -2319,12 +2272,7 @@ sub hash :prototype($$;$)
 } # end sub hash($$;$)
 
 # Shorten directory and file names for Spotlight:
-sub shorten_sl_names :prototype($$$$) {
-   my $src_dir = shift;
-   my $src_fil = shift;
-   my $dst_dir = shift;
-   my $dst_fil = shift;
-
+sub shorten_sl_names :prototype($$$$) ($src_dir, $src_fil, $dst_dir, $dst_fil) {
    my $s1 = '/cygdrive/c/Users';
    my $s2 = '/AppData/Local/Packages';
    my $s3 = '/Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy';
@@ -2354,12 +2302,6 @@ sub is_data_file :prototype($) ($path) {
    my $name = get_name_from_path($path);
    return 0 if $name eq '.';
    return 0 if $name eq '..';
-   return 0 if $name =~ m/^\.sync.ffs_db/;
-   return 0 if $name =~ m/^\.directory$/;
-   return 0 if $name =~ m/^desktop.*\.ini$/i;
-   return 0 if $name =~ m/^thumbs.*\.db$/i;
-   return 0 if $name =~ m/^pspbrwse.*\.jbf$/i;
-   return 0 if $name =~ m/ID-Token/i;
    return 0 unless -e e $path;
    lstat e $path;
    return 0 unless -f _ ;
@@ -2368,9 +2310,20 @@ sub is_data_file :prototype($) ($path) {
    return 1;
 } # end sub is_data_file :prototype($) ($path)
 
+# Return 1 if-and-only-if a given string is a path to a "meta" file (a data file which is hidden, sync,
+sub is_meta_file :prototype($) ($path) {
+   return 0 unless is_data_file($path);
+   my $name = get_name_from_path($path);
+   return 1 if $name =~ m/^\./;
+   return 1 if $name =~ m/^desktop.*\.ini$/i;
+   return 1 if $name =~ m/^thumbs.*\.db$/i;
+   return 1 if $name =~ m/^pspbrwse.*\.jbf$/i;
+   return 1 if $name =~ m/id-token/i;
+   return 0;
+}
+
 # Return 1 if-and-only-if a given string is a fully-qualified path to a valid directory.
-sub is_valid_qual_dir :prototype($) {
-   my $path  = shift;
+sub is_valid_qual_dir :prototype($) ($path) {
    my $valid = 1;
    if ( !defined($path) ) {
       print STDERR "\nWarning from \"is_valid_qual_dir\": path is not defined.\n";

@@ -1,5 +1,5 @@
-// This is a 79-character-wide utf-8-encoded C++ source-code text file.  
-// ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。  
+// This is a 79-character-wide utf-8-encoded C++ source-code text file.
+// ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。
 //=======|=========|=========|=========|=========|=========|=========|=========
 
 // numeric-limits-cpp.cpp
@@ -39,6 +39,9 @@ int main(void)
    << "unsigned long long maximum:  " << numeric_limits<unsigned long long>::max()    << endl
    << "unsigned long long minimum:  " << numeric_limits<unsigned long long>::min()    << endl
    << "unsigned long long digits10: " << numeric_limits<unsigned long long>::digits10 << endl
+   << "__int128_t min:              -170141183460469231731687303715884105728 (non-std Gnu extension)" << endl
+   << "__int128_t max:               170141183460469231731687303715884105727 (non-std Gnu extension)" << endl
+   << "__uint128_t max:              340282366920938463463374607431768211455 (non-std Gnu extension)" << endl
    << "FLOATING-POINT TYPES:        "                                                 << endl
    << "float maximum:               " << numeric_limits<float>::max()                 << endl
    << "float minimum:               " << numeric_limits<float>::min()                 << endl
