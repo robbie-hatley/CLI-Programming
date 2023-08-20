@@ -15,159 +15,82 @@
 #                   work now. Also, simplified dir names, and now moving to 2021 instead of 2020.
 # Fri Jan 29, 2021: Now also renames and files-away screenshots in appropriate year/month directories.
 # Sat Feb 13, 2021: Simplified. Now an ASCII file. No-longer uses -CSDA. Runs on all Perl versions.
-# Sat Jul 31, 2021: Now a UTF-8-encoded file. Now 120 characters wide. Now using "use utf8", "use Sys::Binmode", and e.
+# Sat Jul 31, 2021: Now a UTF-8-encoded file. Now 120 characters wide. Now using "use utf8",
+#                   "use Sys::Binmode", and e.
 # Wed Oct 27, 2021: Added Help() function.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate. Now using "common::sense".
 # Thu Nov 25, 2021: Fixed regexp bug that was causing program to find no files. Added timestamping.
 # Fri Nov 26, 2021: Fixed yet another regexp bug; this one was causing program to refuse to file files by date.
 # Thu Aug 17, 2023: Reduced width from 120 to 110. Upgraded from "V5.32" to "v5.36". Got rid of CPAN module
-#                   "common::sense" (antiquated). Got rid of prototypes. Now using signatures.
+#                   "common::sense" (antiquated). Got rid of prototypes. Program is very broken, though,
+#                   because it's trying to use directories which don't exist. TO-DO: Fix dirs.
+# Sat Aug 19, 2023: Fixed directories and returned full multi-platform functionality.
 ##############################################################################################################
 
+# ======= PRELIMINARIES: =====================================================================================
+
+# Pragmas:
 use v5.36;
 use strict;
 use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
+
+# CPAN:
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
+
+# Homebrew modules:
 use RH::Dir;
-
-# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
-
-sub argv    ;
-sub curdire ;
-sub curfile ;
-sub stats   ;
-sub help    ;
 
 # ======= VARIABLES: =========================================================================================
 
 my $db = 0;
-my $JpgPngRegExp = qr/\.(?:jpg)|(?:png)$/o;
+my $image_regexp = qr/\.(?i:jpg)$|\.(?i:png)$/o;
+my $program_dir_1;
+my $program_dir_2;
+my $screenshots_dir;
+my $platform = $ENV{PLATFORM};
 
-# ======= MAIN BODY OF PROGRAM: ==============================================================================
-
-{ # begin main
-   # Start timer:
-   my $t0 = time;
-
-   # Process arguments; if user wants help, just print help and exit;
-   # otherwise, ignore any other arguments and continue execution:
-   argv;
-
-   # Get program name and platform, and announce program entry:
-   my $prgnam = get_name_from_path($0);
-   my $pltfrm = $ENV{PLATFORM};
-
-   # Determine directories based on platform, or if platform is invalid, die:
-   my ($dir1,$dir2,$dir3);
-   if ('Win64' == $pltfrm)
-   {
-      $dir1 = '/cygdrive/c/Programs/Games/Toontown-Rewritten-A1/screenshots';
-      $dir2 = '/cygdrive/c/Programs/Games/Toontown-Rewritten-A2/screenshots';
-      $dir3 = '/cygdrive/d/Arcade/Toontown-Rewritten/Screenshots';
-   }
-   elsif ('Linux' == $pltfrm)
-   {
-      $dir1 = '/home/aragorn/.toontown-A1/screenshots';
-      $dir2 = '/home/aragorn/.toontown-A1/screenshots';
-      $dir3 = '/home/aragorn/Data/Celephais/Arcade/Toontown/Screenshots';
-   }
-   else
-   {
-      die "Error in \"aggregate-toontown.pl\": Invalid platform.\n$!\n";
-   }
-
-   # Announce program entry:
-   print "\n";
-   print "Now entering program \"$prgnam\" on platform \"$pltfrm\".";
-
-   # Aggregate Toontown screenshots from program directories to Arcade:
-   system(e("move-files.pl '$dir1' '$dir3' '$JpgPngRegExp'"));
-   system(e("move-files.pl '$dir2' '$dir3' '$JpgPngRegExp'"));
-
-   # Enter Arcade:
-   chdir(e($dir3));
-
-   # Rename Toontown screenshot files as necessary:
-   print "\n";
-   print "Now canonicalizing names of Toontown screenshots....\n";
-   system(e("rename-toontown-images.pl"));
-
-   # Get ref to list of file-info hashes of info on files in cu
-   my $ImageFiles = GetFiles($dir3, 'F', $JpgPngRegExp);
-   my $num = scalar(@{$ImageFiles});
-
-   my $cwd = cwd_utf8;
-
-   # File screenshots by date:
-   print "\n";
-   print "Now filing Toontown images by date....\n";
-   if ($db)
-   {
-      say "In ATT, in main, above foreach.";
-      say "Current directory = $cwd";
-      say "Number of files   = $num";
-   }
-   foreach my $file (@{$ImageFiles})
-   {
-      my $path  = $file->{Path};
-      my $name  = $file->{Name};
-      if ($db)
-      {
-         say "In ATT, in main, inside foreach.";
-         say "Current file name = \"$name\".";
-      }
-      my $pref  = get_prefix($name);
-      my @Parts = split /[-_]{1}/, $pref;
-      my $year  = $Parts[2];
-      my $month = $Parts[3];
-      my $dir   = $year . '/' . $month;
-      if ( ! -e e $dir ) {mkdir e $dir;}
-      move_file($path, $dir);
-   }
-   print "\n";
-   print "Finished filing Toontown images by date.\n";
-
-   # Stop timer and announce exit and execution time:
-   my $t1 = time; my $te = $t1 - $t0;
-   print "\n";
-   print "Now exiting program \"$pname\". Execution time was $te seconds.\n";
-   exit 0;
-} # end main
-
-# ======= SUBROUTINE DEFINITIONS: ============================================================================
-
-sub argv {
-   for (@ARGV)
-   {
-      # If user requests help, just print help and exit:
-      if ( '-h' eq $_ || '--help' eq $_ ) {help; exit 777;}
-      # Otherwise, do nothing:
-      else {;}
-   }
-   return 1;
-} # end sub argv
+# ======= SUBROUTINES: =======================================================================================
 
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "aggregate-towntown.pl". This program moves all screenshots from
-   program folders to "/d/Arcade/Toontown-Rewritten/Screenshots". It then
-   renames the screenshots according to my standard naming format, then moves
-   the files into appropriate year/month subfolders of the screenshots folder.
 
-   Command lines:
-   aggregate-towntown.pl -h | --help  (to print this help and exit)
-   aggregate-towntown.pl              (to aggregate screenshots)
+   -------------------------------------------------------------------------------
+   Introduction:
 
-   Description of options:
-   Option:                      Meaning:
-   "-h" or "--help"             Print help and exit.
+   Welcome to "aggregate-towntown.pl". This program moves all screenshots
+   from the Toontown-Rewritten program director[y|ies] to the directory
+   "/d/Arcade/Toontown-Rewritten/Screenshots". It then renames the files according
+   to my standard naming format, then moves the files into appropriate year/month
+   subdirectories of the screenshots directory.
 
-   All other options, and all non-option arguments, are ignored, as there is
-   nothing to "adjust" in the way that this program does its job. Just alter
-   the program itself if changes are needed.
+   -------------------------------------------------------------------------------
+   Command Lines:
+
+   aggregate-towntown.pl [-h | --help]   (to print this help and exit)
+   aggregate-towntown.pl [options]       (to aggregate screenshots)
+
+   -------------------------------------------------------------------------------
+   Description of Options:
+
+   Option:         Meaning:
+   -h or --help    Print this help and exit.
+   -1 or --debug1  Print diagnostics and exit after first  breakpoint.
+   -2 or --debug2  Print diagnostics and exit after second breakpoint.
+   -3 or --debug3  Print diagnostics and exit after third  breakpoint.
+
+   All other options are ignored.
+
+   -------------------------------------------------------------------------------
+   Description of Arguments:
+
+   All arguments will be ignored.
+   If you need to alter what this program does, edit this script.
+
+   Happy Toontown screenshot aggregating!
 
    Cheers,
    Robbie Hatley,
@@ -175,3 +98,139 @@ sub help {
    END_OF_HELP
    return 1;
 } # end sub help
+
+sub argv {
+   for (@ARGV) {
+      /^-h$|^--help$/   and help and exit 777;
+      /^-1$|^--debug1$/ and $db = 1;
+      /^-2$|^--debug2$/ and $db = 2;
+      /^-3$|^--debug3$/ and $db = 3;
+   }
+   return 1;
+} # end sub argv
+
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
+
+my $t0 = time;
+argv;
+say STDOUT '';
+say STDOUT 'Now entering program \"aggregate-toontown.pl\".';
+say STDOUT "Platform = \"$platform\".";
+
+# File aggregation method will vary depending on platform:
+if ( $platform eq 'Linux'  ) {
+   # Set directory variables for Linux:
+   $program_dir_1   = '/home/aragorn/.var/app/com.toontownrewritten.Launcher/data/screenshots';
+   $screenshots_dir = '/d/Arcade/Toontown-Rewritten/Screenshots';
+
+   if ( $db ) {
+      say STDERR "In ATT, in \"if (Linux)\", about to aggregate.";
+      say STDERR "Platform              = $platform";
+      say STDERR "Source      directory = $program_dir_1";
+      say STDERR "Destination directory = $screenshots_dir";
+      if ( 1 == $db ) {exit 111}
+   }
+
+   # Aggregate Toontown screenshots from the all-accounts program directory to Arcade:
+   system(e("move-files.pl '$program_dir_1' '$screenshots_dir' '$image_regexp'"));
+}
+elsif ( $platform eq 'Win64' ) {
+   # Set directory variables for Windows:
+   $program_dir_1   = '/c/Programs/Games/Toontown-Rewritten-A1/screenshots';
+   $program_dir_2   = '/c/Programs/Games/Toontown-Rewritten-A2/screenshots';
+   $screenshots_dir = '/d/Arcade/Toontown-Rewritten/Screenshots';
+
+   if ( $db ) {
+      say STDERR "In ATT, in \"if (Win64)\", about to aggregate.";
+      say STDERR "Platform                = $platform";
+      say STDERR "Source      directory 1 = $program_dir_1";
+      say STDERR "Source      directory 2 = $program_dir_2";
+      say STDERR "Destination directory   = $screenshots_dir";
+      if ( 1 == $db ) {exit 111}
+   }
+
+   # Aggregate Toontown screenshots from both per-account program directories to Arcade:
+   system(e("move-files.pl '$program_dir_1' '$screenshots_dir' '$image_regexp'"));
+   system(e("move-files.pl '$program_dir_2' '$screenshots_dir' '$image_regexp'"));
+}
+else {
+   if ( $db ) {
+      say STDERR "In ATT, in \"if (invalid platform)\", about to die.";
+      say STDERR "Platform                = $platform";
+      if ( 1 == $db ) {exit 111}
+   }
+   die "Error in \"aggregate-toontown.pl\":\nInvalid platform \"$platform\".\n$!\n";
+}
+
+# Enter screenshots directory:
+chdir(e($screenshots_dir));
+
+# Get ref to list of file-info hashes for all jpg and png files in screenshots directory:
+my $ImageFiles1 = GetFiles($screenshots_dir, 'F', $image_regexp);
+my $num1 = scalar @$ImageFiles1;
+
+if ( $db )
+{
+   say STDERR "In ATT, about to rename files.";
+   say STDERR "Screenshots dir = \"$screenshots_dir\".";
+   # Sanity check!!! Are we actually where we think we are???
+   my $cwd = d(getcwd);
+   say STDERR "CWD = \"$cwd\".";
+   say STDERR "Number of files before renaming = $num1";
+   say STDERR "Names  of files before renaming:";
+   say STDERR $_->{Name} for @$ImageFiles1;
+   if ( 2 == $db ) {exit 222}
+}
+
+# Rename Toontown screenshot files as necessary:
+say STDOUT '';
+say STDOUT 'Now canonicalizing names of Toontown screenshots....';
+system(e("rename-toontown-images.pl"));
+
+# Get ref to list of file-info hashes for all jpg and png files in screenshots directory:
+my $ImageFiles2 = GetFiles($screenshots_dir, 'F', $image_regexp);
+my $num2 = scalar(@{$ImageFiles2});
+
+if ( $db )
+{
+   say STDERR "In ATT, after renaming files.";
+   say STDERR "Screenshots dir = \"$screenshots_dir\".";
+   # Sanity check!!! Are we actually where we think we are???
+   my $cwd = d(getcwd);
+   say STDERR "CWD = \"$cwd\".";
+   say STDERR "Number of files after renaming = $num2";
+   say STDERR "Names  of files after renaming:";
+   say STDERR $_->{Name} for @$ImageFiles2;
+   if ( 3 == $db ) {exit 333}
+}
+
+# File screenshots by date:
+say STDOUT '';
+say STDOUT 'Now filing Toontown images by date....';
+foreach my $file (@$ImageFiles2)
+{
+   my $path  = $file->{Path};
+   my $name  = $file->{Name};
+   if ($db)
+   {
+      say "In ATT, in main, inside foreach.";
+      say "Current file name = \"$name\".";
+   }
+   my $pref  = get_prefix($name);
+   my @Parts = split /[-_]/, $pref;
+   my $year  = $Parts[2];
+   my $month = $Parts[3];
+   my $dir   = $year . '/' . $month;
+   if ( ! -e e $dir ) {mkdir e $dir;}
+   move_file($path, $dir);
+}
+say STDOUT '';
+say STDOUT 'Finished filing Toontown images by date.';
+
+# Stop timer and announce exit and execution time:
+my $te = time - $t0;
+say    STDOUT '';
+say    STDOUT 'Now exiting program "aggregate-toontown.pl"';
+printf STDOUT "Execution time was %.3f seconds.\n", $te;
+exit 0;
+__END__

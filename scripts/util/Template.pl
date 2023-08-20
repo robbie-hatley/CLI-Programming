@@ -388,10 +388,21 @@ sub help
    backwards, they won't do what you want, as most predicates aren't valid regexps
    and vice-versa.
 
-   If the number of arguments is not 0, 1, or 2, this program will print an
-   error message and abort.
+   A number of arguments greater than 2 will cause this program to print an error
+   message and abort.
+
+   A number of arguments less than 0 will likely rupture our spacetime manifold
+   and destroy everything. But if you DO somehow manage to use a negative number
+   of arguments without destroying the universe, please send me an email at
+   "Hatley.Software@gmail.com", because I'd like to know how you did that!
+
+   But if you somehow manage to use a number of arguments which is an irrational
+   or complex number, please keep THAT to yourself. Some things would be better
+   for my sanity for me not to know. I don't want to find myself enthralled to
+   Cthulhu.
 
    Happy item processing!
+
    Cheers,
    Robbie Hatley,
    programmer.
