@@ -114,7 +114,7 @@ sub argv {
 my $t0 = time;
 argv;
 say STDOUT '';
-say STDOUT 'Now entering program \"aggregate-toontown.pl\".';
+say STDOUT 'Now entering program "aggregate-toontown.pl".';
 say STDOUT "Platform = \"$platform\".";
 
 # File aggregation method will vary depending on platform:
@@ -124,7 +124,7 @@ if ( $platform eq 'Linux'  ) {
    $screenshots_dir = '/d/Arcade/Toontown-Rewritten/Screenshots';
 
    if ( $db ) {
-      say STDERR "In ATT, in \"if (Linux)\", about to aggregate.";
+      say STDERR 'In ATT, in "if (Linux)", about to aggregate.';
       say STDERR "Platform              = $platform";
       say STDERR "Source      directory = $program_dir_1";
       say STDERR "Destination directory = $screenshots_dir";
@@ -141,7 +141,7 @@ elsif ( $platform eq 'Win64' ) {
    $screenshots_dir = '/d/Arcade/Toontown-Rewritten/Screenshots';
 
    if ( $db ) {
-      say STDERR "In ATT, in \"if (Win64)\", about to aggregate.";
+      say STDERR 'In ATT, in "if (Win64)", about to aggregate.';
       say STDERR "Platform                = $platform";
       say STDERR "Source      directory 1 = $program_dir_1";
       say STDERR "Source      directory 2 = $program_dir_2";
@@ -155,8 +155,8 @@ elsif ( $platform eq 'Win64' ) {
 }
 else {
    if ( $db ) {
-      say STDERR "In ATT, in \"if (invalid platform)\", about to die.";
-      say STDERR "Platform                = $platform";
+      say STDERR 'In ATT, in "if (invalid platform)", about to die.';
+      say STDERR "Platform = $platform";
       if ( 1 == $db ) {exit 111}
    }
    die "Error in \"aggregate-toontown.pl\":\nInvalid platform \"$platform\".\n$!\n";
@@ -171,7 +171,7 @@ my $num1 = scalar @$ImageFiles1;
 
 if ( $db )
 {
-   say STDERR "In ATT, about to rename files.";
+   say STDERR 'In ATT, about to rename files.';
    say STDERR "Screenshots dir = \"$screenshots_dir\".";
    # Sanity check!!! Are we actually where we think we are???
    my $cwd = d(getcwd);
@@ -185,7 +185,7 @@ if ( $db )
 # Rename Toontown screenshot files as necessary:
 say STDOUT '';
 say STDOUT 'Now canonicalizing names of Toontown screenshots....';
-system(e("rename-toontown-images.pl"));
+system(e('rename-toontown-images.pl'));
 
 # Get ref to list of file-info hashes for all jpg and png files in screenshots directory:
 my $ImageFiles2 = GetFiles($screenshots_dir, 'F', $image_regexp);
@@ -193,7 +193,7 @@ my $num2 = scalar(@{$ImageFiles2});
 
 if ( $db )
 {
-   say STDERR "In ATT, after renaming files.";
+   say STDERR 'In ATT, after renaming files.';
    say STDERR "Screenshots dir = \"$screenshots_dir\".";
    # Sanity check!!! Are we actually where we think we are???
    my $cwd = d(getcwd);
@@ -211,11 +211,6 @@ foreach my $file (@$ImageFiles2)
 {
    my $path  = $file->{Path};
    my $name  = $file->{Name};
-   if ($db)
-   {
-      say "In ATT, in main, inside foreach.";
-      say "Current file name = \"$name\".";
-   }
    my $pref  = get_prefix($name);
    my @Parts = split /[-_]/, $pref;
    my $year  = $Parts[2];

@@ -32,6 +32,9 @@
 #                   Got rid of "common::sense" (antiquated). Got rid of prototypes. Now using signatures.
 #                   Shorted target options from "--target=xxxxx" to just "--xxxxx". Upgraded sub argv.
 #                   Made sub error single-purpose. Shortened curfile() by using "and" and "or".
+# Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
+#                   Reformated debug printing of opts and args to ("word1", "word2", "word3") style.
+#                   Inserted text into help explaining the use of "--" as "end of options" marker.
 ##############################################################################################################
 
 use v5.36;
@@ -96,7 +99,6 @@ my $failcount = 0; # Count of failed attempts to rename files.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-
    if ( $Verbose ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\". ";
@@ -115,6 +117,7 @@ my $failcount = 0; # Count of failed attempts to rename files.
       say STDERR "Prefix    = \'$Prefix\'          ";
       say STDERR "Suffix    = \'$Suffix\'          ";
    }
+   if ( $db ) {exit 555}
 
    unless ( $Yes ) {
       say STDERR '';
@@ -122,23 +125,19 @@ my $failcount = 0; # Count of failed attempts to rename files.
       say STDERR '(AND IN ALL SUBDIRECTORIES IF -r OR --recurse IS USED) TO RANDOM STRINGS OF';
       say STDERR '8 lower-case LETTERS. ALL INFORMATION CONTAINED IN THE FILE NAMES WILL BE LOST,';
       say STDERR 'AND ONLY THE FILE BODIES WILL REMAIN, WITH GIBBERISH NAMES.';
-      say STDERR '';
       say STDERR 'ARE YOU SURE THAT THAT IS WHAT YOU REALLY WANT TO DO???';
-      say STDERR '';
-      say STDERR 'Press ":" (shift-semicolon) to continue or any other key to abort.';
+      say STDERR 'Press ":" (shift-semicolon) to continue, or any other key to abort.';
       my $char = get_character;
       exit 0 unless ':' eq $char;
    }
-
    $Recurse and RecurseDirs {curdire} or curdire;
-   stats;
 
+   stats;
    my $ms = 1000 * (time - $t0);
    if ( $Verbose ) {
       say    STDERR '';
       printf STDERR "Now exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
    }
-
    exit 0;
 } # end main
 
@@ -149,34 +148,35 @@ sub argv {
    my @opts = (); my @args = (); my $end_of_options = 0;
    for ( @ARGV ) {
       /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^-\pL*$|^--.+$/ and push @opts, $_ or push @args, $_;
+      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
    }
+
    # Process options:
    for ( @opts ) {
-      /^-\pL*h|^--help$/      and help and exit 777   ;
-      /^-\pL*e|^--debug$/     and $db        =  1     ;
-      /^-\pL*q|^--quiet$/     and $Verbose   =  0     ;
-      /^-\pL*v|^--verbose$/   and $Verbose   =  1     ;
-      /^-\pL*l|^--local$/     and $Recurse   =  0     ;
-      /^-\pL*r|^--recurse$/   and $Recurse   =  1     ;
-      /^-\pL*f|^--files$/     and $Target    = 'F'    ;
-      /^-\pL*d|^--dirs$/      and $Target    = 'D'    ;
-      /^-\pL*b|^--both$/      and $Target    = 'B'    ;
-      /^-\pL*a|^--all$/       and $Target    = 'A'    ;
-      /^-\pL*y|^--yes$/       and $Yes       =  1     ;
-      /^-\pL*s|^--simulate$/  and $Simulate  =  1     ;
-      /^-\pL*i|^--nine$/      and $Nine      =  1     ;
-      /^-\pL*n|^--noreran$/   and $NoReRan   =  1     ;
-      /^-\pL*p|^--spotlight$/ and $Spotlight =  1     ;
-      /^-\pL*x|^--firefox$/   and $Firefox   =  1     ;
-      /^-\pL*t|^--spotfire$/  and $Spotlight =  1 and $Firefox = 1;
+      /^-\w*h|^--help$/      and help and exit 777   ;
+      /^-\w*e|^--debug$/     and $db        =  1     ;
+      /^-\w*q|^--quiet$/     and $Verbose   =  0     ;
+      /^-\w*v|^--verbose$/   and $Verbose   =  1     ;
+      /^-\w*l|^--local$/     and $Recurse   =  0     ;
+      /^-\w*r|^--recurse$/   and $Recurse   =  1     ;
+      /^-\w*f|^--files$/     and $Target    = 'F'    ;
+      /^-\w*d|^--dirs$/      and $Target    = 'D'    ;
+      /^-\w*b|^--both$/      and $Target    = 'B'    ;
+      /^-\w*a|^--all$/       and $Target    = 'A'    ;
+      /^-\w*y|^--yes$/       and $Yes       =  1     ;
+      /^-\w*s|^--simulate$/  and $Simulate  =  1     ;
+      /^-\w*i|^--nine$/      and $Nine      =  1     ;
+      /^-\w*n|^--noreran$/   and $NoReRan   =  1     ;
+      /^-\w*p|^--spotlight$/ and $Spotlight =  1     ;
+      /^-\w*x|^--firefox$/   and $Firefox   =  1     ;
+      /^-\w*t|^--spotfire$/  and $Spotlight =  1 and $Firefox = 1;
       length($_) > 9 && substr($_, 0, 9) eq '--prefix=' and $Prefix = substr($_, 9);
       length($_) > 9 && substr($_, 0, 9) eq '--suffix=' and $Suffix = substr($_, 9);
    }
    if ( $db ) {
       say   STDERR '';
-      print STDERR "opts = "; say STDERR map {'\''.$_.'\''} @opts;
-      print STDERR "args = "; say STDERR map {'\''.$_.'\''} @args;
+      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
+      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
    }
 
    # Process arguments:
@@ -407,9 +407,13 @@ sub help {
    For example, use -vr to verbosely and recursively process items.
 
    If multiple conflicting separate options are given, later overrides earlier.
-
    If multiple conflicting single-letter options are piled after a single colon,
    the result is determined by this descending order of precedence: heabdfrlvtq.
+
+   If you want to use an argument that looks like an option (say, you want to
+   search for files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
 
    All options not listed above are ignored.
 

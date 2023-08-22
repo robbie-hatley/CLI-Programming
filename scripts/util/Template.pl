@@ -54,6 +54,9 @@
 # Sat Aug 05, 2023: Command-line item "--" now means "all further items are arguments, not options".
 # Sun Aug 06, 2023: Improvements to argv, error, and help. Added $Predicate.
 # Sat Aug 12, 2023: Fixed wrong width in colophon.
+# Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
+#                   Reformated debug printing of opts and args to ("word1", "word2", "word3") style.
+#                   Inserted text into help explaining the use of "--" as "end of options" marker.
 ##############################################################################################################
 
 ##############################################################################################################
@@ -69,8 +72,8 @@ use strict;
 use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
-use Sys::Binmode;
 
+use Sys::Binmode;
 use Time::HiRes 'time';
 use charnames qw( :full :short );
 use Unicode::Normalize qw( NFD NFC );
@@ -99,7 +102,8 @@ sub help    ; # Print help and exit.
 # ======= VARIABLES: =========================================================================================
 
 # Setting:      Default Value:   Meaning of Setting:         Range:     Meaning of Default:
-   $"         = ' '          ; # Quoted-array formatting.    string     Separate elements with spaces.
+   $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma space.
+   $,         = ', '         ; # Listed-array formatting.    string     Separate elements with comma space.
 my $db        = 0            ; # Debug?                      bool       Don't debug.
 my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
@@ -135,7 +139,6 @@ my $unkncount = 0 ; # Count of all unknown files.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-
    if ( $db || $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\". ";
@@ -145,16 +148,15 @@ my $unkncount = 0 ; # Count of all unknown files.
       say STDERR "Target    = $Target              ";
       say STDERR "Predicate = $Predicate           ";
    }
-   $db and exit 555;
+   if ( $db ) {exit 555}
 
    $Recurse and RecurseDirs {curdire} or curdire;
-   stats;
 
+   stats;
    my $ms = 1000 * (time - $t0);
    if ( $Verbose >= 1 ) {
       printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
    }
-
    exit 0;
 } # end main
 
@@ -166,26 +168,28 @@ sub argv {
    my @opts = (); my @args = (); my $end_of_options = 0;
    for ( @ARGV ) {
       /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^-\pL*$|^--.+$/ and push @opts, $_ or push @args, $_;
+      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\pL*h|^--help$/     and help and exit 777 ;
-      /^-\pL*e|^--debug$/    and $db      =  1     ;
-      /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\pL*t|^--terse$/    and $Verbose =  1     ;
-      /^-\pL*v|^--verbose$/  and $Verbose =  2     ;
-      /^-\pL*l|^--local$/    and $Recurse =  0     ;
-      /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
-      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
-      /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
-      /^-\pL*b|^--both$/     and $Target  = 'B'    ;
-      /^-\pL*a|^--all$/      and $Target  = 'A'    ;
+      /^-\w*h|^--help$/     and help and exit 777 ;
+      /^-\w*e|^--debug$/    and $db      =  1     ;
+      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
+      /^-\w*t|^--terse$/    and $Verbose =  1     ;
+      /^-\w*v|^--verbose$/  and $Verbose =  2     ;
+      /^-\w*l|^--local$/    and $Recurse =  0     ;
+      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
+      /^-\w*f|^--files$/    and $Target  = 'F'    ;
+      /^-\w*d|^--dirs$/     and $Target  = 'D'    ;
+      /^-\w*b|^--both$/     and $Target  = 'B'    ;
+      /^-\w*a|^--all$/      and $Target  = 'A'    ;
    }
-   $db
-   and say STDERR "opts = ", qw("@opts")
-   and say STDERR "args = ", qw("@args");
+   if ( $db ) {
+      say   STDERR '';
+      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
+      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+   }
 
    # Count args:
    my $NA = scalar @args;
@@ -326,26 +330,31 @@ sub help
    -------------------------------------------------------------------------------
    Description of options:
 
-   Option:             Meaning:
-   -h or --help        Print help and exit.
-   -e or --debug       Print diagnostics and exit.
-   -q or --quiet       Be quiet.                       (DEFAULT)
-   -t or --terse       Be terse.
-   -v or --verbose     Be verbose.
-   -l or --local       Don't recurse subdirectories.   (DEFAULT)
-   -r or --recurse     Do    recurse subdirectories.
-   -f or --files       Target Files.
-   -d or --dirs        Target Directories.
-   -b or --both        Target Both.
-   -a or --all         Target All.                     (DEFAULT)
+   Option:            Meaning:
+   -h or --help       Print help and exit.
+   -e or --debug      Print diagnostics and exit.
+   -q or --quiet      Be quiet.                       (DEFAULT)
+   -t or --terse      Be terse.
+   -v or --verbose    Be verbose.
+   -l or --local      Don't recurse subdirectories.   (DEFAULT)
+   -r or --recurse    Do    recurse subdirectories.
+   -f or --files      Target Files.
+   -d or --dirs       Target Directories.
+   -b or --both       Target Both.
+   -a or --all        Target All.                     (DEFAULT)
+         --           End of options (all further CL items are arguments).
 
    Multiple single-letter options may be piled-up after a single hyphen.
    For example, use -vr to verbosely and recursively process items.
 
    If multiple conflicting separate options are given, later overrides earlier.
-
    If multiple conflicting single-letter options are piled after a single colon,
    the result is determined by this descending order of precedence: heabdfrlvtq.
+
+   If you want to use an argument that looks like an option (say, you want to
+   search for files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
 
    All options not listed above are ignored.
 

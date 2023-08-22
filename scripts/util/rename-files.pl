@@ -41,6 +41,9 @@
 #                   All normal-operations printing is now to STDOUT, and all stats, diagnostics, and
 #                   unrecoverable errors are to STDERR. Got rid of variable "$Success" (now testing return
 #                   of "rename_file" in if() instead).
+# Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
+#                   Reformated debug printing of opts and args to ("word1", "word2", "word3") style.
+#                   Inserted text into help explaining the use of "--" as "end of options" marker.
 ##############################################################################################################
 
 use v5.36;
@@ -113,6 +116,8 @@ $Targets{A} = 'All Directory Entries';
       say STDERR "Replacement String = $Replace";
       say STDERR "Modifier Flags     = $Flags";
    }
+   if ( $db ) {exit 555}
+
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $ms = 1000 * (time - $t0);
@@ -128,31 +133,31 @@ sub argv {
    # Get options and arguments:
    my @opts = (); my @args = (); my $end_of_options = 0;
    for ( @ARGV ) {
-      /^--$/
-      and $end_of_options = 1
-      and next;
-      !$end_of_options && /^-\pL*$|^--.+$/
-      and push @opts, $_
-      or  push @args, $_;
+      /^--$/ and $end_of_options = 1 and next;
+      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\pL*h|^--help$/     and help and exit 777 ;
-      /^-\pL*e|^--debug$/    and $db      =  1     ;
-      /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\pL*v|^--verbose$/  and $Verbose =  1     ;
-      /^-\pL*l|^--local$/    and $Recurse =  0     ;
-      /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
-      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
-      /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
-      /^-\pL*b|^--both$/     and $Target  = 'B'    ;
-      /^-\pL*a|^--all$/      and $Target  = 'A'    ;
-      /^-\pL*p|^--prompt$/   and $Mode    = 'P'    ;
-      /^-\pL*s|^--simulate$/ and $Mode    = 'S'    ;
-      /^-\pL*y|^--noprompt$/ and $Mode    = 'Y'    ;
+      /^-\w*h|^--help$/     and help and exit 777 ;
+      /^-\w*e|^--debug$/    and $db      =  1     ;
+      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
+      /^-\w*v|^--verbose$/  and $Verbose =  1     ;
+      /^-\w*l|^--local$/    and $Recurse =  0     ;
+      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
+      /^-\w*f|^--files$/    and $Target  = 'F'    ;
+      /^-\w*d|^--dirs$/     and $Target  = 'D'    ;
+      /^-\w*b|^--both$/     and $Target  = 'B'    ;
+      /^-\w*a|^--all$/      and $Target  = 'A'    ;
+      /^-\w*p|^--prompt$/   and $Mode    = 'P'    ;
+      /^-\w*s|^--simulate$/ and $Mode    = 'S'    ;
+      /^-\w*y|^--noprompt$/ and $Mode    = 'Y'    ;
    }
-   $db and say STDERR "opts = (@opts)\nargs = (@args)";
+   if ( $db ) {
+      say   STDERR '';
+      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
+      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+   }
 
    # Process arguments:
    my $NA = scalar @args;
@@ -365,14 +370,19 @@ sub help {
    -d or --dirs        Rename directories only.
    -b or --both        Rename both regular files and directories.
    -a or --all         Rename all files.
+         --            End of options (all further CL items are arguments).
 
    Multiple single-letter options can be piled-up after a single hyphen.
    For example: "-ldqy" to rename local directories quietly and without prompting.
 
    If conflicting separate options are given, later options overrule earlier.
-
    If conflicting single-letter options are piled-up after a single hyphen,
    then the order of precedence from highest to lowest will be hyspabdfrlvq.
+
+   If you want to use an argument that looks like an option (say, you want to
+   search for files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
 
    All options not listed above are ignored.
 

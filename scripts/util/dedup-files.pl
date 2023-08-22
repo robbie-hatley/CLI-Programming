@@ -83,6 +83,9 @@
 #                   prototypes; now using signatures instead. Switched from "cwd_utf8" to "d getcwd".
 #                   Replaced all given/when with if/elsif/else. Shortened some sub names. Improved help.
 #                   Dramatically-simplified argv. Changed brace style to "if (test) {".
+# Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
+#                   Reformated debug printing of opts and args to ("word1", "word2", "word3") style.
+#                   Inserted text into help explaining the use of "--" as "end of options" marker.
 ##############################################################################################################
 
 use v5.36;
@@ -190,7 +193,10 @@ my $errocount = 0; # Count of errors.
    say STDERR "\$RegExp = $RegExp";
    say STDERR "prompt    mode = ", $PromptHash{$PromptMode};
    say STDERR "prejudice mode = ", $PrejudHash{$PrejudMode};
+   if ( $db ) {exit 555}
+
    $Recurse and RecurseDirs {curdire} or curdire;
+
    tree_stats;
    my $ms = 1000 * (time - $t0);
    printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
@@ -201,20 +207,24 @@ my $errocount = 0; # Count of errors.
 
 sub argv {
    # Get options and arguments:
-   my @opts;
-   my @args;
+   my @opts = (); my @args = (); my $end_of_options = 0;
    for ( @ARGV ) {
-      if (/^-\pL*$|^--.*$/) {push @opts, $_}
-      else                  {push @args, $_}
+      /^--$/ and $end_of_options = 1 and next;
+      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\pL*h|^--help$/      and help and exit 777;
-      /^-\pL*r|^--recurse$/   and $Recurse    = 1;
-      /^-\pL*s|^--spotlight$/ and $PromptMode = 1;
-      /^-\pL*n|^--newer$/     and $PromptMode = 2 and $PrejudMode = 0;
-      /^-\pL*o|^--older$/     and $PromptMode = 2 and $PrejudMode = 1;
+      /^-\w*h|^--help$/      and help and exit 777;
+      /^-\w*r|^--recurse$/   and $Recurse    = 1;
+      /^-\w*s|^--spotlight$/ and $PromptMode = 1;
+      /^-\w*n|^--newer$/     and $PromptMode = 2 and $PrejudMode = 0;
+      /^-\w*o|^--older$/     and $PromptMode = 2 and $PrejudMode = 1;
+   }
+   if ( $db ) {
+      say   STDERR '';
+      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
+      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
    }
 
    # Process arguments:
@@ -654,16 +664,15 @@ sub help {
    -------------------------------------------------------------------------------
    Description of Options:
 
-   Option:               Meaning:
-   "-h" or "--help"      Print help and exit.
-   "-r" or "--recurse"   Traverse subdirectories.
-   "-s" or "--spotlight" Enter Spotlight mode (erase gibberish names).
-   "-n" or "--newer"     Enter NoPrompt  mode (don't prompt user)
-                         and be prejudiced against newer duplicates.
-   "-o" or "--older"     Enter NoPrompt  mode (don't prompt user)
-                         and be prejudiced against older duplicates.
-
-   All options not listed above are ignored.
+   Option:              Meaning:
+   -h or --help         Print help and exit.
+   -r or --recurse      Traverse subdirectories.
+   -s or --spotlight    Enter Spotlight mode (erase gibberish names).
+   -n or --newer        Enter NoPrompt  mode (don't prompt user)
+                        and be prejudiced against newer duplicates.
+   -o or --older        Enter NoPrompt  mode (don't prompt user)
+                        and be prejudiced against older duplicates.
+         --             End of options (all further CL items are arguments).
 
    Single-letter options may be piled-up after a single hyphen.
 
@@ -672,6 +681,13 @@ sub help {
 
    If contradictory single-letter options are piled-up after a single colon,
    the following descending order of operations prevail: honsr
+
+   If you want to use an argument that looks like an option (say, you want to
+   search for files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
+
+   All options not listed above are ignored.
 
    -------------------------------------------------------------------------------
    Modes of Operation:

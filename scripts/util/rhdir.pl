@@ -34,6 +34,9 @@
 # Mon Jul 31, 2023: Cleaned up formatting and comments. Fine-tuned definitions of "option" and "argument".
 #                   Fixed bug in which $, was being set instead of $" . Improved help.
 #                   Got rid of "--target=xxxx" options in favor of just "--xxxx".
+# Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
+#                   Reformated debug printing of opts and args to ("word1", "word2", "word3") style.
+#                   Inserted text into help explaining the use of "--" as "end of options" marker.
 ##############################################################################################################
 
 use v5.36;
@@ -109,8 +112,10 @@ $Targets{A} = "All Directory Entries";
       say STDERR "Regexp   = $Regexp"  ;
       say STDERR "Inodes   = $Inodes"  ;
    }
-   if ($db) {exit 555;}
+   if ( $db ) {exit 555}
+
    $Recurse and RecurseDirs {curdire} or curdire;
+
    stats;
    my $ms = 1000 * (time - $t0);
    if ( $Verbose >= 1 ) {printf STDERR "Now exiting program \"rhdir.pl\". Execution time was %.3fms.\n", $ms;}
@@ -121,26 +126,30 @@ $Targets{A} = "All Directory Entries";
 
 sub argv {
    # Get options and arguments:
-   my @opts;
-   my @args;
+   my @opts = (); my @args = (); my $end_of_options = 0;
    for ( @ARGV ) {
-      if (/^-\pL*$|^--.*$/) {push @opts, $_}
-      else                  {push @args, $_}
+      /^--$/ and $end_of_options = 1 and next;
+      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\pL*h|^--help$/     and help and exit 777 ;
-      /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\pL*t|^--terse$/    and $Verbose =  1     ;
-      /^-\pL*v|^--verbose$/  and $Verbose =  2     ;
-      /^-\pL*l|^--local$/    and $Recurse =  0     ;
-      /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
-      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
-      /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
-      /^-\pL*b|^--both$/     and $Target  = 'B'    ;
-      /^-\pL*a|^--all$/      and $Target  = 'A'    ;
-      /^-\pL*i|^--inodes$/   and $Inodes  =  1     ;
+      /^-\w*h|^--help$/     and help and exit 777 ;
+      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
+      /^-\w*t|^--terse$/    and $Verbose =  1     ;
+      /^-\w*v|^--verbose$/  and $Verbose =  2     ;
+      /^-\w*l|^--local$/    and $Recurse =  0     ;
+      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
+      /^-\w*f|^--files$/    and $Target  = 'F'    ;
+      /^-\w*d|^--dirs$/     and $Target  = 'D'    ;
+      /^-\w*b|^--both$/     and $Target  = 'B'    ;
+      /^-\w*a|^--all$/      and $Target  = 'A'    ;
+      /^-\w*i|^--inodes$/   and $Inodes  =  1     ;
+   }
+   if ( $db ) {
+      say   STDERR '';
+      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
+      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
    }
 
    # Process arguments
@@ -388,6 +397,7 @@ sub help
    -b or --both        List both files and directories.
    -a or --all         List all directory entries.                       (DEFAULT)
    -i or --inodes      Print inode numbers, block sizes, & #s of blocks.
+         --            End of options (all further CL items are arguments).
 
    Defaults (what will be printed if no options are used) are as follows:
     - Give file listings for files of all types (dir, reg, link, pipe, etc).
@@ -399,7 +409,12 @@ sub help
    Multiple single-letter options may be piled-up after a single hyphen.
    For example, use -vrfi to verbosely recurse and print files and inodes.
 
-   Options other than those listed above will be ignored.
+   If you want to use an argument that looks like an option (say, you want to
+   search for files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
+
+   All options not listed above are ignored.
 
    -------------------------------------------------------------------------------
    Description of arguments:
