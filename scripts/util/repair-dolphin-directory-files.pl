@@ -31,6 +31,7 @@ use utf8;
 
 use Sys::Binmode;
 use Time::HiRes 'time';
+use Sys::Hostname;
 
 use RH::Dir;
 
@@ -44,15 +45,27 @@ sub help    ; # Print help and exit.
 
 # ======= VARIABLES: ===================================================================================================
 
-# Settings:                    Meaning:                     Range:    Default:
-my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (don't print diagnostics)
-my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (process all directories)
-my $Recurse   = 1          ; # Recurse subdirectories?      bool      1 (recurse)
-my $Verbose   = 1          ; # Be wordy?                    bool      1 (blab)
+# Settings:     Default:       Meaning of setting:          Range:    Meaning of default:
+my $db        = 0          ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
+my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    Process all directory names.
+my $Recurse   = 0          ; # Recurse subdirectories?      bool      Don't recurse.
+my $Verbose   = 0          ; # Be wordy?                    bool      Be quiet.
 
 # Paths to known ctrl-1 and ctrl-3 ".directory" files:
-my $ctrl_1_path = '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic/.directory';
-my $ctrl_3_path = '/home/aragorn/Data/Celephais/Captain’s-Den/FFS-Profiles/.directory';
+my $hostname = hostname();
+my $ctrl_1_path;
+my $ctrl_3_path;
+if ( 'excalibur' eq $hostname ) {
+   $ctrl_1_path = '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic/.directory';
+   $ctrl_3_path = '/home/aragorn/Data/Celephais/Captain’s-Den/FFS-Profiles/.directory';
+}
+elsif ( 'optiplex-major' eq $hostname ) {
+   $ctrl_1_path = '/home/arthur/Aranath/OS-Resources/Background-Pictures/.directory';
+   $ctrl_3_path = '/home/arthur/Belequenta/rhe/scripts/util/.directory';
+}
+else {
+   die "Not set-up for this host.\n$!\n";
+}
 
 # Counters:
 my $direcount = 0 ; # Count of directories processed by curdire().
@@ -66,14 +79,20 @@ my $cofacount = 0 ; # Count of failed copy attempts.
 { # begin main
    my $t0 = time;
    argv;
-   say "\nNow entering program \"" . get_name_from_path($0) . "\".";
-   say "RegExp  = $RegExp";
-   say "Recurse = $Recurse";
-   say "Verbose = $Verbose";
+   if ( $Verbose >= 1 ) {
+      say "\nNow entering program \"" . get_name_from_path($0) . "\".";
+      say "RegExp  = $RegExp";
+      say "Recurse = $Recurse";
+      say "Verbose = $Verbose";
+   }
+
    $Recurse and RecurseDirs {curdire} or curdire;
-   stats;
+
    my $t1 = time; my $te = $t1 - $t0;
-   say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   if ( $Verbose >= 1 ) {
+      stats;
+      say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+   }
    exit 0;
 } # end main
 
@@ -104,17 +123,39 @@ sub argv
       }
    }
    my $NA = scalar(@ARGV);
-   if    ( 0 == $NA ) {                                  } # Do nothing.
-   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/o           } # Set $RegExp.
-   else               {error($NA); say ''; help; exit 666} # Print error and help messages then exit 666.
+   if    ( 0 == $NA ) {                              } # Do nothing.
+   elsif ( 1 == $NA ) { $RegExp = qr/$ARGV[0]/o      } # Set $RegExp.
+   else               { error($NA); help(); exit 666 } # Print error and help messages then exit 666.
    return 1;
 } # end sub argv
 
 # Process current directory:
-sub curdire
-{
+sub curdire {
    # Get current working directory:
    my $cwd = cwd_utf8;
+
+   # Just return 1 if we're in one of our "exemplar" directories (or if host is unknown):
+   if ( 'excalibur' eq $hostname ) {
+      if ( '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic' eq $cwd ) {
+         return 1;
+      }
+      if ( '/home/aragorn/Data/Celephais/Captain’s-Den/FFS-Profiles' eq $cwd ) {
+         return 1;
+      }
+   }
+
+   elsif ( 'optiplex-major' eq $hostname ) {
+      if ( '/home/arthur/Aranath/OS-Resources/Background-Pictures' eq $cwd ) {
+         return 1;
+      }
+      if ( '/home/arthur/Belequenta/rhe/scripts/util' eq $cwd ) {
+         return 1;
+      }
+   }
+
+   else {
+      return 1;
+   }
 
    # Just return 1 if this directory doesn't match our regexp:
    return 1 if $cwd !~ m/$RegExp/;
@@ -123,7 +164,9 @@ sub curdire
    ++$direcount;
 
    # Announce directory if being verbose:
-   say "\nDirectory # $direcount: $cwd\n" if $Verbose;
+   if ( $Verbose >= 1 ) {
+      say "\nDirectory # $direcount: $cwd\n";
+   }
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, 'F', $RegExp);
@@ -184,6 +227,7 @@ sub stats
 sub error ($err_msg)
 {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: you typed $err_msg arguments, but this program takes at most 1 argument,
    which, if present, must be a Perl-Compliant Regular Expression specifying
    which directory entries to process. Help follows:
@@ -194,6 +238,7 @@ sub error ($err_msg)
 sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "dolphin-ctrl1.pl". This program pastes a "ctrl-1" type Dolphin
    ".directory" file to each subdirectory of the current directory which contains
    1-or-more picture (jpg, jpeg, bmp, png, gif, tif, or tiff) files. This causes
@@ -206,22 +251,22 @@ sub help
    Description of options:
    Option:                      Meaning:
    "-h" or "--help"             Print this help and exit.
-   "-q" or "--quiet"            Don't print directories.
-   "-v" or "--verbose"          Do    print directories.      (DEFAULT)
-   "-l" or "--local"            Don't recurse subdirectories.
-   "-r" or "--recurse"          Do    recurse subdirectories. (DEFAULT)
+   "-q" or "--quiet"            Don't print directories.      (DEFAULT)
+   "-v" or "--verbose"          Do    print directories.
+   "-l" or "--local"            Don't recurse subdirectories. (DEFAULT)
+   "-r" or "--recurse"          Do    recurse subdirectories.
 
    Description of arguments:
    In addition to options, this program can take one optional argument which,
-   if present, must be a Perl-Compliant Regular Expression specifying which 
-   directories to process. To specify multiple patterns, use the | alternation 
+   if present, must be a Perl-Compliant Regular Expression specifying which
+   directories to process. To specify multiple patterns, use the | alternation
    operator. To apply pattern modifier letters, use an Extended RegExp Sequence.
    For example, if you want to search for items with names containing "cat",
    "dog", or "horse", title-cased or not, you could use this regexp:
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Happy picture viewing!
    Cheers,
