@@ -86,6 +86,7 @@
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
 #                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
+# Tue Aug 22, 2023: Fixed missing $" and $, variables (set item separation to ', ').
 ##############################################################################################################
 
 use v5.36;
@@ -113,11 +114,14 @@ sub unlink_file ; # Unlink a file.
 sub print_two   ; # Print two file names, with times and dates, aligned.
 sub dire_stats  ; # Print statistics for current directory.
 sub tree_stats  ; # Print statistics for current tree.
-sub help        ; # Print help for this program.
+sub error       ; # Print error message.
+sub help        ; # Print help  message.
 
 # ======= VARIABLES: =========================================================================================
 
 # Settings:                 # Meaning of setting:      Meanings of values:
+   $"       = ', ';         # Quoted array formatting  Separate elements with comma space.
+   $,       = ', ';         # Listed array formatting  Separate elements with comma space.
 my $db = 0;                 # Debug?                   0 => don't debug
                             #                          1 => debug
 my $RegExp     = qr/^.+$/o; # Regular Expression.      Specifies which files to process.
@@ -216,6 +220,7 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-\w*h|^--help$/      and help and exit 777;
+      /^-\w*e|^--debug$/     and $db = 1;
       /^-\w*r|^--recurse$/   and $Recurse    = 1;
       /^-\w*s|^--spotlight$/ and $PromptMode = 1;
       /^-\w*n|^--newer$/     and $PromptMode = 2 and $PrejudMode = 0;
@@ -229,9 +234,9 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar(@args);
-   if    ( 0 == $NA ) {                              ; } # Use default settings.
-   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o      ; } # Set $RegExp.
-   else               { error($NA); help(); exit 666 ; } # Something evil happened.
+   if    ( 0 == $NA ) {                              ; } #  0 args => Use default settings.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o      ; } #  1 arg  => Set $RegExp.
+   elsif ( !$db     ) { error($NA); help(); exit 666 ; } # >1 args => print error & help if not debugging.
 
    # Return success code 1 to caller:
    return 1;
@@ -645,6 +650,17 @@ sub tree_stats {
    $errocount = 0; # Count of errors.
    return 1;
 } # end sub tree_stats
+
+# Handle errors:
+sub error ($NA) {
+   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
+   Error: you typed $NA arguments, but this program takes at most 1 argument,
+   which, if present, must be a Perl-Compliant Regular Expression describing
+   which file names to check for duplicates. Help follows:
+   END_OF_ERROR
+   return 1;
+} # end sub error
 
 # Print help for this program:
 sub help {

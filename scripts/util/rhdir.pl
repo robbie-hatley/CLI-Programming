@@ -64,11 +64,12 @@ sub help      ;
 
 # Settings:     Default Val:     Meaning of Setting:         Range:     Meaning of Default:
    $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma space.
-my $db        = 0            ; # Debug?                      0,1        Don't debug.
+   $,         = ', '         ; # Listed-array formatting.    string     Separate elements with comma space.
+my $Db        = 0            ; # Debug?                      0,1        Don't debug.
 my $Verbose   = 1            ; # Be verbose?                 0,1,2      Be somewhat verbose.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Don't recurse.
 my $Target    = 'A'          ; # Target                      F|D|B|A    List files of all types.
-my $Regexp    = qr/^.+$/o    ; # Regular Expression.         regexp     List files of all names.
+my $RegExp    = qr/^.+$/o    ; # Regular Expression.         regexp     List files of all names.
 my $Inodes    = 0            ; # Print inodes?               bool       Don't print inodes.
 
 # Counts of events in this program:
@@ -103,16 +104,19 @@ $Targets{A} = "All Directory Entries";
 
 { # begin main
    my $t0 = time;
-   if ($Verbose >= 1) {say STDERR "\nNow entering program \"rhdir.pl\".";}
-   argv;
-   if ( $Verbose >= 1 ) {
-      say STDERR "Verbose  = $Verbose" ;
-      say STDERR "Recurse  = $Recurse" ;
-      say STDERR "Target   = $Target"  ;
-      say STDERR "Regexp   = $Regexp"  ;
-      say STDERR "Inodes   = $Inodes"  ;
+   if ( $Db || $Verbose >= 1 ) {
+      say STDERR "Now entering program \"rhdir.pl\".";
    }
-   if ( $db ) {exit 555}
+   argv;
+   if ( $Db || $Verbose >= 1 ) {
+      say STDERR "\$Db       = $Db"      ;
+      say STDERR "\$Verbose  = $Verbose" ;
+      say STDERR "\$Recurse  = $Recurse" ;
+      say STDERR "\$Target   = $Target"  ;
+      say STDERR "\$Regexp   = $RegExp"  ;
+      say STDERR "\$Inodes   = $Inodes"  ;
+   }
+   if ( $Db ) {exit 555}
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
@@ -135,6 +139,7 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-\w*h|^--help$/     and help and exit 777 ;
+      /^-\w*e|^--debut$/    and $Db      =  1     ;
       /^-\w*q|^--quiet$/    and $Verbose =  0     ;
       /^-\w*t|^--terse$/    and $Verbose =  1     ;
       /^-\w*v|^--verbose$/  and $Verbose =  2     ;
@@ -146,17 +151,16 @@ sub argv {
       /^-\w*a|^--all$/      and $Target  = 'A'    ;
       /^-\w*i|^--inodes$/   and $Inodes  =  1     ;
    }
-   if ( $db ) {
-      say   STDERR '';
+   if ( $Db ) {
       print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
       print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
    }
 
    # Process arguments
    my $NA = scalar(@args);
-      if ( 0 == $NA ) {                            ; } # Do nothing.
-   elsif ( 1 == $NA ) { $Regexp = qr/$args[0]/o    ; } # Set $Regexp.
-   else               { error($NA); help; exit 666 ; } # Something evil happened.
+                                                          #  0 args => Use default settings.
+   $NA == 1 and $RegExp = qr/$args[0]/o;                  #  1 arg  => Set $RegExp.
+   $NA >= 1 && !$Db and error($NA) and help and exit 666; # >1 args => Print
    return 1;
 } # end sub argv
 
@@ -165,10 +169,10 @@ sub curdire {
    my $curdir = cwd_utf8;
    say STDOUT "\nDir # $direcount: \"$curdir\"";
 
-   # Get list of files in current directory matching $Target and $Regexp:
-   my $curdirfiles = GetFiles($curdir, $Target, $Regexp);
+   # Get list of files in current directory matching $Target and $RegExp:
+   my $curdirfiles = GetFiles($curdir, $Target, $RegExp);
 
-   if ($db)
+   if ($Db)
    {
       say STDERR '';
       say STDERR 'IN curdire. List of paths from GetFiles:';
@@ -207,7 +211,7 @@ sub curdire {
    # Make a hash of refs to lists of refs to file-record hashes, keyed by type:
    my %TypeLists;
 
-   if ($db) {print Dumper \%TypeLists}
+   if ($Db) {print Dumper \%TypeLists}
 
    # Use autovivification to insert refs to anonymous arrays into %TypeLists,
    # and to push refs to file-record hashes into those anonymous arrays:
@@ -222,7 +226,7 @@ sub curdire {
       }
    }
 
-   if ($db) {print Dumper \%TypeLists}
+   if ($Db) {print Dumper \%TypeLists}
 
    if ($Inodes)
    {
