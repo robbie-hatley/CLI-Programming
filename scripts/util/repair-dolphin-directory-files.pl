@@ -46,6 +46,8 @@ sub help    ; # Print help and exit.
 # ======= VARIABLES: ===================================================================================================
 
 # Settings:     Default:       Meaning of setting:          Range:    Meaning of default:
+   $"         = ', '       ; # Quoted array formatting.     string    Separate elements with comma space.
+   $,         = ', '       ; # Listed array formatting.     string    Separate elements with comma space.
 my $db        = 0          ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
 my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    Process all directory names.
 my $Recurse   = 0          ; # Recurse subdirectories?      bool      Don't recurse.
@@ -79,19 +81,22 @@ my $cofacount = 0 ; # Count of failed copy attempts.
 { # begin main
    my $t0 = time;
    argv;
-   if ( $Verbose >= 1 ) {
-      say "\nNow entering program \"" . get_name_from_path($0) . "\".";
-      say "RegExp  = $RegExp";
-      say "Recurse = $Recurse";
-      say "Verbose = $Verbose";
+   my $pname = get_name_from_path($0);
+   if ( $db || $Verbose >= 1 ) {
+      say STDERR '';
+      say STDERR "Now entering program \"$pname\".";
+      say STDERR "RegExp  = $RegExp";
+      say STDERR "Recurse = $Recurse";
+      say STDERR "Verbose = $Verbose";
    }
+   exit 555 if $db;
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
-   my $t1 = time; my $te = $t1 - $t0;
+   stats;
+   my $te = time - $t0;
    if ( $Verbose >= 1 ) {
-      stats;
-      say "\nNow exiting program \"" . get_name_from_path($0) . "\". Execution time was $te seconds.";
+      say STDERR "\nNow exiting program \"$pname\".\nExecution time was $te seconds.";
    }
    exit 0;
 } # end main
@@ -99,33 +104,35 @@ my $cofacount = 0 ; # Count of failed copy attempts.
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
 # Process @ARGV :
-sub argv
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if ( $_ eq '-h' || $_ eq '--help'    ) {help; exit 777;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse' ) {$Recurse =  1 ;} # DEFAULT
-         elsif ( $_ eq '-l' || $_ eq '--local'   ) {$Recurse =  0 ;}
-         elsif ( $_ eq '-v' || $_ eq '--verbose' ) {$Verbose =  1 ;} # DEFAULT
-         elsif ( $_ eq '-q' || $_ eq '--quiet'   ) {$Verbose =  0 ;}
-
-         # Remove option from @ARGV:
-         splice @ARGV, $i, 1;
-
-         # Move the index 1-left, so that the "++$i" above
-         # moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right
-         # due to deletion of previous element contents:
-         --$i;
-      }
+sub argv {
+   # Get options and arguments:
+   my @opts = (); my @args = (); my $end_of_options = 0;
+   for ( @ARGV ) {
+      /^--$/ and $end_of_options = 1 and next;
+      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
    }
-   my $NA = scalar(@ARGV);
-   if    ( 0 == $NA ) {                              } # Do nothing.
-   elsif ( 1 == $NA ) { $RegExp = qr/$ARGV[0]/o      } # Set $RegExp.
-   else               { error($NA); help(); exit 666 } # Print error and help messages then exit 666.
+
+   # Process options:
+   for ( @opts ) {
+      /^-\w*h|^--help$/     and help and exit 777 ;
+      /^-\w*e|^--debug$/    and $db      =  1     ;
+      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
+      /^-\w*v|^--verbose$/  and $Verbose =  1     ;
+      /^-\w*l|^--local$/    and $Recurse =  0     ;
+      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
+   }
+   if ( $db ) {
+      say   STDERR '';
+      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
+      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+   }
+
+   # Process arguments:
+   my $NA = scalar @args;
+   $NA >= 1 and $RegExp = qr/$args[0]/o;                  # Set $RegExp.
+   $NA >= 2 && !$db and error($NA) and help and exit 666; # Too many arguments.
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
@@ -165,7 +172,7 @@ sub curdire {
 
    # Announce directory if being verbose:
    if ( $Verbose >= 1 ) {
-      say "\nDirectory # $direcount: $cwd\n";
+      say STDOUT "\nDirectory # $direcount: $cwd\n";
    }
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
@@ -180,8 +187,11 @@ sub curdire {
             $file->{Name} =~ m/\A(?:-\(\d{4}\))*\.directory\z/
          )
       {
-         unlink(e($file->{Path})) and ++$erascount and say("erased \"$file->{Path}\"")
-         or ++$erfacount and warn "Failed to erase \"$file->{Path}\"\n";
+         unlink(e($file->{Path}))
+         and ++$erascount
+         and say STDOUT "erased \"$file->{Path}\""
+         or ++$erfacount
+         and say STDOUT "Failed to erase \"$file->{Path}\"";
       }
 
       if (
@@ -203,8 +213,11 @@ sub curdire {
    # otherwise, paste a ctrl-3 ".directory" file here:
    my $spath = ( ( $pics > 0 ) ? ($ctrl_1_path) : ($ctrl_3_path) );
    my $dpath = path($cwd, ".directory");
-   !system(e("cp '$spath' '$dpath'")) and ++$copycount and say("created \"$dpath\"")
-   or ++$cofacount and warn "Failed to copy .directory file to $cwd\n";
+   !system(e("cp '$spath' '$dpath'"))
+   and ++$copycount
+   and say STDOUT "created \"$dpath\""
+   or ++$cofacount
+   and say STDOUT "Failed to copy .directory file to $cwd";
 
    # We're done, so return 1:
    return 1;
@@ -213,13 +226,15 @@ sub curdire {
 # Print statistics for this program run:
 sub stats
 {
-   say '';
-   say 'Statistics for this directory tree:';
-   say "Found  $direcount directories matching RegExp.";
-   say "Erased $erascount old, enumerated, or corrupted \".directory\" files.";
-   say "Failed $erfacount erasure attempts.";
-   say "Copied $copycount new \".directory\" files.";
-   say "Failed $cofacount copy attempts.";
+   if ( $Verbose >= 1 ) {
+      say STDERR '';
+      say STDERR 'Statistics for this directory tree:';
+      say STDERR "Found  $direcount directories matching RegExp.";
+      say STDERR "Erased $erascount old, enumerated, or corrupted \".directory\" files.";
+      say STDERR "Failed $erfacount erasure attempts.";
+      say STDERR "Copied $copycount new \".directory\" files.";
+      say STDERR "Failed $cofacount copy attempts.";
+   }
    return 1;
 } # end sub stats
 
@@ -249,12 +264,13 @@ sub help
    program-name.pl [options] [arguments]  (to copy ".directory" )
 
    Description of options:
-   Option:                      Meaning:
-   "-h" or "--help"             Print this help and exit.
-   "-q" or "--quiet"            Don't print directories.      (DEFAULT)
-   "-v" or "--verbose"          Do    print directories.
-   "-l" or "--local"            Don't recurse subdirectories. (DEFAULT)
-   "-r" or "--recurse"          Do    recurse subdirectories.
+   Option:              Meaning:
+   -h or --help         Print this help and exit.
+   -e or --debug        Print diagnostics.
+   -q or --quiet        Don't print directories.      (DEFAULT)
+   -v or --verbose      Do    print directories.
+   -l or --local        Don't recurse subdirectories. (DEFAULT)
+   -r or --recurse      Do    recurse subdirectories.
 
    Description of arguments:
    In addition to options, this program can take one optional argument which,
