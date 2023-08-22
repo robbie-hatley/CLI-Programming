@@ -33,7 +33,7 @@
 #                   Shorted target options from "--target=xxxxx" to just "--xxxxx". Upgraded sub argv.
 #                   Made sub error single-purpose. Shortened curfile() by using "and" and "or".
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
-#                   Reformated debug printing of opts and args to ("word1", "word2", "word3") style.
+#                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
 ##############################################################################################################
 

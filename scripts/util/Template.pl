@@ -55,7 +55,7 @@
 # Sun Aug 06, 2023: Improvements to argv, error, and help. Added $Predicate.
 # Sat Aug 12, 2023: Fixed wrong width in colophon.
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
-#                   Reformated debug printing of opts and args to ("word1", "word2", "word3") style.
+#                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
 ##############################################################################################################
 
