@@ -57,6 +57,10 @@
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
 #                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
+# Thu Aug 24, 2023: Redefined what characters may exist in options:
+#                   short option = 1 hyphen , NOT followed by a hyphen, followed by [a-zA-Z0-9]+
+#                   long  option = 2 hyphens, NOT followed by a hyphen, followed by [a-zA-Z0-9-=]+
+#                   I use negative look-aheads to check for "NOT followed by a hyphen".
 ##############################################################################################################
 
 ##############################################################################################################
@@ -103,7 +107,6 @@ sub help    ; # Print help and exit.
 
 # Setting:      Default Value:   Meaning of Setting:         Range:     Meaning of Default:
    $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma space.
-   $,         = ', '         ; # Listed-array formatting.    string     Separate elements with comma space.
 my $db        = 0            ; # Debug?                      bool       Don't debug.
 my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
@@ -142,11 +145,11 @@ my $unkncount = 0 ; # Count of all unknown files.
    if ( $db || $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\". ";
-      say STDERR "Verbose   = $Verbose             ";
-      say STDERR "Recurse   = $Recurse             ";
-      say STDERR "RegExp    = $RegExp              ";
-      say STDERR "Target    = $Target              ";
-      say STDERR "Predicate = $Predicate           ";
+      say STDERR "\$Verbose   = $Verbose             ";
+      say STDERR "\$Recurse   = $Recurse             ";
+      say STDERR "\$RegExp    = $RegExp              ";
+      say STDERR "\$Target    = $Target              ";
+      say STDERR "\$Predicate = $Predicate           ";
    }
    if ( $db ) {exit 555}
 
@@ -165,30 +168,37 @@ my $unkncount = 0 ; # Count of all unknown files.
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ()               ; # options
+   my @args = ()               ; # arguments
+   my $end  = 0                ; # end-of-options flag
+   my $s    = '[a-zA-Z0-9]'    ; # single-hyph allowable chars (English letters, numbers)
+   my $d    = '[a-zA-Z0-9=.-]' ; # double-hyph allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      /^--$/ and $end = 1 and next; # -- = end-of-options marker = construe all further CL items as arguments
+      !$end                         # If we haven't reached end-of-options,
+      && /^-(?!-)$s+$|^--(?!-)$d+$/ # and if we get a valid short or long option,
+      and push @opts, $_            # then push item to @opts
+      or  push @args, $_;           # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\w*h|^--help$/     and help and exit 777 ;
-      /^-\w*e|^--debug$/    and $db      =  1     ;
-      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\w*t|^--terse$/    and $Verbose =  1     ;
-      /^-\w*v|^--verbose$/  and $Verbose =  2     ;
-      /^-\w*l|^--local$/    and $Recurse =  0     ;
-      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
-      /^-\w*f|^--files$/    and $Target  = 'F'    ;
-      /^-\w*d|^--dirs$/     and $Target  = 'D'    ;
-      /^-\w*b|^--both$/     and $Target  = 'B'    ;
-      /^-\w*a|^--all$/      and $Target  = 'A'    ;
+      /^-$s*h|^--help$/     and help and exit 777 ;
+      /^-$s*e|^--debug$/    and $db      =  1     ;
+      /^-$s*q|^--quiet$/    and $Verbose =  0     ;
+      /^-$s*t|^--terse$/    and $Verbose =  1     ;
+      /^-$s*v|^--verbose$/  and $Verbose =  2     ;
+      /^-$s*l|^--local$/    and $Recurse =  0     ;
+      /^-$s*r|^--recurse$/  and $Recurse =  1     ;
+      /^-$s*f|^--files$/    and $Target  = 'F'    ;
+      /^-$s*d|^--dirs$/     and $Target  = 'D'    ;
+      /^-$s*b|^--both$/     and $Target  = 'B'    ;
+      /^-$s*a|^--all$/      and $Target  = 'A'    ;
    }
    if ( $db ) {
-      say   STDERR '';
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Count args:
@@ -207,8 +217,7 @@ sub argv {
 } # end sub argv
 
 # Process current directory:
-sub curdire
-{
+sub curdire {
    # Increment directory counter:
    ++$direcount;
 
@@ -257,8 +266,7 @@ sub curdire
 } # end sub curdire
 
 # Process current file:
-sub curfile ($file)
-{
+sub curfile ($file) {
    # Increment file counter:
    ++$filecount;
 
@@ -312,8 +320,7 @@ sub error ($err_msg) {
 } # end sub error
 
 # Print help:
-sub help
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
    -------------------------------------------------------------------------------
@@ -418,3 +425,4 @@ sub help
    END_OF_HELP
    return 1;
 } # end sub help
+__END__
