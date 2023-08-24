@@ -59,8 +59,15 @@
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
 # Thu Aug 24, 2023: Redefined what characters may exist in options:
 #                   short option = 1 hyphen , NOT followed by a hyphen, followed by [a-zA-Z0-9]+
-#                   long  option = 2 hyphens, NOT followed by a hyphen, followed by [a-zA-Z0-9-=]+
+#                   long  option = 2 hyphens, NOT followed by a hyphen, followed by [a-zA-Z0-9-=.]+
 #                   I use negative look-aheads to check for "NOT followed by a hyphen".
+#                   Got rid of "o" option on qr// (unnecessary). Put "\$" before variable names to be printed.
+#                   Removed code that exits after printing settings if debugging. Inserted code that puts
+#                   program in "simulate" mode near bottom of curfile() if debugging. Fixed bug in which "-"
+#                   was being interpretted as "character range" instead of "hyphen", by changing
+#                   "$d = [a-zA-Z0-9-=.]+" to "$d = [a-zA-Z0-9=.-]+". Dramatically simplified way in which
+#                   options and arguments are printed if debugging. Removed "$" = ', '" and "$, = ', '".
+#                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
 ##############################################################################################################
 
 ##############################################################################################################
@@ -106,11 +113,10 @@ sub help    ; # Print help and exit.
 # ======= VARIABLES: =========================================================================================
 
 # Setting:      Default Value:   Meaning of Setting:         Range:     Meaning of Default:
-   $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma space.
 my $db        = 0            ; # Debug?                      bool       Don't debug.
 my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
-my $RegExp    = qr/^.+$/o    ; # Regular expression.         regexp     Process all file names.
+my $RegExp    = qr/^.+$/     ; # Regular expression.         regexp     Process all file names.
 my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Process all file types.
 my $Predicate = 1            ; # Boolean predicate.          bool       Means whatever you want it to.
 
@@ -151,7 +157,6 @@ my $unkncount = 0 ; # Count of all unknown files.
       say STDERR "\$Target    = $Target              ";
       say STDERR "\$Predicate = $Predicate           ";
    }
-   if ( $db ) {exit 555}
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
@@ -168,32 +173,35 @@ my $unkncount = 0 ; # Count of all unknown files.
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts = ()               ; # options
-   my @args = ()               ; # arguments
-   my $end  = 0                ; # end-of-options flag
-   my $s    = '[a-zA-Z0-9]'    ; # single-hyph allowable chars (English letters, numbers)
-   my $d    = '[a-zA-Z0-9=.-]' ; # double-hyph allowable chars (English letters, numbers, equal, dot, hyphen)
+   my @opts = ()            ; # options
+   my @args = ()            ; # arguments
+   my $end = 0              ; # end-of-options flag
+   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end = 1 and next; # -- = end-of-options marker = construe all further CL items as arguments
-      !$end                         # If we haven't reached end-of-options,
-      && /^-(?!-)$s+$|^--(?!-)$d+$/ # and if we get a valid short or long option,
-      and push @opts, $_            # then push item to @opts
-      or  push @args, $_;           # else push item to @args.
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-$s*h|^--help$/     and help and exit 777 ;
-      /^-$s*e|^--debug$/    and $db      =  1     ;
-      /^-$s*q|^--quiet$/    and $Verbose =  0     ;
-      /^-$s*t|^--terse$/    and $Verbose =  1     ;
-      /^-$s*v|^--verbose$/  and $Verbose =  2     ;
-      /^-$s*l|^--local$/    and $Recurse =  0     ;
-      /^-$s*r|^--recurse$/  and $Recurse =  1     ;
-      /^-$s*f|^--files$/    and $Target  = 'F'    ;
-      /^-$s*d|^--dirs$/     and $Target  = 'D'    ;
-      /^-$s*b|^--both$/     and $Target  = 'B'    ;
-      /^-$s*a|^--all$/      and $Target  = 'A'    ;
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $db      =  1     ;
+      /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
+      /^-$s*t/ || /^--terse$/   and $Verbose =  1     ;
+      /^-$s*v/ || /^--verbose$/ and $Verbose =  2     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
+      /^-$s*f/ || /^--files$/   and $Target  = 'F'    ;
+      /^-$s*d/ || /^--dirs$/    and $Target  = 'D'    ;
+      /^-$s*b/ || /^--both$/    and $Target  = 'B'    ;
+      /^-$s*a/ || /^--all$/     and $Target  = 'A'    ;
    }
    if ( $db ) {
       say STDERR '';
@@ -270,8 +278,18 @@ sub curfile ($file) {
    # Increment file counter:
    ++$filecount;
 
+   # Get path:
+   my $path = $file->{Path};
+
    # Announce path:
-   say STDOUT $file->{Path};
+   if ( $db ) {
+      say STDOUT "Simulate: $path";
+      # (Don't actually DO anything to file at $path.)
+   }
+   else {
+      say STDOUT "Activate: $path";
+      # (Insert code here to DO something to file at $path.)
+   }
 
    # Return success code 1 to caller:
    return 1;

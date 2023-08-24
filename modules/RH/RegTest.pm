@@ -20,6 +20,8 @@
 # Sat Nov 20, 2021: use v5.32. Renewed colophon. Revamped pragmas & encodings.
 # Wed Aug 23, 2023: Upgraded from "v5.32" to "v5.36". Reduced width from 120 to 110. Got rid of CPAN module
 #                   "common::sense" (antiquated). Got rid of all prototypes. Now using signatures.
+# Thu Aug 24, 2023: Changed to C-style {bracing}. Got rid of "o" option on the qr// (unnecessary).
+#                   Added some comments to clarify various tricky bits.
 ##############################################################################################################
 
 # Package:
@@ -35,7 +37,7 @@ use warnings FATAL => 'utf8';
 # CPAN modules:
 use Sys::Binmode;
 # Note: Don't use "use parent 'Exporter';" here, because this module doesn't export anything,
-# because it is a class.
+# because it is a class. Also, don't put -CSDA on the shebang, because it's too late for that.
 
 # Encodings:
 use open ':std', IN  => ':encoding(UTF-8)';
@@ -44,27 +46,27 @@ use open         IN  => ':encoding(UTF-8)';
 use open         OUT => ':encoding(UTF-8)';
 # NOTE: these may be over-ridden later. Eg, "open($fh, '< :raw', e $path)".
 
-sub new
-{
+sub new {
    my $class  = shift;
    my $re = @_ ? shift : '^.+$';
-   if ( ! defined $re ) {die "Bad RegExp.\n$!\n";}
-   my $RegExp = qr/$re/o;
+   my $RegExp = qr/$re/;
+   if ( ! defined $RegExp ) {die "Bad RegExp \"$re\".\n$!\n";}
    say "RegExp = \"$RegExp\"";
    my $self = {RegExp => $RegExp};
    return bless $self, $class;
 }
 
-sub match
-{
+sub match {
    my $Self    = shift;
    my $RegExp  = $Self->{RegExp};
    my $Text    = shift;
    say '';
    say "Text   = \"$Text\"";
    my @Matches = $Text =~ m/$RegExp/;
-   if (@Matches)
-   {
+   # If match, the above will return either the list (1) if no captures, or the list ($1, $2, $3...).
+   # If no match, the above will return the list (0). So either way, we can easily determine match/no-match
+   # by just testing for if (@Matches), because if() forces scalar context, same as "if (scalar(@Matches))".
+   if (@Matches) {
       say "Text matches RegExp.";
       say ( "Length  of \$` = "  ,   length($`) ,        );
       say ( "Content of \$` = \"",          $`  , "\""   );
@@ -72,17 +74,16 @@ sub match
       say ( "Content of \$& = \"",          $&  , "\""   );
       say ( "Length  of \$' = "  ,   length($') ,        );
       say ( "Content of \$' = \"",          $'  , "\""   );
-      if ($1)
-      {
+      # If there were 1-or-more captures, $1 will be set; otherwise, $1 will be undefined ("false" in boolean
+      # context). So the easiest way to determine "Were there captures?" is "if ($1) {...} else {...}".
+      if ($1) {
          say scalar(@Matches), " captures: ", join(', ', map {"\"$_\""} @Matches);
       }
-      else
-      {
+      else {
          say('No captures.');
       }
    }
-   else
-   {
+   else {
       say "Text does NOT match Regex.";
    }
 }

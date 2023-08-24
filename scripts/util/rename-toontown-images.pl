@@ -20,9 +20,14 @@
 #                   "common::sense" (antiquated). Got rid of prototypes. Now using signatures.
 # Thu Aug 24, 2023: Redefined what characters may exist in options:
 #                   short option = 1 hyphen , NOT followed by a hyphen, followed by [a-zA-Z0-9]+
-#                   long  option = 2 hyphens, NOT followed by a hyphen, followed by [a-zA-Z0-9-=]+
+#                   long  option = 2 hyphens, NOT followed by a hyphen, followed by [a-zA-Z0-9-=.]+
 #                   I use negative look-aheads to check for "NOT followed by a hyphen". Also, dramatically
 #                   improved help. Options now include help, debug, quiet, verbose, local, recurse.
+#                   Got rid of "o" option on qr// (unnecessary). Put "\$" before variable names to be printed.
+#                   Fixed bug in which "-" was being interpretted as "character range" instead of "hyphen",
+#                   by changing "$d = [a-zA-Z0-9-=.]+" to "$d = [a-zA-Z0-9=.-]+". Dramatically simplified way
+#                   in which options and arguments are printed if debugging. Removed "$" = ', '" and
+#                   "$, = ', '". Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
@@ -59,7 +64,7 @@ sub help;
 my $db        = 0; # Print diagnostics and exit?
 my $Verbose   = 0; # Print stats?
 my $Recurse   = 0; # Recurse subdirectories?
-my $RegExp    = qr/^(?:ttr-)?screenshot-\pL{3}-\pL{3}-\d{2}-.*\.(?:jpg|png)$/io; # tto or ttr screenshot
+my $RegExp    = qr/^(?:ttr-)?screenshot-\pL{3}-\pL{3}-\d{2}-.*\.(?:jpg|png)$/i; # tto or ttr screenshot
 
 # Counters:
 my $direcount = 0; # Count of directories processed by curdire().
@@ -95,9 +100,10 @@ my %Months =
    if ( $db || $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\".";
-      say STDERR "\$Verbose   = $Verbose             ";
-      say STDERR "\$Recurse   = $Recurse             ";
-      say STDERR "\$RegExp    = $RegExp              ";
+      say STDERR "\$db        = $db      ";
+      say STDERR "\$Verbose   = $Verbose ";
+      say STDERR "\$Recurse   = $Recurse ";
+      say STDERR "\$RegExp    = $RegExp  ";
    }
 
    $Recurse and RecurseDirs {curdire} or curdire;
@@ -114,34 +120,31 @@ my %Months =
 
 sub argv {
    # Get options and arguments:
-   my @opts = ()               ; # options
-   my @args = ()               ; # arguments
-   my $end  = 0                ; # end-of-options flag
-   my $s    = '[a-zA-Z0-9]'    ; # single-hyph allowable chars (English letters, numbers)
-   my $d    = '[a-zA-Z0-9=.-]' ; # double-hyph allowable chars (English letters, numbers, equal, dot, hyphen)
+   my @opts = ()            ; # options
+   my @args = ()            ; # arguments
+   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end = 1 and next; # -- = end-of-options marker = construe all further CL items as arguments
-      !$end                         # If we haven't reached end-of-options,
-      && /^-(?!-)$s+$|^--(?!-)$d+$/  # and if we get a valid short or long option,
-      and push @opts, $_            # then push item to @opts
-      or  push @args, $_;           # else push item to @args.
+         /^-(?!-)$s+$/        # If we get a valid short option
+      || /^--(?!-)$d+$/       # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-$s*h|^--help$/     and help and exit 777 ;
-      /^-$s*e|^--debug$/    and $db      =  1     ;
-      /^-$s*q|^--quiet$/    and $Verbose =  0     ; # DEFAULT
-      /^-$s*v|^--verbose$/  and $Verbose =  1     ;
-      /^-$s*l|^--local$/    and $Recurse =  0     ; # DEFAULT
-      /^-$s*r|^--recurse$/  and $Recurse =  1     ;
+      /^-$s*h/ || /^--help$/     and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/    and $db      =  1     ;
+      /^-$s*q/ || /^--quiet$/    and $Verbose =  0     ; # DEFAULT
+      /^-$s*v/ || /^--verbose$/  and $Verbose =  1     ;
+      /^-$s*l/ || /^--local$/    and $Recurse =  0     ; # DEFAULT
+      /^-$s*r/ || /^--recurse$/  and $Recurse =  1     ;
    }
    if ( $db ) {
-      say   STDERR '';
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
-
    # Ignore all arguments.
 
    # Return success code 1 to caller:
