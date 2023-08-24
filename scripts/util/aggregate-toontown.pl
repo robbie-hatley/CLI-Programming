@@ -1,6 +1,6 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
@@ -25,6 +25,7 @@
 #                   "common::sense" (antiquated). Got rid of prototypes. Program is very broken, though,
 #                   because it's trying to use directories which don't exist. TO-DO: Fix dirs.
 # Sat Aug 19, 2023: Fixed directories and returned full multi-platform functionality.
+# Thu Aug 24, 2023: Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
@@ -65,8 +66,6 @@ my $platform = $ENV{PLATFORM};
 { # begin main
    my $t0 = time;
    argv;
-   my $pname = get_name_from_path($0);
-   say    '';
    say    'Now entering program "aggregate-toontown.pl".';
    say    "Platform = \"$platform\".";
 
@@ -84,10 +83,10 @@ my $platform = $ENV{PLATFORM};
 # Process @ARGV :
 sub argv {
    for ( @ARGV ) {
-      /^-h$|^--help$/   and help and exit 777;
-      /^-1$|^--debug1$/ and $db = 1;
-      /^-2$|^--debug2$/ and $db = 2;
-      /^-3$|^--debug3$/ and $db = 3;
+      /^-h$/ || /^--help$/   and help and exit 777;
+      /^-1$/ || /^--debug1$/ and $db = 1;
+      /^-2$/ || /^--debug2$/ and $db = 2;
+      /^-3$/ || /^--debug3$/ and $db = 3;
    }
    return 1;
 } # end sub argv
