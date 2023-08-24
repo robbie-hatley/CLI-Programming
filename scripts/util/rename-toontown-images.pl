@@ -1,10 +1,10 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # rename-toontown-images.pl
 # Renames Toontown screenshots to a standard format such that lexical sorting = chronological sorting.
 #
@@ -12,34 +12,47 @@
 # Fri Jan 29, 2021: Wrote first draft.
 # Mon Mar 08, 2021: Heavily refactored. Now also renames TTO screenshots.
 # Wed Apr 14, 2021: Expanded width to 120 characters; shorted sub names; cleaned-up formatting and comments.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
 # Mon Nov 22, 2021: Fixed bug on line 188: "/avaname" => "/$avaname".
 # Thu Nov 25, 2021: Added timestamping.
-########################################################################################################################
+# Tue Aug 22, 2023: Upgraded from "v5.32" to "v5.36". Decreased width from 120 to 110. Got rid of CPAN module
+#                   "common::sense" (antiquated). Got rid of prototypes. Now using signatures.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+# ======= PRELIMINARIES: =====================================================================================
+
+# Pragmas:
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+
+# CPAN modules:
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
 
+# Homebrew modules:
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv    ()  ;
-sub curdire ()  ;
-sub curfile ($) ;
-sub stats   ()  ;
-sub help    ()  ;
+sub argv;
+sub curdire;
+sub curfile;
+sub stats;
+sub help;
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Debug?
 my $db = 0; # Set to 1 for debug, 0 for no-debug.
 
 # Settings:
 my $Recurse   = 0; # Recurse subdirectories?  (bool)
-my $Regexp    = qr/^(?:ttr-)?screenshot-\pL{3}-\pL{3}-\d{2}-.*\.(?:jpg|png)$/; # old-style tto or ttr screenshot
+my $Regexp    = qr/^(?:ttr-)?screenshot-\pL{3}-\pL{3}-\d{2}-.*\.(?:jpg|png)$/; # old-style tto/ttr screenshot
 
 # Counters:
 my $direcount = 0; # Count of directories processed by curdire().
@@ -66,7 +79,7 @@ my %Months =
    Dec => '12',
 );
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    say "\nNow entering program \"" . get_name_from_path($0) . "\".\n";
@@ -79,10 +92,9 @@ my %Months =
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS =======================================================================================
+# ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub argv ()
-{
+sub argv {
    my $help = 0;  # Print help and exit?
    foreach (@ARGV)
    {
@@ -93,10 +105,9 @@ sub argv ()
       }
    }
    return 1;
-} # end sub argv ()
+} # end sub argv
 
-sub curdire ()
-{
+sub curdire {
    ++$direcount;
 
    # Get and announce current working directory:
@@ -109,19 +120,17 @@ sub curdire ()
    my $curdirfiles = GetFiles($curdir, 'F', $Regexp);
 
    # Iterate through these files and send each one to curfile:
-   foreach my $file (@{$curdirfiles}) 
+   foreach my $file (@{$curdirfiles})
    {
       next if ! -e e $file->{Path};
       next if ! -f e $file->{Path};
       curfile($file);
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-sub curfile ($)
-{
+sub curfile ($file) {
    ++$filecount;
-   my $file = shift;
    my $cwd  = cwd_utf8();
    my $path = $file->{Path};
    my $name = $file->{Name};
@@ -140,7 +149,7 @@ sub curfile ($)
    # Bail if number of parts isn't 10:
    if (10 != scalar(@Parts))
    {
-      ++$malfcount; 
+      ++$malfcount;
       warn "\nError in \"rename-toontown-images.pl\":\n"
          . "This file has a malformed name (# of parts is other-than 10):\n"
          . "${path}\n"
@@ -206,10 +215,9 @@ sub curfile ($)
       or  ++$failcount and warn "Couldn't rename $path to $newpath.\n" and return 0;
    } # end else not debugging
    return 1;
-} # end sub curfile ($)
+} # end sub curfile ($file)
 
-sub stats ()
-{
+sub stats {
    say '';
    printf("Navigated %6d directories.\n",                      $direcount);
    printf("Processed %6d files.\n",                            $filecount);
@@ -218,10 +226,9 @@ sub stats ()
    printf("Renamed   %6d files.\n",                            $renacount);
    printf("Failed    %6d file rename attempts.\n",             $failcount);
    return 1;
-} # end sub stats ()
+} # end sub stats
 
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "rename-toontown-images.pl". This program renames all
    Toontown Rewritten screenshots in the current directory (and all subdirectories
@@ -239,4 +246,5 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help
+__END__
