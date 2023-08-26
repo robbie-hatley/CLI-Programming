@@ -6,7 +6,7 @@
 
 ##############################################################################################################
 # canonicalize-permissions.pl
-# Canonicalizes permissions in current directory tree.
+# Canonicalizes permissions of directory entries, except for hidden files & directories.
 # Written by Robbie Hatley.
 # Edit history:
 # Sun Mar 05, 2023: Wrote stub. (NOT YET FUNCTIONAL.)
@@ -17,6 +17,9 @@
 #                   Elapsed time is now in milliseconds.
 # Wed Aug 09, 2023: Dramatically symplified permission-setting. Created new subs "dir_nav", "set_exec", and
 #                   "set_noex". Added several new suffixes. Now handles makefiles (noex).
+# Fri Aug 25, 2023: Added "quiet" and "verbose" options to control output. Added "nodebug" option.
+#                   Fixed bug in which all image files were having their perms set TWICE.
+#                   Added stipulation that this program does not process hidden files.
 ##############################################################################################################
 
 use v5.36;
@@ -33,24 +36,31 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv    ; # Process @ARGV.
-sub curdire ; # Process current directory.
-sub curfile ; # Process current file.
-sub stats   ; # Print statistics.
-sub error   ; # Handle errors.
-sub help    ; # Print help and exit.
+sub argv     ; # Process @ARGV.
+sub curdire  ; # Process current directory.
+sub dir_nav  ; # Set a directory to "navigable".
+sub set_exec ; # Set a file to "executable".
+sub set_noex ; # Set a file to "NOT executable".
+sub curfile  ; # Process current file.
+sub stats    ; # Print statistics.
+sub error    ; # Handle errors.
+sub help     ; # Print help and exit.
 
 # ======= VARIABLES: =========================================================================================
 
 # Settings:     Default:       Meaning of setting:          Range:    Meaning of default:
-my $db        = 0          ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
+my $Db        = 0          ; # Print diagnostics?           bool      Don't print diagnostics.
+my $Verbose   = 0          ; # Print stats?                 bool      Don't print stats.
 my $Recurse   = 0          ; # Recurse subdirectories?      bool      Don't recurse.
-my $Target    = 'F'        ; # Files, dirs, both, all?      F|D|B|A   Process regular files only.
 my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    Process all file names.
+my $Target    = 'F'        ; # Files, dirs, both, all?      F|D|B|A   Process regular files only.
+my $Predicate = 1          ; # Boolean predicate.           bool      Process files of all types.
 
 # Counters:
 my $direcount = 0          ; # Count of directories processed by curdire().
-my $filecount = 0          ; # Count of dir entries processed by curfile().
+my $filecount = 0          ; # Count of dir entries matching $RegExp and $Target
+my $findcount = 0          ; # Count of dir entries also matching $Predicate.
+my $hidncount = 0          ; # Count of all hidden entries encountered.
 my $opencount = 0          ; # Count of all regular files we could    open.
 my $noopcount = 0          ; # Count of all regular files we couldn't open.
 my $readcount = 0          ; # Count of all regular files we could    read.
@@ -60,16 +70,28 @@ my $permcount = 0          ; # Count of all permissions set.
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 { # begin main
    my $t0 = time;
-   my $pname = get_name_from_path($0);
    argv;
-   say STDERR "\nNow entering program \"$pname\".";
-   say STDERR "Target  = $Target";
-   say STDERR "RegExp  = $RegExp";
-   say STDERR "Recurse = $Recurse";
+   my $pname = get_name_from_path($0);
+   if ( $Db || $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now entering program \"$pname\".   ";
+      say    STDERR "\$Db        = $Db                  ";
+      say    STDERR "\$Verbose   = $Verbose             ";
+      say    STDERR "\$Recurse   = $Recurse             ";
+      say    STDERR "\$RegExp    = $RegExp              ";
+      say    STDERR "\$Target    = $Target              ";
+      say    STDERR "\$Predicate = $Predicate           ";
+   }
+
    $Recurse and RecurseDirs {curdire} or curdire;
+
    stats;
-   my $ms = 1000 * (time - $t0);
-   printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
+   my $et = time - $t0;
+   if ( $Db || $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now exiting program \"$pname\".";
+      printf STDERR "Execution time was %.3f seconds.", $et;
+   }
    exit 0;
 } # end main
 
@@ -78,30 +100,47 @@ my $permcount = 0          ; # Count of all permissions set.
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts;
-   my @args;
+   my @opts = ()            ; # options
+   my @args = ()            ; # arguments
+   my $end = 0              ; # end-of-options flag
+   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      if (/^-\pL*$|^--.*$/) {push @opts, $_}
-      else                  {push @args, $_}
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\pL*h|^--help$/     and help and exit 777 ;
-      /^-\pL*e|^--debug$/    and $db      =  1     ;
-      /^-\pL*l|^--local$/    and $Recurse =  0     ;
-      /^-\pL*r|^--recurse$/  and $Recurse =  1     ; # DEFAULT
-      /^-\pL*f|^--files$/    and $Target  = 'F'    ;
-      /^-\pL*d|^--dirs$/     and $Target  = 'D'    ;
-      /^-\pL*b|^--both$/     and $Target  = 'B'    ;
-      /^-\pL*a|^--all$/      and $Target  = 'A'    ; # DEFAULT
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*n/ || /^--nodebug$/ and $Db      =  0     ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
+      /^-$s*v/ || /^--verbose$/ and $Verbose =  1     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
+      /^-$s*f/ || /^--files$/   and $Target  = 'F'    ;
+      /^-$s*d/ || /^--dirs$/    and $Target  = 'D'    ;
+      /^-$s*b/ || /^--both$/    and $Target  = 'B'    ;
+      /^-$s*a/ || /^--all$/     and $Target  = 'A'    ;
+   }
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
    my $NA = scalar(@args);
-   if    ( 0 == $NA ) {                                  } # Use default settings.
-   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o          } # Set $RegExp.
-   else               { error($NA) and help and exit 666 } # Something evil happened.
+   $NA >= 1 and $RegExp = qr/$args[0]/;                   # Set $RegExp.
+   $NA >= 2 and $Predicate = $args[1];                    # Set $Predicate.
+   $NA >= 3 && !$Db and error($NA) and help and exit 666; # Wrong number of arguments.
 
    # Return success code 1 to caller:
    return 1;
@@ -119,10 +158,14 @@ sub curdire {
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
 
-   # Iterate through $curdirfiles and send each file to curfile():
-   foreach my $file (@{$curdirfiles})
-   {
-      curfile($file);
+   # Send each file that matches $RegExp, $Target, and $Predicate to curfile():
+   foreach my $file (@$curdirfiles) {
+      ++$filecount;
+      local $_ = e $file->{Path};
+      if (eval($Predicate)) {
+         ++$findcount;
+         curfile($file);
+      }
    }
    return 1;
 } # end sub curdire
@@ -150,8 +193,13 @@ sub set_noex ($file) {
 
 # Process current file:
 sub curfile ($file) {
-   # Increment file counter:
-   ++$filecount;
+   # If this file is hidden, just return:
+   if ( '.' eq substr($file->{Name}, 0, 1) ) {
+      ++$hidncount;
+      return;
+   }
+
+   # If we get to here, this file is NOT hidden, so process it normally.
 
    if    ( 'D' eq $file->{Type} ) { # Directories need to be navigable.
       dir_nav($file);
@@ -175,7 +223,7 @@ sub curfile ($file) {
             /^(jpg|jpeg|tif|tiff|bmp|gif|png|xcf)$/ and set_noex($file);
 
             # Archive files DON'T need to be executable:
-            /^(zip|rar|tar|tgz|bmp|gif|png|xcf)$/ and set_noex($file);
+            /^(zip|rar|tar|tgz)$/ and set_noex($file);
 
             # Sound files DON'T need to be executable:
             /^(mp3|ogg|flac|wav)$/ and set_noex($file);
@@ -233,14 +281,19 @@ sub curfile ($file) {
 
 # Print statistics for this program run:
 sub stats {
-   say STDERR "\nStatistics for this directory tree:";
-   say STDERR "Navigated $direcount directories.";
-   say STDERR "Processed $filecount directory entries.";
-   say STDERR "Was able to open $opencount regular files with unknown or missing file-name extensions.";
-   say STDERR "Failed $noopcount file-open attempts.";
-   say STDERR "Was able to read $readcount regular files with unknown or missing file-name extensions.";
-   say STDERR "Failed $nordcount file-read attempts.";
-   say STDERR "Set $permcount permissions.";
+   if ( $Db || $Verbose >= 1 ) {
+      say STDERR '';
+      say STDERR "Statistics for this directory tree:";
+      say STDERR "Navigated $direcount directories.";
+      say STDERR "Processed $filecount directory entries matching regexp and target.";
+      say STDERR "Found $findcount directory entries also matching predicate.";
+      say STDERR "Skipped $hidncount hidden directory entries.";
+      say STDERR "Was able to open $opencount regular files with unknown or missing file-name extensions.";
+      say STDERR "Failed $noopcount file-open attempts.";
+      say STDERR "Was able to read $readcount regular files with unknown or missing file-name extensions.";
+      say STDERR "Failed $nordcount file-read attempts.";
+      say STDERR "Set $permcount permissions.";
+   }
    return 1;
 } # end sub stats
 
@@ -263,10 +316,10 @@ sub help
    Introduction:
 
    Welcome to "canononicalize-permissions.pl". This program canonicalizes the
-   permissions of directory entries. Permissions for directories are set to
-   "rwxrwxr-x"; things which should be executable are set to "rwxrwxr-x";
+   permissions of non-hidden directory entries. Permissions for directories are
+   set to "rwxrwxr-x"; things which should be executable are set to "rwxrwxr-x";
    text, pictures, sounds, and videos are set to "-rw-rw-r--"; and everything else
-   (links, sockets, etc) is left unaltered.
+   (links, sockets, hidden files, etc) is left unaltered.
 
    By default, this program acts on regular files only and in the current working
    directory only, but this can be altered (see "Description of Option" below).
@@ -282,7 +335,10 @@ sub help
 
    Option:           Meaning:
    -h or --help      Print help and exit.
-   -e or --debug     Print diagnostics.
+   -n or --nodebug   DON'T print diagnostics.                       (DEFAULT)
+   -e or --debug     DO    print diagnostics.
+   -q or --quiet     DON'T print stats.                             (DEFAULT)
+   -v or --verbose   DO    print stats.
    -l or --local     DON'T recurse subdirectories (but not links).  (DEFAULT)
    -r or --recurse   DO    recurse subdirectories (but not links).
    -f or --files     Target files only.                             (DEFAULT)
@@ -290,22 +346,62 @@ sub help
    -b or --both      Target both files and directories.
    -a or --all       Target all directory entries.
    Multiple single-letter options can be piled-up after a single hyphen.
-   For example, use "-ar" to process ALL entires in ALL subdirectories.
+   For example, use "-arv" to verbosely process all entries in all subdirectories.
 
    -------------------------------------------------------------------------------
    Description of arguments:
-   In addition to options, this program can take one optional argument which, if
-   present, must be a Perl-Compliant Regular Expression specifying which items to
-   process. To specify multiple patterns, use the | alternation operator.
-   To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to process items with names containing "cat",
-   "dog", or "horse", title-cased or not, you could use this regexp:
-   '(?i:c)at|(?i:d)og|(?i:h)orse'
+
+   In addition to options, this program can take 1 or 2 optional arguments.
+
+   Arg1 (OPTIONAL), if present, must be a Perl-Compliant Regular Expression
+   specifying which file names to process. To specify multiple patterns, use the
+   | alternation operator. To apply pattern modifier letters, use an Extended
+   RegExp Sequence. For example, if you want to process items with names
+   containing "cat", "dog", or "horse", title-cased or not, you could use this
+   regexp: '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
 
+   Arg2 (OPTIONAL), if present, must be a boolean expression using Perl
+   file-test operators. The expression must be enclosed in parentheses (else
+   this program will confuse your file-test operators for options), and then
+   enclosed in single quotes (else the shell won't pass your expression to this
+   program intact). Here are some examples of valid and invalid second arguments:
+
+   '(-d && -l)'  # VALID:   Finds symbolic links to directories
+   '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
+   '(-b)'        # VALID:   Finds block special files
+   '(-c)'        # VALID:   Finds character special files
+   '(-S || -p)'  # VALID:   Finds sockets and pipes.  (S must be CAPITAL S   )
+    '-d && -l'   # INVALID: missing parentheses       (confuses program      )
+    (-d && -l)   # INVALID: missing quotes            (confuses shell        )
+     -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
+
+   (Exception: Technically, you can use an integer as a boolean, and it doesn't
+   need quotes or parentheses; but if you use an integer, any non-zero integer
+   will process all paths and 0 will process no paths, so this isn't very useful.)
+
+   Arguments and options may be freely mixed, but the arguments must appear in
+   the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them
+   backwards, they won't do what you want, as most predicates aren't valid regexps
+   and vice-versa.
+
+   A number of arguments greater than 2 will cause this program to print an error
+   message and abort.
+
+   A number of arguments less than 0 will likely rupture our spacetime manifold
+   and destroy everything. But if you DO somehow manage to use a negative number
+   of arguments without destroying the universe, please send me an email at
+   "Hatley.Software@gmail.com", because I'd like to know how you did that!
+
+   But if you somehow manage to use a number of arguments which is an irrational
+   or complex number, please keep THAT to yourself. Some things would be better
+   for my sanity for me not to know. I don't want to find myself enthralled to
+   Cthulhu.
+
    Happy directory tree permissions canonicalizing!
+
    Cheers,
    Robbie Hatley,
    programmer.

@@ -26,6 +26,8 @@
 #                   because it's trying to use directories which don't exist. TO-DO: Fix dirs.
 # Sat Aug 19, 2023: Fixed directories and returned full multi-platform functionality.
 # Thu Aug 24, 2023: Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+# Fri Aug 25, 2023: Now calls "rename-toontown-images.pl" in "verbose" mode.
+#                   Now expressing execution time in seconds, to nearest millisecond.
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
@@ -37,7 +39,7 @@ use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
 
-# CPAN:
+# CPAN modules:
 use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
@@ -67,14 +69,19 @@ my $platform = $ENV{PLATFORM};
    my $t0 = time;
    argv;
    say    'Now entering program "aggregate-toontown.pl".';
-   say    "Platform = \"$platform\".";
+   say    "\$db              = $db";
+   say    "\$image_regexp    = $image_regexp";
+   say    "\$program_dir_1   = $program_dir_1";
+   say    "\$program_dir_2   = $program_dir_2";
+   say    "\$screenshots_dir = $screenshots_dir";
+   say    "\$Platform        = \"$platform\".";
 
    aggregate;
 
-   my $ms = 1000 * (time - $t0);
+   my $et = time - $t0;
    say    '';
    say    'Now exiting program "aggregate-toontown.pl".';
-   printf "Execution time was %.3fms.\n", $ms;
+   printf "Execution time was %.3f seconds.\n", $et;
    exit 0;
 } # end main
 
@@ -83,10 +90,10 @@ my $platform = $ENV{PLATFORM};
 # Process @ARGV :
 sub argv {
    for ( @ARGV ) {
-      /^-h$/ || /^--help$/   and help and exit 777;
-      /^-1$/ || /^--debug1$/ and $db = 1;
-      /^-2$/ || /^--debug2$/ and $db = 2;
-      /^-3$/ || /^--debug3$/ and $db = 3;
+      if    ( /^-h$/ || /^--help$/   ) {help; exit 777;}
+      elsif ( /^-1$/ || /^--debug1$/ ) {$db = 1;}
+      elsif ( /^-2$/ || /^--debug2$/ ) {$db = 2;}
+      elsif ( /^-3$/ || /^--debug3$/ ) {$db = 3;}
    }
    return 1;
 } # end sub argv
@@ -171,7 +178,7 @@ sub aggregate {
    # Rename Toontown screenshot files as necessary:
    say STDOUT '';
    say STDOUT 'Now canonicalizing names of Toontown screenshots....';
-   system(e('rename-toontown-images.pl'));
+   system(e('rename-toontown-images.pl -v'));
 
    # Get ref to list of file-info hashes for all jpg and png files in screenshots directory:
    my $ImageFiles2 = GetFiles($screenshots_dir, 'F', $image_regexp);
@@ -229,8 +236,9 @@ sub help {
    -------------------------------------------------------------------------------
    Command Lines:
 
-   aggregate-towntown.pl [-h | --help]   (to print this help and exit)
-   aggregate-towntown.pl [options]       (to aggregate screenshots)
+   aggregate-towntown.pl [-h | --help]  (to print this help and exit)
+   aggregate-towntown.pl [-1|-2|-3]     (to simulate screenshot aggregation)
+   aggregate-towntown.pl                (to aggregate screenshots)
 
    -------------------------------------------------------------------------------
    Description of Options:
@@ -241,17 +249,19 @@ sub help {
    -2 or --debug2  Print diagnostics and exit after second breakpoint.
    -3 or --debug3  Print diagnostics and exit after third  breakpoint.
 
+   Single-letter options may NOT be stacked in front of a single hyphen in this
+   program, because they all contradict each other; at most one may be used.
+
    All other options are ignored.
 
    -------------------------------------------------------------------------------
    Description of Arguments:
 
-   You can type as many arguments as you like on the command line.
-   This program will ignore them all.
+   You can type as many arguments as you like on the command line, but this
+   program will ignore them all. If you need to alter what this program does,
+   edit this script.
 
    "Going UP, sir!"
-
-   If you need to alter what this program does, edit this script.
 
    Happy Toontown screenshot aggregating!
 

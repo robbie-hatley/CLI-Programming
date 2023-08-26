@@ -68,6 +68,7 @@
 #                   "$d = [a-zA-Z0-9-=.]+" to "$d = [a-zA-Z0-9=.-]+". Dramatically simplified way in which
 #                   options and arguments are printed if debugging. Removed "$" = ', '" and "$, = ', '".
 #                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+# Fri Aug 25, 2023: Added "nodebug" option. Fixed bug in which curfile was never being called.
 ##############################################################################################################
 
 ##############################################################################################################
@@ -113,7 +114,7 @@ sub help    ; # Print help and exit.
 # ======= VARIABLES: =========================================================================================
 
 # Setting:      Default Value:   Meaning of Setting:         Range:     Meaning of Default:
-my $db        = 0            ; # Debug?                      bool       Don't debug.
+my $Db        = 0            ; # Debug?                      bool       Don't debug.
 my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
 my $RegExp    = qr/^.+$/     ; # Regular expression.         regexp     Process all file names.
@@ -148,22 +149,25 @@ my $unkncount = 0 ; # Count of all unknown files.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $db || $Verbose >= 1 ) {
-      say STDERR '';
-      say STDERR "Now entering program \"$pname\". ";
-      say STDERR "\$Verbose   = $Verbose             ";
-      say STDERR "\$Recurse   = $Recurse             ";
-      say STDERR "\$RegExp    = $RegExp              ";
-      say STDERR "\$Target    = $Target              ";
-      say STDERR "\$Predicate = $Predicate           ";
+   if ( $Db || $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now entering program \"$pname\".   ";
+      say    STDERR "\$Db        = $Db                  ";
+      say    STDERR "\$Verbose   = $Verbose             ";
+      say    STDERR "\$Recurse   = $Recurse             ";
+      say    STDERR "\$RegExp    = $RegExp              ";
+      say    STDERR "\$Target    = $Target              ";
+      say    STDERR "\$Predicate = $Predicate           ";
    }
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
    stats;
-   my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 1 ) {
-      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
+   my $et = time - $t0;
+   if ( $Db || $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now exiting program \"$pname\".";
+      printf STDERR "Execution time was %.3f seconds.", $et;
    }
    exit 0;
 } # end main
@@ -192,7 +196,8 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/    and help and exit 777 ;
-      /^-$s*e/ || /^--debug$/   and $db      =  1     ;
+      /^-$s*n/ || /^--nodebug$/ and $Db      =  0     ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
       /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
       /^-$s*t/ || /^--terse$/   and $Verbose =  1     ;
       /^-$s*v/ || /^--verbose$/ and $Verbose =  2     ;
@@ -203,7 +208,7 @@ sub argv {
       /^-$s*b/ || /^--both$/    and $Target  = 'B'    ;
       /^-$s*a/ || /^--all$/     and $Target  = 'A'    ;
    }
-   if ( $db ) {
+   if ( $Db ) {
       say STDERR '';
       say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
       say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
@@ -216,9 +221,9 @@ sub argv {
    # my $re; $NA >= 1 and $re = join '|', @args and $RegExp = qr/$re/o;
 
    # Use positional arguments instead?
-   $NA >= 1 and $RegExp = qr/$args[0]/o;                  # Set $RegExp.
+   $NA >= 1 and $RegExp = qr/$args[0]/;                   # Set $RegExp.
    $NA >= 2 and $Predicate = $args[1];                    # Set $Predicate.
-   $NA >= 3 && !$db and error($NA) and help and exit 666; # Something evil happened.
+   $NA >= 3 && !$Db and error($NA) and help and exit 666; # Wrong number of arguments.
 
    # Return success code 1 to caller:
    return 1;
@@ -265,7 +270,7 @@ sub curdire {
       local $_ = e $file->{Path};
       if (eval($Predicate)) {
          ++$findcount;
-         say STDOUT "$file->{Path}";
+         curfile($file);
       }
    }
 
@@ -275,14 +280,11 @@ sub curdire {
 
 # Process current file:
 sub curfile ($file) {
-   # Increment file counter:
-   ++$filecount;
-
    # Get path:
    my $path = $file->{Path};
 
    # Announce path:
-   if ( $db ) {
+   if ( $Db ) {
       say STDOUT "Simulate: $path";
       # (Don't actually DO anything to file at $path.)
    }

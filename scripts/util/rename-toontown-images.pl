@@ -28,6 +28,8 @@
 #                   by changing "$d = [a-zA-Z0-9-=.]+" to "$d = [a-zA-Z0-9=.-]+". Dramatically simplified way
 #                   in which options and arguments are printed if debugging. Removed "$" = ', '" and
 #                   "$, = ', '". Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+# Fri Aug 25, 2023: Now correctly handles "annotated" file names. (Look-Ahead assertions are fun!)
+#                   Now expressing execution time in seconds, to nearest millisecond.
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
@@ -53,7 +55,6 @@ sub argv;
 sub curdire;
 sub curfile;
 sub stats;
-sub error;
 sub help;
 
 # ======= VARIABLES: =========================================================================================
@@ -61,18 +62,21 @@ sub help;
 # Debug?
 
 # Settings:
-my $db        = 0; # Print diagnostics and exit?
+my $Db        = 0; # Print diagnostics and exit?
 my $Verbose   = 0; # Print stats?
 my $Recurse   = 0; # Recurse subdirectories?
-my $RegExp    = qr/^(?:ttr-)?screenshot-\pL{3}-\pL{3}-\d{2}-.*\.(?:jpg|png)$/i; # tto or ttr screenshot
+my $RE =
+qr/^(?:tt(?:r|o)-)?screenshot(?:-_[^_]+_)?-\pL{3}-\pL{3}-\d{2}-\d{2}-\d{2}-\d{2}-\d{4}-\d+\.(?:jpg|png)$/;
 
 # Counters:
 my $direcount = 0; # Count of directories processed by curdire().
 my $filecount = 0; # Count of files processed by curfile().
-my $oldfcount = 0; # Count of tto and/or ttr screenshot files found.
 my $malfcount = 0; # Count of files skipped because they have malformed names (# of parts is other-than 10).
-my $renacount = 0; # Count of files renamed.
-my $failcount = 0; # Count of failed file-rename attempts.
+my $oldfcount = 0; # Count of old-format (Wed-Aug-27tto and/or ttr screenshot files found.
+my $noavcount = 0; # Count of files skipped because there was no name available that could be used.
+my $simucount = 0; # Count of simulated  file renames.
+my $failcount = 0; # Count of failed     file renames.
+my $renacount = 0; # Count of successful file renames.
 
 # Hashes:
 my %Months =
@@ -97,21 +101,23 @@ my %Months =
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $db || $Verbose >= 1 ) {
+   if ( $Db || $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\".";
-      say STDERR "\$db        = $db      ";
+      say STDERR "\$Db        = $Db      ";
       say STDERR "\$Verbose   = $Verbose ";
       say STDERR "\$Recurse   = $Recurse ";
-      say STDERR "\$RegExp    = $RegExp  ";
+      say STDERR "\$RE        = $RE  ";
    }
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
    stats;
-   my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 1 ) {
-      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
+   my $et = time - $t0;
+   if ( $Db || $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now exiting program \"$pname\".";
+      printf STDERR "Execution time was %.3f seconds.\n", $et;
    }
    exit 0;
 } # end main
@@ -119,49 +125,48 @@ my %Months =
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
 sub argv {
-   # Get options and arguments:
+   # ---------------------------------------------------------------------------------------------------------
+   # Get Options:
    my @opts = ()            ; # options
-   my @args = ()            ; # arguments
    my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
    my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
          /^-(?!-)$s+$/        # If we get a valid short option
       || /^--(?!-)$d+$/       # or a valid long option,
-      and push @opts, $_      # then push item to @opts
-      or  push @args, $_;     # else push item to @args.
+      and push @opts, $_;     # then push item to @opts
    }
-
-   # Process options:
+   # ---------------------------------------------------------------------------------------------------------
+   # Process Options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/     and help and exit 777 ;
-      /^-$s*e/ || /^--debug$/    and $db      =  1     ;
+      /^-$s*n/ || /^--nodebug$/  and $Db      =  0     ; # DEFAULT
+      /^-$s*e/ || /^--debug$/    and $Db      =  1     ;
       /^-$s*q/ || /^--quiet$/    and $Verbose =  0     ; # DEFAULT
       /^-$s*v/ || /^--verbose$/  and $Verbose =  1     ;
       /^-$s*l/ || /^--local$/    and $Recurse =  0     ; # DEFAULT
       /^-$s*r/ || /^--recurse$/  and $Recurse =  1     ;
    }
-   if ( $db ) {
+   if ( $Db ) {
       say STDERR '';
       say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
-      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
-   # Ignore all arguments.
-
-   # Return success code 1 to caller:
+   # ---------------------------------------------------------------------------------------------------------
+   # Return Success Code 1 To Caller:
    return 1;
 } # end sub argv
 
 sub curdire {
+   # Increment directory counter:
    ++$direcount;
 
    # Get and announce current working directory:
-   my $curdir = cwd_utf8;
-   say STDOUT '';
-   say STDOUT "Directory # $direcount:";
-   say STDOUT $curdir;
+   my $curdir = d getcwd;
+   say '';
+   say "Directory # $direcount: $curdir";
+   say '';
 
-   # Get list of JPG and PNG files in current directory:
-   my $curdirfiles = GetFiles($curdir, 'F', $RegExp);
+   # Get list of Regular files matching $RE (ie, old-format Toontown screenshots) in current directory:
+   my $curdirfiles = GetFiles($curdir, 'F', $RE);
 
    # Iterate through these files and send each one to curfile:
    foreach my $file (@$curdirfiles) {
@@ -171,102 +176,213 @@ sub curdire {
 } # end sub curdire
 
 sub curfile ($file) {
+   # Increment file counter:
    ++$filecount;
-   my $cwd  = cwd_utf8();
+
+   my $cwd  = d getcwd;
    my $path = $file->{Path};
    my $name = $file->{Name};
    my $pref = denumerate_file_name(get_prefix($name));
    my $suff = get_suffix($name);
+   my $n;
 
-   # If we get to here, this file is a screenshot file with an old-style name, so increment $oldfcount:
-   ++$oldfcount;
+   # Get parts from prefix. This is tough, because we can't just split on "-", because any annotation may have
+   # hyphens in it. And we can't do varible-width look-behinds. But we can look for hyphens with either 0 or 2
+   # underscores to their right:
+   my @parts = split /-(?=[^_]+$)|-(?=[^_]*_[^_]+_[^_]+$)/, $pref;
 
-   # If prefix begins with "screenshot", tack 'tto-' onto left end of prefix:
-   if ($pref =~ m/^screenshot/) {$pref = 'tto-' . $pref;}
-
-   # Get parts from prefix:
-   my @Parts = split /-/, $pref;
-
-   # Bail if number of parts isn't 10:
-   if (10 != scalar(@Parts))
-   {
+   # Skip this file if number of parts is < 9 or > 11:
+   $n = scalar(@parts);
+   if ( $n < 9 || $n > 11 ) {
       ++$malfcount;
-      warn "\nError in \"rename-toontown-images.pl\":\n"
-         . "This file has a malformed name (# of parts is other-than 10):\n"
-         . "${path}\n"
-         . "Skipping this file and moving on to next.\n\n";
-      return 0;
+      say "Wrong # of parts ($n): \"$name\"";
+      return;
    }
 
-   # Get attributes from parts:
-   my $game    = $Parts[0];          # "tto" or "ttr"
-   my $ss      = $Parts[1];          # "screenshot"
-   my $year    = $Parts[8];          # eg, "2007"
-   my $month   = $Months{$Parts[3]}; # eg, "09"
-   my $day     = $Parts[4];          # eg, "30"
-   my $dow     = $Parts[2];          # eg, "Sun"
-   my $hour    = $Parts[5];          # eg, "01"
-   my $min     = $Parts[6];          # eg, "05"
-   my $sec     = $Parts[7];          # eg, "33"
-   my $serial  = $Parts[9];          # eg, "70299"
+   # If $parts[0] is "screenshot", unshift 'tto' to @Parts:
+   if ( 'screenshot' eq $parts[0] ) {
+      unshift @parts, 'tto';
+   }
+
+   # If part 2 is an annotation, remove its final "_", change " " to "-",  and tack it onto end of final part:
+   if ( $parts[2] =~ m/^_[^_]+_$/ ) {
+      my $note   = ((splice @parts, 2, 1));
+      $note =~ s/_$//;
+      $note =~ s/ /-/g;
+      my $serial = pop @parts;
+      my $final  = $serial.$note;
+      push @parts, $final;
+   }
+
+   # REALITY CHECK!!! DO WE HAVE THE PARTS WE THINK WE DO???
+   # WE SHOULD HAVE EXACTLY 10 PARTS.
+   # CHECK ALL 10 PARTS TO MAKE SURE THEY ARE WHAT WE EXPECT:
+
+   # We should now have exactly 10 parts:
+   $n = scalar(@parts);
+   if ( 10 != $n ) {
+      ++$malfcount;
+      say "Not 10 parts: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 0 isn't "tto" or "ttr":
+   if ( 'tto' ne $parts[0] && 'ttr' ne $parts[0] ) {
+      ++$malfcount;
+      say "Not tto or ttr: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 1 isn't "screenshot":
+   if ( 'screenshot' ne $parts[1] ) {
+      ++$malfcount;
+      say "No screenshot: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 2 isn't dow:
+   if ( $parts[2] !~ m/^(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)$/ ) {
+      ++$malfcount;
+      say "No dow: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 3 isn't month:
+   if ( $parts[3] !~ m/^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/ ) {
+      ++$malfcount;
+      say "No month: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 4 isn't valid dom:
+   if ( $parts[4] !~ m/^(?:0[1-9]|1[0-9]|2[0-9]|3[0-1])$/ ) {
+      ++$malfcount;
+      say "No dom: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 5 isn't valid hour:
+   if ( $parts[5] !~ m/^(?:0[0-9]|1[0-9]|2[0-3])$/ ) {
+      ++$malfcount;
+      say "No hour: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 6 isn't valid minutes:
+   if ( $parts[6] !~ m/^[0-5][0-9]$/ ) {
+      ++$malfcount;
+      say "No minutes: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 7 isn't valid seconds:
+   if ( $parts[7] !~ m/^[0-5][0-9]$/ ) {
+      ++$malfcount;
+      say "No seconds: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 8 isn't valid year (2000-2999):
+   if ( $parts[8] !~ m/^2[0-9][0-9][0-9]$/ ) {
+      ++$malfcount;
+      say "No year: \"$name\"";
+      return;
+   }
+
+   # Skip this file if part 9 isn't digits followed by maybe an annotation:
+   if ( $parts[8] !~ m/^\d+(?:_[^_]+_)?$/ ) {
+      ++$malfcount;
+      say "No final: \"$name\"";
+      return;
+   }
+
+   # If we get to here without returning, we have a valid old-format Toontown screenshot,
+   # so increment $oldfcount and get attributes from parts:
+   ++$oldfcount;
+   my $game    = $parts[0];          # "tto" or "ttr"
+   my $ss      = $parts[1];          # "screenshot"
+   my $year    = $parts[8];          # eg, "2007"
+   my $month   = $Months{$parts[3]}; # eg, "09"
+   my $day     = $parts[4];          # eg, "30"
+   my $dow     = $parts[2];          # eg, "Sun"
+   my $hour    = $parts[5];          # eg, "01"
+   my $min     = $parts[6];          # eg, "05"
+   my $sec     = $parts[7];          # eg, "33"
+   my $final   = $parts[9];          # eg, "70299_me at front door_"
 
    my $newpref = $game    . '-' . $ss                              . '_'
                . $year    . '-' . $month . '-' . $day . '-' . $dow . '_'
                . $hour    . '-' . $min   . '-' . $sec              . '_'
-               . $serial;
+               . $final;
+
    my $newname = $newpref . $suff;
 
-   my $avaname; # Available name.
+   my $newpath = path($cwd, $newname);
 
-   # If $newname is available in $cwd, use that as $avaname:
-   if ( ! -e e path($cwd, $newname) )
-   {
-      $avaname = $newname;
+   # If $newpath already exists in $cwd, we need to file an available enumerated name:
+   if ( -e e $newpath ) {
+      my $avaname = find_avail_enum_name($newname, $cwd);
+      # If we failed to find an available name, skip this file:
+      if ('***ERROR***' eq $avaname) {
+         ++$noavcount;
+         say "No available name: \"$name\"";
+         return;
+      }
+      # Otherwise, make new path based on $avaname:
+      else {
+         $newpath = path($cwd,$avaname);
+      }
    }
 
-   # Otherwise, try to find an available enumerated name:
-   else
-   {
-      my $avaname = find_avail_enum_name($newname);
+   # If debugging, simulate rename:
+   if ($Db) {
+      ++$simucount;
+      say "Simulated rename: \"$name\" => \"$newname\"";
+      return;
    }
 
-   if ('***ERROR***' eq $avaname)
-   {
-      ++$failcount;
-      warn "\nError in \"rename-toontown-images.pl\":\n"
-         . "Couldn't find available enumerated name for this file in current directory:\n"
-         . "${path}\n"
-         . "Skipping this file and moving on to next.\n\n";
-      return 0;
+   # Otherwise, attempt rename:
+   else {
+      if ( rename_file($path, $newpath) ) {
+         ++$renacount;
+         say "Rename succeeded: \"$name\" => \"$newname\"";
+         return;
+      }
+      else {
+         ++$failcount;
+         say "ERROR: Rename failed: $path to $newpath.\n";
+         return;
+      }
    }
 
-   my $newpath = path($cwd, $avaname);
+   # We can't possibly get here.
 
-   # If debugging, emulate rename:
-   if ($db)
-   {
-      say STDOUT "$name -> $newname"; return 1;
-   }
+   # But if we do, then print some cryptic shit to make people say "WTF???":
 
-   # Else attempt rename:
-   else
-   {
-      rename_file($path, $newpath)
-      and ++$renacount and say STDOUT "$path -> $newpath" and return 1
-      or  ++$failcount and warn "Couldn't rename $path to $newpath.\n" and return 0;
-   } # end else not debugging
-   return 1;
+   print ((<<'   END_OF_TWILIGHT_ZONE') =~ s/^   //gmr);
+
+   Back, he spurred like a madman, shrieking a curse to the sky,
+   With the white road smoking behind him and his rapier brandished high.
+   Blood red were his spurs in the golden noon; wine-red was his velvet coat;
+   When they shot him down on the highway,
+      Down like a dog on the highway,
+   And he lay in his blood on the highway, with a bunch of lace at his throat.
+
+   END_OF_TWILIGHT_ZONE
+   return 666;
 } # end sub curfile ($file)
 
 sub stats {
-   if ( $db || $Verbose >= 1 ) {
+   if ( $Db || $Verbose >= 1 ) {
       say '';
       printf("Navigated %6d directories.\n",                      $direcount);
       printf("Processed %6d files.\n",                            $filecount);
-      printf("Found     %6d old-style screenshots.\n",            $oldfcount);
-      printf("Endured   %6d screenshots with malformed names.\n", $malfcount) if $malfcount;
-      printf("Renamed   %6d files.\n",                            $renacount);
+      printf("Endured   %6d files with malformed names.\n",       $malfcount);
+      printf("Found     %6d old-format Toontown screenshots.\n",  $oldfcount);
+      printf("Endured   %6d files with no available name.\n",     $noavcount);
+      printf("Simulated %6d file renames.\n",                     $simucount);
       printf("Failed    %6d file rename attempts.\n",             $failcount);
+      printf("Renamed   %6d files.\n",                            $renacount);
    }
    return 1;
 } # end sub stats
@@ -284,18 +400,19 @@ sub help {
 
    -------------------------------------------------------------------------------
    Command Lines:
-   program-name.pl -h | --help                       (to print this help and exit)
-   program-name.pl [options] [Arg1] [Arg2] [Arg3]    (to rename TT images )
+   program-name.pl -h | --help    (to print this help and exit)
+   program-name.pl [options]      (to rename Toontown images  )
 
    -------------------------------------------------------------------------------
    Description of options:
 
    Option:            Meaning:
-   -h or --help       Print help and exit.
-   -e or --debug      Print diagnostics and exit.
-   -q or --quiet      Be quiet.                       (DEFAULT)
-   -v or --verbose    Be verbose.
-   -l or --local      Don't recurse subdirectories.   (DEFAULT)
+   -h or --help       Print this help and exit.
+   -n or --nodebug    DON'T print diagnostics & simulate renames. (DEFAULT)
+   -e or --debug      DO    print diagnostics & simulate renames.
+   -q or --quiet      DON'T print stats.                          (DEFAULT)
+   -v or --verbose    DO    print stats.
+   -l or --local      Don't recurse subdirectories.               (DEFAULT)
    -r or --recurse    Do    recurse subdirectories.
 
    Multiple single-letter options may be piled-up after a single hyphen.
@@ -311,6 +428,8 @@ sub help {
    Description of arguments:
 
    This program ignores all arguments.
+
+   "Going DOWN, sir!"
 
    Happy Toontown image renaming!
    Cheers,
