@@ -30,6 +30,7 @@
 #                   "$, = ', '". Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
 # Fri Aug 25, 2023: Now correctly handles "annotated" file names. (Look-Ahead assertions are fun!)
 #                   Now expressing execution time in seconds, to nearest millisecond.
+# Sat Aug 26, 2023: Fixed pair of bugs which was interfering with checking of "final" part of name.
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
@@ -290,7 +291,7 @@ sub curfile ($file) {
    }
 
    # Skip this file if part 9 isn't digits followed by maybe an annotation:
-   if ( $parts[8] !~ m/^\d+(?:_[^_]+_)?$/ ) {
+   if ( $parts[9] !~ m/^\d+(?:_[^_]+)?$/ ) {
       ++$malfcount;
       say "No final: \"$name\"";
       return;
