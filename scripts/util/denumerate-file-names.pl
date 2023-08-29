@@ -38,6 +38,13 @@
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
 #                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
+# Mon Aug 28, 2023: Clarified sub argv().
+#                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+#                   Simplified way in which options and arguments are printed if debugging.
+#                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
+#                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Removed "no debug" option as that's already default in all of my programs.
+#                   Changed short option for debugging from "-e" to "-d".
 ##############################################################################################################
 
 use v5.36;
@@ -47,6 +54,7 @@ use utf8;
 use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
 
 use RH::Util;
@@ -63,13 +71,11 @@ sub help    ; # Print help and exit.
 
 # ======= VARIABLES: =========================================================================================
 
-# Settings:                       Meaning of setting:          Range:    Meaning of default:
-   $"         = ' '           ; # Quoted array formatting.     string    Separate elements with spaces.
-   $,         = ' '           ; # Listed array formatting.     string    Separate elements with spaces.
-my $db        = 0             ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
-my $Verbose   = 0             ; # Be verbose?                  bool      Be quiet.
-my $Recurse   = 0             ; # Recurse subdirectories?      bool      Don't recurse.
-my $RegExp    = qr/^[^.].+$/o ; # Regular Expression.          regexp    Process only non-hidden files.
+# Settings:                      Meaning of setting:          Range:    Meaning of default:
+my $Db        = 0            ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
+my $Verbose   = 0            ; # Be verbose?                  bool      Be quiet.
+my $Recurse   = 0            ; # Recurse subdirectories?      bool      Don't recurse.
+my $RegExp    = qr/^[^.].+$/ ; # What files to enumerate?     regexp    Process only non-hidden files.
 
 
 # Counters:
@@ -80,6 +86,7 @@ my $skipcount = 0 ; # Count of files skipped because a file with same name base 
 my $attecount = 0 ; # Count of file rename attempts.
 my $succcount = 0 ; # Count of files successfully renamed.
 my $failcount = 0 ; # Count of failed file rename attempts.
+my $simucount = 0 ; # Count of file-rename simulations.
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
@@ -87,15 +94,14 @@ my $failcount = 0 ; # Count of failed file rename attempts.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $db || $Verbose ) {
+   if ( $Verbose ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\".";
-      say STDERR "\$db      = $db";
+      say STDERR "\$Db      = $Db";
       say STDERR "\$Verbose = $Verbose";
       say STDERR "\$Recurse = $Recurse";
       say STDERR "\$RegExp  = $RegExp";
    }
-   if ( $db ) {exit 555}
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
@@ -113,32 +119,46 @@ my $failcount = 0 ; # Count of failed file rename attempts.
 
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ()            ; # options
+   my @args = ()            ; # arguments
+   my $end = 0              ; # end-of-options flag
+   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\w*h|^--help$/     and help and exit 777 ;
-      /^-\w*e|^--debug$/    and $db      =  1     ;
-      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\w*v|^--verbose$/  and $Verbose =  1     ;
-      /^-\w*l|^--local$/    and $Recurse =  0     ;
-      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*d/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
+      /^-$s*v/ || /^--verbose$/ and $Verbose =  1     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
 
    }
-   if ( $db ) {
-      say   STDERR '';
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
-   my $NA = scalar @args;
-   $NA >= 1 and $RegExp = qr/$args[0]/o;                  # Set $RegExp.
-   $NA >= 2 && !$db and error($NA) and help and exit 666; # Too many arguments.
+   my $NA = scalar(@args);             # Get number of arguments.
+   $NA >= 1                            # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/;         # set $RegExp.
+   $NA >= 2 && !$Db                    # If number of arguments >= 2 and we're not debugging,
+   and error($NA)                      # print error message
+   and help                            # and print help message
+   and exit 666;                       # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
@@ -150,7 +170,7 @@ sub curdire {
    ++$direcount;
 
    # Get current working directory:
-   my $cwd = cwd_utf8;
+   my $cwd = d getcwd;
 
    # Announce current working directory:
    say STDOUT '';
@@ -167,8 +187,7 @@ sub curdire {
 } # end sub curdire
 
 # Process current file:
-sub curfile ($file)
-{
+sub curfile ($file) {
    # Increment file counter:
    ++$filecount;
 
@@ -190,6 +209,16 @@ sub curfile ($file)
       say STDOUT '';
       say STDOUT "Can't denumerate \"$name\" because file with same base name already exists.";
       ++$skipcount;
+      return 1;
+   }
+
+   # If debugging, simulate rename then return without attempting any actual rename:
+   if ( $Db ) {
+      ++$simucount;
+      say STDOUT '';
+      say STDOUT "File rename simulation #$simucount:";
+      say STDOUT "Old name: $name";
+      say STDOUT "New name: $newname";
       return 1;
    }
 
@@ -216,13 +245,14 @@ sub stats {
    if ( $Verbose ) {
       say    STDERR '';
       say    STDERR 'Statistics for program "denumerate-file-names.pl":';
-      printf STDERR "Traversed   %6u directories.           \n" , $direcount;
-      printf STDERR "Found       %6u files matching RegExp. \n" , $filecount;
-      printf STDERR "Bypassed    %6u unnumerated files.     \n" , $bypacount;
-      printf STDERR "Skipped     %6u undenumerable files.   \n" , $skipcount;
-      printf STDERR "Attempted   %6u file renames.          \n" , $attecount;
-      printf STDERR "Denumerated %6u files.                 \n" , $succcount;
-      printf STDERR "Failed      %6u file rename attempts.  \n" , $failcount;
+      printf STDERR "Traversed   %6u directories.           \n", $direcount;
+      printf STDERR "Found       %6u files matching RegExp. \n", $filecount;
+      printf STDERR "Bypassed    %6u unnumerated files.     \n", $bypacount;
+      printf STDERR "Skipped     %6u undenumerable files.   \n", $skipcount;
+      printf STDERR "Attempted   %6u file renames.          \n", $attecount;
+      printf STDERR "Denumerated %6u files.                 \n", $succcount;
+      printf STDERR "Failed      %6u file rename attempts.  \n", $failcount;
+      printf STDERR "Simulated   %6u file renames.          \n", $simucount;
    }
    return 1;
 } # end sub stats
@@ -262,13 +292,20 @@ sub help
 
    Option:            Meaning:
    -h or --help       Print this help and exit.
-   -e or --debug      Print diagnostics then exit.
-   -q or --quiet      DON'T print directories and stats.  (DEFAULT)
+   -d or --debug      Print diagnostics and simulate renames.
+   -q or --quiet      DON'T print directories and stats.      (DEFAULT)
    -v or --verbose    DO    print directories and stats.
-   -l or --local      DON'T recurse subdirectories.       (DEFAULT)
+   -l or --local      DON'T recurse subdirectories.           (DEFAULT)
    -r or --recurse    DO    recurse subdirectories.
 
          --           End of options (all further CL items are arguments).
+
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, use -vr to verbosely and recursively process items.
+
+   If multiple conflicting separate options are given, later overrides earlier.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: hdrlvq.
 
    If you want to use an argument that looks like an option (say, you want to
    search for files which contain "--recurse" as part of their name), use a "--"

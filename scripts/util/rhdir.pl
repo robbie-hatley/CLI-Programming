@@ -24,7 +24,7 @@
 #                   as before. Removed type "M", because in Linux, ALL directories have multiple hard links
 #                   pointing to them because of "." and "..". All directories are now type "D" instead of "M".
 #                   Corrected omission in help(), which failed to mention the number-of-links column.
-#                   Removed mention of "directories with multiple hard links" from dir_stats and stats.
+#                   Removed mention of "directories with multiple hard links" from dir_stats and tree_stats.
 # Sun Jul 30, 2023: Upgraded from "use v5.32;" to "use v5.36;". Got rid of "common::sense" (antiquated).
 #                   Got rid of "prototypes". Now using "signature" for error() and dir_stats().
 #                   Got rid of all usage of given/when. Reduced width from 120 to 110 with github in mind.
@@ -37,6 +37,11 @@
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
 #                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
+# Mon Aug 28, 2023: Updated argv. Got rid of "/o" in every instance of qr(). Changed all $db to $Db.
+#                   Entry and exit blurbs now controlled only by $Verbose. Clarified argv. Now using "||"
+#                   between separate short and long /regexps/ for processing options. Now using map and join
+#                   instead of separate print statements for printing options and arguments. Fixed "--debut"
+#                   bug in argv (should have been --debug).
 ##############################################################################################################
 
 use v5.36;
@@ -56,21 +61,19 @@ use RH::Dir;
 sub argv      ;
 sub curdire   ;
 sub dir_stats ;
-sub stats     ;
+sub tree_stats;
 sub error     ;
 sub help      ;
 
 # ======= VARIABLES: =========================================================================================
 
-# Settings:     Default Val:     Meaning of Setting:         Range:     Meaning of Default:
-   $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma space.
-   $,         = ', '         ; # Listed-array formatting.    string     Separate elements with comma space.
-my $Db        = 0            ; # Debug?                      0,1        Don't debug.
-my $Verbose   = 1            ; # Be verbose?                 0,1,2      Be somewhat verbose.
-my $Recurse   = 0            ; # Recurse subdirectories?     bool       Don't recurse.
-my $Target    = 'A'          ; # Target                      F|D|B|A    List files of all types.
-my $RegExp    = qr/^.+$/o    ; # Regular Expression.         regexp     List files of all names.
-my $Inodes    = 0            ; # Print inodes?               bool       Don't print inodes.
+# Settings:     Default Val:   Meaning of Setting:        Range:    Meaning of Default:
+my $Db        = 0          ; # Debug?                     0,1       Don't debug.
+my $Verbose   = 1          ; # Be verbose?                0,1,2     Be somewhat verbose.
+my $Recurse   = 0          ; # Recurse subdirectories?    bool      Don't recurse.
+my $Target    = 'A'        ; # Target                     F|D|B|A   List files of all types.
+my $RegExp    = qr/^.+$/   ; # Regular Expression.        regexp    List files of all names.
+my $Inodes    = 0          ; # Print inodes?              bool      Don't print inodes.
 
 # Counts of events in this program:
 my $direcount = 0 ; # Count of directories processed.
@@ -104,25 +107,28 @@ $Targets{A} = "All Directory Entries";
 
 { # begin main
    my $t0 = time;
-   if ( $Db || $Verbose >= 1 ) {
-      say STDERR "Now entering program \"rhdir.pl\".";
-   }
    argv;
-   if ( $Db || $Verbose >= 1 ) {
-      say STDERR "\$Db       = $Db"      ;
-      say STDERR "\$Verbose  = $Verbose" ;
-      say STDERR "\$Recurse  = $Recurse" ;
-      say STDERR "\$Target   = $Target"  ;
-      say STDERR "\$Regexp   = $RegExp"  ;
-      say STDERR "\$Inodes   = $Inodes"  ;
+   my $pname = get_name_from_path($0);
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now entering program \"$pname\".";
+      say    STDERR "\$Db      = $Db"      ;
+      say    STDERR "\$Verbose = $Verbose" ;
+      say    STDERR "\$Recurse = $Recurse" ;
+      say    STDERR "\$Target  = $Target"  ;
+      say    STDERR "\$Regexp  = $RegExp"  ;
+      say    STDERR "\$Inodes  = $Inodes"  ;
    }
-   if ( $Db ) {exit 555}
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
-   stats;
-   my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 1 ) {printf STDERR "Now exiting program \"rhdir.pl\". Execution time was %.3fms.\n", $ms;}
+   tree_stats;
+   my $et = time - $t0;
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now exiting program \"$pname\".";
+      printf STDERR "Execution time was %.3f seconds.", $et;
+   }
    exit 0;
 } # end main
 
@@ -130,37 +136,53 @@ $Targets{A} = "All Directory Entries";
 
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ()            ; # options
+   my @args = ()            ; # arguments
+   my $end = 0              ; # end-of-options flag
+   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\w*h|^--help$/     and help and exit 777 ;
-      /^-\w*e|^--debut$/    and $Db      =  1     ;
-      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\w*t|^--terse$/    and $Verbose =  1     ;
-      /^-\w*v|^--verbose$/  and $Verbose =  2     ;
-      /^-\w*l|^--local$/    and $Recurse =  0     ;
-      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
-      /^-\w*f|^--files$/    and $Target  = 'F'    ;
-      /^-\w*d|^--dirs$/     and $Target  = 'D'    ;
-      /^-\w*b|^--both$/     and $Target  = 'B'    ;
-      /^-\w*a|^--all$/      and $Target  = 'A'    ;
-      /^-\w*i|^--inodes$/   and $Inodes  =  1     ;
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
+      /^-$s*t/ || /^--terse$/   and $Verbose =  1     ;
+      /^-$s*v/ || /^--verbose$/ and $Verbose =  2     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
+      /^-$s*f/ || /^--files$/   and $Target  = 'F'    ;
+      /^-$s*d/ || /^--dirs$/    and $Target  = 'D'    ;
+      /^-$s*b/ || /^--both$/    and $Target  = 'B'    ;
+      /^-$s*a/ || /^--all$/     and $Target  = 'A'    ;
+      /^-$s*i/ || /^--inodes$/  and $Inodes  =  1     ;
    }
    if ( $Db ) {
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+      say STDERR '';
+      say STDERR '$opts = (', join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR '$args = (', join(', ', map {"\"$_\""} @args), ')';
    }
 
-   # Process arguments
-   my $NA = scalar(@args);
-                                                          #  0 args => Use default settings.
-   $NA == 1 and $RegExp = qr/$args[0]/o;                  #  1 arg  => Set $RegExp.
-   $NA >= 1 && !$Db and error($NA) and help and exit 666; # >1 args => Print
+   # Process arguments:
+   my $NA = scalar(@args);     # Get number of arguments.
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 1 && !$Db            # If number of arguments >= 2 and we're not debugging,
+   and error($NA)              # print error message
+   and help                    # and print help message
+   and exit 666;               # and exit, returning The Number Of The Beast.
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
@@ -291,7 +313,7 @@ sub dir_stats ($curdir) {
    return 1;
 } # end sub dir_stats ($curdir)
 
-sub stats {
+sub tree_stats {
    if ( $Verbose >= 1 ) {
       say STDERR "\nStatistics for this tree:";
       say STDERR "Navigated $direcount directories.";
@@ -316,7 +338,7 @@ sub stats {
       printf STDERR "%7u files of unknown type\n",                  $unkncount;
    }
    return 1;
-} # end sub stats
+} # end sub tree_stats
 
 sub error ($NA)
 {
@@ -391,6 +413,7 @@ sub help
 
    Option:             Meaning:
    -h or --help        Print help and exit.
+   -e or --debug       Print diagnostics.
    -q or --quiet       Be  non-verbose (don't list stats or counts).
    -t or --terse       Be semi-verbose (list stats  but not counts).     (DEFAULT)
    -v or --verbose     Be VERY-verbose (list both stats AND counts).
@@ -411,7 +434,11 @@ sub help
     - Don't print inode numbers, recommended block sizes, or number of blocks.
 
    Multiple single-letter options may be piled-up after a single hyphen.
-   For example, use -vrfi to verbosely recurse and print files and inodes.
+   For example, use -vr to verbosely and recursively process items.
+
+   If multiple conflicting separate options are given, later overrides earlier.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: heiabdfrlvtq.
 
    If you want to use an argument that looks like an option (say, you want to
    search for files which contain "--recurse" as part of their name), use a "--"

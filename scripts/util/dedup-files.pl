@@ -87,6 +87,13 @@
 #                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
 # Tue Aug 22, 2023: Fixed missing $" and $, variables (set item separation to ', ').
+# Mon Aug 28, 2023: Clarified sub argv().
+#                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+#                   Simplified way in which options and arguments are printed if debugging.
+#                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
+#                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Removed "no debug" option as that's already default in all of my programs.
+#                   Changed short option for debugging from "-e" to "-d".
 ##############################################################################################################
 
 use v5.36;
@@ -119,20 +126,27 @@ sub help        ; # Print help  message.
 
 # ======= VARIABLES: =========================================================================================
 
+# NOTE: This program has no variable "$Verbose", because this program requires maximum verbosity, always.
+
 # Settings:                 # Meaning of setting:      Meanings of values:
-   $"       = ', ';         # Quoted array formatting  Separate elements with comma space.
-   $,       = ', ';         # Listed array formatting  Separate elements with comma space.
-my $db = 0;                 # Debug?                   0 => don't debug
+my $Db         =    0     ; # Print diagnostics?       0 => don't debug
                             #                          1 => debug
-my $RegExp     = qr/^.+$/o; # Regular Expression.      Specifies which files to process.
-my $Recurse    =    0 ;     # Recurse subdirectories?  0 => Local     (don't traverse subdirs)
+
+my $RegExp     = qr/^.+$/ ; # Regular Expression.      Specifies which files to process.
+
+
+my $Recurse    =    0     ; # Recurse subdirectories?  0 => Local     (don't traverse subdirs)
                             #                          1 => Recurse   (do    traverse subdirs)
-my $PromptMode =    0 ;     # Prompting Mode.          0 => DupPrompt (ask user what to do)
+
+my $PromptMode =    0     ; # Prompting Mode.          0 => DupPrompt (ask user what to do)
                             #                          1 => Spotlight (process Spotlight files)
                             #                          2 => NoPrompt  (act without prompting user)
-my $PrejudMode =    0 ;     # Prejudice Mode.          0 => Newer     (prejudice against newer files)
-                            #                          1 => Older     (prejudice against older files)
+
+my $PrejudMode =    0     ; # Prejudice Mode.          0 => Newer     (erase newer duplicates)
+                            #                          1 => Older     (erase older duplicates)
+
 my %PromptHash; $PromptHash{0}='DupPrompt'; $PromptHash{1}='Spotlight'; $PromptHash{2}='NoPrompt';
+
 my %PrejudHash; $PrejudHash{0}='Newer';     $PrejudHash{1}='Older';
 
 # Note regarding settings:
@@ -160,22 +174,23 @@ my %PrejudHash; $PrejudHash{0}='Newer';     $PrejudHash{1}='Older';
 # These prejudices don't affect Spotlight Mode or DupPrompt mode.
 
 # SHA1 hash pattern:
-my $shapat = qr(^[0-9a-f]{40}(?:-\(\d{4}\))?(?:\.\w+)?$)o;
+my $shapat = qr(^[0-9a-f]{40}(?:-\(\d{4}\))?(?:\.\w+)?$);
 
 # Gibberish pattern:
-my $gibpat = qr(^[a-z]{8}(?:-\(\d{4}\))?(?:\.\w+)?$)o;
+my $gibpat = qr(^[a-z]{8}(?:-\(\d{4}\))?(?:\.\w+)?$);
 
 # Windows SpotLight pattern:
-my $wslpat = qr(^[0-9a-f]{64}(?:-\(\d{4}\))?(?:\.\w+)?$)o;
+my $wslpat = qr(^[0-9a-f]{64}(?:-\(\d{4}\))?(?:\.\w+)?$);
 
 # Per-Directory Counters:
-my $regfdirec =  0; # Count of regular files processed.
-my $compdirec =  0; # Count of comparisons of file pairs.
-my $dupldirec =  0; # Count of duplicate file pairs found.
-my $ignodirec =  0; # Count of ignored duplicate file pairs.
-my $deledirec =  0; # Count of deleted files.
-my $faildirec =  0; # Count of failed attempts at deleting files.
-my $errodirec =  0; # Count of errors.
+my $regfdirec = 0; # Count of regular files processed.
+my $compdirec = 0; # Count of comparisons of file pairs.
+my $dupldirec = 0; # Count of duplicate file pairs found.
+my $ignodirec = 0; # Count of ignored duplicate file pairs.
+my $deledirec = 0; # Count of deleted files.
+my $faildirec = 0; # Count of failed attempts at deleting files.
+my $errodirec = 0; # Count of errors.
+my $simudirec = 0; # Count of simulated file unlinkages.
 
 # Per-Tree Counters:
 my $direcount = 0; # Count of directories traversed.
@@ -186,24 +201,27 @@ my $ignocount = 0; # Count of ignored duplicate file pairs.
 my $delecount = 0; # Count of deleted files.
 my $failcount = 0; # Count of failed attempts at deleting files.
 my $errocount = 0; # Count of errors.
+my $simucount = 0; # Count of simulated file unlinkages.
 
 # ======= MAIN BODY OF PROGRAM: ========================================================================================
 
 { # begin main
    my $t0 = time;
-   my $pname = get_name_from_path($0);
    argv;
-   say STDERR "\nNow entering program \"$pname\".";
+   my $pname = get_name_from_path($0);
+   say STDERR '';
+   say STDERR "Now entering program \"$pname\".";
    say STDERR "\$RegExp = $RegExp";
    say STDERR "prompt    mode = ", $PromptHash{$PromptMode};
    say STDERR "prejudice mode = ", $PrejudHash{$PrejudMode};
-   if ( $db ) {exit 555}
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
    tree_stats;
-   my $ms = 1000 * (time - $t0);
-   printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
+   my $et = time - $t0;
+   say    STDERR '';
+   say    STDERR "Now exiting program \"$pname\".";
+   printf STDERR "Execution time was %.3f seconds.", $et;
    exit 0;
 } # end main
 
@@ -211,32 +229,45 @@ my $errocount = 0; # Count of errors.
 
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ()            ; # options
+   my @args = ()            ; # arguments
+   my $end = 0              ; # end-of-options flag
+   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\w*h|^--help$/      and help and exit 777;
-      /^-\w*e|^--debug$/     and $db = 1;
-      /^-\w*r|^--recurse$/   and $Recurse    = 1;
-      /^-\w*s|^--spotlight$/ and $PromptMode = 1;
-      /^-\w*n|^--newer$/     and $PromptMode = 2 and $PrejudMode = 0;
-      /^-\w*o|^--older$/     and $PromptMode = 2 and $PrejudMode = 1;
+      /^-$s*h/ || /^--help$/      and help and exit 777;
+      /^-$s*d/ || /^--debug$/     and $Db = 1;
+      # NOTE: There are no verbosity controls here because this program requires maximum verbosity, always,
+      # because of its inherently highly-interactive nature.
+      /^-$s*l/ || /^--local$/     and $Recurse = 0;
+      /^-$s*r/ || /^--recurse$/   and $Recurse = 1;
+      /^-$s*s/ || /^--spotlight$/ and $PromptMode = 1;
+      /^-$s*n/ || /^--newer$/     and $PromptMode = 2 and $PrejudMode = 0;
+      /^-$s*o/ || /^--older$/     and $PromptMode = 2 and $PrejudMode = 1;
    }
-   if ( $db ) {
-      say   STDERR '';
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
    my $NA = scalar(@args);
    if    ( 0 == $NA ) {                              ; } #  0 args => Use default settings.
-   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o      ; } #  1 arg  => Set $RegExp.
-   elsif ( !$db     ) { error($NA); help(); exit 666 ; } # >1 args => print error & help if not debugging.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/       ; } #  1 arg  => Set $RegExp.
+   elsif ( !$Db     ) { error($NA); help(); exit 666 ; } # >1 args => print error & help if not debugging.
 
    # Return success code 1 to caller:
    return 1;
@@ -247,18 +278,10 @@ sub curdire {
    # We just entered a new directory, so increment directory counter:
    ++$direcount;
 
-   # Zero all per-directory counters here so they don't accumulate garbage between calls to curdire:
-   $regfdirec = 0; # Count of regular files processed.
-   $compdirec = 0; # Count of comparisons of file pairs.
-   $dupldirec = 0; # Count of duplicate file pairs found.
-   $ignodirec = 0; # Count of ignored duplicate file pairs.
-   $deledirec = 0; # Count of deleted files.
-   $faildirec = 0; # Count of failed attempts at deleting files.
-   $errodirec = 0; # Count of errors.
-
    # Get and announce current working directory:
    my $curdir = d getcwd;
-   say "\nDir # $direcount: \"$curdir\"\n";
+   say '';
+   say "Dir # $direcount: \"$curdir\"";
 
    # Get hash of arrays of file records for for all regular files
    # in current directory, keyed by size:
@@ -281,13 +304,15 @@ sub curdire {
       FIRST: foreach my $i (0..$count-2) {
          # Set $file1 to reference to first file record:
          my $file1 = $curdirfiles->{$size}->[$i];
-
-         say("FIRST file name = ", $file1->{Name}) if $db;
+         say("FIRST file name = ", $file1->{Name}) if $Db;
 
          # "SECOND" LOOP: Iterate through all files of current size which are
          # to the right of file "$i":
          SECOND: foreach my $j ($i+1..$count-1) {
-            #
+            # Set $file2 to reference to second file record:
+            my $file2 = $curdirfiles->{$size}->[$j];
+            say("SECOND file name = ", $file2->{Name}) if $Db;
+
             # Skip to next FIRST file if $file1 has already been deleted.
             #
             # Note: This MUST be HERE, and NOT above start of "SECOND" loop,
@@ -298,35 +323,35 @@ sub curdire {
             # at this point, because we're just skipping-over the remains of
             # situations which have ALREADY been noted and acted-on.
             # Only print anything if debugging:
-            #
             if ( $file1->{Name} eq '***DELETED***' ) {
-               say "FIRST file was deleted. Name = ", $file1->{Name} if $db;
+               say "FIRST file was deleted. Name = ", $file1->{Name} if $Db;
                next FIRST;
             }
             if ( $file1->{Name} eq '***FAILED***' ) {
-               say "FIRST file was failed. Name = ", $file1->{Name} if $db;
+               say "FIRST file was failed. Name = ", $file1->{Name} if $Db;
+               next FIRST;
+            }
+            if ( $file1->{Name} eq '***SIMULATED***' ) {
+               say "FIRST file was simulated. Name = ", $file1->{Name} if $Db;
                next FIRST;
             }
 
-            # Set $file2 to reference to second file record:
-            my $file2 = $curdirfiles->{$size}->[$j];
-
-            say("SECOND file name = ", $file2->{Name}) if $db;
-
-            #
             # Skip to next SECOND file if $file2 has already been deleted:
             #
             # Note: Don't take any actions, return anything, or count anything
             # at this point, because we're just skipping-over the remains of
             # situations which have ALREADY been noted and acted-on.
             # Only print anything if debugging:
-            #
             if ( $file2->{Name} eq '***DELETED***' ) {
-               say "SECOND file was deleted. Name = ", $file2->{Name} if $db;
+               say "SECOND file was deleted. Name = ", $file2->{Name} if $Db;
                next SECOND;
             }
             if ( $file2->{Name} eq '***FAILED***' ) {
-               say "SECOND file was failed. Name = ", $file2->{Name} if $db;
+               say "SECOND file was failed. Name = ", $file2->{Name} if $Db;
+               next SECOND;
+            }
+            if ( $file2->{Name} eq '***SIMULATED***' ) {
+               say "SECOND file was simulated. Name = ", $file2->{Name} if $Db;
                next SECOND;
             }
 
@@ -380,14 +405,13 @@ sub curdire {
                   $result = no_prompt($file1, $file2);
                }
 
-               # Otherwise, we're in an unknown mode:
+               # Otherwise, we're in an unknown prompt mode; this is a fatal error, so die:
                else {
-                  say "Error in \"dedup-files.pl\": unknown mode $PromptMode";
-                  $result = "error";
+                  die "Fatal error in \"dedup-files.pl\": Invalid prompt mode in curdire.\n$!\n";
                }
 
                # We just finished processing a pair of identical files.
-               # The result of that was "ignored", "deleted", "failed", "error", or "exit".
+               # The result of that was "ignored", "deleted", "failed", "error", "exit", or "simulated".
                # Increment counters (and maybe exit program) accordingly:
                if ('ignored' eq $result) {
                   ++$ignodirec;
@@ -410,8 +434,13 @@ sub curdire {
                   tree_stats;
                   exit 0;
                }
+               elsif ('simulated' eq $result) {
+                  ++$simudirec;
+                  ++$simucount;
+               }
+               # Otherwise, we received an unknown result code; this is a fatal error, so die:
                else {
-                  warn "Invalid result in curdire.";
+                  die "Fatal error in \"dedup-files.pl\": Invalid result code in curdire.\n$!\n";
                }
             } # end if identical
             else { # if not identical
@@ -422,7 +451,7 @@ sub curdire {
       } # end FIRST file loop
    } # end SIZE group loop
 
-   if ($db) {
+   if ($Db) {
       # Did we ACTUALLY mark any files as being deleted or failed?
       foreach my $size (sort {$b<=>$a} keys %{$curdirfiles}) {
          # Say the names of all of the files in this size group:
@@ -576,18 +605,29 @@ sub erase_older ($file1, $file2) {
    }
 } # end sub erase_older
 
-# Unlink a file (leave the data in-situ, but remove this hard link from this directory):
+# Unlink a file (leave the data in-situ, but remove this hard link from this directory),
+# or if debugging, just SIMULATE unlinking the file:
 sub unlink_file ($file) {
-   my $success = unlink e $file->{Name};
-   if ( $success ) {
-      say "Successfully unlinked $file->{Name}";
-      $file->{Name} = "***DELETED***";
-      return 'deleted';
+   # If debugging, just go through the motions:
+   if ( $Db ) {
+      say "Simulation: Would have unlinked file $file->{Name}";
+      $file->{Name} = "***SIMULATED***";
+      return 'simulated';
    }
+   # Otherwise, try to actually unlink the file:
    else {
-      warn("Failed to unlink $file->{Name}\n$!\n");
-      $file->{Name} = "***FAILED***";
-      return 'failed';
+      my $success = unlink e $file->{Name};
+      if ( $success ) {
+         say "Successfully unlinked $file->{Name}";
+         $file->{Name} = "***DELETED***";
+         return 'deleted';
+      }
+      else {
+         say "Failed to unlink $file->{Name}";
+         say "\$! = $!";
+         $file->{Name} = "***FAILED***";
+         return 'failed';
+      }
    }
 } # end sub unlink_file
 
@@ -624,6 +664,16 @@ sub dire_stats {
    printf("Deleted   %6d files.\n",                    $deledirec);
    printf("Failed    %6d file deletion attempts.\n",   $faildirec);
    printf("Suffered  %6d errors.\n",                   $errodirec);
+   printf("Simulated %6d file deletions.\n",           $simudirec);
+   # Zero all per-directory counters here so they don't accumulate garbage between calls to curdire:
+   $regfdirec = 0;
+   $compdirec = 0;
+   $dupldirec = 0;
+   $ignodirec = 0;
+   $deledirec = 0;
+   $faildirec = 0;
+   $errodirec = 0;
+   $simudirec = 0;
    return 1;
 } # end sub dire_stats
 
@@ -639,15 +689,19 @@ sub tree_stats {
    printf("Deleted   %6d duplicate files.\n",          $delecount);
    printf("Failed    %6d file deletion attempts.\n",   $failcount);
    printf("Suffered  %6d errors.\n",                   $errocount);
-   # Zero all per-tree counters here, in case this function ever needs to be called twice in the future:
-   $direcount = 0; # Count of directories traversed.
-   $regfcount = 0; # Count of regular files seen.
-   $compcount = 0; # Count of comparisons of file pairs.
-   $duplcount = 0; # Count of duplicate file pairs found.
-   $ignocount = 0; # Count of ignored duplicate file pairs.
-   $delecount = 0; # Count of deleted files.
-   $failcount = 0; # Count of failed attempts at deleting files.
-   $errocount = 0; # Count of errors.
+   printf("Simulated %6d file deletions.\n",           $simucount);
+   # As of 2023-08-28, it's impossible for this function to be called twice within one run of this program,
+   # and hence there's currently no need to zero the per-tree counters here. HOWEVER, I do so here anyway,
+   # in case this subroutine ever needs to be called multiple times in future versions of this program:
+   $direcount = 0;
+   $regfcount = 0;
+   $compcount = 0;
+   $duplcount = 0;
+   $ignocount = 0;
+   $delecount = 0;
+   $failcount = 0;
+   $errocount = 0;
+   $simucount = 0;
    return 1;
 } # end sub tree_stats
 
@@ -680,23 +734,22 @@ sub help {
    -------------------------------------------------------------------------------
    Description of Options:
 
-   Option:              Meaning:
-   -h or --help         Print help and exit.
-   -r or --recurse      Traverse subdirectories.
-   -s or --spotlight    Enter Spotlight mode (erase gibberish names).
-   -n or --newer        Enter NoPrompt  mode (don't prompt user)
-                        and be prejudiced against newer duplicates.
-   -o or --older        Enter NoPrompt  mode (don't prompt user)
-                        and be prejudiced against older duplicates.
-         --             End of options (all further CL items are arguments).
+   Option:             Meaning:
+   -h or --help        Print help and exit.
+   -d or --debug       Print diagnostics and simulate renames.
+   -l or --local       DON'T recurse subdirectories. (DEFAULT)
+   -r or --recurse     DO    recurse subdirectories.
+   -s or --spotlight   Enter Spotlight mode (erase gibberish names).
+   -n or --newer       Erase all newer duplicates without prompting.
+   -o or --older       Erase all older duplicates without prompting.
+         --            End of options (all further CL items are arguments).
 
-   Single-letter options may be piled-up after a single hyphen.
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, use -re to recursively simulate deletions.
 
-   If contradictory separate options are given, the right-most prevails.
-   (Eg, "-n -o" is the same as "-o".)
-
-   If contradictory single-letter options are piled-up after a single colon,
-   the following descending order of operations prevail: honsr
+   If multiple conflicting separate options are given, later overrides earlier.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: hdonsrl.
 
    If you want to use an argument that looks like an option (say, you want to
    search for files which contain "--recurse" as part of their name), use a "--"
@@ -721,8 +774,8 @@ sub help {
    6. End program and return to BASH.
 
    So, using dedup-files you can trim duplicates from your file collection with
-   surgical precision, if that's what you want to do. (Or, you can bludgeon them
-   to death with a sledgehammer if THAT'S what you want to do. Read on.)
+   surgical precision, if that's what you want to do. (Or, you can destroy them
+   all at once with an atomic bomb, if THAT'S what you want to do. Read on.)
 
    If you use a "-s" or "--spotlight" option, dedup-files goes into "Spotlight"
    mode and automatically unlinks duplicate files in cases where one of a pair
@@ -734,15 +787,15 @@ sub help {
 
    if you use a "-n", or "--newer" option, dedup-files will erase all newer
    duplicate files in the current directory (and all subdirectories as well
-   if a "-r" or "--recurse" option was also used) without prompting. So be
-   careful, because if you say "dedup-files.pl -r -n", this program may erase
+   if a "-r" or "--recurse" option was also used) without prompting.
+   BE CAREFUL, because if you say "dedup-files.pl -rn", this program may erase
    a large number of files without stopping to ask for your permission. If that's
    not what you want to do, it's better to run dedup-files in interactive mode.
 
    if you use a "-o", or "--older" option, dedup-files will erase all older
    duplicate files in the current directory (and all subdirectories as well
-   if a "-r" or "--recurse" option was also used) without prompting. So be
-   careful, because if you say "dedup-files.pl -r -o", this program may erase
+   if a "-r" or "--recurse" option was also used) without prompting.
+   BE CAREFUL, because if you say "dedup-files.pl -ro", this program may erase
    a large number of files without stopping to ask for your permission. If that's
    not what you want to do, it's better to run dedup-files in interactive mode.
 

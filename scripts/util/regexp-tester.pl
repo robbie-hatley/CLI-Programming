@@ -12,6 +12,7 @@
 # Fri Dec 03, 2021: Wrote it.
 # Wed Aug 23, 2023: Upgraded from "v5.32" to "v5.36". Reduced width from 120 to 110. Got rid of CPAN module
 #                   "common::sense" (antiquated). Got rid of all prototypes. Now using signatures.
+# Mon Aug 28, 2023: Improved argv. Got rid of "/o" on all instances of qr().
 ##############################################################################################################
 
 use v5.36;
@@ -39,8 +40,8 @@ sub help  ; # Print help and exit.
 # Turn on debugging?
 my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 
-# Settings:                 Meaning of setting:           Range:   Meannig of default:
-my $RegExp = qr/^.+$/o;   # Regular expression to test.   regexp   Expression which matches all strings.
+# Settings:               Meaning of setting:           Range:   Meannig of default:
+my $RegExp = qr/^.+$/;  # Regular expression to test.   regexp   Expression which matches all strings.
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
@@ -65,21 +66,33 @@ my $RegExp = qr/^.+$/o;   # Regular expression to test.   regexp   Expression wh
 
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ()            ; # options
+   my @args = ()            ; # arguments
+   my $end = 0              ; # end-of-options flag
+   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-h$|^--help$/ and help and exit 777;
+      /^-$s*h/ || /^--help$/ and help and exit 777 ;
    }
 
    # Process arguments:
-   my $NA = scalar @args;
-   if ( 1 == $NA ) { $RegExp = qr/$args[0]/o    ; } # Set $RegExp.
-   else            { error($NA); help; exit 666 ; } # Wrong number of arguments.
+   my $NA = scalar @args;                # Get number of arguments.
+   1 == $NA                              # If number of arguments is 1,
+   and $RegExp = qr/$args[0]/;           # set $RegExp,
+   1 != $NA && !$Db                      # If number of arguments is NOT 1 and we're not debugging,
+   and error($NA) and help and exit 666; # print error and help messages and exit.
 
    # Return success code 1 to caller:
    return 1;

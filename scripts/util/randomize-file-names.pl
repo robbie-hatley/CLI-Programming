@@ -6,9 +6,9 @@
 
 ##############################################################################################################
 # randomize-file-names.pl
-# Renames all files in the current directory (and all subdirs, if a -r or --recurse option is used) to random
-# strings of 8 lower-case letters. All file-name information will be lost; only the file bodies will remain,
-# with gibberish names.
+# Renames all files in the current directory (and all subdirectories if a -r or --recurse option is used)
+# to strings of 8 random lower-case letters. All file-name information will be lost; only the file bodies
+# will remain, with gibberish names.
 #
 # Edit history:
 # Sun May 31, 2015: Wrote first draft.
@@ -21,7 +21,7 @@
 #                   for each file.
 # Fri Nov 20, 2020: Now using sub "find_available_random" from RH::Dir. And, now allowing user to specify
 #                   an optional prefix and/or suffix to tack onto file name prefix.
-# Sat Nov 21, 2020: Diagnostics now output only if $db.
+# Sat Nov 21, 2020: Diagnostics now output only if $Db.
 # Wed Feb 17, 2021: Refactored to use the new GetFiles(), which now requires a fully-qualified directory as
 #                   its first argument, target as second, and regexp (instead of wildcard) as third.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
@@ -35,6 +35,8 @@
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
 #                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
+# Mon Aug 28, 2023: Changed all "$db" to "$Db". Got rid of "/o" on all instances of qr(). Program no-longer
+#                   exits in main if in debug mode; it simulates renames instead. Updated argv.
 ##############################################################################################################
 
 use v5.36;
@@ -61,23 +63,21 @@ sub help    ; # Print help and exit.
 
 # ======= GLOBAL VARIABLES ===================================================================================
 
-# Setting:      Default Value:   Meaning of setting:         Range:     Meaning of default:
-   $"         = ', '         ; # Quoted-array formatting.    string     Separate elements with comma-space.
-   $,         = ', '         ; # Listed-array formatting.    string     Separate elements with comma-space.
-my $db        = 0            ; # Debug?                      bool       Don't debug.
-my $Verbose   = 0            ; # Quiet or Verbose?           0,1        Be quiet.
-my $Recurse   = 0            ; # Recurse subdirectories?     bool       Don't recurse.
-my $RegExp    = qr/^.+$/o    ; # Regexp.                     regexp     Process all file names.
-my $Target    = 'F'          ; # Type of files to target     F|D|B|A    Process regular files only.
-my $Predicate = 1            ; # Predicate.                  bool       Process all file types.
-my $Yes       = 0            ; # Proceed without prompting?  bool       Don't skip prompting.
-my $Simulate  = 0            ; # Merely simulate renames?    bool       Don't simulate
-my $Nine      = 0            ; # Ignore files with PreLen<9? bool       Don't skip short-name-length files.
-my $Spotlight = 0            ; # Ignore all but Spotlight?   bool       Don't skip all-but-spotlight.
-my $Firefox   = 0            ; # Ignore all but Firefox?     bool       Don't skip all-but-firefox.
-my $NoReRan   = 0            ; # Ignore ran-name files?      bool       Don't skip random-named files.
-my $Prefix    = ''           ; # Prefix.                     string     Prefix is empty string.
-my $Suffix    = ''           ; # Suffix.                     string     Suffix is empty string.
+# Setting:      Default Value:   Meaning of setting:           Range:    Meaning of default:
+my $Db        = 0            ; # Debug?                        bool      Don't debug.
+my $Verbose   = 0            ; # Quiet or Verbose?             0,1       Be quiet.
+my $Recurse   = 0            ; # Recurse subdirectories?       bool      Don't recurse.
+my $RegExp    = qr/^.+$/     ; # Regexp.                       regexp    Process all file names.
+my $Target    = 'F'          ; # Type of files to target       F|D|B|A   Process regular files only.
+my $Predicate = 1            ; # Predicate.                    bool      Process all file types.
+my $Yes       = 0            ; # Proceed without prompting?    bool      Don't skip prompting.
+my $Simulate  = 0            ; # Merely simulate renames?      bool      Don't simulate
+my $Nine      = 0            ; # Ignore files with PreLen<9?   bool      Don't skip short-name-length files.
+my $Spotlight = 0            ; # Ignore all but Spotlight?     bool      Don't skip all-but-spotlight.
+my $Firefox   = 0            ; # Ignore all but Firefox?       bool      Don't skip all-but-firefox.
+my $NoReRan   = 0            ; # Ignore ran-name files?        bool      Don't skip random-named files.
+my $Prefix    = ''           ; # Prefix.                       string    Prefix is empty string.
+my $Suffix    = ''           ; # Suffix.                       string    Suffix is empty string.
 
 # Counts of events:
 my $direcount = 0; # Count of directories processed by curdire.
@@ -85,7 +85,7 @@ my $filecount = 0; # Count of files matching $RegExp.
 my $findcount = 0; # Count of files also matching $Predicate.
 my $skipcount = 0; # Count of files skipped because they're ini, db, jbf.
 my $ninecount = 0; # Count of files skipped because prefix length < 9.
-my $nomacount = 0; # Count of files skipped because NOt MAtching sl or ff.
+my $nomacount = 0; # Count of files skipped because NOt MAtching Spotlight or Firefox.
 my $norecount = 0; # Count of files skipped because their names are already randomized.
 my $candcount = 0; # Count of candidates for renaming.
 my $nonacount = 0; # Count of candidates for which no suitable name could be found.
@@ -99,10 +99,10 @@ my $failcount = 0; # Count of failed attempts to rename files.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Verbose ) {
+   if ( $Db || $Verbose ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\". ";
-      say STDERR "Debug     = $db                  ";
+      say STDERR "Debug     = $Db                  ";
       say STDERR "Verbose   = $Verbose             ";
       say STDERR "Recurse   = $Recurse             ";
       say STDERR "RegExp    = $RegExp              ";
@@ -117,9 +117,8 @@ my $failcount = 0; # Count of failed attempts to rename files.
       say STDERR "Prefix    = \'$Prefix\'          ";
       say STDERR "Suffix    = \'$Suffix\'          ";
    }
-   if ( $db ) {exit 555}
 
-   unless ( $Yes ) {
+   unless ( $Db || $Yes ) {
       say STDERR '';
       say STDERR 'WARNING: THIS PROGRAM RENAMES ALL TARGETED FILES IN THE CURRENT DIRECTORY';
       say STDERR '(AND IN ALL SUBDIRECTORIES IF -r OR --recurse IS USED) TO RANDOM STRINGS OF';
@@ -134,7 +133,7 @@ my $failcount = 0; # Count of failed attempts to rename files.
 
    stats;
    my $ms = 1000 * (time - $t0);
-   if ( $Verbose ) {
+   if ( $Db || $Verbose ) {
       say    STDERR '';
       printf STDERR "Now exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
    }
@@ -144,39 +143,44 @@ my $failcount = 0; # Count of failed attempts to rename files.
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
 sub argv {
-   # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   # Define options and arguments arrays and end-of-options flag:
+   my @opts = (); my @args = (); my $end = 0;
+   # Specify which characters are allowed in single-hyphen and double-hyphen options:
+   my $s = '[a-zA-Z0-9]'; my $d = '[a-zA-Z0-9=.-]';
+   # Riffle through @ARGV and push a copy of each item onto either options or arguments:
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      # If current item is "--", it's an end-of-options marker, so set flag and skip to next @ARGV element:
+      /^--$/ and $end = 1 and next;
+      # If not end-of-options, and if we get a valid option, then push to @opts; else push to @args:
+      !$end && (/^-(?!-)$s+$/ || /^--(?!-)$d+$/) and push @opts, $_ or  push @args, $_;
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\w*h|^--help$/      and help and exit 777   ;
-      /^-\w*e|^--debug$/     and $db        =  1     ;
-      /^-\w*q|^--quiet$/     and $Verbose   =  0     ;
-      /^-\w*v|^--verbose$/   and $Verbose   =  1     ;
-      /^-\w*l|^--local$/     and $Recurse   =  0     ;
-      /^-\w*r|^--recurse$/   and $Recurse   =  1     ;
-      /^-\w*f|^--files$/     and $Target    = 'F'    ;
-      /^-\w*d|^--dirs$/      and $Target    = 'D'    ;
-      /^-\w*b|^--both$/      and $Target    = 'B'    ;
-      /^-\w*a|^--all$/       and $Target    = 'A'    ;
-      /^-\w*y|^--yes$/       and $Yes       =  1     ;
-      /^-\w*s|^--simulate$/  and $Simulate  =  1     ;
-      /^-\w*i|^--nine$/      and $Nine      =  1     ;
-      /^-\w*n|^--noreran$/   and $NoReRan   =  1     ;
-      /^-\w*p|^--spotlight$/ and $Spotlight =  1     ;
-      /^-\w*x|^--firefox$/   and $Firefox   =  1     ;
-      /^-\w*t|^--spotfire$/  and $Spotlight =  1 and $Firefox = 1;
+      /^-$s*h/ || /^--help$/      and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/     and $Db      =  1     ;
+      /^-$s*q/ || /^--quiet$/     and $Verbose =  0     ;
+      /^-$s*v/ || /^--verbose$/   and $Verbose =  2     ;
+      /^-$s*l/ || /^--local$/     and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/   and $Recurse =  1     ;
+      /^-$s*f/ || /^--files$/     and $Target  = 'F'    ;
+      /^-$s*d/ || /^--dirs$/      and $Target  = 'D'    ;
+      /^-$s*b/ || /^--both$/      and $Target  = 'B'    ;
+      /^-$s*a/ || /^--all$/       and $Target  = 'A'    ;
+      /^-$s*y/ || /^--yes$/       and $Yes       =  1   ;
+      /^-$s*s/ || /^--simulate$/  and $Simulate  =  1   ;
+      /^-$s*9/ || /^--nine$/      and $Nine      =  1   ;
+      /^-$s*n/ || /^--noreran$/   and $NoReRan   =  1   ;
+      /^-$s*p/ || /^--spotlight$/ and $Spotlight =  1   ;
+      /^-$s*x/ || /^--firefox$/   and $Firefox   =  1   ;
+      /^-$s*t/ || /^--spotfire$/  and $Spotlight =  1 and $Firefox = 1;
       length($_) > 9 && substr($_, 0, 9) eq '--prefix=' and $Prefix = substr($_, 9);
       length($_) > 9 && substr($_, 0, 9) eq '--suffix=' and $Suffix = substr($_, 9);
    }
-   if ( $db ) {
-      say   STDERR '';
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
@@ -185,10 +189,10 @@ sub argv {
       ;                           # Do nothing.
    }
    elsif ( 1 == $NA ) {           # $NA == 1:
-      $RegExp = qr/$args[0]/o;    # Set $RegExp.
+      $RegExp = qr/$args[0]/;     # Set $RegExp.
    }
    elsif ( 2 == $NA ) {           # $NA == 2:
-      $RegExp = qr/$args[0]/o;    # Set $RegExp.
+      $RegExp = qr/$args[0]/;     # Set $RegExp.
       $Predicate = $args[1];      # Set $Predicate.
    }
    else {                         # $NA < 0 or $NA > 2:
@@ -226,7 +230,7 @@ sub curfile ($file) {
    my $suffix        = get_suffix($name);
 
    # Announce file name info if debugging:
-   if ( $db ) {
+   if ( $Db ) {
       say STDERR '';
       say STDERR "In curfile(), near top. Just set initial variables:";
       say STDERR "\$path   = $path";
@@ -286,17 +290,16 @@ sub curfile ($file) {
 
    # Try to find a random file name that doesn't already exist in file's directory:
    my $new_name = find_avail_rand_name($dire, $Prefix, $Suffix . $suffix);
-   $db and say STDERR "In curfile(); \$new_name = $new_name";
+   $Db and say STDERR "In curfile(). \$new_name = $new_name";
 
    # Check to see if find_avail_rand_name returned an error code:
    '***ERROR***' eq $new_name
    and ++$nonacount
-   and say STDERR "Unable to find nonexisting randomized new name for this file."
-   and say STDERR "Rejecting this candidate and skipping to next file."
+   and say STDOUT "Error: unable to find available name for \"$name\"."
    and return 0;
 
-   # If simulating, just go through the motions then return 1:
-   $Simulate
+   # If debugging or simulating, just go through the motions then return 1:
+   $Db || $Simulate
    and ++$simucount and say STDOUT "Simulated Rename: $name => $new_name" and return 1;
 
    # Otherwise, attempt rename:
@@ -306,7 +309,7 @@ sub curfile ($file) {
 } # end sub curfile ($file)
 
 sub stats {
-   if ( $Verbose ) {
+   if ( $Db || $Verbose ) {
       say STDERR '';
       say STDERR "Statistics for program \"randomize-file-names.pl\":";
       say STDERR "Navigated $direcount directories.";
@@ -383,15 +386,15 @@ sub help {
    -e or --debug        Print diagnostics and exit.
    -q or --quiet        Be quiet.                       (DEFAULT)
    -v or --verbose      Be verbose.
-   -l or --local        DON'T recurse subdirectories.   (DEFAULT)
-   -r or --recurse       DO   recurse subdirectories.
+   -l or --local        Process local files only.       (DEFAULT)
+   -r or --recurse      Recurse subdirectories.
    -f or --files        Target Files.
    -d or --dirs         Target Directories.
    -b or --both         Target Both.
    -a or --all          Target All.
    -y or --yes          Randomize file names without prompting.
    -s or --simulate     Merely simulate renames.
-   -i or --nine         Ignore files with prefix length < 9.
+   -9 or --nine         Ignore files with prefix length < 9.
    -n or --noreran      Ignore files with names that are already randomized
    -p or --spotlight    Ignore all file names other than spotlight photo names
    -x or --firefox      Ignore all file names other than firefox cache names
@@ -407,13 +410,13 @@ sub help {
    For example, use -vr to verbosely and recursively process items.
 
    If multiple conflicting separate options are given, later overrides earlier.
-   If multiple conflicting single-letter options are piled after a single colon,
-   the result is determined by this descending order of precedence: heabdfrlvtq.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: hetxpn9syabdfrlvq
 
    If you want to use an argument that looks like an option (say, you want to
-   search for files which contain "--recurse" as part of their name), use a "--"
-   option; that will force all command-line entries to its right to be considered
-   "arguments" rather than "options".
+   search for files with names containing the substring "-9"), use a "--"
+   option; that will force all command-line entries to its right to be construed
+   as being "arguments" rather than "options".
 
    All options not listed above are ignored.
 

@@ -33,6 +33,13 @@
 # Tue Aug 22, 2023: Added options for quiet, terse, and local, to complement verbose and recurse.
 #                   Added missing sub "error". (What the heck happened to THAT??? It got erased somehow.)
 #                   Fixed missing $" and $, variables (set item separation to ', ').
+# Mon Aug 28, 2023: Clarified sub argv().
+#                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+#                   Simplified way in which options and arguments are printed if debugging.
+#                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
+#                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Removed "no debug" option as that's already default in all of my programs.
+#                   Changed short option for debugging from "-e" to "-d".
 ##############################################################################################################
 
 use v5.36;
@@ -49,21 +56,19 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv  ;
-sub dedup ;
-sub stats ;
-sub error ;
-sub help  ;
+sub argv    ;
+sub curdire ;
+sub stats   ;
+sub error   ;
+sub help    ;
 
 # ======= VARIABLES: =========================================================================================
 
-# Settings:                 Meaning of setting:       Range:   Meaning of default:
-   $"       = ', '      ; # Quoted array formatting   string   Separate elements with comma space.
-   $,       = ', '      ; # Listed array formatting   string   Separate elements with comma space.
-my $Db      = 0         ; # Print diagnostics?        bool     Don't print diagnostics.
-my $Verbose = 0         ; # Be verbose?               bool     Be quiet.
-my $Recurse = 0         ; # Recurse subdirectories?   bool     Be local.
-my $RegExp  = qr/^.+$/o ; # Which files?              regexp   Process all regular files.
+# Settings:                # Meaning of setting:       Range:   Meaning of default:
+my $Db      = 0          ; # Print diagnostics?        bool     Don't print diagnostics.
+my $Verbose = 2          ; # Be verbose?               bool     Be verbose: Print variables, time, and stats.
+my $Recurse = 0          ; # Recurse subdirectories?   bool     Be local.
+my $RegExp  = qr/^.+$/   ; # Which files?              regexp   Process all regular files.
 
 # Counters:
 my $direcount = 0;
@@ -73,6 +78,7 @@ my $compcount = 0;
 my $duplcount = 0;
 my $delecount = 0;
 my $failcount = 0;
+my $simucount = 0;
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
@@ -80,21 +86,22 @@ my $failcount = 0;
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Db || $Verbose >= 2 ) {
+   if ( $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\".";
       say STDERR "Verbose = $Verbose";
       say STDERR "Recurse = $Recurse";
       say STDERR "RegExp  = $RegExp";
    }
-   if ( $Db ) {exit 555}
 
-   $Recurse and RecurseDirs {dedup} or dedup;
+   $Recurse and RecurseDirs {curdire} or curdire;
 
-   my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 2 ) {
-      stats();
-      printf STDERR "\nNow exiting program \"%s\".\nExecution time was %.3fms.\n", $pname, $ms;
+   stats;
+   my $et = time - $t0;
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now exiting program \"$pname\".";
+      printf STDERR "Execution time was %.3f seconds.", $et;
    }
    exit 0;
 } # end main
@@ -103,39 +110,52 @@ my $failcount = 0;
 
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ()            ; # options
+   my @args = ()            ; # arguments
+   my $end = 0              ; # end-of-options flag
+   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\w*h|^--help$/    and help() and exit 777;
-      /^-\w*e|^--debug$/   and $Db      =  1 ;
-      /^-\w*q|^--quiet$/   and $Verbose =  0 ;
-      /^-\w*t|^--terse$/   and $Verbose =  1 ;
-      /^-\w*v|^--verbose$/ and $Verbose =  2 ;
-      /^-\w*l|^--local$/   and $Recurse =  0 ;
-      /^-\w*r|^--recurse$/ and $Recurse =  1 ;
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*d/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
+      /^-$s*t/ || /^--terse$/   and $Verbose =  1     ;
+      /^-$s*v/ || /^--verbose$/ and $Verbose =  2     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
    }
    if ( $Db ) {
-      say   STDERR '';
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
-   my $NA = scalar(@args);
-                                                            #  0 args => Use default settings.
-   $NA == 1 and $RegExp = qr/$args[0]/o;                    #  1 arg  => Set $RegExp.
-   $NA  > 1 && !$Db and error($NA) and help() and exit 666; # >1 args => Print error message and exit 666.
+   my $NA = scalar(@args);     # Get number of arguments.
+   $NA >= 1                    # If num args >= 1,
+   and $RegExp = qr/$args[0]/; # then Set $RegExp.
+   $NA >= 2 && !$Db            # If num args >= 2 and we're not debugging,
+   and error($NA)              # then print error message
+   and help                    # and  print help  message
+   and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
-sub dedup {
+sub curdire {
    ++$direcount;
 
    # Get current working directory:
@@ -143,7 +163,9 @@ sub dedup {
 
    # If being terse or verbose, announce directory:
    if ( $Verbose >= 1 ) {
-      say STDERR "\nDirectory # $direcount: $curdir\n";
+      say STDOUT '';
+      say STDOUT "Directory # $direcount: $curdir";
+      say STDOUT '';
    }
 
    # Get reference to array of references to file records for all regular files
@@ -175,8 +197,10 @@ sub dedup {
          # Set $file1 to reference to ith file record:
          my $file1 = $name_groups{$base}->[$i];
 
-         # Skip to next first file if ith file has already been deleted:
+         # Skip to next first file if file is marked simulated, deleted, or error:
+         next FIRST if $file1->{Name} eq "***SIMULATED***";
          next FIRST if $file1->{Name} eq "***DELETED***";
+         next FIRST if $file1->{Name} eq "***ERROR***";
 
          # "SECOND" LOOP: Iterate through all files of current name group which are
          # to the right of file "$i":
@@ -184,8 +208,10 @@ sub dedup {
             # Set $file2 to reference to jth file record:
             my $file2 = $name_groups{$base}->[$j];
 
-            # Skip to next second file if jth file has already been deleted:
+            # Skip to next second file if file is marked simulated, deleted, or error:
+            next SECOND if $file2->{Name} eq "***SIMULATED***";
             next SECOND if $file2->{Name} eq "***DELETED***";
+            next SECOND if $file2->{Name} eq "***ERROR***";
 
             # Skip to next second file unless jth file is same size as ith file:
             next SECOND unless $file2->{Size} == $file1->{Size};
@@ -209,23 +235,43 @@ sub dedup {
 
                # If file2 has the more-recent Mtime, erase file2:
                if ($file2->{Mtime} > $file1->{Mtime}) {
-                  unlink(e($file2->{Name})) # Unlink second file.
-                  and say STDOUT "Erased $file2->{Path}"
-                  and $file2->{Name} = "***DELETED***"
-                  and ++$delecount
-                  or  say STDOUT "Error in dnf: Failed to unlink $file2->{Path}."
-                  and ++$failcount;
+                  # If debugging, just simulate:
+                  if ( $Db ) {
+                     say STDOUT "Simulated erasure: $file2->{Path}";
+                     $file2->{Name} = "***SIMULATED***";
+                     ++$simucount;
+                  }
+                  # Otherwise, attempt an actual erasure:
+                  else {
+                     unlink(e($file2->{Name})) # Unlink second file.
+                     and say STDOUT "Erased $file2->{Path}"
+                     and $file2->{Name} = "***DELETED***"
+                     and ++$delecount
+                     or  say STDOUT "Error in dnf: Failed to unlink $file2->{Path}."
+                     and $file2->{Name} = "***ERROR***"
+                     and ++$failcount;
+                  }
                   next SECOND;
-               }
+               }#end if (erase file 2)
 
                # Otherwise, erase file1:
                else {
-                  unlink(e($file1->{Name})) # Unlink first file.
-                  and say STDOUT "Erased $file1->{Path}"
-                  and $file1->{Name} = "***DELETED***"
-                  and ++$delecount
-                  or  say STDOUT "Error in dnf: Failed to unlink $file1->{Path}."
-                  and ++$failcount;
+                  # If debugging, just simulate:
+                  if ( $Db ) {
+                     say STDOUT "Simulated erasure: $file1->{Path}";
+                     $file1->{Name} = "***SIMULATED***";
+                     ++$simucount;
+                  }
+                  # Otherwise, attempt an actual erasure:
+                  else {
+                     unlink(e($file1->{Name})) # Unlink first file.
+                     and say STDOUT "Erased $file1->{Path}"
+                     and $file1->{Name} = "***DELETED***"
+                     and ++$delecount
+                     or  say STDOUT "Error in dnf: Failed to unlink $file1->{Path}."
+                     and $file1->{Name} = "***ERROR***"
+                     and ++$failcount;
+                  }
                   next FIRST;
                }#end else (erase file 1)
             }#end if ($identical)
@@ -233,18 +279,22 @@ sub dedup {
       }#end FIRST loop
    }#end BASE loop
    return 1;
-}#end sub dedup
+}#end sub curdire
 
 sub stats {
-   say    STDERR '';
-   say    STDERR "Statistics for program \"dedup-newsbin-files.pl\":";
-   printf STDERR "Navigated   %6d directories.\n",               $direcount;
-   printf STDERR "Encountered %6d files.\n",                     $filecount;
-   printf STDERR "Encountered %6d matching file-name groups.\n", $ngrpcount;
-   printf STDERR "Compaired   %6d pairs of files.\n",            $compcount;
-   printf STDERR "Found       %6d pairs of duplicate files.\n",  $duplcount;
-   printf STDERR "Deleted     %6d duplicate files.\n",           $delecount;
-   printf STDERR "Failed      %6d file deletion attempts.\n",    $failcount;
+   # If being very verbose, print stats for this program run:
+   if ( $Verbose >= 2 ) {
+      say    STDERR '';
+      say    STDERR "Statistics for program \"dedup-newsbin-files.pl\":";
+      printf STDERR "Navigated   %6d directories.\n",               $direcount;
+      printf STDERR "Found       %6d files matching RegExp.\n",     $filecount;
+      printf STDERR "Examined    %6d file-name groups.\n",          $ngrpcount;
+      printf STDERR "Compaired   %6d pairs of files.\n",            $compcount;
+      printf STDERR "Found       %6d pairs of duplicate files.\n",  $duplcount;
+      printf STDERR "Deleted     %6d duplicate files.\n",           $delecount;
+      printf STDERR "Failed      %6d file deletion attempts.\n",    $failcount;
+      printf STDERR "Simulated   %6d file deletions.\n",            $simucount;
+   }
    return 1;
 } # end sub stats
 
@@ -291,19 +341,24 @@ sub help {
    -------------------------------------------------------------------------------
    Description of options:
 
-   Option:            Meaning:
-   -h or --help       Print this help and exit.
-   -e or --debug      Print diagnostics.
-   -q or --quiet      Don't print dirs or stats.       (DEFAULT)
-   -t or --terse      Print dirs, but not stats.
-   -v or --verbose    Print both dirs AND stats.
-   -l or --local      Process current directory only.  (DEFAULT)
-   -r or --recurse    Recurse subdirectories.
-         --           End of options (all further CL items are arguments).
+   Option:             Meaning:
+   -h or --help        Print help and exit.
+   -d or --debug       Print diagnostics and simulate renames.
+   -q or --quiet       Don't print variables, time, or stats.
+   -t or --terse       Print variables and time but not stats.
+   -v or --verbose     Print variables, time, and stats.       (DEFAULT)
+   -l or --local       DON'T recurse subdirectories.           (DEFAULT)
+   -r or --recurse     DO    recurse subdirectories.
+         --            End of options (all further CL items are arguments).
+
+
 
    Multiple single-letter options may be piled-up after a single hyphen.
-   For example, to be both recursive and verbose:
-   dedup-newsbin-files.pl -rv
+   For example, use -vr to verbosely and recursively process items.
+
+   If multiple conflicting separate options are given, later overrides earlier.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: hdnrlvtq.
 
    If you want to use an argument that looks like an option (say, you want to
    search for files which contain "--recurse" as part of their name), use a "--"

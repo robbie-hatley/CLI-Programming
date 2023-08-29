@@ -28,6 +28,7 @@
 # Thu Aug 24, 2023: Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
 # Fri Aug 25, 2023: Now calls "rename-toontown-images.pl" in "verbose" mode.
 #                   Now expressing execution time in seconds, to nearest millisecond.
+# Mon Aug 28, 2023: Changed all "$db" to "$Db". Now using "d getcwd" instead of "cwd_utf8".
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
@@ -56,7 +57,7 @@ sub help;
 # ======= VARIABLES: =========================================================================================
 
 # Settings:
-my $db = 0;
+my $Db = 0;
 my $image_regexp = qr/\.jpg$|\.png$/io;
 my $program_dir_1   = 'not_set';
 my $program_dir_2   = 'not_set';
@@ -69,7 +70,7 @@ my $platform = $ENV{PLATFORM};
    my $t0 = time;
    argv;
    say    'Now entering program "aggregate-toontown.pl".';
-   say    "\$db              = $db";
+   say    "\$Db              = $Db";
    say    "\$image_regexp    = $image_regexp";
    say    "\$program_dir_1   = $program_dir_1";
    say    "\$program_dir_2   = $program_dir_2";
@@ -91,9 +92,9 @@ my $platform = $ENV{PLATFORM};
 sub argv {
    for ( @ARGV ) {
       if    ( /^-h$/ || /^--help$/   ) {help; exit 777;}
-      elsif ( /^-1$/ || /^--debug1$/ ) {$db = 1;}
-      elsif ( /^-2$/ || /^--debug2$/ ) {$db = 2;}
-      elsif ( /^-3$/ || /^--debug3$/ ) {$db = 3;}
+      elsif ( /^-1$/ || /^--debug1$/ ) {$Db = 1;}
+      elsif ( /^-2$/ || /^--debug2$/ ) {$Db = 2;}
+      elsif ( /^-3$/ || /^--debug3$/ ) {$Db = 3;}
    }
    return 1;
 } # end sub argv
@@ -109,13 +110,13 @@ sub aggregate {
       $program_dir_1   = '/home/aragorn/.var/app/com.toontownrewritten.Launcher/data/screenshots';
       $screenshots_dir = '/d/Arcade/Toontown-Rewritten/Screenshots';
 
-      if ( $db ) {
+      if ( $Db ) {
          say STDERR 'In ATT, in "if (Linux)", about to aggregate.';
          say STDERR "Platform                = $platform";
          say STDERR "Source      directory 1 = $program_dir_1";
          say STDERR "Source      directory 2 = $program_dir_2";
          say STDERR "Destination directory   = $screenshots_dir";
-         if ( 1 == $db ) {exit 111}
+         if ( 1 == $Db ) {exit 111}
       }
 
       # Aggregate Toontown screenshots from the all-accounts program directory to Arcade:
@@ -127,13 +128,13 @@ sub aggregate {
       $program_dir_2   = '/c/Programs/Games/Toontown-Rewritten-A2/screenshots';
       $screenshots_dir = '/d/Arcade/Toontown-Rewritten/Screenshots';
 
-      if ( $db ) {
+      if ( $Db ) {
          say STDERR 'In ATT, in "if (Win64)", about to aggregate.';
          say STDERR "Platform                = $platform";
          say STDERR "Source      directory 1 = $program_dir_1";
          say STDERR "Source      directory 2 = $program_dir_2";
          say STDERR "Destination directory   = $screenshots_dir";
-         if ( 1 == $db ) {exit 111}
+         if ( 1 == $Db ) {exit 111}
       }
 
       # Aggregate Toontown screenshots from both per-account program directories to Arcade:
@@ -141,13 +142,13 @@ sub aggregate {
       system(e("move-files.pl '$program_dir_2' '$screenshots_dir' '$image_regexp'"));
    }
    else {
-      if ( $db ) {
+      if ( $Db ) {
          say STDERR 'In ATT, in "if (invalid platform)", about to die.';
          say STDERR "Platform                = $platform";
          say STDERR "Source      directory 1 = $program_dir_1";
          say STDERR "Source      directory 2 = $program_dir_2";
          say STDERR "Destination directory   = $screenshots_dir";
-         if ( 1 == $db ) {exit 111}
+         if ( 1 == $Db ) {exit 111}
       }
       die "Error in \"aggregate-toontown.pl\":\nInvalid platform \"$platform\".\n$!\n";
    }
@@ -162,17 +163,17 @@ sub aggregate {
    my $ImageFiles1 = GetFiles($screenshots_dir, 'F', $image_regexp);
    my $num1 = scalar @$ImageFiles1;
 
-   if ( $db )
+   if ( $Db )
    {
       say STDERR 'In ATT, about to rename files.';
       say STDERR "Screenshots dir = \"$screenshots_dir\".";
       # Sanity check!!! Are we actually where we think we are???
-      my $cwd = d(getcwd);
+      my $cwd = d getcwd;
       say STDERR "CWD = \"$cwd\".";
       say STDERR "Number of files before renaming = $num1";
       say STDERR "Names  of files before renaming:";
       say STDERR $_->{Name} for @$ImageFiles1;
-      if ( 2 == $db ) {exit 222}
+      if ( 2 == $Db ) {exit 222}
    }
 
    # Rename Toontown screenshot files as necessary:
@@ -180,11 +181,12 @@ sub aggregate {
    say STDOUT 'Now canonicalizing names of Toontown screenshots....';
    system(e('rename-toontown-images.pl -v'));
 
-   # Get ref to list of file-info hashes for all jpg and png files in screenshots directory:
+   # Get ref to FRESH list of file-info hashes for all jpg and png files in screenshots directory
+   # (NOTE: all the names will have changed, so we can't re-use old list):
    my $ImageFiles2 = GetFiles($screenshots_dir, 'F', $image_regexp);
    my $num2 = scalar(@{$ImageFiles2});
 
-   if ( $db )
+   if ( $Db )
    {
       say STDERR 'In ATT, after renaming files.';
       say STDERR "Screenshots dir = \"$screenshots_dir\".";
@@ -194,7 +196,7 @@ sub aggregate {
       say STDERR "Number of files after renaming = $num2";
       say STDERR "Names  of files after renaming:";
       say STDERR $_->{Name} for @$ImageFiles2;
-      if ( 3 == $db ) {exit 333}
+      if ( 3 == $Db ) {exit 333}
    }
 
    # ---------------------------------------------------------------------------------------------------------
@@ -249,10 +251,11 @@ sub help {
    -2 or --debug2  Print diagnostics and exit after second breakpoint.
    -3 or --debug3  Print diagnostics and exit after third  breakpoint.
 
-   Single-letter options may NOT be stacked in front of a single hyphen in this
+   Single-letter options may NOT be piled-up after a single hyphen in this
    program, because they all contradict each other; at most one may be used.
+   If two contradictory options are used, the right-most dominates.
 
-   All other options are ignored.
+   All options not listed above are ignored.
 
    -------------------------------------------------------------------------------
    Description of Arguments:

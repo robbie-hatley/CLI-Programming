@@ -22,6 +22,7 @@
 #                   "common::sense" (antiquated). Got rid of all prototypes. Now using signatures.
 # Thu Aug 24, 2023: Changed to C-style {bracing}. Got rid of "o" option on the qr// (unnecessary).
 #                   Added some comments to clarify various tricky bits.
+# Mon Aug 28, 2023: Fixed bug in which, if capture $1 is "0", it will be reported as "no captures".
 ##############################################################################################################
 
 # Package:
@@ -74,9 +75,9 @@ sub match {
       say ( "Content of \$& = \"",          $&  , "\""   );
       say ( "Length  of \$' = "  ,   length($') ,        );
       say ( "Content of \$' = \"",          $'  , "\""   );
-      # If there were 1-or-more captures, $1 will be set; otherwise, $1 will be undefined ("false" in boolean
-      # context). So the easiest way to determine "Were there captures?" is "if ($1) {...} else {...}".
-      if ($1) {
+      # If there were 1-or-more captures, $1 will be set; otherwise, $1 will be undefined.
+      # So the easiest way to determine "Were there captures?" is "if (defined $1) {...} else {...}".
+      if ( defined $1 ) {
          say scalar(@Matches), " captures: ", join(', ', map {"\"$_\""} @Matches);
       }
       else {

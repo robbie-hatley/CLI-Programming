@@ -31,6 +31,9 @@
 # Fri Aug 25, 2023: Now correctly handles "annotated" file names. (Look-Ahead assertions are fun!)
 #                   Now expressing execution time in seconds, to nearest millisecond.
 # Sat Aug 26, 2023: Fixed pair of bugs which was interfering with checking of "final" part of name.
+# Mon Aug 28, 2023: Fixed comment on final part. Improved formatting of argv. Removed "no debug" option as
+#                   that's already default in ALL my programs. Changed all "$db" to "$Db".
+#                   Now using "d getcwd" instead of "cwd_utf8". sub curfile() no longer calls getcwd.
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
@@ -102,7 +105,7 @@ my %Months =
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Db || $Verbose >= 1 ) {
+   if ( $Verbose >= 1 ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\".";
       say STDERR "\$Db        = $Db      ";
@@ -115,7 +118,7 @@ my %Months =
 
    stats;
    my $et = time - $t0;
-   if ( $Db || $Verbose >= 1 ) {
+   if ( $Verbose >= 1 ) {
       say    STDERR '';
       say    STDERR "Now exiting program \"$pname\".";
       printf STDERR "Execution time was %.3f seconds.\n", $et;
@@ -136,11 +139,11 @@ sub argv {
       || /^--(?!-)$d+$/       # or a valid long option,
       and push @opts, $_;     # then push item to @opts
    }
+
    # ---------------------------------------------------------------------------------------------------------
    # Process Options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/     and help and exit 777 ;
-      /^-$s*n/ || /^--nodebug$/  and $Db      =  0     ; # DEFAULT
       /^-$s*e/ || /^--debug$/    and $Db      =  1     ;
       /^-$s*q/ || /^--quiet$/    and $Verbose =  0     ; # DEFAULT
       /^-$s*v/ || /^--verbose$/  and $Verbose =  1     ;
@@ -151,6 +154,7 @@ sub argv {
       say STDERR '';
       say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
    }
+
    # ---------------------------------------------------------------------------------------------------------
    # Return Success Code 1 To Caller:
    return 1;
@@ -180,8 +184,8 @@ sub curfile ($file) {
    # Increment file counter:
    ++$filecount;
 
-   my $cwd  = d getcwd;
    my $path = $file->{Path};
+   my $cwd  = get_dir_from_path($path);
    my $name = $file->{Name};
    my $pref = denumerate_file_name(get_prefix($name));
    my $suff = get_suffix($name);
@@ -309,7 +313,7 @@ sub curfile ($file) {
    my $hour    = $parts[5];          # eg, "01"
    my $min     = $parts[6];          # eg, "05"
    my $sec     = $parts[7];          # eg, "33"
-   my $final   = $parts[9];          # eg, "70299_me at front door_"
+   my $final   = $parts[9];          # eg, "70299_me at front door"
 
    my $newpref = $game    . '-' . $ss                              . '_'
                . $year    . '-' . $month . '-' . $day . '-' . $dow . '_'
@@ -409,8 +413,7 @@ sub help {
 
    Option:            Meaning:
    -h or --help       Print this help and exit.
-   -n or --nodebug    DON'T print diagnostics & simulate renames. (DEFAULT)
-   -e or --debug      DO    print diagnostics & simulate renames.
+   -e or --debug      Print diagnostics & simulate renames.
    -q or --quiet      DON'T print stats.                          (DEFAULT)
    -v or --verbose    DO    print stats.
    -l or --local      Don't recurse subdirectories.               (DEFAULT)
@@ -420,7 +423,7 @@ sub help {
    For example, use -vr to verbosely and recursively process items.
 
    If multiple conflicting separate options are given, later overrides earlier.
-   If multiple conflicting single-letter options are piled after a single colon,
+   If multiple conflicting single-letter options are piled after a single hyphen,
    the result is determined by this descending order of precedence: herlvq.
 
    All options not listed above are ignored.

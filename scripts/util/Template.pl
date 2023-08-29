@@ -65,10 +65,14 @@
 #                   Removed code that exits after printing settings if debugging. Inserted code that puts
 #                   program in "simulate" mode near bottom of curfile() if debugging. Fixed bug in which "-"
 #                   was being interpretted as "character range" instead of "hyphen", by changing
-#                   "$d = [a-zA-Z0-9-=.]+" to "$d = [a-zA-Z0-9=.-]+". Dramatically simplified way in which
-#                   options and arguments are printed if debugging. Removed "$" = ', '" and "$, = ', '".
+#                   "$d = [a-zA-Z0-9-=.]+" to "$d = [a-zA-Z0-9=.-]+". Added "nodebug" option. Fixed bug in
+#                   which curfile was never being called.
+# Mon Aug 28, 2023: Clarified sub argv().
 #                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
-# Fri Aug 25, 2023: Added "nodebug" option. Fixed bug in which curfile was never being called.
+#                   Simplified way in which options and arguments are printed if debugging.
+#                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
+#                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Removed "no debug" option as that's already default in all of my programs.
 ##############################################################################################################
 
 ##############################################################################################################
@@ -86,6 +90,7 @@ use utf8;
 use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
 use charnames qw( :full :short );
 use Unicode::Normalize qw( NFD NFC );
@@ -149,22 +154,22 @@ my $unkncount = 0 ; # Count of all unknown files.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Db || $Verbose >= 1 ) {
+   if ( $Verbose >= 1 ) {
       say    STDERR '';
-      say    STDERR "Now entering program \"$pname\".   ";
-      say    STDERR "\$Db        = $Db                  ";
-      say    STDERR "\$Verbose   = $Verbose             ";
-      say    STDERR "\$Recurse   = $Recurse             ";
-      say    STDERR "\$RegExp    = $RegExp              ";
-      say    STDERR "\$Target    = $Target              ";
-      say    STDERR "\$Predicate = $Predicate           ";
+      say    STDERR "Now entering program \"$pname\"." ;
+      say    STDERR "\$Db        = $Db"        ;
+      say    STDERR "\$Verbose   = $Verbose"   ;
+      say    STDERR "\$Recurse   = $Recurse"   ;
+      say    STDERR "\$RegExp    = $RegExp"    ;
+      say    STDERR "\$Target    = $Target"    ;
+      say    STDERR "\$Predicate = $Predicate" ;
    }
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
    stats;
    my $et = time - $t0;
-   if ( $Db || $Verbose >= 1 ) {
+   if ( $Verbose >= 1 ) {
       say    STDERR '';
       say    STDERR "Now exiting program \"$pname\".";
       printf STDERR "Execution time was %.3f seconds.", $et;
@@ -196,7 +201,6 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/    and help and exit 777 ;
-      /^-$s*n/ || /^--nodebug$/ and $Db      =  0     ;
       /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
       /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
       /^-$s*t/ || /^--terse$/   and $Verbose =  1     ;
@@ -221,9 +225,16 @@ sub argv {
    # my $re; $NA >= 1 and $re = join '|', @args and $RegExp = qr/$re/o;
 
    # Use positional arguments instead?
-   $NA >= 1 and $RegExp = qr/$args[0]/;                   # Set $RegExp.
-   $NA >= 2 and $Predicate = $args[1];                    # Set $Predicate.
-   $NA >= 3 && !$Db and error($NA) and help and exit 666; # Wrong number of arguments.
+   # Process arguments:
+   my $NA = scalar(@args);     # Get number of arguments.
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 2                    # If number of arguments >= 2,
+   and $Predicate = $args[1];  # set $Predicate.
+   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
+   and error($NA)              # print error message
+   and help                    # and print help message
+   and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
@@ -235,7 +246,7 @@ sub curdire {
    ++$direcount;
 
    # Get current working directory:
-   my $cwd = cwd_utf8;
+   my $cwd = d getcwd;
 
    # Announce current working directory if being at-least-somewhat-verbose:
    if ( $Verbose >= 1) {
@@ -359,23 +370,23 @@ sub help {
 
    Option:            Meaning:
    -h or --help       Print help and exit.
-   -e or --debug      Print diagnostics and exit.
-   -q or --quiet      Be quiet.                       (DEFAULT)
+   -e or --debug      DO    print diagnostics and exit.
+   -q or --quiet      Be quiet.                         (DEFAULT)
    -t or --terse      Be terse.
    -v or --verbose    Be verbose.
-   -l or --local      Don't recurse subdirectories.   (DEFAULT)
-   -r or --recurse    Do    recurse subdirectories.
+   -l or --local      DON'T recurse subdirectories.     (DEFAULT)
+   -r or --recurse    DO    recurse subdirectories.
    -f or --files      Target Files.
    -d or --dirs       Target Directories.
    -b or --both       Target Both.
-   -a or --all        Target All.                     (DEFAULT)
+   -a or --all        Target All.                       (DEFAULT)
          --           End of options (all further CL items are arguments).
 
    Multiple single-letter options may be piled-up after a single hyphen.
    For example, use -vr to verbosely and recursively process items.
 
    If multiple conflicting separate options are given, later overrides earlier.
-   If multiple conflicting single-letter options are piled after a single colon,
+   If multiple conflicting single-letter options are piled after a single hyphen,
    the result is determined by this descending order of precedence: heabdfrlvtq.
 
    If you want to use an argument that looks like an option (say, you want to
