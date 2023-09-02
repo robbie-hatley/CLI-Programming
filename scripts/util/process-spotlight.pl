@@ -154,7 +154,7 @@ my $Current = 0;
    # Print exit message, including elapsed time, and exit:
    say '';
    say "Now exiting \"$pname\".";
-   printf "Execution time was %.3f seconds.\n", time-$to;
+   printf "Execution time was %.3f seconds.\n", time-$t0;
    exit 0;
 } # end main
 
