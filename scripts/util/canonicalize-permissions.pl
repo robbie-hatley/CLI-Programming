@@ -7,7 +7,9 @@
 ##############################################################################################################
 # canonicalize-permissions.pl
 # Canonicalizes permissions of directory entries, except for hidden files & directories.
-# Written by Robbie Hatley.
+#
+# Written by Robbie Hatley, beginning on Sunday March 5, 2023.
+#
 # Edit history:
 # Sun Mar 05, 2023: Wrote stub. (NOT YET FUNCTIONAL.)
 # Thu Aug 04, 2023: Reduced width from 120 to 100. Got rid of all prototypes (using signatures instead).
@@ -15,11 +17,20 @@
 #                   Got rid of "--debug=no", "--local", "--quiet" (already defaults).
 #                   Changed "--debug=yes" to just "--debug". Now using "my $pname = get_name_from_path($0);".
 #                   Elapsed time is now in milliseconds.
-# Wed Aug 09, 2023: Dramatically symplified permission-setting. Created new subs "dir_nav", "set_exec", and
+# Wed Aug 09, 2023: Dramatically symplified permission-setting. Created new subs "set_navi", "set_exec", and
 #                   "set_noex". Added several new suffixes. Now handles makefiles (noex).
 # Fri Aug 25, 2023: Added "quiet" and "verbose" options to control output. Added "nodebug" option.
 #                   Fixed bug in which all image files were having their perms set TWICE.
 #                   Added stipulation that this program does not process hidden files.
+# Wed Aug 30, 2023: Entry & Exit messages are now controlled by $Verbose only, not $Db.
+# Thu Aug 31, 2023: Clarified sub argv().
+#                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+#                   Simplified way in which options and arguments are printed if debugging.
+#                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
+#                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Removed "no debug" option as that's already default in all of my programs.
+#                   Variable "$Verbose" now means "print per-file info", and default is to NOT do that.
+#                   STDERR = "stats and serious errors". STDOUT = "file permissions set, and dirs if verbose".
 ##############################################################################################################
 
 use v5.36;
@@ -38,7 +49,7 @@ use RH::Dir;
 
 sub argv     ; # Process @ARGV.
 sub curdire  ; # Process current directory.
-sub dir_nav  ; # Set a directory to "navigable".
+sub set_navi ; # Set a directory to "navigable".
 sub set_exec ; # Set a file to "executable".
 sub set_noex ; # Set a file to "NOT executable".
 sub curfile  ; # Process current file.
@@ -52,46 +63,46 @@ sub help     ; # Print help and exit.
 my $Db        = 0          ; # Print diagnostics?           bool      Don't print diagnostics.
 my $Verbose   = 0          ; # Print stats?                 bool      Don't print stats.
 my $Recurse   = 0          ; # Recurse subdirectories?      bool      Don't recurse.
-my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    Process all file names.
+my $RegExp    = qr/^.+$/   ; # Regular Expression.          regexp    Process all file names.
 my $Target    = 'F'        ; # Files, dirs, both, all?      F|D|B|A   Process regular files only.
 my $Predicate = 1          ; # Boolean predicate.           bool      Process files of all types.
 
 # Counters:
 my $direcount = 0          ; # Count of directories processed by curdire().
 my $filecount = 0          ; # Count of dir entries matching $RegExp and $Target
-my $findcount = 0          ; # Count of dir entries also matching $Predicate.
+my $predcount = 0          ; # Count of dir entries also matching $Predicate.
 my $hidncount = 0          ; # Count of all hidden entries encountered.
 my $opencount = 0          ; # Count of all regular files we could    open.
 my $noopcount = 0          ; # Count of all regular files we couldn't open.
 my $readcount = 0          ; # Count of all regular files we could    read.
 my $nordcount = 0          ; # Count of all regular files we couldn't read.
 my $permcount = 0          ; # Count of all permissions set.
+my $simucount = 0          ; # Count of all simulated setting of permissions.
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 { # begin main
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Db || $Verbose >= 1 ) {
-      say    STDERR '';
-      say    STDERR "Now entering program \"$pname\".   ";
-      say    STDERR "\$Db        = $Db                  ";
-      say    STDERR "\$Verbose   = $Verbose             ";
-      say    STDERR "\$Recurse   = $Recurse             ";
-      say    STDERR "\$RegExp    = $RegExp              ";
-      say    STDERR "\$Target    = $Target              ";
-      say    STDERR "\$Predicate = $Predicate           ";
-   }
+   say    STDERR '';
+   say    STDERR "Now entering program \"$pname\".   ";
+   say    STDERR "\$Db        = $Db                  ";
+   say    STDERR "\$Verbose   = $Verbose             ";
+   say    STDERR "\$Recurse   = $Recurse             ";
+   say    STDERR "\$RegExp    = $RegExp              ";
+   say    STDERR "\$Target    = $Target              ";
+   say    STDERR "\$Predicate = $Predicate           ";
 
+   # Run sub curdire() for desired directories:
    $Recurse and RecurseDirs {curdire} or curdire;
 
+   # Print closing newline if we've just been printing $direcount repeatedly on top of itself:
+   print STDOUT "\n" if !$Verbose && !$Db;
+
    stats;
-   my $et = time - $t0;
-   if ( $Db || $Verbose >= 1 ) {
-      say    STDERR '';
-      say    STDERR "Now exiting program \"$pname\".";
-      printf STDERR "Execution time was %.3f seconds.", $et;
-   }
+   say    STDERR '';
+   say    STDERR "Now exiting program \"$pname\".";
+   printf STDERR "Execution time was %.3f seconds.", time - $t0;
    exit 0;
 } # end main
 
@@ -100,11 +111,11 @@ my $permcount = 0          ; # Count of all permissions set.
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts = ()            ; # options
-   my @args = ()            ; # arguments
-   my $end = 0              ; # end-of-options flag
-   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
-   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   my @opts = ();             # options
+   my @args = ();             # arguments
+   my $end = 0;               # end-of-options flag
+   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
       /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
       and $end = 1            # so if we see that, then set the "end-of-options" flag
@@ -119,7 +130,6 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/    and help and exit 777 ;
-      /^-$s*n/ || /^--nodebug$/ and $Db      =  0     ;
       /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
       /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
       /^-$s*v/ || /^--verbose$/ and $Verbose =  1     ;
@@ -137,10 +147,15 @@ sub argv {
    }
 
    # Process arguments:
-   my $NA = scalar(@args);
-   $NA >= 1 and $RegExp = qr/$args[0]/;                   # Set $RegExp.
-   $NA >= 2 and $Predicate = $args[1];                    # Set $Predicate.
-   $NA >= 3 && !$Db and error($NA) and help and exit 666; # Wrong number of arguments.
+   my $NA = scalar(@args);     # Get number of arguments.
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 2                    # If number of arguments >= 2,
+   and $Predicate = $args[1];  # set $Predicate.
+   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
+   and error($NA)              # print error message,
+   and help                    # and print help message,
+   and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
@@ -151,9 +166,21 @@ sub curdire {
    # Increment directory counter:
    ++$direcount;
 
-   # Get and announce current working directory:
+   # Get current working directory:
    my $cwd = d getcwd;
-   say "\nDirectory # $direcount: $cwd\n";
+   # Announce current working directory:
+   if ( $Verbose || $Db ) {
+      say STDOUT "\nDirectory # $direcount: $cwd\n";
+   }
+   else {
+      if ( 1 == $direcount ) {
+         printf STDOUT "\nDirectory # %6d", $direcount;
+      }
+      else {
+         printf STDOUT "\b\b\b\b\b\b%6d", $direcount;
+      }
+   }
+
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
@@ -163,7 +190,7 @@ sub curdire {
       ++$filecount;
       local $_ = e $file->{Path};
       if (eval($Predicate)) {
-         ++$findcount;
+         ++$predcount;
          curfile($file);
       }
    }
@@ -171,24 +198,30 @@ sub curdire {
 } # end sub curdire
 
 # Set a directory to "navigable":
-sub dir_nav ($file) {
-   chmod 0775, e($file->{Path});
-   say "Set directory \"$file->{Name}\" to navigable.";
-   ++$permcount;
+sub set_navi ($file) {
+   chmod 0775, e($file->{Path}) if !$Db;
+   say STDOUT "Set directory \"$file->{Name}\" to navigable." if !$Db && $Verbose;
+   ++$permcount if !$Db;
+   say STDOUT "Simulation: would have set directory \"$file->{Name}\" to navigable." if $Db;
+   ++$simucount if $Db;
 }
 
 # Set a file to "executable":
 sub set_exec ($file) {
-   chmod 0775, e($file->{Path});
-   say "Set file \"$file->{Name}\" to executable.";
-   ++$permcount;
+   chmod 0775, e($file->{Path}) if !$Db;
+   say STDOUT "Set file \"$file->{Name}\" to executable." if !$Db && $Verbose;
+   ++$permcount if !$Db;
+   say STDOUT "Simulation: would have set file \"$file->{Name}\" to executable." if $Db;
+   ++$simucount if $Db;
 }
 
 # Set a file to "not executable":
 sub set_noex ($file) {
-   chmod 0664, e($file->{Path});
-   say "Set file \"$file->{Name}\" to NOT-executable.";
-   ++$permcount;
+   chmod 0664, e($file->{Path}) if !$Db;
+   say STDOUT "Set file \"$file->{Name}\" to NOT-executable." if !$Db && $Verbose;
+   ++$permcount if !$Db;
+   say STDOUT "Simulation: would have set file \"$file->{Name}\" to NOT-executable." if $Db;
+   ++$simucount if $Db;
 }
 
 # Process current file:
@@ -202,45 +235,50 @@ sub curfile ($file) {
    # If we get to here, this file is NOT hidden, so process it normally.
 
    if    ( 'D' eq $file->{Type} ) { # Directories need to be navigable.
-      dir_nav($file);
+      unless ( $Db ) {
+         set_navi($file);
+      }
+      else {
+         sim_navi($file);
+      }
    }
    elsif ( 'F' eq $file->{Type} ) { # Regular files, however, are a mixed bag.
       my $suf = get_suffix($file->{Name});
       if ( 0 != length $suf ) { # File name DOES have a suffix.
          my $lsuf = lc substr $suf, 1;
          for ( $lsuf ) {
-
-            # Scripts in in known languages DO need to be executable:
-            /^(apl|awk|pl|perl|py|raku|sed|sh)$/ and set_exec($file);
-
-            # Source, header, library, and module files DON'T need to be executable:
-            /^(c|cpp|cppism|h|hpp|cppismh|a|pm)$/ and set_noex($file);
-
-            # Document files DON'T need to be executable:
-            /^(chm|doc|epub|txt|pdf|htm|html|doc|odt|ods|ion|eml|log)$/ and set_noex($file);
-
-            # Picture files DON'T need to be executable:
-            /^(jpg|jpeg|tif|tiff|bmp|gif|png|xcf)$/ and set_noex($file);
-
-            # Archive files DON'T need to be executable:
-            /^(zip|rar|tar|tgz)$/ and set_noex($file);
-
-            # Sound files DON'T need to be executable:
-            /^(mp3|ogg|flac|wav)$/ and set_noex($file);
-
-            # Video files DON'T need to be executable:
-            /^(mpg|mpeg|mp4|mov|avi|flv)$/ and set_noex($file);
+            # EX: Scripts:
+            if ( /^(apl|awk|pl|perl|py|raku|sed|sh)$/ ) {
+               set_exec($file);
+            }
+            # NOEX: Source, header, library, module, documen, archivet, picture, sound, and video files:
+            elsif ( /^(c|cpp|cppism)$/                  || # source
+                    /^(h|hpp|cppismh)$/                 || # header
+                    /^(a|pm)$/                          || # library
+                    /^(chm|epub|txt|pdf|ion|eml|log)$/  || # document
+                    /^(doc|odt|ods)$/                   || # office
+                    /^(htm|html)$/                      || # html
+                    /^(zip|rar|tar|tgz)$/               || # archive
+                    /^(jpg|jpeg|tif|tiff|bmp|gif|png)$/ || # picture
+                    /^(xcf)$/                           || # gimp
+                    /^(mp3|ogg|flac|wav)$/              || # sound
+                    /^(mpg|mpeg|mp4|mov|avi|flv)$/ ) {     # video
+               set_noex($file);
+            }
+            # Other suffixes:
+            else {
+               ; # Do nothing.
+            }
          }
-      } # end if (suffix)
+      } # end if (files with suffix)
 
       # Make files DON'T need to be executable:
       elsif ( (lc $file->{Name}) =~ m/^make(file|tail)$/ ) {
          set_noex($file);
-      } # end elsif (make file)
+      } # end elsif (make files with no suffix)
 
-      # If we couldn't make a decision regarding the permissions of this file based on its name,
-      # resort to opening the file and looking at the first 4 bytes of its contents:
-      else { # File name DOESN'T have a suffix.
+      # If this file's name doesn't have a suffix, open the file and scrutinize its first 4 bytes:
+      else {
          my $fh;
          my $buffer;
          if ( open $fh, "< :raw", e $file->{Path} ) {
@@ -250,12 +288,15 @@ sub curfile ($file) {
                # We WERE able to read this file:
                ++$readcount;
 
-               # Shebang scripts DO need to be executable:
-               '#!' eq substr($buffer, 0, 2) and set_exec($file);
-
-               # Linux "ELF" ("Executable & Linkable Format") programs DO need to be executable:
-               "\x{7F}ELF" eq substr($buffer, 0, 4) and set_exec($file);
-
+               # Shebang scripts and ELF files need to be executable:
+               if ( '#!' eq substr($buffer, 0, 2) || "\x{7F}ELF" eq substr($buffer, 0, 4) ) {
+                  unless ( $Db ) {
+                     set_exec($file);
+                  }
+                  else {
+                     sim_exex($file);
+                  }
+               }
             } # end could read
             else {
                # We WEREN'T able to read this file:
@@ -267,8 +308,8 @@ sub curfile ($file) {
             # We WEREN'T able to open this file:
             ++$noopcount;
          } # end couldn't open
-      } # end else (no suffix)
-   } # end regular file
+      } # end else (other regular files with no suffix)
+   } # end if (regular file)
 
    # For things OTHER THAN regular files and directories, do nothing:
    else {
@@ -281,19 +322,18 @@ sub curfile ($file) {
 
 # Print statistics for this program run:
 sub stats {
-   if ( $Db || $Verbose >= 1 ) {
-      say STDERR '';
-      say STDERR "Statistics for this directory tree:";
-      say STDERR "Navigated $direcount directories.";
-      say STDERR "Processed $filecount directory entries matching regexp and target.";
-      say STDERR "Found $findcount directory entries also matching predicate.";
-      say STDERR "Skipped $hidncount hidden directory entries.";
-      say STDERR "Was able to open $opencount regular files with unknown or missing file-name extensions.";
-      say STDERR "Failed $noopcount file-open attempts.";
-      say STDERR "Was able to read $readcount regular files with unknown or missing file-name extensions.";
-      say STDERR "Failed $nordcount file-read attempts.";
-      say STDERR "Set $permcount permissions.";
-   }
+   say STDERR '';
+   say STDERR "Statistics for this directory tree:";
+   say STDERR "Navigated $direcount directories.";
+   say STDERR "Processed $filecount directory entries matching regexp and target.";
+   say STDERR "Found $predcount directory entries also matching predicate.";
+   say STDERR "Skipped $hidncount hidden directory entries.";
+   say STDERR "Was able to open $opencount regular files with unknown or missing file-name extensions.";
+   say STDERR "Failed $noopcount file-open attempts.";
+   say STDERR "Was able to read $readcount regular files with unknown or missing file-name extensions.";
+   say STDERR "Failed $nordcount file-read attempts.";
+   say STDERR "Set $permcount permissions.";
+   say STDERR "Simulated $simucount permissions set.";
    return 1;
 } # end sub stats
 
@@ -335,18 +375,29 @@ sub help
 
    Option:           Meaning:
    -h or --help      Print help and exit.
-   -n or --nodebug   DON'T print diagnostics.                       (DEFAULT)
-   -e or --debug     DO    print diagnostics.
-   -q or --quiet     DON'T print stats.                             (DEFAULT)
-   -v or --verbose   DO    print stats.
+   -e or --debug     Print diagnostics and simulate permissions.
+   -q or --quiet     DON'T print per-file info.                     (DEFAULT)
+   -v or --verbose   DO    print per-file info.
    -l or --local     DON'T recurse subdirectories (but not links).  (DEFAULT)
    -r or --recurse   DO    recurse subdirectories (but not links).
    -f or --files     Target files only.                             (DEFAULT)
    -d or --dirs      Target directories only.
    -b or --both      Target both files and directories.
    -a or --all       Target all directory entries.
-   Multiple single-letter options can be piled-up after a single hyphen.
-   For example, use "-arv" to verbosely process all entries in all subdirectories.
+
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, use -vr to verbosely and recursively process items.
+
+   If multiple conflicting separate options are given, later overrides earlier.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: heabdfrlvq.
+
+   If you want to use an argument that looks like an option (say, you want to
+   search for files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
+
+   All options not listed above are ignored.
 
    -------------------------------------------------------------------------------
    Description of arguments:
@@ -395,9 +446,9 @@ sub help
    of arguments without destroying the universe, please send me an email at
    "Hatley.Software@gmail.com", because I'd like to know how you did that!
 
-   But if you somehow manage to use a number of arguments which is an irrational
-   or complex number, please keep THAT to yourself. Some things would be better
-   for my sanity for me not to know. I don't want to find myself enthralled to
+   However, if you somehow manage to use a number of arguments which is an
+   irrational and/or complex number, please keep THAT to yourself. Some things
+   are better for me NOT to to know. I don't want to find myself enthralled to
    Cthulhu.
 
    Happy directory tree permissions canonicalizing!
@@ -408,3 +459,4 @@ sub help
    END_OF_HELP
    return 1;
 } # end sub help
+__END__

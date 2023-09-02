@@ -1,36 +1,54 @@
 #! /bin/perl -CSDA
+
+##############################################################################################################
 # get_correct_suffix.pl
+# Given a valid path to a data file as first argument, tries hard to determine correct file-name suffix;
+# if this can't be done, returns original suffix (if there is one) or ".unk" (if there isn't).
+#
+# Written by Robbie Hatley starting on Tue Aug 15, 2023.
+#
+# Edit Log:
+# Tue Aug 15, 2023: Wrote first draft.
+# Mon Aug 28, 2023: Changed "$Db" to $Db". Got rid of prototypes. Now using Signatures. Improved formatting.
+##############################################################################################################
 
 use v5.36;
 use strict;
 use warnings;
 use utf8;
 use warnings FATAL => "utf8";
+
 use Sys::Binmode;
-
 use Cwd;
-use Encode        qw( :DEFAULT encode decode :fallbacks :fallback_all );
+use Time::HiRes qw( time );
+use Encode      qw( :DEFAULT encode decode :fallbacks :fallback_all );
 use File::Type;
-use List::Util    qw( sum0 );
-use Time::HiRes   qw( time );
+use List::Util  qw( sum0 );
 
-sub is_ascii               :prototype($)    ; # Is a given text string encoded in ASCII?
-sub is_iso_8859_1          :prototype($)    ; # Is a given text string encoded in ASCII?
-sub is_utf8                :prototype($)    ; # Is a given text string encoded in ASCII?
-sub d                                       ; # utf8-decode.
-sub e                                       ; # utf8-encode.
-sub is_data_file           :prototype($)    ; # Is a file a regular, non-link, non-dir file?
-sub get_suffix             :prototype($)    ; # Get suffix from file name.
-sub get_name_from_path     :prototype($)    ; # Get name from file path.
-sub get_correct_suffix     :prototype($)    ; # Return correct file-name suffix for file at given path.
+my $Db = 0; # Debug?
 
-my $db = 0; # Debug?
+# Prepare constant "EFLAGS" which contains bitwise-OR'd flags for Encode::encode and Encode::decode :
+use constant EFLAGS => RETURN_ON_ERR | WARN_ON_ERR | LEAVE_SRC;
+
+# Decode from UTF-8 to Unicode:
+sub d {
+      if (0 == scalar @_) {return Encode::decode('UTF-8', $_,    EFLAGS);}
+   elsif (1 == scalar @_) {return Encode::decode('UTF-8', $_[0], EFLAGS);}
+   else              {return map {Encode::decode('UTF-8', $_,    EFLAGS)} @_ };
+} # end sub d
+
+# Encode from Unicode to UTF-8:
+sub e {
+      if (0 == scalar @_) {return Encode::encode('UTF-8', $_,    EFLAGS);}
+   elsif (1 == scalar @_) {return Encode::encode('UTF-8', $_[0], EFLAGS);}
+   else              {return map {Encode::encode('UTF-8', $_,    EFLAGS)} @_ };
+} # end sub e
 
 # Is a line of text encoded in ASCII?
-sub is_ascii :prototype($) ($text) {
+sub is_ascii ($text) {
    my $is_ascii = 1;
    foreach my $ord (map {ord} split //, $text) {
-      if ($db) {say STDERR "In is_ascii(), at top of foreach. \$ord = $ord"}
+      if ($Db) {say STDERR "In is_ascii(), at top of foreach. \$ord = $ord"}
       next if (  9 == $ord ); # HT
       next if ( 10 == $ord ); # LF
       next if ( 11 == $ord ); # VT
@@ -44,15 +62,15 @@ sub is_ascii :prototype($) ($text) {
       $is_ascii = 0;
       last;
    }
-   if ($db) {say STDERR "In is_ascii(), about to return. \$is_ascii = $is_ascii"}
+   if ($Db) {say STDERR "In is_ascii(), about to return. \$is_ascii = $is_ascii"}
    return $is_ascii;
-} # end sub is_ascii :prototype($) ($text)
+} # end sub is_ascii ($text)
 
 # Is a line of text encoded in iso-8859-1?
-sub is_iso_8859_1 :prototype($) ($text) {
+sub is_iso_8859_1 ($text) {
    my $is_iso = 1;
    foreach my $ord (map {ord} split //, $text) {
-      if ($db) {say STDERR "In is_iso_8859_1(), at top of foreach. \$ord = $ord"}
+      if ($Db) {say STDERR "In is_iso_8859_1(), at top of foreach. \$ord = $ord"}
       next if (  9 == $ord ); # HT
       next if ( 10 == $ord ); # LF
       next if ( 11 == $ord ); # VT
@@ -68,12 +86,12 @@ sub is_iso_8859_1 :prototype($) ($text) {
       $is_iso = 0;
       last;
    }
-   if ($db) {say STDERR "In is_iso_8859_1(), about to return. \$is_iso = $is_iso"}
+   if ($Db) {say STDERR "In is_iso_8859_1(), about to return. \$is_iso = $is_iso"}
    return $is_iso;
-} # end sub is_iso_8859_1 :prototype($) ($text)
+} # end sub is_iso_8859_1 ($text)
 
 # Is a line of text encoded in Unicode then transformed to UTF-8?
-sub is_utf8 :prototype($) ($text) {
+sub is_utf8 ($text) {
    my $is_utf8;
    if ( eval {decode('UTF-8', $text, DIE_ON_ERR|LEAVE_SRC)} ) {
       $is_utf8 = 1;
@@ -81,50 +99,22 @@ sub is_utf8 :prototype($) ($text) {
    else {
       $is_utf8 = 0;
    }
-   if ($db) {say STDERR "In is_utf8(), about to return. \$is_utf8 = $is_utf8"}
+   if ($Db) {say STDERR "In is_utf8(), about to return. \$is_utf8 = $is_utf8"}
    return $is_utf8;
-}
+} # end sub is_utf8 ($text)
 
-# Prepare constant "EFLAGS" which contains bitwise-OR'd flags for Encode::encode and Encode::decode :
-use constant EFLAGS => RETURN_ON_ERR | WARN_ON_ERR | LEAVE_SRC;
-
-# Decode from UTF-8 to Unicode:
-sub d
-{
-      if (0 == scalar @_) {return Encode::decode('UTF-8', $_,    EFLAGS);}
-   elsif (1 == scalar @_) {return Encode::decode('UTF-8', $_[0], EFLAGS);}
-   else              {return map {Encode::decode('UTF-8', $_,    EFLAGS)} @_ };
-} # end sub d
-
-# Encode from Unicode to UTF-8:
-sub e
-{
-      if (0 == scalar @_) {return Encode::encode('UTF-8', $_,    EFLAGS);}
-   elsif (1 == scalar @_) {return Encode::encode('UTF-8', $_[0], EFLAGS);}
-   else              {return map {Encode::encode('UTF-8', $_,    EFLAGS)} @_ };
-} # end sub e
-
-# Return 1 if-and-only-if a given string is a path to a data file (a regular file that is not a link or dir).
-sub is_data_file :prototype($) ($path) {
-   my $name = get_name_from_path($path);
-   return 0 if $name eq '.';
-   return 0 if $name eq '..';
-   return 0 if $name =~ m/^\.sync.ffs_db/;
-   return 0 if $name =~ m/^\.directory$/;
-   return 0 if $name =~ m/^desktop.*\.ini$/i;
-   return 0 if $name =~ m/^thumbs.*\.db$/i;
-   return 0 if $name =~ m/^pspbrwse.*\.jbf$/i;
-   return 0 if $name =~ m/ID-Token/i;
-   return 0 unless -e e $path;
+# Return 1 if-and-only-if a path points to a data file (an existing, non-link, non-dir, regular file):
+sub is_data_file ($path) {
+   return 0 if ! -e e $path;
    lstat e $path;
-   return 0 unless -f _ ;
-   return 0 if     -l _ ;
-   return 0 if     -d _ ;
+   return 0 if   -l _ ;
+   return 0 if   -d _ ;
+   return 0 if ! -f _ ;
    return 1;
-} # end sub is_data_file :prototype($) ($path)
+} # end sub is_data_file ($path)
 
 # Return the name part of a file path:
-sub get_name_from_path :prototype($) ($path) {
+sub get_name_from_path ($path) {
    # If $path does not contain "/", then consider $path to be an unqualified
    # file name, so return $path:
    if (-1 == rindex($path,'/')) {
@@ -142,24 +132,24 @@ sub get_name_from_path :prototype($) ($path) {
    else {
       return '';
    }
-} # end sub get_name_from_path
+} # end sub get_name_from_path ($path)
 
 # Given any string, return last dot and following characters:
-sub get_suffix :prototype($) {
-   my $string = shift;
+sub get_suffix ($string) {
    my $dotindex = rindex($string, '.');
    return ''      if -1 == $dotindex;
    return $string if  0 == $dotindex;
    return substr($string, $dotindex);
-} # end sub get_suffix
+} # end sub get_suffix ($string)
 
-# Get the correct suffix for the name of a file at a given path, ignoring the existing suffix (if any) and
-# basing our type determination on the "checktype_filename" method of modules "File::Type" and/or on direct
-# examination of the contents of the file. If we are unable to determine the correct suffix through these
-# methods, then return the existing suffix (if any), or return '.unk' if there is no existing suffix,
-# or return '***ERROR***' if an error occurs (no file, not-data-file, file open/read/close error, perms, etc).
-sub get_correct_suffix :prototype($) ($path) {
-   if ($db) {
+# Attempt to get the correct suffix for the name of a file at a given path, ignoring the existing suffix
+# (if any) and basing our type determination on the "checktype_filename" method of modules "File::Type"
+# and/or on direct examination of the contents of the file. If we are unable to determine the correct suffix
+# through these methods, then return the existing suffix (if any), or return '.unk' if there is no existing
+# suffix, or return '***ERROR***' if an error occurs (no file, not-data-file, file open/read/close error,
+# we don't have permission to read the file, etc).
+sub get_correct_suffix ($path) {
+   if ( $Db ) {
       say STDERR '';
       say STDERR "In get_correct_suffix(), at top.";
       say STDERR "\$path = $path";
@@ -185,14 +175,14 @@ sub get_correct_suffix :prototype($) ($path) {
    $type =~ s%\+\pL+%%;  # Get rid of alternate type interpretations (eg, xml for svg).
 
    # Announce type if debugging:
-   if ( $db ) {
+   if ( $Db ) {
       say STDERR '';
       say STDERR "In get_correct_suffix(), just got type.";
       say STDERR "\$type = $type";
    }
 
    # Match normalized type against known types and choose extension if possible:
-   for ($type) {
+   for ( $type ) {
       m%^video/msvideo$%                                   and return '.avi'  ;
       m%^image/bmp$%                                       and return '.bmp'  ;
       m%^application/freearc$%                             and return '.arc'  ;
@@ -257,7 +247,7 @@ sub get_correct_suffix :prototype($) ($path) {
       my $bytes = length($buffer);
       $bytes >= 32                                    or return '***ERROR***' ; # Didn't read 32 bytes.
 
-      if ( $db ) {
+      if ( $Db ) {
          say STDERR '';
          say STDERR "In get_correct_suffix(), just loaded \$buffer.";
          say STDERR "\$size  = $size";
@@ -296,6 +286,52 @@ sub get_correct_suffix :prototype($) ($path) {
    # original suffix, unless it was blank, in which case return '.unk':
    $suff eq ''                                             and return '.unk'    # File of unknown type.
                                                             or return $suff   ; # Return original suffix.
-} # end sub get_correct_suffix :prototype($) ($path)
+} # end sub get_correct_suffix ($path)
 
+# Give user some help:
+sub help {
+   print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+   Introduction:
+
+   Welcome to "get-correct-suffix.pl". Given a valid path to a data file as first
+   argument, this program attempts to determine the correct file-name suffix; if
+   this can't be done, this program returns the original suffix (if there is one)
+   or ".unk" (if there isn't).
+
+   -------------------------------------------------------------------------------
+   Command lines:
+
+   get-correct-suffix.pl [-h|--help]    (to print this help and exit)
+   get-correct-suffix.pl path           (to get correct suffix )
+
+   -------------------------------------------------------------------------------
+   Description of options:
+
+   There are no options. Any option you attempt to use would be interpreted as a
+   file path, so don't try to use options.
+
+   -------------------------------------------------------------------------------
+   Description of arguments:
+
+   This program requires exactly one mandatory argument, which must be a path to
+   an existing, regular, non-link, non-directory file.
+
+   Happy suffix determining!
+
+   Cheers,
+   Robbie Hatley,
+   programmer.
+   END_OF_HELP
+   return 1;
+} # end sub help
+
+my $NA = scalar @ARGV;
+for ( @ARGV ) { /-h/ || /--help/ and help and exit ; }
+($NA != 1) || !-e(e($ARGV[0])) || !-f(e($ARGV[0])) || -d(e($ARGV[0])) || -l(e($ARGV[0]))
+and die "Error: this program must have one argument, which must be \n".
+        "-h or --help or a path to an existing regular file.\n";
 say get_correct_suffix($ARGV[0]);
+exit 0;
+__END__

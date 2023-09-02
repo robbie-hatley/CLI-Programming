@@ -96,7 +96,7 @@ sub curdire ()
    closedir $dh;
 
    # Send each path to curfile:
-   foreach my $path (@paths) 
+   foreach my $path (@paths)
    {
       if ( ! is_data_file($path) )
       {
@@ -127,9 +127,9 @@ sub curfile ($)                                            # What the fuck kind 
    rename_file($name, $newname)                            # Attempt to rename this fucker.
    and say "Renamed \"$name\" to \"$newname\"."            # If the attempt fucking succeeds, announce success
    and return 1                                            # and return the fucking success code.
-   or warn "Failed to rename \"$name\" to \"$newname\".\n" # Aw, fuck, it failed! Announce the god-damned failure,
+   or warn "Failed to rename \"$name\" to \"$newname\".\n" # Aw, fuck, it failed. Announce the god-damned failure,
    and return 0;                                           # and return a fucking failure code. Fuck!
-} # end sub curfile ()                                     # Let's get the fuck out of here.
+} # end sub curfile ()                                     # Let's get the fuck out of here. God damn!
 
 sub stats ()
 {

@@ -1703,7 +1703,7 @@ sub glob_regexp_utf8 :prototype(;$$$) ($dir = d(getcwd), $target = 'A', $regexp 
    opendir $dh, e $dir
    or die "Fatal error in glob_regexp_utf8: Couldn't open  directory \"$dir\".\n$!\n";
 
-   my @names = d readdir $dh;
+   my @names = sort {$a cmp $b} d(readdir($dh));
    scalar(@names) < 2 # $dir should contain at least '.' and '..'!
    and die "Fatal error in glob_regexp_utf8: Couldn't read  directory \"$dir\".\n$!\n";
 
@@ -2030,7 +2030,8 @@ sub get_correct_suffix :prototype($) ($path) {
       say STDERR "\$path = $path";
    }
 
-   # Return an error code unless $path points to an existing data file:
+   # Return an error code unless $path points to an existing "data file" (non-directory, non-link
+   # regular file which we can read data from):
    return '***ERROR***' unless is_data_file($path);
 
    # Try to determine the correct suffix using the checktype_filename() method from module "File::Type":
@@ -2297,22 +2298,23 @@ sub shorten_sl_names :prototype($$$$) ($src_dir, $src_fil, $dst_dir, $dst_fil) {
    return ($src_dir, $src_fil, $dst_dir, $dst_fil);
 } # end sub shorten_sl_names ($$$$)
 
-# Return 1 if-and-only-if a given string is a path to a data file (a regular file that is not a link or dir).
+# Return 1 if-and-only-if a path points to a data file (an existing, non-link, non-dir, regular file):
 sub is_data_file :prototype($) ($path) {
-   my $name = get_name_from_path($path);
-   return 0 if $name eq '.';
-   return 0 if $name eq '..';
-   return 0 unless -e e $path;
+   return 0 if ! -e e $path;
    lstat e $path;
-   return 0 unless -f _ ;
-   return 0 if     -l _ ;
-   return 0 if     -d _ ;
+   return 0 if   -l _ ;
+   return 0 if   -d _ ;
+   return 0 if ! -f _ ;
    return 1;
 } # end sub is_data_file :prototype($) ($path)
 
-# Return 1 if-and-only-if a given string is a path to a "meta" file (a data file which is hidden, sync,
+# Return 1 if-and-only-if a given string is a path to a "meta" file (a data file which is hidden,
+# desktop-settings, windows-picture-thumbnails, paint-shop-pro-browse-thumbnails, or ID-Token.
+# Keep in mind that "hidden" include ALL files with names starting with ".", which include
+# application settings, Free-File-Sync synchronization files, Dolphin ".directory" files,
+# Kate project files, etc; these are all "meta" files, not intended for direct use by humans.
 sub is_meta_file :prototype($) ($path) {
-   return 0 unless is_data_file($path);
+   return 0 unless -e e $path;
    my $name = get_name_from_path($path);
    return 1 if $name =~ m/^\./;
    return 1 if $name =~ m/^desktop.*\.ini$/i;

@@ -73,6 +73,10 @@
 #                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
 #                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
 #                   Removed "no debug" option as that's already default in all of my programs.
+# Fri Sep 01, 2023: Entry & exit messages are now printed regardless, to STDERR.
+#                   STDERR = entry & exit messages, stats, diagnostics, and severe errors.
+#                   STDOUT = directories ("Dir # 27: Dogs") and files ("Successfully renamed asdf to yuio").
+#                   Stats also go to STDERR, but are controlled by verbosity level (0=none, 1=some, 2=all).
 ##############################################################################################################
 
 ##############################################################################################################
@@ -129,7 +133,7 @@ my $Predicate = 1            ; # Boolean predicate.          bool       Means wh
 # Counters:
 my $direcount = 0 ; # Count of directories processed by curdire().
 my $filecount = 0 ; # Count of files found which match file-name regexp.
-my $findcount = 0 ; # Count of files found which also match file-type predicate.
+my $predcount = 0 ; # Count of files found which also match file-type predicate.
 
 # Accumulations of counters from RH::Dir::GetFiles():
 my $totfcount = 0 ; # Count of all directory entries matching regexp & target.
@@ -154,26 +158,22 @@ my $unkncount = 0 ; # Count of all unknown files.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Verbose >= 1 ) {
-      say    STDERR '';
-      say    STDERR "Now entering program \"$pname\"." ;
-      say    STDERR "\$Db        = $Db"        ;
-      say    STDERR "\$Verbose   = $Verbose"   ;
-      say    STDERR "\$Recurse   = $Recurse"   ;
-      say    STDERR "\$RegExp    = $RegExp"    ;
-      say    STDERR "\$Target    = $Target"    ;
-      say    STDERR "\$Predicate = $Predicate" ;
-   }
+   say    STDERR '';
+   say    STDERR "Now entering program \"$pname\"." ;
+   say    STDERR "\$Db        = $Db"        ;
+   say    STDERR "\$Verbose   = $Verbose"   ;
+   say    STDERR "\$Recurse   = $Recurse"   ;
+   say    STDERR "\$RegExp    = $RegExp"    ;
+   say    STDERR "\$Target    = $Target"    ;
+   say    STDERR "\$Predicate = $Predicate" ;
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
    stats;
    my $et = time - $t0;
-   if ( $Verbose >= 1 ) {
-      say    STDERR '';
-      say    STDERR "Now exiting program \"$pname\".";
-      printf STDERR "Execution time was %.3f seconds.", $et;
-   }
+   say    STDERR '';
+   say    STDERR "Now exiting program \"$pname\".";
+   printf STDERR "Execution time was %.3f seconds.", $et;
    exit 0;
 } # end main
 
@@ -182,11 +182,11 @@ my $unkncount = 0 ; # Count of all unknown files.
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts = ()            ; # options
-   my @args = ()            ; # arguments
-   my $end = 0              ; # end-of-options flag
-   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
-   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   my @opts = ();             # options
+   my @args = ();             # arguments
+   my $end = 0;               # end-of-options flag
+   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
       /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
       and $end = 1            # so if we see that, then set the "end-of-options" flag
@@ -232,8 +232,8 @@ sub argv {
    $NA >= 2                    # If number of arguments >= 2,
    and $Predicate = $args[1];  # set $Predicate.
    $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
-   and error($NA)              # print error message
-   and help                    # and print help message
+   and error($NA)              # print error message,
+   and help                    # and print help message,
    and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
@@ -276,11 +276,11 @@ sub curdire {
    }
 
    # Process each path that matches $RegExp, $Target, and $Predicate:
-   foreach my $file (@$curdirfiles) {
+   foreach my $file (sort {$a->{Name} cmp $b->{Name}} @$curdirfiles) {
       ++$filecount;
       local $_ = e $file->{Path};
       if (eval($Predicate)) {
-         ++$findcount;
+         ++$predcount;
          curfile($file);
       }
    }
@@ -315,7 +315,7 @@ sub stats {
       say    STDERR 'Statistics for this directory tree:';
       say    STDERR "Navigated $direcount directories.";
       say    STDERR "Found $filecount files matching regexp \"$RegExp\" and target \"$Target\".";
-      say    STDERR "Found $findcount files which also match predicate \"$Predicate\".";
+      say    STDERR "Found $predcount files which also match predicate \"$Predicate\".";
    }
 
    if ( $Verbose >= 2) {
@@ -361,7 +361,9 @@ sub help {
    to all files in the current directory (and all subdirectories if a -r or
    --recurse option is used).
 
+   -------------------------------------------------------------------------------
    Command lines:
+
    program-name.pl -h | --help                       (to print this help and exit)
    program-name.pl [options] [Arg1] [Arg2] [Arg3]    (to [perform funciton] )
 

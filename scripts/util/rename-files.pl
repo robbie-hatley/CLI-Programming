@@ -44,12 +44,21 @@
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
 #                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
+# Thu Aug 31, 2023: Clarified sub argv().
+#                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+#                   Simplified way in which options and arguments are printed if debugging.
+#                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
+#                   Changed all "$Db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Removed "no debug" option as that's already default in all of my programs.
+#                   "$Verbose" now means "print directories"; all other info is now printed regardless.
+#                   STDERR = "stats and serious errors". STDOUT = "files renamed, and dirs if being verbose".
 ##############################################################################################################
 
 use v5.36;
 use strict;
 use warnings;
 use utf8;
+use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
 use Cwd;
@@ -70,15 +79,14 @@ sub help    ;
 # ======= VARIABLES: =========================================================================================
 
 # Settings:     Default Value:   Meaning of Setting:                 Range           Default
-   $"         = ', '         ; # Quoted-array formatting.            string          Comma space.
-my $db        = 0            ; # Debug?                              bool            Don't debug.
+my $Db        = 0            ; # Debug?                              bool            Don't debug.
+my $Verbose   = 0            ; # Print directories?                  bool            Don't print dirs.
 my $Recurse   = 0            ; # Recurse subdirectories?             bool            Be local.
-my $Mode      = 'P'          ; # Prompt mode                         P|S|Y           Prompt user.
 my $Target    = 'F'          ; # Files, directories, both, or All?   F|D|B|A         Regular files only.
-my $RegExp    = qr/^(.+)$/o  ; # RegExp.                             RegExp          Match all file names.
+my $Mode      = 'P'          ; # Prompt mode                         P|S|Y           Prompt user.
+my $RegExp    = qr/^(.+)$/   ; # RegExp.                             RegExp          Match all file names.
 my $Replace   = '$1'         ; # Replacement string.                 string          Repl. is same as match.
 my $Flags     = ''           ; # Flags for s/// operator.            imsxopdualgre   No flags.
-my $Verbose   = 0            ; # Print directories?                  bool            Don't print dirs.
 
 # Counters:
 my $dircount  = 0; # Count of directories processed.
@@ -88,6 +96,7 @@ my $diffcount = 0; # Count of files for which NewName ne OldName.
 my $skipcount = 0; # Count of files skipped at user's request.
 my $renacount = 0; # Count of files successfully renamed.
 my $failcount = 0; # Count of failed rename attempts.
+my $simucount = 0; # Count of simulated file renames.
 
 # Hashes:
 my %Modes;
@@ -106,24 +115,22 @@ $Targets{A} = 'All Directory Entries';
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Verbose >= 1 ) {
-      say STDERR "\nNow entering program \"$pname\".";
-      say STDERR 'Verbosity is ' . ($Verbose ? 'on' : 'off') . '.';
-      say STDERR 'Recursion is ' . ($Recurse ? 'on' : 'off') . '.';
-      say STDERR 'Target    is ' . $Targets{$Target}         . '.';
-      say STDERR 'Mode      is ' . $Modes{$Mode}             . '.';
-      say STDERR "Regular Expression = $RegExp";
-      say STDERR "Replacement String = $Replace";
-      say STDERR "Modifier Flags     = $Flags";
-   }
-   if ( $db ) {exit 555}
+   say    STDERR '';
+   say    STDERR "Now entering program \"$pname\".";
+   say    STDERR 'Verbosity is ' . ($Verbose ? 'on' : 'off') . '.';
+   say    STDERR 'Recursion is ' . ($Recurse ? 'on' : 'off') . '.';
+   say    STDERR 'Target    is ' . $Targets{$Target}         . '.';
+   say    STDERR 'Mode      is ' . $Modes{$Mode}             . '.';
+   say    STDERR "Regular Expression = $RegExp";
+   say    STDERR "Replacement String = $Replace";
+   say    STDERR "Modifier Flags     = $Flags";
 
    $Recurse and RecurseDirs {curdire} or curdire;
+
    stats;
-   my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 1 ) {
-      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms\n", $pname, $ms;
-   }
+   say    STDERR '';
+   say    STDERR "Now exiting program \"$pname\".";
+   printf STDERR "Execution time was %.3f seconds.\n", time - $t0;
    exit 0;
 } # end main
 
@@ -131,50 +138,56 @@ $Targets{A} = 'All Directory Entries';
 
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ();             # options
+   my @args = ();             # arguments
+   my $end = 0;               # end-of-options flag
+   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\w*h|^--help$/     and help and exit 777 ;
-      /^-\w*e|^--debug$/    and $db      =  1     ;
-      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\w*v|^--verbose$/  and $Verbose =  1     ;
-      /^-\w*l|^--local$/    and $Recurse =  0     ;
-      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
-      /^-\w*f|^--files$/    and $Target  = 'F'    ;
-      /^-\w*d|^--dirs$/     and $Target  = 'D'    ;
-      /^-\w*b|^--both$/     and $Target  = 'B'    ;
-      /^-\w*a|^--all$/      and $Target  = 'A'    ;
-      /^-\w*p|^--prompt$/   and $Mode    = 'P'    ;
-      /^-\w*s|^--simulate$/ and $Mode    = 'S'    ;
-      /^-\w*y|^--noprompt$/ and $Mode    = 'Y'    ;
+      /^-$s*h/ || /^--help$/     and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/    and $Db      =  1     ;
+      /^-$s*q/ || /^--quiet$/    and $Verbose =  0     ; # DEFAULT
+      /^-$s*v/ || /^--verbose$/  and $Verbose =  1     ;
+      /^-$s*l/ || /^--local$/    and $Recurse =  0     ; # DEFAULT
+      /^-$s*r/ || /^--recurse$/  and $Recurse =  1     ;
+      /^-$s*f/ || /^--files$/    and $Target  = 'F'    ; # DEFAULT
+      /^-$s*d/ || /^--dirs$/     and $Target  = 'D'    ;
+      /^-$s*b/ || /^--both$/     and $Target  = 'B'    ;
+      /^-$s*a/ || /^--all$/      and $Target  = 'A'    ;
+      /^-$s*p/ || /^--prompt$/   and $Mode    = 'P'    ; # DEFAULT
+      /^-$s*s/ || /^--simulate$/ and $Mode    = 'S'    ;
+      /^-$s*y/ || /^--noprompt$/ and $Mode    = 'Y'    ;
    }
-   if ( $db ) {
-      say   STDERR '';
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
-   my $NA = scalar @args;
-   if    ( 2 == $NA ) {
-      $RegExp  = qr/$args[0]/o;
-      $Replace =    $args[1];
-   }
-   elsif ( 3 == $NA ) {
-      $RegExp  = qr/$args[0]/o;
-      $Replace =    $args[1];
-      $Flags   =    $args[2];
-   }
-   else {         # Wrong number of arguments,
-      error($NA); # so print error message,
-      help;       # print help message
-      exit 666;   # and exit, returning The Number Of The Beast to caller, because something evil happened.
-   }
+   my $NA = scalar @args;      # Get number of arguments.
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 2                    # If number of arguments >= 2,
+   and $Replace   = $args[1] ; # set $Replace.
+   $NA >= 3                    # If number of arguments >= 3,
+   and $Flags     = $args[2] ; # set $Flags.
+   $NA >= 4 && !$Db            # If number of arguments >= 4 and not debugging,
+   and error($NA)              # print error message,
+   and help                    # and print help message,
+   and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code to caller:
    return 1;
@@ -186,7 +199,7 @@ sub curdire {
    # Get and announce current working directory:
    my $curdir = d getcwd;
    if ( $Verbose >= 1 ) {
-      say STDERR "\nDirectory # $dircount: $curdir\n";
+      say STDOUT "\nDirectory # $dircount: $curdir";
    }
 
    # Get list of targeted files in current directory:
@@ -288,8 +301,9 @@ sub curfile ($file) {
       }
    } # end if (current mode is 'Y')
 
-   # Simulation Mode:
-   elsif ( 'S' eq $Mode ) {
+   # Simulation Mode or Debugging:
+   elsif ( 'S' eq $Mode || $Db ) {
+      ++$simucount;
       say STDOUT "Simulation: Would have renamed file from old name to new name.";
    }
 
@@ -303,18 +317,14 @@ sub curfile ($file) {
 } # end sub curfile
 
 sub stats {
-   if ( $Verbose >= 1 ) {
-      printf STDERR "\n";
-      printf STDERR "Processed %5d directories.\n",                                          $dircount;
-      printf STDERR "Found     %5d files matching target and regexp.\n",                     $filecount;
-      printf STDERR "Bypassed  %5d files because new name was same as old name.\n",          $samecount;
-      printf STDERR "Examined  %5d files for which new name was different from old name.\n", $diffcount;
-      printf STDERR "Skipped   %5d files at user's request.\n",                              $skipcount;
-      printf STDERR "Renamed   %5d files.\n",                                                $renacount;
-      printf STDERR "Failed    %5d file rename attempts.\n",                                 $failcount;
-   }
-
-   # Return success code 1 to caller:
+   printf STDERR "\n";
+   printf STDERR "Processed %5d directories.\n",                                          $dircount;
+   printf STDERR "Found     %5d files matching target and regexp.\n",                     $filecount;
+   printf STDERR "Bypassed  %5d files because new name was same as old name.\n",          $samecount;
+   printf STDERR "Examined  %5d files for which new name was different from old name.\n", $diffcount;
+   printf STDERR "Skipped   %5d files at user's request.\n",                              $skipcount;
+   printf STDERR "Renamed   %5d files.\n",                                                $renacount;
+   printf STDERR "Failed    %5d file rename attempts.\n",                                 $failcount;
    return 1;
 } # end sub stats
 
@@ -359,25 +369,25 @@ sub help {
    Option:             Meaning:
    -h or --help        Print help and exit.
    -e or --debug       Print diagnostics.
-   -q or --quiet       DON'T print directories and stats               (DEFAULT)
-   -v or --verbose      DO   print directories and stats.
-   -l or --local       Rename files in current directory only.         (DEFAULT)
+   -q or --quiet       DON'T print directories.                          (DEFAULT)
+   -v or --verbose      DO   print directories.
+   -l or --local       Rename files in current directory only.           (DEFAULT)
    -r or --recurse     Recurse subdirectories.
-   -p or --prompt      Prompt before renaming files.                   (DEFAULT)
-   -s or --simulate    Simulate renames (don't actually rename files).
-   -y or --noprompt    Rename files without prompting.
-   -f or --files       Rename regular files only.                      (DEFAULT)
+   -f or --files       Rename regular files only.                        (DEFAULT)
    -d or --dirs        Rename directories only.
    -b or --both        Rename both regular files and directories.
-   -a or --all         Rename all files.
-         --            End of options (all further CL items are arguments).
+   -a or --all         Rename ALL directory entries.
+   -p or --prompt      Prompt before renaming files.                     (DEFAULT)
+   -s or --simulate    Simulate renames (don't actually rename files).
+   -y or --noprompt    Rename files without prompting.
+         --            End of options (all CL items to right are arguments).
 
    Multiple single-letter options can be piled-up after a single hyphen.
    For example: "-ldqy" to rename local directories quietly and without prompting.
 
    If conflicting separate options are given, later options overrule earlier.
    If conflicting single-letter options are piled-up after a single hyphen,
-   then the order of precedence from highest to lowest will be hyspabdfrlvq.
+   then the order of precedence from highest to lowest will be heyspabdfrlvq.
 
    If you want to use an argument that looks like an option (say, you want to
    search for files which contain "--recurse" as part of their name), use a "--"
@@ -434,13 +444,10 @@ sub help {
    Arguments may be freely mixed with options, but arguments must appear in
    the order Arg1, Arg2, Arg3.
 
-   WARNING: Make sure that none of the arguments looks like an option!
-   Otherwise, they will be interpretted as "options" rather than as "arguments",
-   and this program will not do what you intend. If you avoid arguments of the
-   form 'hyphen-letter' (eg, '-h') or 'hyphen-hyphen-word' (eg, '--help') you
-   should be OK. As a workaround, you can use '^--help$' as your regexp
-   instead of '--help' if you feel that you absolutely MUST give a file such a
-   pathological name.
+   WARNING: If any of your arguments looks like an option (say, "--help"),
+   use a "--" option and put any such arguments to the right of the "--"; that
+   will force any items to the right of the "--" to be construed as arguments
+   rather than as options.
 
    -------------------------------------------------------------------------------
    Directory Navigation:

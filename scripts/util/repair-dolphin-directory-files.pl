@@ -1,41 +1,53 @@
 #! /bin/perl -CSDA
 
-# This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
-# repair-dolphin-directory-files.pl"
-# For the current directory and all subdirectories (unless a -l or --local option is used), make sure that the Dolphin
-# ".directory" file is uncorrupted and appropriate for the contents of the directory. This means that directories which
-# contain 1-or-more picture files (jpg, jpeg, bmp, png, apng, gif, tif, tiff) should have a "thumbnails" or ctrl-1
-# ".directory" file, and all other directories should have a "details" or ctrl-3 ".directory" file.
+##############################################################################################################
+# repair-dolphin-directory-files.pl
+# For the current directory and all subdirectories (unless a -l or --local option is used), make sure that the
+# Dolphin ".directory" file is uncorrupted and appropriate for the contents of the directory. This means that
+# directories which contain 1-or-more picture files (jpg, jpeg, bmp, png, apng, gif, tif, tiff) should have a
+# "thumbnails" or ctrl-1 ".directory" file, and all other directories should have a "details" or ctrl-3
+# ".directory" file.
 #
-# Written by Robbie Hatley.
+# Written by Robbie Hatley, beginning on Monday March 13, 2023.
 #
 # Edit history:
-# Mon Mar 13, 2023: Wrote it.
+# Mon Mar 13, 2023: Wrote first draft.
 # Tue Mar 14, 2023: Expanded from jpg to (jpg,bmp,png,gif) and make extensions case-insensitive.
-# Sun Mar 19, 2023: Made "error" a "do just one thing" function, fixed "error" and "help" duplication bug, removed all
-#                   "prototypes", added "signature" to "error", and added "use utf8" (necessary due to removal of
-#                   "use common::sense").
-# Mon Mar 20, 2023: Renamed from "dolphin-ctrl1.pl" to "repair-dolphin-directory-files.pl". Changed program semantics
-#                   so that it doesn't just paste a ctrl-1 file to "picture" directories, but also pastes a ctrl-3 file
-#                   to non-picture directories.
-########################################################################################################################
+# Sun Mar 19, 2023: Made "error" a "do just one thing" function, fixed "error" and "help" duplication bug,
+#                   removed all "prototypes", added "signature" to "error", and added "use utf8"
+#                   (necessary due to removal of "use common::sense").
+# Mon Mar 20, 2023: Renamed from "dolphin-ctrl1.pl" to "repair-dolphin-directory-files.pl". Changed program
+#                   semantics so that it doesn't just paste a ctrl-1 file to "picture" directories, but also
+#                   pastes a ctrl-3 file to non-picture directories.
+# Thu Aug 31, 2023: Fixed excalibur-vs-Excalibur bug. (My main computer is "Excalibur", not "excalibur".)
+#                   Reduced width from 120 to 110. Clarified sub argv().
+#                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+#                   Simplified way in which options and arguments are printed if debugging.
+#                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
+#                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Removed "no debug" option as that's already default in all of my programs.
+#                   Variable "$Verbose" now means "print per-file info", and default is to NOT do that.
+#                   STDERR = "stats and serious errors". STDOUT = "files erased/copied, and dirs if verbose".
+##############################################################################################################
 
 use v5.36;
 use strict;
 use warnings;
 use utf8;
+use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
 use Sys::Hostname;
 
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 sub argv    ; # Process @ARGV.
 sub curdire ; # Process current directory.
@@ -43,31 +55,18 @@ sub stats   ; # Print statistics.
 sub error   ; # Handle errors.
 sub help    ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
-# Settings:     Default:       Meaning of setting:          Range:    Meaning of default:
-   $"         = ', '       ; # Quoted array formatting.     string    Separate elements with comma space.
-   $,         = ', '       ; # Listed array formatting.     string    Separate elements with comma space.
-my $db        = 0          ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
-my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    Process all directory names.
-my $Recurse   = 0          ; # Recurse subdirectories?      bool      Don't recurse.
-my $Verbose   = 0          ; # Be wordy?                    bool      Be quiet.
+# Settings:     Default:   # Meaning of setting:          Range:    Meaning of default:
+my $Db        = 0        ; # Debug (print diagnostics)?   bool      Don't print diagnostics.
+my $RegExp    = qr/^.+$/ ; # Regular Expression.          regexp    Process all directory names.
+my $Recurse   = 0        ; # Recurse subdirectories?      bool      Don't recurse.
+my $Verbose   = 0        ; # Be wordy?                    bool      Be quiet.
 
 # Paths to known ctrl-1 and ctrl-3 ".directory" files:
 my $hostname = hostname();
 my $ctrl_1_path;
 my $ctrl_3_path;
-if ( 'excalibur' eq $hostname ) {
-   $ctrl_1_path = '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic/.directory';
-   $ctrl_3_path = '/home/aragorn/Data/Celephais/Captain’s-Den/FFS-Profiles/.directory';
-}
-elsif ( 'optiplex-major' eq $hostname ) {
-   $ctrl_1_path = '/home/arthur/Aranath/OS-Resources/Background-Pictures/.directory';
-   $ctrl_3_path = '/home/arthur/Belequenta/rhe/scripts/util/.directory';
-}
-else {
-   die "Not set-up for this host.\n$!\n";
-}
 
 # Counters:
 my $direcount = 0 ; # Count of directories processed by curdire().
@@ -75,62 +74,95 @@ my $erascount = 0 ; # Count of ".directory" files erased.
 my $erfacount = 0 ; # Count of failed erasure attempts.
 my $copycount = 0 ; # Count of ".directory" files copied.
 my $cofacount = 0 ; # Count of failed copy attempts.
+my $simecount = 0 ; # Count of simulated file erasures.
+my $simccount = 0 ; # Count of simulated file copies.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
+   # Set start time, process @ARGV, and print entry message:
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $db || $Verbose >= 1 ) {
-      say STDERR '';
-      say STDERR "Now entering program \"$pname\".";
-      say STDERR "RegExp  = $RegExp";
-      say STDERR "Recurse = $Recurse";
-      say STDERR "Verbose = $Verbose";
-   }
-   exit 555 if $db;
+   say STDERR '';
+   say STDERR "Now entering program \"$pname\".";
+   say STDERR "\$Db      = $Db";
+   say STDERR "\$RegExp  = $RegExp";
+   say STDERR "\$Recurse = $Recurse";
+   say STDERR "\$Verbose = $Verbose";
 
+   # Select appropriate "exemplars" of the "pictures" and "general" versions of the file ".directory".
+   # Path "$ctrl_1_path" will be for   pictures  and will be equivalent to manually pressing Ctrl-1.
+   # Path "$ctrl_3_path" will be for general use and will be equivalent to manually pressing Ctrl-3.
+   if ( 'Excalibur' eq $hostname ) {
+      $ctrl_1_path = '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic/.directory';
+      $ctrl_3_path = '/home/aragorn/Data/Celephais/Captain’s-Den/FFS-Profiles/.directory';
+   }
+   elsif ( 'optiplex-major' eq $hostname ) {
+      $ctrl_1_path = '/home/arthur/Aranath/OS-Resources/Background-Pictures/.directory';
+      $ctrl_3_path = '/home/arthur/Belequenta/rhe/scripts/util/.directory';
+   }
+   else {
+      die "Not set-up for this host.\n$!\n";
+   }
+
+   # Run sub curdire() for desired directories:
    $Recurse and RecurseDirs {curdire} or curdire;
 
+   # Print closing newline if we've just been printing $direcount repeatedly on top of itself:
+   print STDOUT "\n" if !$Verbose && !$Db;
+
+   # Finally, print stats and exit message, including run time:
    stats;
    my $te = time - $t0;
-   if ( $Verbose >= 1 ) {
-      say STDERR "\nNow exiting program \"$pname\".\nExecution time was $te seconds.";
-   }
+   say STDERR "\nNow exiting program \"$pname\".\nExecution time was $te seconds.";
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ();             # options
+   my @args = ();             # arguments
+   my $end = 0;               # end-of-options flag
+   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^--?\w+$/ and push @opts, $_ or push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
-   # Process options:
    for ( @opts ) {
-      /^-\w*h|^--help$/     and help and exit 777 ;
-      /^-\w*e|^--debug$/    and $db      =  1     ;
-      /^-\w*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\w*v|^--verbose$/  and $Verbose =  1     ;
-      /^-\w*l|^--local$/    and $Recurse =  0     ;
-      /^-\w*r|^--recurse$/  and $Recurse =  1     ;
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
+      /^-$s*v/ || /^--verbose$/ and $Verbose =  1     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
    }
-   if ( $db ) {
-      say   STDERR '';
-      print STDERR "opts = ("; print STDERR map {'"'.$_.'"'} @opts; say STDERR ')';
-      print STDERR "args = ("; print STDERR map {'"'.$_.'"'} @args; say STDERR ')';
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
-   my $NA = scalar @args;
-   $NA >= 1 and $RegExp = qr/$args[0]/o;                  # Set $RegExp.
-   $NA >= 2 && !$db and error($NA) and help and exit 666; # Too many arguments.
+   my $NA = scalar(@args);     # Get number of arguments.
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 2 && !$Db            # If number of arguments >= 2 and we're not debugging,
+   and error($NA)              # print error message,
+   and help                    # and print help message,
+   and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
@@ -139,10 +171,13 @@ sub argv {
 # Process current directory:
 sub curdire {
    # Get current working directory:
-   my $cwd = cwd_utf8;
+   my $cwd = d getcwd;
 
-   # Just return 1 if we're in one of our "exemplar" directories (or if host is unknown):
-   if ( 'excalibur' eq $hostname ) {
+   # Return 1 if this directory doesn't match our regexp:
+   return 1 if $cwd !~ m/$RegExp/;
+
+   # Return 1 if we're in one of our "exemplar" directories (or if host is unknown):
+   if ( 'Excalibur' eq $hostname ) {
       if ( '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic' eq $cwd ) {
          return 1;
       }
@@ -161,63 +196,81 @@ sub curdire {
    }
 
    else {
-      return 1;
+      die "Error in rdd, in curdire(): invalid host.\n$!\n";
    }
 
-   # Just return 1 if this directory doesn't match our regexp:
-   return 1 if $cwd !~ m/$RegExp/;
-
-   # Increment directory counter:
+   # If we get to here, increment directory counter:
    ++$direcount;
 
-   # Announce directory if being verbose:
-   if ( $Verbose >= 1 ) {
+   # Announce directory:
+   if ( $Verbose || $Db ) {
       say STDOUT "\nDirectory # $direcount: $cwd\n";
    }
+   else {
+      if ( 1 == $direcount ) {
+         printf STDOUT "\nDirectory # %6d", $direcount;
+      }
+      else {
+         printf STDOUT "\b\b\b\b\b\b%6d", $direcount;
+      }
+   }
 
-   # Get list of file-info packets in $cwd matching $Target and $RegExp:
+   # Get ref to array of file-info packets for all regular files in in $cwd matching $RegExp:
    my $curdirfiles = GetFiles($cwd, 'F', $RegExp);
 
-   # Riffle through the files, count how many pictures are here, and get rid of any old (possibly enumerated or
-   # corrupted) ".directory" files"
+   # Riffle through the files, count how many pictures are here, and get rid of
+   # any old (possibly enumerated or corrupted) ".directory" files":
    my $pics = 0;
-   foreach my $file (@{$curdirfiles})
-   {
-      if (
-            $file->{Name} =~ m/\A(?:-\(\d{4}\))*\.directory\z/
-         )
-      {
-         unlink(e($file->{Path}))
-         and ++$erascount
-         and say STDOUT "erased \"$file->{Path}\""
-         or ++$erfacount
-         and say STDOUT "Failed to erase \"$file->{Path}\"";
+   foreach my $file ( @{$curdirfiles} ) {
+      my $p = $file->{Path};
+      my $n = $file->{Name};
+      my $r = get_prefix($n);
+      my $s = get_suffix($n);
+      say STDERR "In rdd, in curdire(), in file loop; path = $p" if $Db;
+      say STDERR "In rdd, in curdire(), in file loop; name = $n" if $Db;
+      say STDERR "In rdd, in curdire(), in file loop; pref = $r" if $Db;
+      say STDERR "In rdd, in curdire(), in file loop; suff = $s" if $Db;
+      if ( $file->{Name} =~ m/^(?:-\(\d{4}\))*\.directory$/ ) {
+         if ( $Db ) {
+            ++$simecount;
+            say STDOUT "Simulation: would have erased \"$file->{Path}\"." if $Verbose;
+         }
+         else {
+            if ( unlink(e($file->{Path})) ) {
+               ++$erascount;
+               say STDOUT "erased \"$file->{Path}\"" if $Verbose;
+            }
+            else {
+               ++$erfacount;
+               say STDOUT "Failed to erase \"$file->{Path}\"" if $Verbose;
+            }
+         }
       }
-
-      if (
-               get_suffix($file->{Name}) =~ m/jpg/i
-            || get_suffix($file->{Name}) =~ m/jpeg/i
-            || get_suffix($file->{Name}) =~ m/bmp/i
-            || get_suffix($file->{Name}) =~ m/png/i
-            || get_suffix($file->{Name}) =~ m/apng/i
-            || get_suffix($file->{Name}) =~ m/gif/i
-            || get_suffix($file->{Name}) =~ m/tif/i
-            || get_suffix($file->{Name}) =~ m/tiff/i
-         )
-      {
+      if (     $s eq '.jpg'  || $s eq '.jpeg' || $s eq '.bmp'  || $s eq '.png'
+            || $s eq '.apng' || $s eq '.gif'  || $s eq '.tif'  || $s eq '.tiff' ) {
          ++$pics;
       }
    }
 
-   # If 1-or-more pictures exist in this directory, paste a ctrl-1 ".directory" file here;
-   # otherwise, paste a ctrl-3 ".directory" file here:
-   my $spath = ( ( $pics > 0 ) ? ($ctrl_1_path) : ($ctrl_3_path) );
+   # If 1-or-more pictures exist in this directory, paste a ctrl-1 ".directory" file here:
+   my $spath = $pics > 0 ? $ctrl_1_path : $ctrl_3_path;
    my $dpath = path($cwd, ".directory");
-   !system(e("cp '$spath' '$dpath'"))
-   and ++$copycount
-   and say STDOUT "created \"$dpath\""
-   or ++$cofacount
-   and say STDOUT "Failed to copy .directory file to $cwd";
+   if ( $Db ) {
+      ++$simccount;
+      say STDOUT "Simulation: would have copied \"$spath\" to \"$dpath\".";
+   }
+
+   # Otherwise, paste a ctrl-3 ".directory" file here:
+   else {
+      if ( 0 == system(e("cp '$spath' '$dpath'")) ) {
+         ++$copycount;
+         say STDOUT "Copied .directory file from \"$spath\" to \"$dpath\"." if $Verbose;
+      }
+      else {
+         ++$cofacount;
+         say STDOUT "Failed to copy .directory file from \"$spath\" to \"$dpath\"." if $Verbose;
+      }
+   }
 
    # We're done, so return 1:
    return 1;
@@ -226,15 +279,15 @@ sub curdire {
 # Print statistics for this program run:
 sub stats
 {
-   if ( $Verbose >= 1 ) {
-      say STDERR '';
-      say STDERR 'Statistics for this directory tree:';
-      say STDERR "Found  $direcount directories matching RegExp.";
-      say STDERR "Erased $erascount old, enumerated, or corrupted \".directory\" files.";
-      say STDERR "Failed $erfacount erasure attempts.";
-      say STDERR "Copied $copycount new \".directory\" files.";
-      say STDERR "Failed $cofacount copy attempts.";
-   }
+   say STDERR '';
+   say STDERR 'Statistics for this directory tree:';
+   say STDERR "Found $direcount directories matching RegExp.";
+   say STDERR "Erased $erascount old, enumerated, or corrupted \".directory\" files.";
+   say STDERR "Failed $erfacount erasure attempts.";
+   say STDERR "Copied $copycount new \".directory\" files.";
+   say STDERR "Failed $cofacount copy attempts.";
+   say STDERR "Simulated $simecount file erasures.";
+   say STDERR "Simulated $simccount file copies.";
    return 1;
 } # end sub stats
 
@@ -254,25 +307,54 @@ sub help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
-   Welcome to "dolphin-ctrl1.pl". This program pastes a "ctrl-1" type Dolphin
-   ".directory" file to each subdirectory of the current directory which contains
-   1-or-more picture (jpg, jpeg, bmp, png, gif, tif, or tiff) files. This causes
-   picture files to be displayed as picture thumbnails instead of as lines of text.
+   -------------------------------------------------------------------------------
+   Introduction:
 
+   Welcome to "repair-dolphin-directory-files.pl". This program pastes replaces
+   all existing ".directory" files in the current directory (and all
+   subdirectories if a -r or --recurse option is used) with an appropriate
+   ".directory" file depending on whether or not pictures are present.
+
+   If 1-or-more picture files are present, a "Ctrl-1" .directory file is copied;
+   this will cause picture files in Dolphin to be displayed as thumbnails.
+
+   If    no     picture files are present, a "Ctrl-3" .directory file is copied;
+   this will put Dolphin in "Details" mode for the current directory.
+
+   -------------------------------------------------------------------------------
    Command lines:
+
    program-name.pl -h | --help            (to print help and exit)
    program-name.pl [options] [arguments]  (to copy ".directory" )
 
+   -------------------------------------------------------------------------------
    Description of options:
+
    Option:              Meaning:
    -h or --help         Print this help and exit.
-   -e or --debug        Print diagnostics.
-   -q or --quiet        Don't print directories.      (DEFAULT)
-   -v or --verbose      Do    print directories.
-   -l or --local        Don't recurse subdirectories. (DEFAULT)
+   -e or --debug        Print diagnostics and simulate file copies.
+   -q or --quiet        Don't print per-file info.                  (DEFAULT)
+   -v or --verbose      Do    print per-file info.
+   -l or --local        Don't recurse subdirectories.               (DEFAULT)
    -r or --recurse      Do    recurse subdirectories.
 
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, use -vr to verbosely and recursively process items.
+
+   If multiple conflicting separate options are given, later overrides earlier.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: herlvq.
+
+   If you want to use an argument that looks like an option (say, you want to
+   search for dirs which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
+
+   All options not listed above are ignored.
+
+   -------------------------------------------------------------------------------
    Description of arguments:
+
    In addition to options, this program can take one optional argument which,
    if present, must be a Perl-Compliant Regular Expression specifying which
    directories to process. To specify multiple patterns, use the | alternation
@@ -291,3 +373,4 @@ sub help
    END_OF_HELP
    return 1;
 } # end sub help
+__END__

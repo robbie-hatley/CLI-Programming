@@ -13,6 +13,8 @@
 # Wed Aug 23, 2023: Upgraded from "v5.32" to "v5.36". Reduced width from 120 to 110. Got rid of CPAN module
 #                   "common::sense" (antiquated). Got rid of all prototypes. Now using signatures.
 # Mon Aug 28, 2023: Improved argv. Got rid of "/o" on all instances of qr().
+# Tue Aug 29, 2023: Changed all "$Db" to "$Db". Argument processing now set's $RegExp even if many args.
+# Wed Aug 30, 2023: Got rid of a couple extra "say '';" (too many blank lines in output).
 ##############################################################################################################
 
 use v5.36;
@@ -27,7 +29,6 @@ use Time::HiRes 'time';
 use RH::Util;
 use RH::Dir;
 use RH::RegTest;
-use RH::WinChomp;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
@@ -38,10 +39,11 @@ sub help  ; # Print help and exit.
 # ======= VARIABLES: =========================================================================================
 
 # Turn on debugging?
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
+my $Db = 0; # Set to 1 for debugging, 0 for no debugging.
 
-# Settings:               Meaning of setting:           Range:   Meannig of default:
-my $RegExp = qr/^.+$/;  # Regular expression to test.   regexp   Expression which matches all strings.
+# Options and arguments:
+my @opts = (); # options
+my @args = (); # arguments
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
@@ -51,14 +53,19 @@ my $RegExp = qr/^.+$/;  # Regular expression to test.   regexp   Expression whic
    my $pname = get_name_from_path($0);
    say '';
    say "Now entering program \"$pname\".";
-   my $tester = RH::RegTest->new($RegExp);
 
-   $tester->match(winchomp($_)) while (<STDIN>);
+   my @input_lines = <STDIN>;
+   for my $RE ( @args ) {
+      my $tester = RH::RegTest->new($RE);
+      for my $line ( @input_lines ) {
+         $line =~ s/\s+$//;
+         $tester->match($line);
+      }
+   }
 
-   my $µs = 1000000 * (time - $t0);
    say '';
    say "Now exiting program \"$pname\".";
-   printf "Execution time was %.0fµs.", $µs;
+   printf "Execution time was %.0fµs.\n", 1000000 * (time - $t0);
    exit 0;
 } # end main
 
@@ -66,11 +73,9 @@ my $RegExp = qr/^.+$/;  # Regular expression to test.   regexp   Expression whic
 
 sub argv {
    # Get options and arguments:
-   my @opts = ()            ; # options
-   my @args = ()            ; # arguments
-   my $end = 0              ; # end-of-options flag
-   my $s = '[a-zA-Z0-9]'    ; # single-hyphen allowable chars (English letters, numbers)
-   my $d = '[a-zA-Z0-9=.-]' ; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   my $end = 0;               # end-of-options flag
+   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
       /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
       and $end = 1            # so if we see that, then set the "end-of-options" flag
@@ -88,11 +93,15 @@ sub argv {
    }
 
    # Process arguments:
-   my $NA = scalar @args;                # Get number of arguments.
-   1 == $NA                              # If number of arguments is 1,
-   and $RegExp = qr/$args[0]/;           # set $RegExp,
-   1 != $NA && !$Db                      # If number of arguments is NOT 1 and we're not debugging,
-   and error($NA) and help and exit 666; # print error and help messages and exit.
+   my $NA = scalar @args;       # Get number of arguments.
+   if ( 0 == $NA) {             # If there are NO arguments,
+      error($NA);               # print error message
+      help;                     # and print help message
+      exit 666;                 # and exit, returning The Number Of The Beast.
+   }
+   else {                       # Else if number of arguments is != 0,
+      ;                         # do nothing. (@args will now contain regular expressions to be tested.)
+   }
 
    # Return success code 1 to caller:
    return 1;
@@ -101,8 +110,9 @@ sub argv {
 sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
-   Error: you typed $NA arguments, but this program takes exactly 1 argument,
-   which must be a valid Perl-Compliant Regular Expression. Help follows:
+   Error: you typed $NA arguments, but this program takes must have
+   1-or-more arguments, which much be valid Perl-Compliant
+   Regular Expressions. Help follows:
    END_OF_ERROR
 } # end sub error ($)
 
@@ -114,9 +124,9 @@ sub help {
    by matching text coming in on STDIN to that regexp.
 
    Command lines:
-   regexp-tester.pl -h | --help        (to print this help and exit)
-   regexp-tester.pl RegExp < Input     (to test a regular expression)
-   Input | regexp-tester.pl RegExp     (to test a regular expression)
+   regexp-tester.pl -h | --help          (to print this help and exit)
+   regexp-tester.pl RegExp(s) < Input    (to test a regular expression)
+   Input | regexp-tester.pl RegExp(s)    (to test a regular expression)
 
    Description of options:
    Option:                      Meaning:
@@ -125,9 +135,10 @@ sub help {
 
    Description of arguments:
 
-   This program must have exactly one command-line argument, which must be a valid
-   Perl-Compliant Regular Expression. This regular expression will be tested by
-   matching text coming in on STDIN against it.
+   This program must have 1-or-more arguments, which much be valid
+   Perl-Compliant Regular Expressions. This program will then test
+   each of those regular expressions against each line of input text.
+
 
    Happy regular-expression testing!
    Cheers,

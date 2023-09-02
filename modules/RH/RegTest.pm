@@ -52,7 +52,9 @@ sub new {
    my $re = @_ ? shift : '^.+$';
    my $RegExp = qr/$re/;
    if ( ! defined $RegExp ) {die "Bad RegExp \"$re\".\n$!\n";}
-   say "RegExp = \"$RegExp\"";
+   say '';
+   say '-------------------------------------------------------------------------------';
+   say "New RegTest object: \$RegExp = \"$RegExp\"";
    my $self = {RegExp => $RegExp};
    return bless $self, $class;
 }
@@ -62,11 +64,11 @@ sub match {
    my $RegExp  = $Self->{RegExp};
    my $Text    = shift;
    say '';
-   say "Text   = \"$Text\"";
+   say "New RegExp test: \$Text = \"$Text\"";
    my @Matches = $Text =~ m/$RegExp/;
-   # If match, the above will return either the list (1) if no captures, or the list ($1, $2, $3...).
-   # If no match, the above will return the list (0). So either way, we can easily determine match/no-match
-   # by just testing for if (@Matches), because if() forces scalar context, same as "if (scalar(@Matches))".
+   # If match, the above will return the list (1) if no captures, or the list ($1, $2, $3...) if captures.
+   # If no match, the above will return the list (). So either way, we can easily determine match/no-match
+   # by if (@Matches), because "if" forces scalar context, same as "if (scalar(@Matches))".
    if (@Matches) {
       say "Text matches RegExp.";
       say ( "Length  of \$` = "  ,   length($`) ,        );

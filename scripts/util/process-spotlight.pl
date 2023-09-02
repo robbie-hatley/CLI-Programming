@@ -1,10 +1,10 @@
 #! /bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # process-spotlight.pl
 # Processes images scavenged from MS Win 10 Spotlight.
 #
@@ -14,7 +14,7 @@
 # Sun Apr 05, 2020: Now fully functional.
 # Sat Jun 13, 2020: Now prefering Windows Spotlight file names over gibberish names.
 # Tue Jun 23, 2020: Fixed some errors in comments; simplified code.
-# Sat Sep 05, 2020: Removed -CSDA from shebang for now because it was causing a "too late" 
+# Sat Sep 05, 2020: Removed -CSDA from shebang for now because it was causing a "too late"
 #                   error, due to the fact that I'm now invoking this script  via a wrapper
 #                   shell script. But that's fine because the -CSDA is now in the perl
 #                   invocation line in the wrapper.
@@ -46,44 +46,59 @@
 # Thu Dec 31, 2020: Dramatically simplified, by using "/usl#" SYMLINKDs in "/".
 # Fri Mar 12, 2021: Discontinued use of "Administrator".
 # Sun Sep 26, 2021: Reinstituted use of "Administrator". Removed "Recent".
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate.
+#                   Now using "common::sense" and "Sys::Binmode".
 # Thu Nov 25, 2021: Simplified subroutine names.
 # Tue Dec 14, 2021: Now using "current user" instead of "Aragorn" for single-user photo aggregating.
-########################################################################################################################
+# Fri Sep 01, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". Got rid of CPAN module
+#                   "common::sense" (antiquated). Got rid of all prototypes.
+# Sat Sep 02, 2023: Improved help and argv.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+
 use Sys::Binmode;
 use Time::HiRes 'time';
+
 use RH::Dir;
 
-# ======================================================================================================================
+# ============================================================================================================
 # SUBROUTINE PRE-DECLARATIONS:
 
-sub argv (); # Process @ARGV.
-sub help (); # Provide user with help.
+sub argv; # Process @ARGV.
+sub help; # Provide user with help.
 
-# ======================================================================================================================
+# ============================================================================================================
 # GLOBAL VARIABLES:
 
-my $db      = 0;
+my $Db      = 0;
 my $Current = 0;
 
-# ======================================================================================================================
+# ============================================================================================================
 # MAIN BODY OF SCRIPT:
 
 { # begin main
-   # Announce program entry, get hi-res entry time $t0, and process arguments:
+   # Set time and program variables:
    my $t0 = time;
-   print "\nNow entering \"process-spotlight.pl\".\n";
+   my $pname = substr $0,1+rindex $0,'/';
+
+   # Process @ARGV:
    argv;
 
-   # Announce mode:
-   if ($Current) {print STDOUT "Mode = \"Process Current User Only\".\n";}
-   else          {print STDOUT "Mode = \"Process All Users\".\n";}
+   # Announce program entry:
+   say "Now entering program \"process-spotlight.pl\".";
 
-   # Declare and define a hash of user/directory key/value pairs. Each '/usl#' is a symbolic link in '/' to the actual
+   # Announce mode:
+   $Current and say "Mode = \"Process Current User Only\"."
+            or  say "Mode = \"Process All Users\".";
+
+   # Define a hash of user/directory key/value pairs. Each '/usl#' is a symbolic link in '/' to the actual
    # locations of the Windows Spotlight directories for each user. ("USL" = "User Spotlight Locations".)
+   # These are my users. For your system, substitute-in your actual users.
    my %USLs = (
                  'Aragorn'       => '/usl1',
                  'Administrator' => '/usl2',
@@ -92,29 +107,23 @@ my $Current = 0;
               );
 
    # If debugging, print all user/directory key/value pairs:
-   if ($db)
-   {
-      print STDOUT "\n";
-      for (sort keys %USLs)
-      {
-         print STDOUT "key = \"$_\"; value = \"$USLs{$_}\".\n";
+   if ($Db) {
+      for ( sort keys %USLs ) {
+         say "key = \"$_\"; value = \"$USLs{$_}\".";
       }
-      print STDOUT "\n";
    }
 
    # Determine whether or not all needed directories exist:
-   my $cusr  = getlogin()   ; # Current user.
+   my $cusr  = getlogin     ; # Current user.
    my $cusl  = $USLs{$cusr} ; # Current user's spotlight location.
    my $valid = 0            ; # Do all needed directories exist?
-   if ($Current)
-   {
-      $valid = 
-         -e e($cusl)   && -d e($cusl) 
+   if ( $Current ) {
+      $valid =
+         -e e($cusl)   && -d e($cusl)
       && -e e('/d/sl') && -d e('/d/sl');
    }
-   else
-   {
-      $valid = 
+   else {
+      $valid =
          -e e('/usl1') && -d e('/usl1')
       && -e e('/usl2') && -d e('/usl2')
       && -e e('/usl3') && -d e('/usl3')
@@ -124,77 +133,87 @@ my $Current = 0;
 
    # If all needed directories exist, print verification message;
    # otherwise, print error message and exit:
-   if ($valid)
-   {
-      print STDOUT "Verified that all needed directories exist.\n";
+   if ( $valid ) {
+      say 'Verified that all needed directories exist.';
    }
-   else
-   {
-      print STDERR "Some of the needed directories don't exist!\n".
-                   "Aborting program to prevent disaster!\n".
-                   "$!\n";
+   else {
+      say 'Fatal error in program \"process-spotlight.pl\":';
+      say 'Some of the needed directories don\'t exist!';
+      say 'Aborting program to prevent disaster!';
       exit 666;
    }
 
    # Update directory /d/sl from user directories:
-   foreach my $user (sort keys %USLs)
-   {
+   foreach my $user ( sort keys %USLs ) {
       next if $Current && $user ne $cusr;
-      print STDOUT "\nUser = \"$user\".\n";
+      say '';
+      say "User = \"$user\".";
       copy_files($USLs{$user}, '/d/sl', 'large', 'unique', 'sha1', 'sl');
    }
 
-   # Get hi-res exit time $t1 and elapsed time $te, print exit message, and exit:
-   my $t1 = time;
-   my $te = $t1 - $t0;
-   print STDOUT "\nNow exiting \"process-spotlight.pl\". Execution time was $te seconds.\n";
+   # Print exit message, including elapsed time, and exit:
+   say '';
+   say "Now exiting \"$pname\".";
+   printf "Execution time was %.3f seconds.\n", time-$to;
    exit 0;
 } # end main
 
-# ======================================================================================================================
+# ============================================================================================================
 # SUBROUTINE DEFINITIONS:
 
-sub argv ()
-{
-   for (@ARGV)
-   {
-      if ( $_ eq '-h' || $_ eq '--help'    ) { help(); exit; }
-      if ( $_ eq '-c' || $_ eq '--current' ) { $Current = 1; }
+sub argv {
+   my $s = '[a-zA-Z0-9]';
+   for ( @ARGV ) {
+      /^-$s*h/ || /^--help$/    and help and exit;
+      /^-$s*e/ || /^--debug$/   and $Db = 1;
+      /^-$s*c/ || /^--current$/ and $Current = 1;
    }
 } # end sub argv ()
 
 # Provide help:
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "process-spotlight.pl", Robbie Hatley's nifty Windows 10
    "Spotlight" scenic photo aggregator.
 
    Command lines:
-   process-spotlight.pl [-h | --help]     (to print this help and exit)
-   process-spotlight.pl [-c | --current]  (process photos for current user)
-   process-spotlight.pl                   (process photos for all users)
+   process-spotlight.pl [-h | --help]    (print this help and exit)
+   process-spotlight.pl [options]        (process spotlight photos)
+
+   Options:
+   -h or --help       Print this help and exit.
+   -e or --debug      Print diagnostic information.
+   -c or --current    Process spotlight photos for current user only.
+   Multiple single-letter options may be piled after a single hyphen;
+   for example, use "-ce" to process current user only and debug.
 
    To use this program:
 
-   1. This program is only useful on computers running Microsoft Windows 10,
-      so to use it, you'll first need such a computer.
+   1. Install Microsoft Windows 10 on a computer, and set the computer to use
+      "Windows Spotlight" for its "Lock" and "Log-in" screens. That will pull-in
+      scenic photos.
 
    2. Install Cygwin on your computer, including the Perl that comes with it.
       That will give you the Linux-like file-access syntax this script needs.
+      (Oh, and, you'll need to become expert at using Windows, Cygwin, and Perl
+      before anything in this script will make sense to you. So do that.)
 
-   3. Give yourself permission to access the Windows Spotlight folders for
+   3. You'll also need my "RH" modules; you can get them here:
+      https://github.com/robbie-hatley/CLI-Programming/tree/main/modules/RH
+
+   4. Give yourself permission to access the Windows Spotlight folders for
       all of your user ids. Those are located here:
       C:\Users\YourUserId\AppData\Local\Packages\
          Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets
-      By default they're not accessible, so you'll have to manually sieze control
+      By default they're not accessible, so you'll have to manually seize control
       by following this procedure:
       1. In Windows Explorer, go into C:\Users\YourUserID\AppData\Local\Packages\
       2. Right-click "Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy"
          and select "properties".
       2. Click "Security" tab.
       3. Click "Advanced".
-      4. Sieze ownership, and apply to all children.
+      4. Seize ownership, and apply to all children.
       5. Click "OK" to close out of all boxes.
       6. Go back into advanced security settings, give yourself full control, and
          apply to all children.
@@ -202,25 +221,34 @@ sub help ()
       8. Do steps 1-7 above for each of your user names.
       You should now have full control of those folders.
 
-   4. Create symbolic links called 'usl1', 'usl2', etc, in Cygwin's root directory
-      ('/') to your user spotlight folders (see step 1 above for where those are
-      and how to gain access to them). Edit this script as necessary to compensate
-      for the actual number of users on your system (and their names) for which
-      you want to aggregate Spotlight photos.
+   5. Create symbolic links called 'usl1', 'usl2', etc, in Cygwin's root directory
+      ('/') to your user spotlight folders (see step 4 above for where those are
+      and how to gain access to them). Edit this script as necessary to account
+      for the actual users on your system for which you want to aggregate
+      Spotlight photos.
 
-   5. Create a symbolic link called 'sl' in '/' to the directory where you want to
-      store your Windows10 Spotlight photos. For example:
+   6. Create a symbolic link called 'd' in '/' to the storage device where you
+      want to store your Windows10 Spotlight photos. For example:
       cd /
-      ln -s '/cygdrive/d/sl' sl
+      ln -s '/cygdrive/c' d
 
-   6. Make this script executable. 
+   7. Create a symbolic link called 'sl' in 'd' to the directory where you
+      want to store your Windows10 Spotlight photos. For example:
+      cd /d
+      ln -s '/cygdrive/c/Spotlight' sl
 
-   7. Optional: Rename this script to whatever you like.
+   8. Make this script executable, rename it to whatever you like, and create
+      an "alias" for it in your ~/.bashrc file (I use "psl").
 
-   8. Optional: Create a short "alias" for this script in your ~/.bashrc file.
-      (I use "psl".)
+   9. Run this script daily by typing it's file name or alias. It will then
+      accumulate many beautiful huge hi-res full-color scenic photographs in
+      whatever folder you set "sl" to point to.
 
-   9. Run this script by typing it's file name or alias.
+   Happy scenic photo collecting!
+
+   Cheers,
+   Robbie Hatley,
+   Programmer
 
    END_OF_HELP
    return 1;

@@ -35,8 +35,14 @@
 # Mon Aug 21, 2023: An "option" is now "one or two hyphens followed by 1-or-more word characters".
 #                   Reformatted debug printing of opts and args to ("word1", "word2", "word3") style.
 #                   Inserted text into help explaining the use of "--" as "end of options" marker.
-# Mon Aug 28, 2023: Changed all "$db" to "$Db". Got rid of "/o" on all instances of qr(). Program no-longer
-#                   exits in main if in debug mode; it simulates renames instead. Updated argv.
+# Tue Aug 29, 2023: Clarified sub argv().
+#                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
+#                   Simplified way in which options and arguments are printed if debugging.
+#                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
+#                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Removed "no debug" option as that's already default in all of my programs.
+#                   Now using "d getcwd" instead of "cwd_utf8". Reverted to using "-9" for "--nine".
+#                   $Db now triggers only diagostics and simulation, not entry/exit or stats.
 ##############################################################################################################
 
 use v5.36;
@@ -99,7 +105,7 @@ my $failcount = 0; # Count of failed attempts to rename files.
    my $t0 = time;
    argv;
    my $pname = get_name_from_path($0);
-   if ( $Db || $Verbose ) {
+   if ( $Verbose ) {
       say STDERR '';
       say STDERR "Now entering program \"$pname\". ";
       say STDERR "Debug     = $Db                  ";
@@ -118,7 +124,7 @@ my $failcount = 0; # Count of failed attempts to rename files.
       say STDERR "Suffix    = \'$Suffix\'          ";
    }
 
-   unless ( $Db || $Yes ) {
+   unless ( $Yes ) {
       say STDERR '';
       say STDERR 'WARNING: THIS PROGRAM RENAMES ALL TARGETED FILES IN THE CURRENT DIRECTORY';
       say STDERR '(AND IN ALL SUBDIRECTORIES IF -r OR --recurse IS USED) TO RANDOM STRINGS OF';
@@ -133,7 +139,7 @@ my $failcount = 0; # Count of failed attempts to rename files.
 
    stats;
    my $ms = 1000 * (time - $t0);
-   if ( $Db || $Verbose ) {
+   if ( $Verbose ) {
       say    STDERR '';
       printf STDERR "Now exiting program \"%s\". Execution time was %.3fms.\n", $pname, $ms;
    }
@@ -143,30 +149,35 @@ my $failcount = 0; # Count of failed attempts to rename files.
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
 sub argv {
-   # Define options and arguments arrays and end-of-options flag:
-   my @opts = (); my @args = (); my $end = 0;
-   # Specify which characters are allowed in single-hyphen and double-hyphen options:
-   my $s = '[a-zA-Z0-9]'; my $d = '[a-zA-Z0-9=.-]';
-   # Riffle through @ARGV and push a copy of each item onto either options or arguments:
+   # Get options and arguments:
+   my @opts = ();             # options
+   my @args = ();             # arguments
+   my $end = 0;               # end-of-options flag
+   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      # If current item is "--", it's an end-of-options marker, so set flag and skip to next @ARGV element:
-      /^--$/ and $end = 1 and next;
-      # If not end-of-options, and if we get a valid option, then push to @opts; else push to @args:
-      !$end && (/^-(?!-)$s+$/ || /^--(?!-)$d+$/) and push @opts, $_ or  push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/      and help and exit 777 ;
-      /^-$s*e/ || /^--debug$/     and $Db      =  1     ;
-      /^-$s*q/ || /^--quiet$/     and $Verbose =  0     ;
-      /^-$s*v/ || /^--verbose$/   and $Verbose =  2     ;
-      /^-$s*l/ || /^--local$/     and $Recurse =  0     ;
-      /^-$s*r/ || /^--recurse$/   and $Recurse =  1     ;
-      /^-$s*f/ || /^--files$/     and $Target  = 'F'    ;
-      /^-$s*d/ || /^--dirs$/      and $Target  = 'D'    ;
-      /^-$s*b/ || /^--both$/      and $Target  = 'B'    ;
-      /^-$s*a/ || /^--all$/       and $Target  = 'A'    ;
+      /^-$s*e/ || /^--debug$/     and $Db        =  1   ;
+      /^-$s*q/ || /^--quiet$/     and $Verbose   =  0   ;
+      /^-$s*v/ || /^--verbose$/   and $Verbose   =  2   ;
+      /^-$s*l/ || /^--local$/     and $Recurse   =  0   ;
+      /^-$s*r/ || /^--recurse$/   and $Recurse   =  1   ;
+      /^-$s*f/ || /^--files$/     and $Target    = 'F'  ;
+      /^-$s*d/ || /^--dirs$/      and $Target    = 'D'  ;
+      /^-$s*b/ || /^--both$/      and $Target    = 'B'  ;
+      /^-$s*a/ || /^--all$/       and $Target    = 'A'  ;
       /^-$s*y/ || /^--yes$/       and $Yes       =  1   ;
       /^-$s*s/ || /^--simulate$/  and $Simulate  =  1   ;
       /^-$s*9/ || /^--nine$/      and $Nine      =  1   ;
@@ -184,22 +195,15 @@ sub argv {
    }
 
    # Process arguments:
-   my $NA = scalar @args;
-   if ( 0 == $NA ) {              # $NA == 0:
-      ;                           # Do nothing.
-   }
-   elsif ( 1 == $NA ) {           # $NA == 1:
-      $RegExp = qr/$args[0]/;     # Set $RegExp.
-   }
-   elsif ( 2 == $NA ) {           # $NA == 2:
-      $RegExp = qr/$args[0]/;     # Set $RegExp.
-      $Predicate = $args[1];      # Set $Predicate.
-   }
-   else {                         # $NA < 0 or $NA > 2:
-      error($NA);                 # Print error message.
-      help;                       # Print help  message.
-      exit 666;                   # Exit program and return The Number Of The Beast to OS.
-   }
+   my $NA = scalar(@args);     # Get number of arguments.
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 2                    # If number of arguments >= 2,
+   and $Predicate = $args[1];  # set $Predicate.
+   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
+   and error($NA)              # print error message
+   and help                    # and print help message
+   and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
@@ -249,7 +253,7 @@ sub curfile ($file) {
 
    # Skip desktop, thumbs, browse, and id-token files:
    is_data_file($path)
-   && $name =~ m/^desktop.*\.ini$|^thumbs.*\.db$|^pspbrwse.*\.jbf$|id-token|^\..+$/i
+   && $name =~ m/^desktop.*\.ini$|^thumbs.*\.db$|^pspbrwse.*\.jbf$|id-token/i
    and ++$skipcount
    and say STDOUT "Skipped file \"$name\" (desktop, thumbs, browse, or id-token)."
    and return 1;
@@ -309,7 +313,7 @@ sub curfile ($file) {
 } # end sub curfile ($file)
 
 sub stats {
-   if ( $Db || $Verbose ) {
+   if ( $Verbose ) {
       say STDERR '';
       say STDERR "Statistics for program \"randomize-file-names.pl\":";
       say STDERR "Navigated $direcount directories.";
