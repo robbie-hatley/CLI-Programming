@@ -157,7 +157,7 @@ my $unkncount = 0 ; # Count of all unknown files.
 { # begin main
    my $t0 = time;
    argv;
-   my $pname = get_name_from_path($0);
+   my $pname = substr $0,1+rindex $0,'/';
    say    STDERR '';
    say    STDERR "Now entering program \"$pname\"." ;
    say    STDERR "\$Db        = $Db"        ;

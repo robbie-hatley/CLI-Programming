@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#! /bin/perl
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -52,19 +52,11 @@
 # Tue Dec 14, 2021: Now using "current user" instead of "Aragorn" for single-user photo aggregating.
 # Fri Sep 01, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". Got rid of CPAN module
 #                   "common::sense" (antiquated). Got rid of all prototypes.
-# Sat Sep 02, 2023: Improved help and argv.
+# Sat Sep 02, 2023: Improved help and argv. Removed all utf8 stuff, as this program doesn't need it.
+#                   Got rid of all dependence on modules (CPAN or homebrew). Got rid of strict & warnings.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
-use utf8;
-use warnings FATAL => 'utf8';
-
-use Sys::Binmode;
-use Time::HiRes 'time';
-
-use RH::Dir;
 
 # ============================================================================================================
 # SUBROUTINE PRE-DECLARATIONS:
@@ -119,16 +111,16 @@ my $Current = 0;
    my $valid = 0            ; # Do all needed directories exist?
    if ( $Current ) {
       $valid =
-         -e e($cusl)   && -d e($cusl)
-      && -e e('/d/sl') && -d e('/d/sl');
+         -e $cusl   && -d $cusl
+      && -e '/d/sl' && -d '/d/sl';
    }
    else {
       $valid =
-         -e e('/usl1') && -d e('/usl1')
-      && -e e('/usl2') && -d e('/usl2')
-      && -e e('/usl3') && -d e('/usl3')
-      && -e e('/usl4') && -d e('/usl4')
-      && -e e('/d/sl') && -d e('/d/sl');
+         -e '/usl1' && -d '/usl1'
+      && -e '/usl2' && -d '/usl2'
+      && -e '/usl3' && -d '/usl3'
+      && -e '/usl4' && -d '/usl4'
+      && -e '/d/sl' && -d '/d/sl';
    }
 
    # If all needed directories exist, print verification message;
