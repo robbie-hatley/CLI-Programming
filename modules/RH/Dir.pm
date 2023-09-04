@@ -625,40 +625,80 @@ sub FilesAreIdentical :prototype($$) ($filepath1, $filepath2) {
 
 # Navigate a directory tree recursively, applying code at each node on the tree:
 sub RecurseDirs :prototype(&) ($f) {
+
+   # ======= ARGUMENT CHECK: =================================================================================
+
    # Die if f is not a ref to some code (block or sub):
    if ('CODE' ne ref $f) {
       die '\nFatal error in RecurseDirs: This subroutine takes 1 argument which must be a\n'.
           '{code block} or a reference to a subroutine.\n\n';
    }
 
+   # ======= DIRECTORY CHECKS: ===============================================================================
+
+   # Get raw current directory:
+   my $ecurdir = getcwd;
+
+   # We MUST have a valid "current working directory"!!!
+   if ( ! defined $ecurdir ) {
+      die "Fatal error in RecurseDirs:\n"
+         ."We were unable to determine the current working directory!\n"
+         ."Aborting execution to prevent disaster!\n"
+         ."$!\n";
+   }
+
+   # Don't forget to decode that before using it!!!
+   my $curdir = d $ecurdir;
+
+   # ======= RECURSION CHECKS: ===============================================================================
+
    # This is a recursive function, being used in a chaotic and unpredictable environment with an unknown file
-   # system, so it is VERY possible for runaway recursion to occur. So, to keep track of recursion, we
-   # use this variable, which is initialized to zero once only, the first time this function is called during
-   # this run of this program; this will be incremented before recursing and checked to make sure it never
-   # exceeds 50 levels of recursion:
+   # system, so it is VERY possible for runaway recursion to occur. So, to keep track of recursion, we use a
+   # recursion counter, "$recursion", which is initialized to zero once only, the first time this function is
+   # called during this run of this program.
+   #
+   # If RecurseDirs() is called multiple times during a program run (rare!), "$recursion" won't be initialized
+   # to 0 on the 2nd and subsequent runs, but that's fine, because when RecurseDirs() is done recursing a
+   # directory tree, "$recursion" will always be 0 immediately before the final return anyway.
+   #
+   # "$recursion" is incremented immediately before recursing and decremented immediately after recursing,
+   # and it is checked each time this subroutine is run to make sure it never exceeds 50 levels of recursion:
    state $recursion = 0;
 
-   # Get current directory:
-   my $curdir = d getcwd;
+   # If we are more than 50 levels deep into recursion, die:
+   if ( $recursion > 50 ) {
+      die "Fatal error in RecurseDirs:\n"
+         ."More than 50 levels of recursion!\n"
+         ."CWD = \"$curdir\"\n"
+         ."$!\n";
+   }
 
-   # If we FAILED to get current working directory, something is very wrong!!!
-   if ( ! defined $curdir ){die "Fatal error in RecurseDirs: Can't get current directory!\n$!\n"}
+   # ======= ORIGINAL (PRE-RECURSION) DIRECTORY: =============================================================
 
-   # If starting directory is huge, or a critical Linux system directory, die:
-   if ( 0 == $recursion && 'Linux' eq $ENV{PLATFORM} ) {
+   # Keep track of the ORIGINAL directory we were in when we first entered this subroutine, before recursing:
+   state $oridir;           # Original directory.
+   if ( 0 == $recursion ) { # If this is a non-recursive (first) entry,
+      $oridir = $curdir;    # set $oridir to $curdir.
+   }
+
+   # ======= PLATFORM-SPECIFIC ORIGINAL-DIRECTORY CHECKS: ====================================================
+
+   # If in Linux, and if "original" directory is something we shouldn't be recursing, die:
+   if ( 'Linux' eq $ENV{PLATFORM} ) {
       if
       (
-            $curdir eq '/'               # Too huge, and contains system files, and we don't have permissions.
-         || $curdir eq '/home'           # Too huge, and we don't have permissions.
-         || $curdir eq '/mnt'            # May be huge, depending on what's mounted there.
-         || $curdir eq '/proc'           # Trying to navigate within here causes errors.
-         || $curdir =~ m%/lost\+found$%  # We're not allowed in here.
+            $oridir eq '/'             # Too huge, and contains system files, and we don't have permissions.
+         || $oridir eq '/home'         # Too huge, and we don't have permissions.
+         || $oridir eq '/mnt'          # Too huge, maybe, depending on what's mounted there.
+         || $oridir eq '/proc'         # Trying to navigate within here causes errors.
+         || $oridir =~ m%lost\+found%i # We're not allowed in here.
       )
       {
-         die "Error in RecurseDirs: Can't recurse this problematic Linux directory:\n" .
-             "$curdir\n".
-             "Aborting program.\n".
-             "$!\n";
+         die "Fatal Error in RecurseDirs:\n"
+            ."Can't recurse from this problematic Linux directory:\n"
+            ."$oridir\n"
+            ."Aborting program.\n"
+            ."$!\n";
       }
    }
 
@@ -671,7 +711,7 @@ sub RecurseDirs :prototype(&) ($f) {
    and return 1; # This allows directory-tree-walking to continue.
 
    # Try to read current directory; if that fails, print warning and return 1:
-   my @subdirs = d readdir $dh;
+   my @subdirs = d readdir $dh; # Subdirs & files. (We'll get rid of the files down below.)
    if ( scalar(@subdirs) < 2 ) {
       warn "Error in RecurseDirs: Couldn't read this directory:\n".
            "\"$curdir\"\n".
@@ -691,7 +731,25 @@ sub RecurseDirs :prototype(&) ($f) {
    # Navigate immediate subdirs (if any) of this instance's current directory:
    SUBDIR: foreach my $subdir (@subdirs) {
 
-      # ========== SUBDIR NAME CHECKS: =======================================================================
+      # ======= SUBDIR STATS CHECKS: =========================================================================
+
+      # If "$subdir" doesn't exist, skip it:
+      next SUBDIR if ! -e e $subdir;                # Doesn't exist.
+
+      # Store dir stats for $subdir in _ :
+      lstat e $subdir;
+
+      # If "$subdir" isn't a directory, skip it:
+      next SUBDIR if ! -d _ ;                       # Not a directory.
+
+      # If "$subdir" is a simlinkd, skip it:
+      next SUBDIR if   -l _ ;                       # Symbolic link.
+
+      # If "$subdir" is forbidden to us, skip it:
+      next SUBDIR if ! -r _ ;                       # We can't read file names in this subdir!
+      next SUBDIR if ! -x _ ;                       # We can't read file info  in this subdir!
+
+      # ======= SUBDIR NAME CHECKS: ==========================================================================
 
       # Avoid certain specific problematic directories:
       next SUBDIR if $subdir eq '.';                            # Windows/Linux/Cygwin: Hard link to self.
@@ -753,26 +811,6 @@ sub RecurseDirs :prototype(&) ($f) {
          next SUBDIR if $subdir eq 'All Users';                 # Windows: Problematic account.
       }
 
-      # ========== SUBDIR STATS CHECKS: ======================================================================
-
-      # Now that we've ascertained that $subdir doesn't name a known directory that we specifically want to
-      # avoid, lets examine the statistics of the referent to which label $subdir refers.
-      # Start by making sure that $subdir is the name of something that actually exists:
-      next SUBDIR if ! -e e $subdir;                            # Something that doesn't exist.
-
-      # Now that we know that $subdir exists, store dir stats for subdir in _ :
-      lstat e $subdir;
-
-      # Skip this path if it's not a directory:
-      next SUBDIR if ! -d _ ;                                   # Not a directory.
-
-      # Skip this path if it's a symbolic link:
-      next SUBDIR if -l _ ;                                     # Symbolic link.
-
-      # Skip this directory if we don't have permission to interact with it:
-      next SUBDIR if ! -r _ ;                                   # We can't read file names in this subdir!
-      next SUBDIR if ! -x _ ;                                   # We can't read file info  in this subdir!
-
       # Try to chdir to $subdir; if that fails, try to cd back to $curdir (or die if that fails),
       # then move on to next subdirectory:
       if ( ! chdir e $subdir ) {
@@ -781,12 +819,9 @@ sub RecurseDirs :prototype(&) ($f) {
          next SUBDIR;
       }
 
-      # Try to recurse:
+      # Recurse:
       ++$recursion;
-      $recursion > 50
-      and die "Fatal error in RecurseDirs: More than 50 levels of recursion!\nCWD = \"$curdir\"\n$!\n";
-      RecurseDirs(\&{$f})
-      or die "Fatal error in RecurseDirs: Couldn't recurse!\n";
+      RecurseDirs(\&{$f});
       --$recursion;
 
       # Try to cd back to $curdir (and die if that fails):
@@ -1873,19 +1908,19 @@ sub get_name_from_path :prototype($) ($path) {
 sub path :prototype($$) ($dir, $nam) {
    my $path;
 
-   # If $dir is '/', then the path is just the name with '/' appended to its left:
-   if ( $dir eq '/' ) {
-      $path = "/$nam";
+   # If $dir is '', assume that '' means "current working directory", so set $path to $nam:
+   if ( '' eq $dir ) {
+      $path = $nam;
    }
 
-   # Else if $dir is '', assume that '' means "current working directory", so set $path to $nam:
-   elsif ( $dir eq '' ) {
-      $path = "$nam";
+   # Else if $dir ends with "/" (eg: "/", or "/absolute/dir/", or "relative/dir/"), set $path to $dir.$nam:
+   elsif ( '/' eq substr $dir, -1 ) {
+      $path = $dir.$nam;
    }
 
-   # Otherwise, set path to "$dir/$nam":
+   # Else if $dir DOESN'T end with "/" (eg: "/absolute/dir", or "relative/dir"), set path to $dir.'/'.$nam:
    else {
-      $path = "$dir/$nam";
+      $path = $dir.'/'.$nam;
    }
 
    # Return $path:
@@ -2024,10 +2059,20 @@ sub is_large_image :prototype($) ($path) {
 # methods, then return the existing suffix (if any), or return '.unk' if there is no existing suffix,
 # or return '***ERROR***' if an error occurs (no file, not-data-file, file open/read/close error, perms, etc).
 sub get_correct_suffix :prototype($) ($path) {
+   my $name  = get_name_from_path($path);
+   my $suff  = get_suffix($name);
    if ($db) {
       say STDERR '';
-      say STDERR "In get_correct_suffix(), at top.";
+      say STDERR "In get_correct_suffix(), near top.";
       say STDERR "\$path = $path";
+      say STDERR "\$name = $name";
+      say STDERR "\$suff = $suff";
+   }
+
+   # If this is a "meta" file (hidden, desktop, browse, thumbnails, etc), return old suffix,
+   # else we will end up discarding valid type info and mis-labeling the file as "txt":
+   if ( is_meta_file($path) ) {
+      return $suff;
    }
 
    # Return an error code unless $path points to an existing "data file" (non-directory, non-link
@@ -2035,8 +2080,6 @@ sub get_correct_suffix :prototype($) ($path) {
    return '***ERROR***' unless is_data_file($path);
 
    # Try to determine the correct suffix using the checktype_filename() method from module "File::Type":
-   my $name  = get_name_from_path($path);
-   my $suff  = get_suffix($name);
    my $typer = File::Type->new(); # File-typing functor.
    my $type  = $typer->checktype_filename($path); # Get media-type of file at $path.
 
@@ -2072,8 +2115,7 @@ sub get_correct_suffix :prototype($) ($path) {
       m%^image/vnd.microsoft.icon$%                        and return '.ico'  ;
       m%^application/java-archive$%                        and return '.jar'  ;
       m%^image/jpeg$%                                      and return '.jpg'  ;
-      m%^text/javascript$%                                 and return '.js'   ;
-      m%^application/javascript$%                          and return '.js'   ;
+      #m%javascript%                                        and return '.js'   ;
       m%^application/json$%                                and return '.json' ;
       m%^audio/midi$%                                      and return '.mid'  ;
       m%^audio/mp3$%                                       and return '.mp3'  ;
@@ -2131,18 +2173,11 @@ sub get_correct_suffix :prototype($) ($path) {
       }
 
       # Pore over the contents of $buffer and try to glean clues as to what type of file this is:
-      if ( $type eq 'application/octet-stream' ) {
-         'wOFF' eq substr($buffer,0,4)                     and return '.woff' ; # Web Open Font Format
-         is_ascii($buffer)                                 and return '.txt'  ; # ASCII      text file.
-         is_iso_8859_1($buffer)                            and return '.txt'  ; # ISO-8859-1 text file.
-         is_utf8($buffer)                                  and return '.txt'  ; # UTF-8      text file.
-      }
       "AVI" eq substr($buffer, 8, 3)                       and return '.avi'  ; # AVI (Windows video)
       pack('C4',195,202,4,193) eq substr($buffer,0,4)      and return '.ccf'  ; # CCF (Chrome Cache File)
       'fLaC' eq substr($buffer,0,4)                        and return '.flac' ; # fLaC (high-quality sound)
       'FLV' eq substr($buffer,0,3)                         and return '.flv'  ; # FLV (FLash Video)
       'GIF' eq substr($buffer,0,3)                         and return '.gif'  ; # GIF (lo-color grphcs; anim)
-      $buffer =~ m%^<!DOCTYPE HTML%                        and return '.html' ; # HTML (markup)
       '\xFF\xD8\xFF' eq substr($buffer,0,3)                and return '.jpg'  ; # JPG (lossy compression)
       'ftypmp4' eq substr($buffer,4,7)                     and return '.mp4'  ; # MP4 (good video format)
       'PAR2' eq substr($buffer,0,4)                        and return '.par2' ; # PAR2 (checksum)
@@ -2156,6 +2191,24 @@ sub get_correct_suffix :prototype($) ($path) {
       '\x30\x26\xB2\x75\x8E\x66\xCF\x11'.
       '\xA6\xD9\x00\xAA\x00\x62\xCE\x6C'
          eq substr($buffer,0,16)                           and return '.wmv'  ; # WMV (Windows Media Video)
+      'wOFF' eq substr($buffer,0,4)                        and return '.woff' ; # Web Open Font Format
+
+      # HTML needs to be before JS and CSS, else it may be mistaken for one of those. HTML may have both
+      # JS functions and CSS traits, but CSS doesn't have functions, so order must be HTML, JS, CSS:
+      $buffer =~ m%^<!doctype\s*html%i                     and return '.html' ; # HTML (markup)
+      $buffer =~ m%function\s*\w*\s*\(%i                   and return '.js'   ; # Javascript
+      $buffer =~
+      m% background.*: | border.*:     | margin.*:    |
+         padding.*:    |font-family.*: | font-size.*: |
+         font-weight.*:                                %ix and return '.css'  ; # CSS (style sheets)
+
+      # Save "txt" for last, else other types (eg, html)
+      # will falsely be reported as being "txt":
+      if ( $type eq 'application/octet-stream' ) {
+         is_ascii($buffer)                                 and return '.txt'  ; # ASCII      text file.
+         is_iso_8859_1($buffer)                            and return '.txt'  ; # ISO-8859-1 text file.
+         is_utf8($buffer)                                  and return '.txt'  ; # UTF-8      text file.
+      }
    }
 
    # If we get to here, we've failed to definitively determine the correct suffix for-sure, so return the

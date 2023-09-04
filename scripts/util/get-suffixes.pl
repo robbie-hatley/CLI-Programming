@@ -14,6 +14,11 @@
 # Sun Aug 13, 2023: Fleshed-out help section. Renamed to "get-suffixes.pl". No-longer skips files < 50 bytes.
 #                   Changed all "warn" to "say STDERR" and all "say" and "print" to "say STDOUT".
 #                   Changed file-renaming code to file-name-printing code. Made fully-functional.
+# Sat Sep 02, 2023: Changed all $db to $Db. Got rid of all "/o" on all qr(). Entry and exit messages are now
+#                   always printed to STDERR regardless of $Verbose. Got rid of "--nodebug" as that's already
+#                   default. Updated argv. Updated help. Increased parallelism "(g|s)et-suffixes.pl".
+#                   Stats now always print to STDERR. Got rid of "quiet" and "verbose" options.
+#                   Instead, I'm now using STDERR for messages, stats, diagnostics, STDOUT for dirs/files.
 ##############################################################################################################
 
 use v5.38;
@@ -41,11 +46,10 @@ sub help    ;
 
 # ======= PAGE-GLOBAL LEXICAL VARIABLES: =====================================================================
 
-# Settings:                   Meaning of setting:         Range:    Meaning of default:
-my $db        = 0         ; # Debug?                      bool      Don't debug.
-my $Verbose   = 0         ; # Be verbose?                 bool      Be quiet.
-my $Recurse   = 0         ; # Recurse subdirectories?     bool      Don't recurse subdirectories.
-my $RegExp    = qr/^.+$/o ; # Process which file names?   regexp    Process files of all names.
+# Settings:     Defaults:  # Meaning of setting:         Range:    Meaning of default:
+my $Db        = 0        ; # Debug?                      bool      Don't debug.
+my $Recurse   = 0        ; # Recurse subdirectories?     bool      Don't recurse subdirectories.
+my $RegExp    = qr/^.+$/ ; # Process which file names?   regexp    Process files of all names.
 
 # Event counters:
 my $direcount = 0; # Count of directories processed.
@@ -61,22 +65,20 @@ my $diffcount = 0; # Count of files with new name different from old.
 
 { # begin main
    my $t0 = time;
-   argv;
    my $pname = get_name_from_path($0);
-   if ( $Verbose >= 1 ) {
-      say STDERR '';
-      say STDERR "Now entering program \"$pname\".";
-      say STDERR "\$db      = \"$db\".";
-      say STDERR "\$Verbose = \"$Verbose\".";
-      say STDERR "\$Recurse = \"$Recurse\".";
-      say STDERR "\$RegExp  = \"$RegExp\".";
-   }
+   argv;
+   say STDERR '';
+   say STDERR "Now entering program \"$pname\".";
+   say STDERR "\$Db      = \"$Db\".";
+   say STDERR "\$Recurse = \"$Recurse\".";
+   say STDERR "\$RegExp  = \"$RegExp\".";
+
    $Recurse and RecurseDirs {curdire} or curdire;
+
    stats;
-   my $ms = 1000 * (time - $t0);
-   if ( $Verbose >= 1 ) {
-      printf STDERR "\nNow exiting program \"%s\". Execution time was %.3fms.", $pname, $ms;
-   }
+   say    STDERR '';
+   say    STDERR "Now exiting program \"$pname\".";
+   printf STDERR "Execution time was %.3f seconds.", time - $t0;
    exit 0;
 } # end main
 
@@ -84,31 +86,43 @@ my $diffcount = 0; # Count of files with new name different from old.
 
 sub argv {
    # Get options and arguments:
-   my @opts = (); my @args = (); my $end_of_options = 0;
+   my @opts = ();             # options
+   my @args = ();             # arguments
+   my $end = 0;               # end-of-options flag
+   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      /^--$/ and $end_of_options = 1 and next;
-      !$end_of_options && /^-\pL*$|^--.+$/ and push @opts, $_ or push @args, $_;
+      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1            # so if we see that, then set the "end-of-options" flag
+      and next;               # and skip to next element of @ARGV.
+      !$end                   # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/      # and if we get a valid short option
+      ||   /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_      # then push item to @opts
+      or  push @args, $_;     # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\pL*h|^--help$/     and help and exit 777 ;
-      /^-\pL*n|^--nodebug$/  and $db      =  0     ;
-      /^-\pL*e|^--debug$/    and $db      =  1     ;
-      /^-\pL*q|^--quiet$/    and $Verbose =  0     ;
-      /^-\pL*v|^--Verbose$/  and $Verbose =  1     ;
-      /^-\pL*l|^--local$/    and $Recurse =  0     ;
-      /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
    }
-   $db and say STDERR "opts = (@opts)\nargs = (@args)";
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
+   }
 
-   # Count args:
-   my $NA = scalar @args;
-
-   # Take various actions depending on $NA:
-   $NA  < 1 and 1;                                   # If $NA  < 1, do nothing
-   $NA == 1 and $RegExp = $ARGV[0];                  # If $NA == 1, set $RegExp.
-   $NA  > 1 and error($NA) and help and exit 666;    # If $NA  > 1, print error and help and exit 666.
+   # Process arguments:
+   my $NA = scalar(@args);     # Get number of arguments.
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 2 && !$Db            # If number of arguments >= 2 and we're not debugging,
+   and error($NA)              # print error message,
+   and help                    # and print help message,
+   and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
@@ -119,6 +133,7 @@ sub curdire {
    my $curdir = cwd_utf8;
    say STDOUT '';
    say STDOUT "Directory # $direcount: $curdir";
+   say STDOUT '';
    my @paths = glob_regexp_utf8($curdir, 'F', $RegExp);
    for my $path (@paths) {
       next unless is_data_file($path);
@@ -130,11 +145,12 @@ sub curdire {
 sub curfile ($path) {
    ++$filecount;
    my $name = get_name_from_path($path);
+   my $dir  =  get_dir_from_path($path);
    my $new_suff = get_correct_suffix($path);
    # If new suffix is '.unk', increment $unkncount, otherwise increment $typecount:
    $new_suff eq '.unk' and ++$unkncount or ++$typecount;
 
-   if ($db) {
+   if ($Db) {
       say STDERR '';
       say STDERR "In \"get-suffixes.pl\", in curfile, after getting new suffix.";
       say STDERR "\$filecount = \"$filecount\".";
@@ -144,12 +160,11 @@ sub curfile ($path) {
 
    # Make new name and path:
    my $new_name = get_prefix($name) . $new_suff;
-   my $cwd = d getcwd;
-   my $new_path = path($cwd, $new_name);
+   my $new_path = path($dir, $new_name);
    # Increment "same" counter if new name is same as old name, else increment "diff" counter:
    $new_name eq $name and ++$samecount or  ++$diffcount;
 
-   if ($db) {
+   if ($Db) {
       say STDERR '';
       say STDERR "In \"get-suffixes.pl\", in curfile, after making new name and path.";
       say STDERR "old name = \"$name\".";
@@ -159,29 +174,52 @@ sub curfile ($path) {
       say STDERR "old and new names are SAME"      if $new_name eq $name;
    }
 
-   # Announce old name only if old and new names are the same;
-   # otherwise, announce both old and new names and "wrong suffix" warning:
-   $new_name eq $name
-   and say STDOUT "\"$name\""
-   or  say STDOUT "\"$name\" => \"$new_name\" (FILE NAME HAS WRONG SUFFIX!)";
+   # If new name is same as old name, announce that old name is correct:
+   if ( $new_name eq $name ) {
+      say STDOUT "Correct:   \"$name\"";
+      return 1;
+   }
 
-   # Return success code 1 to caller:
-   return 1;
+   # Otherwise, announce that old name is incorrect:
+   else {
+      say STDOUT "Incorrect: \"$name\" => \"$new_name\"";
+
+
+
+
+
+
+      return 1;
+   }
+
+   # We can't possibly get here.
+   # But if we do, something truly bizarre has happened,
+   # so print some cryptic shit and return 666:
+
+   print ((<<'   666') =~ s/^   //gmr);
+
+   Back, he spurred like a madman, shrieking a curse to the sky,
+   With the white road smoking behind him and his rapier brandished high.
+   Blood red were his spurs in the golden noon; wine-red was his velvet coat;
+   When they shot him down on the highway,
+           Down like a dog on the highway,
+   And he lay in his blood on the highway, with a bunch of lace at his throat.
+   666
+
+   return 666;
 } # end sub curfile ($path)
 
 sub stats {
-   if ( $Verbose >= 1 ){
-      say STDERR '';
-      say STDERR "Stats for \"get-suffixes.pl\":";
-      say STDERR "Navigated $direcount directories.";
-      say STDERR "Encountered $filecount files.";
-      say STDERR "Found $typecount files of known type.";
-      say STDERR "Found $unkncount files of unknown type.";
-      say STDERR "Found $samecount files with correct suffix.";
-      say STDERR "Found $diffcount files with  wrong  suffix.";
+   say STDERR '';
+   say STDERR "Stats for \"get-suffixes.pl\":";
+   say STDERR "Navigated $direcount directories.";
+   say STDERR "Encountered $filecount files.";
+   say STDERR "Found $typecount files of known type.";
+   say STDERR "Found $unkncount files of unknown type.";
+   say STDERR "Found $samecount files with correct suffix.";
+   say STDERR "Found $diffcount files with  wrong  suffix.";
 
 
-   }
    return 1;
 } # end sub stats
 
@@ -202,49 +240,46 @@ sub help {
    -------------------------------------------------------------------------------
    Introduction:
 
-   WARNING! THIS PROGRAM IS A STUB! IT DOES NOT ACTUALLY DO ANY OF THE THINGS
-   LISTED BELOW YET! WARNING! THIS PROGRAM IS A STUB!
+   Welcome to "set-suffixes.pl", Robbie Hatley's nifty file name extension
+   setter. This program determines the types of the files in the current directory
+   (and all subdirectories if a -r or --recurse option is used) then displays the
+   original file names, then, if the original suffix was incorrect, it also gets
+   and displays the file's name with the correct suffix. For example, if a file
+   is named "cat.txt", but the file is actually a jpg file, this program will
+   display the new file name as "cat.jpg".
 
-   Welcome to "get-suffixes.pl" Robbie Hatley's nifty file name extension
-   getter. sxt determines the types of the files in the current directory (and
-   all subdirectories if a -r or --recurse option is used) then displays the
-   original file names, then, if the original suffix was incorrect, it also
-   displays the name with the correct suffix, followed by a warning in ALL-CAPS:
-
-   "Bob.pdf"
-   "cat.txt" => "cat.jpg" (NAME HAS WRONG SUFFIX!)
-   "Apple.odt"
-   "Bob-Dylan.mp3"
-   "Electric-Bill.doc" => "Electric-Bill.pdf" (NAME HAS WRONG SUFFIX!)
-
-   Note that this program does not alter the names of any files. To set correct
-   file-name suffixes on files, use my program "set-suffixes.pl" instead.
-
-   WARNING! THIS PROGRAM IS A STUB! IT DOES NOT ACTUALLY DO ANY OF THE THINGS
-   LISTED ABOVE YET! WARNING! THIS PROGRAM IS A STUB!
+   Note that this program DOESN'T alter the names of files. To set correct
+   file-name suffixes, use my program "set-suffixes.pl" instead.
 
    -------------------------------------------------------------------------------
    Command lines:
 
-   set-extensions.pl [-h|--help]            (to print this help and exit)
-   set-extensions.pl [options] [argument]   (to set file-name extensions)
+   get-extensions.pl [-h|--help]            (to print this help and exit)
+   get-extensions.pl [options] [argument]   (to get file-name extensions)
 
    -------------------------------------------------------------------------------
    Description of options:
 
    Option:            Meaning:
-   -h or --help       Print this help and exit.
-   -n or --nodebug    Don't debug.                                       (DEFAULT)
-   -d or --debug       Do   debug.
-   -q or --quiet      Don't be verbose.                                  (DEFAULT)
-   -v or --verbose     Do   be verbose.
-   -l or --local      Don't recurse subdirectories.                      (DEFAULT)
-   -r or --recurse     Do   recurse subdirectories (but not SYMLINKDs).
+   -h or --help       Print help and exit.
+   -e or --debug      DO    print diagnostics and exit.
+   -l or --local      DON'T recurse subdirectories.                      (DEFAULT)
+   -r or --recurse    DO    recurse subdirectories.
+         --           End of options (all further CL items are arguments).
 
-   "--" can be used as a marker to indicate that all further command-line items
-   are arguments rather than options. All single-letter options can be piled-up
-   after a single hyphen. If later separate options contradict earlier options,
-   later prevails. All options not specifically listed above will be ignored.
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, use -vr to verbosely and recursively process items.
+
+   If multiple conflicting separate options are given, later overrides earlier.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: herlvq.
+
+   If you want to use an argument that looks like an option (say, you want to
+   search for files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
+
+   All options not listed above are ignored.
 
    -------------------------------------------------------------------------------
    Description of arguments:
@@ -262,8 +297,11 @@ sub help {
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
 
-   Happy extension setting!
-   Cheers, Robbie Hatley, programmer.
+   Happy suffix getting!
+
+   Cheers,
+   Robbie Hatley,
+   Programmer.
    END_OF_HELP
    return 1;
 } # end sub help

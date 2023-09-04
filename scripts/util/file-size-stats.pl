@@ -24,15 +24,18 @@
 # Thu Aug 03, 2023: Upgraded from "use v5.32;" to "use v5.36;". Got rid of prototypes and started using
 #                   signatures instead. Renamed from "file-size-statistics.pl" to "file-size-stats.pl".
 #                   Got ride of "common::sense" (antiquated). Reduced width from 120 to 110. Improved help.
+# Sat Sep 02, 2023: Updated main. Updated argv. Got rid of all /o on qr().
 ##############################################################################################################
 
 use v5.36;
 use strict;
 use warnings;
 use utf8;
+use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
 use Cwd;
+use Time::HiRes 'time';
 
 use RH::Dir;
 
@@ -47,74 +50,109 @@ sub help    ;
 
 # ======= VARIABLES: =========================================================================================
 
-# Debug?
-my $db = 0;
-
-# Settings:                      Meaning of setting:        Possible values:    Meaning of default:
-my $Recurse   = 0            ; # Recurse subdirectories?    bool                Don't recurse.
-my $RegExp    = qr/^.+$/o    ; # Regular expression.        regexp              Process all file names.
+# Settings:                  # Meaning of setting:        Possible values:    Meaning of default:
+my $Db = 0                 ; # Print diagnostics?         bool                Don't debug.
+my $Recurse   = 0          ; # Recurse subdirectories?    bool                Don't recurse.
+my $RegExp    = qr/^.+$/   ; # Regular expression.        regexp              Process all file names.
 
 # Counters:
-my $direcount = 0            ; # Count of directories navigated.
-my $filecount = 0            ; # Count of files matching $RegExp.
+my $direcount = 0          ; # Count of directories navigated.
+my $filecount = 0          ; # Count of files matching $RegExp.
 
-# Make array of 13 size bins. $size_bins[i] represents number of files
-# with int(floor(log(size)) = i.
+# Make array of 13 size bins. $size_bins[i] represents number of files with int(floor(log(size)) = i.
 my @size_bins;
 foreach (0..12) {$size_bins[$_] = 0};
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
-   argv;
-   say STDERR "\$Recurse   = $Recurse";
-   say STDERR "\$RegExp    = $RegExp";
-   $Recurse and RecurseDirs {curdire} or curdire;
-   stats;
-   exit 0;
+   # Load time and program variables:
+   my $t0 = time()                                          ;
+   my $pname = substr $0,1+rindex $0,'/'                    ;
+
+   # Get and process options and arguments:
+   argv                                                     ;
+
+   # Print entry message:
+   say    STDERR "Now entering program \"$pname\"."         ;
+   say    STDERR "\$Db        = $Db"                        ;
+   say    STDERR "\$Recurse   = $Recurse"                   ;
+   say    STDERR "\$RegExp    = $RegExp"                    ;
+
+   # Load size bins:
+   $Recurse and RecurseDirs {curdire} or curdire            ;
+
+   # Print size bins:
+   stats                                                    ;
+
+   # Print exit message and exit:
+   say    STDERR "Now exiting program \"$pname\"."          ;
+   printf STDERR "Execution time was %.3fms.\n", time - $t0 ;
+   exit 0                                                   ;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 sub argv {
    # Get options and arguments:
-   my @opts;
-   my @args;
+   my @opts = ();            # options
+   my @args = ();            # arguments
+   my $end = 0;              # end-of-options flag
+   my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
    for ( @ARGV ) {
-      if (/^-\pL*$|^--[\pL\pM\pN\pP\pS]*$/) {push @opts, $_}
-      else                                  {push @args, $_}
+      /^--$/                 # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1           # so if we see that, then set the "end-of-options" flag
+      and next;              # and skip to next element of @ARGV.
+      !$end                  # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/     # and if we get a valid short option
+      ||  /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_     # then push item to @opts
+      or  push @args, $_;    # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-\pL*h|^--help$/     and help and exit 777 ;
-      /^-\pL*r|^--recurse$/  and $Recurse =  1     ;
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
+   }
+   if ( $Db ) {
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
-   my $NA = scalar(@args);
-      if ( 0 == $NA ) {                            ; } # Do nothing.
-   elsif ( 1 == $NA ) { $RegExp    = qr/$args[0]/o ; } # Set $RegExp.
-   else               { error($NA); help; exit 666 ; } # Something evil happened.
+   my $NA = scalar(@args);     # Get number of arguments.
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 2 && !$Db            # If number of arguments >= 2 and we're not debugging,
+   and error($NA)              # print error message,
+   and help                    # and print help message,
+   and exit 666;               # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
 # Return int(log10(file size)) with knife-edge rounding-error protection
-# (ie, protect against int(0.99999973) vs int(1.0000142):
+# (ie, protect against int(0.99999973) vs int(1.00000142):
 sub logsize ($file) {
-   if ($db) {say "In logsize; file name = \"$file->{Name}\".";}
-   my $size_bin;
-   $size_bin = $file->{Size} < 10 ? 0 : int(log($file->{Size}+0.1)/log(10));
-   return $size_bin;
+   if ($Db) {say "In logsize; file name = \"$file->{Name}\".";}
+   my $size_bin =                         # Make bin.
+   0 == $file->{Size} ?                   # If file is empty,
+   0                                      # set size_bin to 0,
+   : int(log($file->{Size}+0.1)/log(10)); # else set size_bin to ln(size+0.1)/ln(10)
+   return $size_bin;                      # Return bin.
 } # end sub logsize ($file)
 
 sub curdire {
    ++$direcount;
 
-   # Get current working directory:
+   # Get and announce current working directory:
    my $curdir = d getcwd;
+   say "Dir #$direcount: $curdir";
 
    # Get list of entries in current directory matching $RegExp:
    my $curdirfiles = GetFiles($curdir, 'F', $RegExp);
@@ -170,10 +208,26 @@ sub help {
    -------------------------------------------------------------------------------
    Description of options:
 
-   Option:                  Meaning:
-   -h or --help             Print help and exit.
-   -r or --recurse          Recurse subdirectories.
-   Any other options will be ignored.
+   Option:            Meaning:
+   -h or --help       Print help and exit.
+   -e or --debug      Print diagnostics.
+   -l or --local      DON'T recurse subdirectories.                      (DEFAULT)
+   -r or --recurse    DO    recurse subdirectories.
+         --           End of options (all further CL items are arguments).
+
+   Multiple single-letter options may be piled-up after a single hyphen.
+   For example, use -er to print diagnostics and recursively process items.
+
+   If multiple conflicting separate options are given, later overrides earlier.
+   If multiple conflicting single-letter options are piled after a single hyphen,
+   the result is determined by this descending order of precedence: herl.
+
+   If you want to use an argument that looks like an option (say, you want to
+   search for files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
+
+   All options not listed above are ignored.
 
    -------------------------------------------------------------------------------
    Description of arguments:
