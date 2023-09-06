@@ -1,39 +1,47 @@
 #! /bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # dir-stats.pl
-# Prints statistics for all items in current directory (and all subdirectories if a -r or --recurse option is used).
+# Prints counts of each type of file found in current directory (and all subdirectories if a -r or --recurse
+# option is used).
 #
 # Edit history:
 # Sat Jan 02, 2021: Wrote it.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-########################################################################################################################
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
+# Wed Sep 06, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36".
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+
 use Sys::Binmode;
+use Cwd;
+use Time::HiRes 'time';
 
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv       ();
-sub curdire    ();
-sub curfile    ($);
-sub list_paths ();
-sub dir_stats  ();
-sub tot_stats  ();
-sub error      ($);
-sub help       ();
+sub argv       ;
+sub curdire    ;
+sub curfile    ;
+sub dire_stats ;
+sub tree_stats ;
+sub error      ;
+sub help       ;
 
-# ======= LEXICAL VARIABLES: ===========================================================================================
+# ======= LEXICAL VARIABLES: =================================================================================
 
 # Turn on debugging?
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
+my $Db = 0; # Set to 1 for debugging, 0 for no debugging.
 
 # Settings (needed by curdire, which may be called indirectly from a functor):
 my $Recurse   = 0         ; # Recurse subdirectories?   (bool)
@@ -49,7 +57,7 @@ my $failcount = 0; # Count of failed attempts to do xxxxxxx.
 
 # Accumulations of counters from RH::Dir::GetFiles():
 my $totfcount = 0; # Count of all targeted directory entries matching regexp and verified by GetFiles().
-my $noexcount = 0; # Count of all nonexistent files encountered. 
+my $noexcount = 0; # Count of all nonexistent files encountered.
 my $ottycount = 0; # Count of all tty files.
 my $cspccount = 0; # Count of all character special files.
 my $bspccount = 0; # Count of all block special files.
@@ -57,7 +65,6 @@ my $sockcount = 0; # Count of all sockets.
 my $pipecount = 0; # Count of all pipes.
 my $slkdcount = 0; # Count of all symbolic links to directories.
 my $linkcount = 0; # Count of all symbolic links to non-directories.
-my $multcount = 0; # Count of all directories with multiple hard links.
 my $sdircount = 0; # Count of all directories.
 my $hlnkcount = 0; # Count of all regular files with multiple hard links.
 my $regfcount = 0; # Count of all regular files.
@@ -67,8 +74,7 @@ my $unkncount = 0; # Count of all unknown files.
 my @LocalFilePaths = ();
 my @LocalDeadPaths = ();
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
-
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 {
    print("\nNow entering program \"dir-stats.pl\".\n\n");
 
@@ -82,29 +88,28 @@ my @LocalDeadPaths = ();
    $Recurse and RecurseDirs {curdire} or curdire;
 
    # Print total stats:
-   tot_stats;
+   tree_stats;
 
    # We be done, so scram:
    print("\nNow exiting program \"dir-stats.pl\".\n\n");
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS =======================================================================================
+# ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub argv ()
-{
+sub argv {
    my $help   = 0;  # Just print help and exit?
    my @CLArgs = (); # Command-Line Arguments (not including options).
 
    # Get and process options and arguments.
-   # An "option" is "-a" where "a" is any single alphanumeric character, 
+   # An "option" is "-a" where "a" is any single alphanumeric character,
    # or "--b" where "b" is any cluster of 2-or-more printable characters.
    foreach (@ARGV)
    {
-      say "item from \@ARGV = $_" if $db;
+      say "item from \@ARGV = $_" if $Db;
       if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
-         say "item is an option" if $db;
+         say "item is an option" if $Db;
          m/^-h$/ || m/^--help$/         and $help    =  1 ;
          m/^-l$/ || m/^--list$/         and $List    =  1 ;
          m/^-r$/ || m/^--recurse$/      and $Recurse =  1 ;
@@ -115,23 +120,21 @@ sub argv ()
       }
       else
       {
-         say "item is an argument" if $db;
+         say "item is an argument" if $Db;
          push @CLArgs, $_;
       }
    }
    if ($help) {help(); exit(777);}                   # If user wants help, just print help and exit.
-   my $NumArgs = scalar(@CLArgs);                    # Get number of arguments.
-   given ($NumArgs)
-   {                                                 # Given the number of arguments,
-      when (0) {;}                                   # if =0, do nothing;
-      when (1) {$RegExp = qr/$CLArgs[0]/o;}          # if =1, set $RegExp;
-      default  {error($NumArgs); help(); exit(666);} # if >1, print error and help messages and exit.
-   }
+   my $NA = scalar(@CLArgs);                         # Get number of arguments.
+   $NA >= 1 and $RegExp = qr/$CLArgs[0]/;            # if $NA >=1, set $RegExp;
+   $NA >= 3 && !$Db
+   and error($NA)
+   and help
+   and exit 666;
    return 1;
-} # end subroutine argv
+} # end sub argv
 
-sub curdire ()
-{
+sub curdire {
    ++$direcount;
 
    # Get and announce current working directory:
@@ -140,8 +143,8 @@ sub curdire ()
    say "Directory # $direcount:";
    say $curdir;
 
-   say "In curdire. \$Target = $Target" if $db;
-   say "In curdire. \$RegExp = $RegExp" if $db;
+   say "In curdire. \$Target = $Target" if $Db;
+   say "In curdire. \$RegExp = $RegExp" if $Db;
 
    # Get list of targeted files in current directory:
    my $curdirfiles = GetFiles($curdir, $Target, $RegExp);
@@ -156,7 +159,6 @@ sub curdire ()
    $pipecount += $RH::Dir::pipecount; # pipes
    $slkdcount += $RH::Dir::slkdcount; # symbolic links to directories
    $linkcount += $RH::Dir::linkcount; # symbolic links to non-directories
-   $multcount += $RH::Dir::multcount; # directories with multiple hard links
    $sdircount += $RH::Dir::sdircount; # directories
    $hlnkcount += $RH::Dir::hlnkcount; # regular files with multiple hard links
    $regfcount += $RH::Dir::regfcount; # regular files
@@ -164,40 +166,31 @@ sub curdire ()
 
    # Iterate through these files, possibly renaming some depending on settings
    # and possibly other user input:
-   foreach my $file (@{$curdirfiles}) 
-   {
+   foreach my $file ( @{$curdirfiles} ) {
       curfile($file);
    }
 
-   # If listing, print per-directory stats:
-   list_paths if $List;
-
    # Print stats for this directory:
-   dir_stats;
+   dire_stats;
 
    return 1;
-} # end subroutine curdire
+} # end sub curdire
 
-sub curfile ($)
-{
+sub curfile ($file) {
    ++$filecount;
-   my $file = shift;
-   if (-e e $file->{Name})
-   {
+   if ( -e e $file->{Name} ) {
       ++$findcount;
       push @LocalFilePaths, $file->{Path} if $List;
       return 1;
    }
-   else
-   {
+   else {
       ++$failcount;
       push @LocalDeadPaths, $file->{Path} if $List;
       return 0;
    }
 } # end sub curfile
 
-sub list_paths ()
-{
+sub list_paths {
    say "\nList of paths found in this directory:";
    if (@LocalFilePaths) {say for @LocalFilePaths}
    else                 {say '(none)'}
@@ -209,8 +202,7 @@ sub list_paths ()
    return 1;
 } # end sub list_paths
 
-sub dir_stats ()
-{
+sub dire_stats {
    say "\nEntries encountered in this directory included:";
    printf("%7u files matching target \"%s\" and regexp \"%s\".\n", $RH::Dir::totfcount, $Target, $RegExp);
    printf("%7u nonexistent files.\n",                     $RH::Dir::noexcount);
@@ -221,16 +213,14 @@ sub dir_stats ()
    printf("%7u pipes\n",                                  $RH::Dir::pipecount);
    printf("%7u symbolic links to directories\n",          $RH::Dir::slkdcount);
    printf("%7u symbolic links to non-directories\n",      $RH::Dir::linkcount);
-   printf("%7u directories with multiple hard links\n",   $RH::Dir::multcount);
    printf("%7u directories\n",                            $RH::Dir::sdircount);
    printf("%7u regular files with multiple hard links\n", $RH::Dir::hlnkcount);
    printf("%7u regular files\n",                          $RH::Dir::regfcount);
    printf("%7u files of unknown type\n",                  $RH::Dir::unkncount);
    return 1;
-} # end sub dir_stats
+} # end sub dire_stats
 
-sub tot_stats ()
-{
+sub tree_stats {
    say "\nStatistics for this directory tree:";
    say "Navigated $direcount directories.";
    say "Examined $filecount files matching regexp \"$RegExp\".";
@@ -249,32 +239,24 @@ sub tot_stats ()
    printf("%7u pipes\n",                                  $pipecount);
    printf("%7u symbolic links to directories\n",          $slkdcount);
    printf("%7u symbolic links to non-directories\n",      $linkcount);
-   printf("%7u directories with multiple hard links\n",   $multcount);
    printf("%7u directories\n",                            $sdircount);
    printf("%7u regular files with multiple hard links\n", $hlnkcount);
    printf("%7u regular files\n",                          $regfcount);
    printf("%7u files of unknown type\n",                  $unkncount);
    }
    return 1;
-} # end sub tot_stats
+} # end sub tree_stats
 
-sub error ($)
-{
-   my $NumArgs = shift;
+sub error ($NA) {
    print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
-   Error: you typed $NumArgs arguments, but
-   \"dir-stats.pl\" takes at most 1 argument, which, if present,
-   must be a regular expression specifying which directory entries
-   to process. (Did you forget to put the regexp in 'single quotes'?)
-   Help follows:
 
+   Error: you typed $NA arguments, but this program takes 0, 1, or 2 arguments.
+   Help follows:
    END_OF_ERROR
-   help;
    return 1;
 } # end sub error
 
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "dir-stats.pl", Robbie Hatley's nifty directory statistics
    printing program. This program prints stats on all of the objects in the
@@ -304,7 +286,7 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Happy statistics printing!
    Robbie Hatley,
@@ -312,3 +294,4 @@ sub help ()
    END_OF_HELP
    return 1;
 } # end sub help
+__END__

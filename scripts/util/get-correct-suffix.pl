@@ -3,13 +3,15 @@
 ##############################################################################################################
 # get_correct_suffix.pl
 # Given a valid path to a data file as first argument, tries hard to determine correct file-name suffix;
-# if this can't be done, returns original suffix (if there is one) or ".unk" (if there isn't).
+# if this can't be done, returns original suffix (if there is one) or ".unk" (if there isn't). Basically
+# a skeletal version of my program "get-suffixes.pl" that's not dependent on my "RH" modules.
 #
 # Written by Robbie Hatley starting on Tue Aug 15, 2023.
 #
 # Edit Log:
 # Tue Aug 15, 2023: Wrote first draft.
-# Mon Aug 28, 2023: Changed "$Db" to $Db". Got rid of prototypes. Now using Signatures. Improved formatting.
+# Mon Aug 28, 2023: Changed "$db" to $Db". Got rid of prototypes. Now using Signatures. Improved formatting.
+# Wed Sep 06, 2023: Added & edited some comments.
 ##############################################################################################################
 
 use v5.36;
