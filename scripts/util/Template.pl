@@ -130,7 +130,7 @@ my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Process 
 my $RegExp    = qr/^.+$/     ; # Regular expression.         regexp     Process all file names.
 my $Predicate = 1            ; # Boolean predicate.          bool       Process all file types.
 
-# Counters:
+# Counts of events in this program:
 my $direcount = 0 ; # Count of directories processed by curdire().
 my $filecount = 0 ; # Count of files found which match file-name regexp.
 my $predcount = 0 ; # Count of files found which also match file-type predicate.
