@@ -61,20 +61,21 @@ use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
 use Time::HiRes 'time';
+use List::Util  'uniq';
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub frequency ($aref, $int) {
-   my $f = 0;
-   for (@$aref) {++$f if $_ == $int}
-   return $f;
-}
-
 sub frequency_sort ($aref) {
-   my %frequency_table;
+   my %int_table;
    for ( @$aref ) {
-      push(@{$frequency_table{frequency($aref, $_)}}, $_);
+      ++$int_table{$_};
+   }
+   my %frequency_table;
+   for my $int ( keys %int_table ) {
+      for ( 1..$int_table{$int} ) {
+         push @{$frequency_table{$int_table{$int}}}, $int;
+      }
    }
    my @sorted;
    for my $f ( sort {$a<=>$b} keys %frequency_table ) {
