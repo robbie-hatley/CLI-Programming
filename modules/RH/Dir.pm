@@ -1729,7 +1729,7 @@ sub glob_regexp_utf8 :prototype(;$$$) ($dir = d(getcwd), $target = 'A', $regexp 
       die "Fatal error in glob_regexp_utf8: Invalid target \'$target\'.\n$!\n";
    }
    my $re;
-   if ( !eval {$re = qr/$regexp/o} ) {
+   if ( !eval {$re = qr/$regexp/} ) {
       die "Fatal error in glob_regexp_utf8: Invalid regular expression \'$regexp\'.\n$!\n";
    }
 
@@ -1761,12 +1761,20 @@ sub glob_regexp_utf8 :prototype(;$$$) ($dir = d(getcwd), $target = 'A', $regexp 
       else              {$path = "$dir/$name";}
       say "IN glob_regexp_utf8. CONSTRUCTED PATH: $path" if $db;
 
-      # Don't test for existence here unless target is 'F', 'D', or 'B'. For target 'A',we want GetFiles
-      # (or other caller) to be able to note any non-existent directory entries and flag them "noex":
-      if    ($target ne 'A') {next if ! -e e $path; lstat e $path;}
-      if    ($target eq 'F') {next if  -l _ || !-f _ ||  -d _ }
-      elsif ($target eq 'D') {next if  -l _ ||  -f _ || !-d _ }
-      elsif ($target eq 'B') {next if  -l _ || !-f _ && !-d _ }
+      # Don't test for existence or type here unless target is 'F', 'D', or 'B'. For target 'A', we want
+      # GetFiles (or other caller) to be able to note any non-existent directory entries and flag them "noex":
+      if ($target eq 'A') {
+         ; # Do nothing.
+      }
+      else {
+         next if ! -e e $path;
+         lstat e $path;
+         # NOTE: DON'T test for -b -c -p -S -t here; wastes too much time; use "is_data_file" for that:
+         if    ($target eq 'F') {next if  -l _ || !-f _ ||  -d _ }
+         elsif ($target eq 'D') {next if  -l _ ||  -f _ || !-d _ }
+         elsif ($target eq 'B') {next if  -l _ || !-f _ && !-d _ }
+         else {die "Fatal error in glob_regexp_utf8: Invalid target \"$target\".\n$!\n";}
+      }
       push @paths, $path;
    }
 
@@ -2355,9 +2363,14 @@ sub shorten_sl_names :prototype($$$$) ($src_dir, $src_fil, $dst_dir, $dst_fil) {
 sub is_data_file :prototype($) ($path) {
    return 0 if ! -e e $path;
    lstat e $path;
-   return 0 if   -l _ ;
-   return 0 if   -d _ ;
    return 0 if ! -f _ ;
+   return 0 if   -b _ ;
+   return 0 if   -c _ ;
+   return 0 if   -d _ ;
+   return 0 if   -l _ ;
+   return 0 if   -p _ ;
+   return 0 if   -S _ ;
+   return 0 if   -t _ ;
    return 1;
 } # end sub is_data_file :prototype($) ($path)
 

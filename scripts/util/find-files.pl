@@ -70,6 +70,10 @@
 #                   $Verbose now means "print directories". Everything else is now printed regardless.
 #                   STDERR = "stats and serious errors". STDOUT = "files found, and dirs if being verbose".
 # Fri Sep 01, 2023: Got rid of $Db and -e and --debug (not necessary).
+# Tue Sep 05, 2023: That was stupid. Added $Db, -e, --debug back in. Improved help. Changed default target
+#                   from 'F' to 'A' so as not to conflict with predicates. Entry/stats/exit messages are
+#                   now printed to STDERR only if $Verbose >= 1. Directory headings are printed to STDOUT
+#                   only if $Verbose >= 2. Found paths are printed to STDOUT regardless of verbosity level.
 ##############################################################################################################
 
 use v5.36;
@@ -97,10 +101,11 @@ sub help    ; # Print help and exit.
 # ======= VARIABLES: =========================================================================================
 
 # Setting:      Default Value:   Meaning of Setting:         Range:     Meaning of Default:
-my $Verbose   = 0            ; # Print directories?          bool       Don't print directories.
+my $Db        = 0            ; # Print diagnostics?          bool       Don't print diagnostics.
+my $Verbose   = 1            ; # Quiet, terse, or verbose?   0,1,2      Be terse.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
+my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Find all directory entries.
 my $RegExp    = qr/^.+$/     ; # Regular expression.         regexp     Find all file names.
-my $Target    = 'F'          ; # Files, dirs, both, all?     F|D|B|A    Find regular files.
 my $Predicate = 1            ; # Boolean predicate.          bool       Find all file-type combos.
 
 # Counters:
@@ -111,24 +116,39 @@ my $predcount = 0 ; # Count of files found which also match $Predicate.
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
+   # Set time and program variables:
    my $t0 = time;
-   my $pname = get_name_from_path($0);
-   argv;
-   say    STDERR '';
-   say    STDERR "Now entering program \"$pname\". " ;
-   say    STDERR "\$Verbose   = $Verbose           " ;
-   say    STDERR "\$Recurse   = $Recurse           " ;
-   say    STDERR "\$RegExp    = $RegExp            " ;
-   say    STDERR "\$Target    = $Target            " ;
-   say    STDERR "\$Predicate = $Predicate         " ;
-   say    STDERR '';
+   my $pname = substr $0, 1 + rindex $0, '/';
 
+   # Process @ARGV:
+   argv;
+
+   # Print entry message if being at least somewhat verbose:
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now entering program \"$pname\"." ;
+      say    STDERR "\$Db        = $Db"        ;
+      say    STDERR "\$Verbose   = $Verbose"   ;
+      say    STDERR "\$Recurse   = $Recurse"   ;
+      say    STDERR "\$Target    = $Target"    ;
+      say    STDERR "\$RegExp    = $RegExp"    ;
+      say    STDERR "\$Predicate = $Predicate" ;
+   }
+
+   # Process current directory (and all subdirectories if recursing):
    $Recurse and RecurseDirs {curdire} or curdire;
 
+   # Print stats:
    stats;
-   say    STDERR '';
-   say    STDERR "Now exiting program \"$pname\".";
-   printf STDERR "Execution time was %.3f seconds.\n", time - $t0;
+
+   # Print exit message if being at least somewhat verbose:
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now exiting program \"$pname\".";
+      printf STDERR "Execution time was %.3f seconds.", time - $t0;
+   }
+
+   # Exit program, returning success code "0" to caller:
    exit 0;
 } # end main
 
@@ -156,14 +176,21 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
       /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
-      /^-$s*v/ || /^--verbose$/ and $Verbose =  1     ;
-      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*t/ || /^--terse$/   and $Verbose =  1     ; # DEFAULT
+      /^-$s*v/ || /^--verbose$/ and $Verbose =  2     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ; # DEFAULT
       /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
       /^-$s*f/ || /^--files$/   and $Target  = 'F'    ;
       /^-$s*d/ || /^--dirs$/    and $Target  = 'D'    ;
       /^-$s*b/ || /^--both$/    and $Target  = 'B'    ;
-      /^-$s*a/ || /^--all$/     and $Target  = 'A'    ;
+      /^-$s*a/ || /^--all$/     and $Target  = 'A'    ; # DEFAULT
+   }
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
    # Process arguments:
@@ -172,7 +199,7 @@ sub argv {
    and $RegExp = qr/$args[0]/; # set $RegExp.
    $NA >= 2                    # If number of arguments >= 2,
    and $Predicate = $args[1];  # set $Predicate.
-   $NA >= 3                    # If number of arguments >= 3,
+   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
    and error($NA)              # print error message,
    and help                    # and print help message,
    and exit 666;               # and exit, returning The Number Of The Beast.
@@ -189,9 +216,11 @@ sub curdire {
    # Get current working directory:
    my $curdir = d getcwd;
 
-   # Announce $curdir if being terse or verbose:
-   if ( $Verbose ) {
-      say STDOUT "\nDir # $direcount: $curdir\n";
+   # Announce $curdir if being VERY verbose:
+   if ( $Verbose >= 2 ) {
+      say STDOUT '';
+      say STDOUT "Dir # $direcount: $curdir";
+      say STDOUT '';
    }
 
    # Get ref to array of file-info hashes for all files in $curdir matching $Target and $RegExp:
@@ -213,11 +242,13 @@ sub curdire {
 
 # Print stats, if being terse or verbose:
 sub stats {
-   say STDERR '';
-   say STDERR 'Statistics for this directory tree:';
-   say STDERR "Navigated $direcount directories.";
-   say STDERR "Found $filecount files matching regexp \"$RegExp\" and target \"$Target\".";
-   say STDERR "Found $predcount files which also match predicate \"$Predicate\".";
+   if ( $Verbose >= 1 ) {
+      say STDERR '';
+      say STDERR 'Statistics for this directory tree:';
+      say STDERR "Navigated $direcount directories.";
+      say STDERR "Found $filecount files matching regexp \"$RegExp\" and target \"$Target\".";
+      say STDERR "Found $predcount files which also match predicate \"$Predicate\".";
+   }
    return 1;
 } # end sub stats
 
@@ -238,19 +269,22 @@ sub help {
    Introduction:
 
    Welcome to "find-files.pl", Robbie Hatley's excellent file-finding utility!
-   This program finds regular files in the current directory which match a given
-   file-name regular expression (defaulting to '^.+$' meaning "all files") and
-   a given file-type predicate  (defaulting to '1'    meaning "all files"),
-   and prints their full paths.
+   By default, this program finds all directory entries in the current working
+   directory which match a given file-name regular expression
+   (defaulting to '^.+$' meaning "all files") and file-type predicate
+   (defaulting to '1'    meaning "all files"), and prints their full paths.
 
-   If a -d, -b, or -a   option is used, items other than regular files can be found.
+   Item types may be restricted to "regular files", "directories", or "both"
+   by using appropriate options (see "Options" section below) or by using a
+   file-type predicate (see "Arguments" section below).
 
-   If a -r or --recurse option is used, all subdirectories are also searched.
+   All subdirectories of the current working directory my be searched by using a
+   "-r" or "--recurse" option.
 
-   If no predicate, no regexps, and no options are specified, this program prints
-   the paths of all regular in the current directory, which probably isn't what
-   you want, so I suggest using options and arguments to specify what you're
-   looking for.
+   If no options, no regexp, and not predicate are specified, this program prints
+   the paths of all regular files in the current working directory, which probably
+   isn't what you want ("ls" is better for that), so I suggest using options and
+   arguments to specify which items you're looking for.
 
    -------------------------------------------------------------------------------
    Command lines:
@@ -263,22 +297,24 @@ sub help {
 
    Option:            Meaning:
    -h or --help       Print help and exit.
-   -q or --quiet      Don't print directories.         (DEFAULT)
-   -v or --verbose    Do    print directories.
-   -l or --local      Don't recurse subdirectories.    (DEFAULT)
+   -e or --debug      Print diagnostics.
+   -q or --quiet      Don't print stats or directories.
+   -t or --terse      Print stats but  not directories.   (DEFAULT)
+   -v or --verbose    Print both stats AND directories.
+   -l or --local      Don't recurse subdirectories.       (DEFAULT)
    -r or --recurse    Do    recurse subdirectories.
-   -f or --files      Target Files.                    (DEFAULT)
+   -f or --files      Target Files.
    -d or --dirs       Target Directories.
    -b or --both       Target Both.
-   -a or --all        Target All.
+   -a or --all        Target All.                         (DEFAULT)
          --           End of options (all further CL items are arguments).
 
    Multiple single-letter options may be piled-up after a single hyphen.
-   For example, use -vr to verbosely and recursively search for files.
+   For example, use -vrf to verbosely and recursively search for files.
 
    If multiple conflicting separate options are given, later overrides earlier.
    If multiple conflicting single-letter options are piled after a single colon,
-   the result is determined by this descending order of precedence: habdfrlvq.
+   the result is determined by this descending order of precedence: heabdfrlvq.
 
    If you want to use an argument that looks like an option (say, you want to
    search for files which contain "--recurse" as part of their name), use a "--"
@@ -292,15 +328,12 @@ sub help {
 
    "find-files-by-type.pl" takes 0, 1, or 2 arguments.
 
-   Providing no arguments will result in this program returning the paths of all
-   entries in the current directory, which is probably not what you want.
-
    Arg1 (OPTIONAL), if present, must be a Perl-Compliant Regular Expression
    specifying which file names to look for. To specify multiple patterns, use the
    | alternation operator. To apply pattern modifier letters, use an Extended
    RegExp Sequence. For example, if you want to search for items with names
-   containing "cat", "dog", or "horse", title-cased or not, you could use this
-   regexp: '(?i:c)at|(?i:d)og|(?i:h)orse'
+   containing "cat", "dog", or "horse", title-cased or not, you could use this:
+   '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
@@ -310,7 +343,6 @@ sub help {
    this program will confuse your file-test operators for options), and then
    enclosed in single quotes (else the shell won't pass your expression to this
    program intact). Here are some examples of valid and invalid second arguments:
-
    '(-d && -l)'  # VALID:   Finds symbolic links to directories
    '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
    '(-b)'        # VALID:   Finds block special files
@@ -319,7 +351,8 @@ sub help {
     '-d && -l'   # INVALID: missing parentheses       (confuses program      )
     (-d && -l)   # INVALID: missing quotes            (confuses shell        )
      -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
-
+   WARNING: If you use a file-test boolean, also use a "-a" option, otherwise
+   you may not find what you're looking for, be
    (Exception: Technically, you can use an integer as a boolean, and it doesn't
    need quotes or parentheses; but if you use an integer, any non-zero integer
    will print all paths and 0 will print no paths, so this isn't very useful.)
@@ -346,23 +379,25 @@ sub help {
    procedure is also followed for each subdirectory of the the current directory;
    otherwise, only the current directory is searched.
 
-   For one example, the following would look for all sockets with names containing
+   Example #1: The following would look for all sockets with names containing
    "pig" or "Pig", in the current directory and all subdirectories, and also print
-   each directory:
-   find-files.pl -rv '(?i:p)ig' '(-S)'
+   stats and directories:
+   find-files.pl -arv '(?i:p)ig' '(-S)'
 
-   For another example, the following would find all block-special and
-   character-special files in the current directory with names containing '435',
-   and would print just the paths, not directories:
+   Example #2: The following will find all block-special and character-special
+   files in the current directory with names containing '435', and would print
+   the paths and stats, but not directories:
    find-files.pl '435' '(-b || -c)'
 
-   Entry and exit messages, and statistics, are always printed regardless of
-   whether "--quiet" or "--verbose" are specified; however, these are printed
-   to STDERR, so if you use "--quiet" and re-direct STDOUT to a file you can
-   obtain a clean listing, one path per line, with no directories, messages,
-   or stats. Or, you can use "2>/dev/null" to get rid of messages and stats.
+   Example #3: The following will find all symbolic links in all subdirectories
+   and print their paths, but won't print any entry or exit message, stats, or
+   directory headings at all. Note that because this program uses "positional"
+   arguments, the regexp argument can't be skipped, but it can be "bypassed" by
+   setting it to '.+' meaning "some characters":
+   find-files.pl -rq '.+' '(-l)'
 
    Happy file finding!
+
    Cheers,
    Robbie Hatley,
    programmer.

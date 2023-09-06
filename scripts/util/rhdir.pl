@@ -58,12 +58,12 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv      ;
-sub curdire   ;
-sub dir_stats ;
-sub tree_stats;
-sub error     ;
-sub help      ;
+sub argv       ;
+sub curdire    ;
+sub dir_stats  ;
+sub tree_stats ;
+sub error      ;
+sub help       ;
 
 # ======= VARIABLES: =========================================================================================
 
@@ -73,15 +73,15 @@ my $Verbose   = 1          ; # Be verbose?                0,1,2     Be somewhat 
 my $Recurse   = 0          ; # Recurse subdirectories?    bool      Don't recurse.
 my $Target    = 'A'        ; # Target                     F|D|B|A   List files of all types.
 my $RegExp    = qr/^.+$/   ; # Regular Expression.        regexp    List files of all names.
+my $Predicate = 1          ; # file-type boolean          bool      All file types.
 my $Inodes    = 0          ; # Print inodes?              bool      Don't print inodes.
 
 # Counts of events in this program:
 my $direcount = 0 ; # Count of directories processed.
-my $filecount = 0 ; # Count of files processed.
+my $filecount = 0 ; # Count of files matching $Target and $RegExp.
+my $predcount = 0 ; # Count of files also matching $Predicate.
 
 # Accumulations of counters from RH::Dir :
-my $totfcount = 0 ; # Count of all targeted directory entries matching regexp.
-my $noexcount = 0 ; # Count of all nonexistent files encountered.
 my $ottycount = 0 ; # Count of all tty files.
 my $cspccount = 0 ; # Count of all character special files.
 my $bspccount = 0 ; # Count of all block special files.
@@ -95,6 +95,7 @@ my $sdircount = 0 ; # Count of all directories.
 my $hlnkcount = 0 ; # Count of all regular files with multiple hard links.
 my $regfcount = 0 ; # Count of all regular files.
 my $unkncount = 0 ; # Count of all unknown files.
+my $noexcount = 0 ; # Count of all nonexistent files encountered.
 
 # Hashes:
 my %Targets;
@@ -106,29 +107,33 @@ $Targets{A} = "All Directory Entries";
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
+   # Set time and program variables:
    my $t0 = time;
-   argv;
    my $pname = get_name_from_path($0);
-   if ( $Verbose >= 1 ) {
-      say    STDERR '';
-      say    STDERR "Now entering program \"$pname\".";
-      say    STDERR "\$Db      = $Db"      ;
-      say    STDERR "\$Verbose = $Verbose" ;
-      say    STDERR "\$Recurse = $Recurse" ;
-      say    STDERR "\$Target  = $Target"  ;
-      say    STDERR "\$Regexp  = $RegExp"  ;
-      say    STDERR "\$Inodes  = $Inodes"  ;
-   }
 
+   # Process @ARGV:
+   argv;
+
+   # Print entry message:
+   say    STDERR "Now entering program \"$pname\".";
+   say    STDERR "\$Db        = $Db"        ;
+   say    STDERR "\$Verbose   = $Verbose"   ;
+   say    STDERR "\$Recurse   = $Recurse"   ;
+   say    STDERR "\$Target    = $Target"    ;
+   say    STDERR "\$Regexp    = $RegExp"    ;
+   say    STDERR "\$Predicate = $Predicate" ;
+   say    STDERR "\$Inodes    = $Inodes"    ;
+
+   # Process current directory (and all subdirectories if recursing):
    $Recurse and RecurseDirs {curdire} or curdire;
 
+   # Print stats for this directory tree:
    tree_stats;
-   my $et = time - $t0;
-   if ( $Verbose >= 1 ) {
-      say    STDERR '';
-      say    STDERR "Now exiting program \"$pname\".";
-      printf STDERR "Execution time was %.3f seconds.", $et;
-   }
+
+   # Print exit message:
+   say    STDERR '';
+   say    STDERR "Now exiting program \"$pname\".";
+   printf STDERR "Execution time was %.3f seconds.", time - $t0;
    exit 0;
 } # end main
 
@@ -177,7 +182,9 @@ sub argv {
    my $NA = scalar(@args);     # Get number of arguments.
    $NA >= 1                    # If number of arguments >= 1,
    and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 1 && !$Db            # If number of arguments >= 2 and we're not debugging,
+   $NA >= 2                    # If number of arguments >= 2,
+   and $Predicate = $args[1];  # set $Predicate.
+   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
    and error($NA)              # print error message
    and help                    # and print help message
    and exit 666;               # and exit, returning The Number Of The Beast.
@@ -188,7 +195,7 @@ sub argv {
 
 sub curdire {
    ++$direcount;
-   my $curdir = cwd_utf8;
+   my $curdir = d getcwd;
    say STDOUT "\nDir # $direcount: \"$curdir\"";
 
    # Get list of files in current directory matching $Target and $RegExp:
@@ -197,21 +204,16 @@ sub curdire {
    if ($Db)
    {
       say STDERR '';
-      say STDERR 'IN curdire. List of paths from GetFiles:';
+      say STDERR 'Db msg from curdire, near top, just ran GetFiles().';
+      say STDERR "cwd = \"$curdir\".";
+      say STDERR "This dir contains $RH::Dir::totfcount entries.";
+      say STDERR 'List of paths from GetFiles:';
       say STDERR $_->{Path} for @{$curdirfiles};
       say STDERR '';
    }
 
-   # If being "somewhat verbose", append total-files and nonexistant-files to accumulators:
-   if ($Verbose >= 1)
-   {
-      $totfcount += $RH::Dir::totfcount; # Total files.
-      $noexcount += $RH::Dir::noexcount; # Nonexistent files.
-   }
-
-   # If being "VERY verbose", also append all remaining RH::Dir counters to accumulators:
-   if ($Verbose >= 2)
-   {
+   # If being "very verbose", append all 14 RH::Dir file-type counters to this program's accumulators:
+   if ( $Verbose >= 2 ) {
       $ottycount += $RH::Dir::ottycount; # tty files
       $cspccount += $RH::Dir::cspccount; # character special files
       $bspccount += $RH::Dir::bspccount; # block special files
@@ -225,31 +227,38 @@ sub curdire {
       $hlnkcount += $RH::Dir::hlnkcount; # regular files with multiple hard links
       $regfcount += $RH::Dir::regfcount; # regular files
       $unkncount += $RH::Dir::unkncount; # unknown files
+      $noexcount += $RH::Dir::noexcount; # Nonexistent files.
    }
-
-   # Make a list of types:
-   my @Types = split //,'NTYXOPBSLWDHFU';
 
    # Make a hash of refs to lists of refs to file-record hashes, keyed by type:
    my %TypeLists;
 
-   if ($Db) {print Dumper \%TypeLists}
-
-   # Use autovivification to insert refs to anonymous arrays into %TypeLists,
-   # and to push refs to file-record hashes into those anonymous arrays:
-   foreach my $type (@Types)
-   {
-      foreach my $file (@{$curdirfiles})
-      {
-         if ($type eq $file->{Type})
-         {
-            push @{$TypeLists{$type}}, $file;
+   # Autovivify create type arrays in %TypeLists, and to push refs to file-record hashes into those arrays,
+   # but only for files matching $Predicate:
+   foreach my $file ( @{$curdirfiles} ) {
+      ++$filecount;
+      local $_ = e $file->{Path};
+      if ($Db) {say "dollscore = $_"}
+      if ( eval($Predicate) ) {
+         if ($Db) {
+            say STDERR 'predicate succeeded';
+         }
+         ++$predcount;
+         push @{$TypeLists{$file->{Type}}}, $file;
+      }
+      else {
+         if ($Db) {
+            say STDERR 'predicate failed';
          }
       }
    }
 
    if ($Db) {print Dumper \%TypeLists}
 
+   # Make a list of types:
+   my @Types = split //,'NTYXOPBSLWDHFU';
+
+   # Directory Listing (if in inodes mode):
    if ($Inodes)
    {
       say STDOUT 'T: Date:       Time:        Size:     Inode:      L:   Bsize:   Blocks:  Name:';
@@ -257,7 +266,6 @@ sub curdire {
       {
          foreach my $file (sort {fc($a->{Name}) cmp fc($b->{Name})} @{$TypeLists{$type}})
          {
-            ++$filecount;
             printf STDOUT "%-1s  %-10s  %-11s  %-8.2E  %10d  %3u  %7u  %7u  %-s\n",
                           $file->{Type},  $file->{Date},   $file->{Time},
                           $file->{Size},  $file->{Inode},  $file->{Nlink},
@@ -266,6 +274,7 @@ sub curdire {
       }
    }
 
+   # Directory Listing (if NOT in inodes mode):
    else
    {
       say 'T: Date:       Time:        Size:     L:   Name:';
@@ -273,7 +282,6 @@ sub curdire {
       {
          foreach my $file (sort {fc($a->{Name}) cmp fc($b->{Name})} @{$TypeLists{$type}})
          {
-            ++$filecount;
             printf STDOUT "%-1s  %-10s  %-11s  %-8.2E  %3u  %-s\n",
                           $file->{Type}, $file->{Date},  $file->{Time},
                           $file->{Size}, $file->{Nlink}, $file->{Name};
@@ -291,8 +299,7 @@ sub curdire {
 sub dir_stats ($curdir) {
    if ( $Verbose >= 1 ) {
       say STDERR "\nStatistics for directory \"$curdir\":";
-      say STDERR "Found ${RH::Dir::totfcount} files matching given target and regexp.";
-      say STDERR "Found ${RH::Dir::noexcount} nonexistent directory entries.";
+      say STDERR "Found ${RH::Dir::totfcount} files in this directory matching given target and regexp.";
    }
    if ( $Verbose >= 2 ) {
       say    STDERR "\nDirectory entries encountered in this directory included:";
@@ -309,6 +316,7 @@ sub dir_stats ($curdir) {
       printf STDERR "%7u regular files with multiple hard links\n", $RH::Dir::hlnkcount;
       printf STDERR "%7u regular files\n",                          $RH::Dir::regfcount;
       printf STDERR "%7u files of unknown type\n",                  $RH::Dir::unkncount;
+      printf STDERR "%7u non-existent directory entries\n",         $RH::Dir::noexcount;
    }
    return 1;
 } # end sub dir_stats ($curdir)
@@ -317,9 +325,9 @@ sub tree_stats {
    if ( $Verbose >= 1 ) {
       say STDERR "\nStatistics for this tree:";
       say STDERR "Navigated $direcount directories.";
-      say STDERR "Processed $filecount files.";
-      say STDERR "Found $totfcount files matching given target and regexp.";
-      say STDERR "Found $noexcount nonexistent directory entries.";
+      say STDERR "Found $filecount files matching given target and regexp.";
+      say STDERR "Found $predcount files also matching given predicate.";
+
    }
    if ( $Verbose >= 2 ) {
       say    STDERR "\nDirectory entries encountered in this tree included:";
@@ -336,6 +344,7 @@ sub tree_stats {
       printf STDERR "%7u regular files with multiple hard links\n", $hlnkcount;
       printf STDERR "%7u regular files\n",                          $regfcount;
       printf STDERR "%7u files of unknown type\n",                  $unkncount;
+      printf STDERR "%7u non-existent directory entries\n",         $noexcount;
    }
    return 1;
 } # end sub tree_stats
@@ -344,9 +353,8 @@ sub error ($NA)
 {
    print STDERR ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
-   Error: rhdir.pl takes zero or one arguments, but you typed $NA. If an argument
-   is present, it must be a Perl-Compliant Regular Expression specifying which
-   directory entries to list. Help follows:
+   Error: rhdir.pl takes 0, 1, or 2 arguments, but you typed $NA arguments.
+   Help follows:
    END_OF_ERROR
 } # end sub error ($NA)
 
@@ -405,8 +413,8 @@ sub help
    -------------------------------------------------------------------------------
    Command lines:
 
-   rhdir.pl [-h | --help]             (to print this help and exit)
-   rhdir.pl [options] [Argument]      (to list files)
+   rhdir.pl [-h | --help]            (to print this help and exit)
+   rhdir.pl [options] [Arguments]    (to list directory entries  )
 
    -------------------------------------------------------------------------------
    Description of options:
@@ -426,7 +434,7 @@ sub help
    -i or --inodes      Print inode numbers, block sizes, & #s of blocks.
          --            End of options (all further CL items are arguments).
 
-   Defaults (what will be printed if no options are used) are as follows:
+   Defaults (what will be printed if no options or arguments are used):
     - Give file listings for files of all types (dir, reg, link, pipe, etc).
     - Print basic stats such as how many directories and files were processed.
     - Don't print counts of how many files of each type were encountered.
@@ -450,18 +458,47 @@ sub help
    -------------------------------------------------------------------------------
    Description of arguments:
 
-   In addition to options, this program can take one optional argument which, if
-   present, must be a Perl-Compliant Regular Expression specifying which items to
-   process. To specify multiple patterns, use the | alternation operator.
-   To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to search for items with names containing "cat",
-   "dog", or "horse", title-cased or not, you could use this regexp:
-   '(?i:c)at|(?i:d)og|(?i:h)orse'
-   Be sure to enclose your regexp in 'single quotes', else your shell may replace
-   it with matching names of entities in the current directory and send THOSE to
+   In addition to options, this program can take 1 or 2 optional arguments.
+
+   Arg1 (OPTIONAL), if present, must be a Perl-Compliant Regular Expression
+   specifying which file names to process. To specify multiple patterns, use the
+   | alternation operator. To apply pattern modifier letters, use an Extended
+   RegExp Sequence. For example, if you want to process items with names
+   containing "cat", "dog", or "horse", title-cased or not, you could use this
+   regexp: '(?i:c)at|(?i:d)og|(?i:h)orse'
+   Be sure to enclose your regexp in 'single quotes', else BASH may replace it
+   with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
 
+   Arg2 (OPTIONAL), if present, must be a boolean expression using Perl
+   file-test operators. The expression must be enclosed in parentheses (else
+   this program will confuse your file-test operators for options), and then
+   enclosed in single quotes (else the shell won't pass your expression to this
+   program intact). Here are some examples of valid and invalid second arguments:
+
+   '(-d && -l)'  # VALID:   Finds symbolic links to directories
+   '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
+   '(-b)'        # VALID:   Finds block special files
+   '(-c)'        # VALID:   Finds character special files
+   '(-S || -p)'  # VALID:   Finds sockets and pipes.  (S must be CAPITAL S   )
+    '-d && -l'   # INVALID: missing parentheses       (confuses program      )
+    (-d && -l)   # INVALID: missing quotes            (confuses shell        )
+     -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
+
+   (Exception: Technically, you can use an integer as a boolean, and it doesn't
+   need quotes or parentheses; but if you use an integer, any non-zero integer
+   will process all paths and 0 will process no paths, so this isn't very useful.)
+
+   Arguments and options may be freely mixed, but the arguments must appear in
+   the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them
+   backwards, they won't do what you want, as most predicates aren't valid regexps
+   and vice-versa.
+
+   A number of arguments other than 0, 1, or 2 will cause this program to print
+   error and help messages and abort.
+
    Happy directory listing!
+
    Cheers,
    Robbie Hatley,
    programmer.

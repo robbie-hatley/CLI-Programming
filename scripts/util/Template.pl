@@ -126,9 +126,9 @@ sub help    ; # Print help and exit.
 my $Db        = 0            ; # Debug?                      bool       Don't debug.
 my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
-my $RegExp    = qr/^.+$/     ; # Regular expression.         regexp     Process all file names.
 my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Process all file types.
-my $Predicate = 1            ; # Boolean predicate.          bool       Means whatever you want it to.
+my $RegExp    = qr/^.+$/     ; # Regular expression.         regexp     Process all file names.
+my $Predicate = 1            ; # Boolean predicate.          bool       Process all file types.
 
 # Counters:
 my $direcount = 0 ; # Count of directories processed by curdire().
@@ -155,24 +155,39 @@ my $unkncount = 0 ; # Count of all unknown files.
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
+   # Set time and program variables:
    my $t0 = time;
-   argv;
-   my $pname = substr $0,1+rindex $0,'/';
-   say    STDERR '';
-   say    STDERR "Now entering program \"$pname\"." ;
-   say    STDERR "\$Db        = $Db"        ;
-   say    STDERR "\$Verbose   = $Verbose"   ;
-   say    STDERR "\$Recurse   = $Recurse"   ;
-   say    STDERR "\$RegExp    = $RegExp"    ;
-   say    STDERR "\$Target    = $Target"    ;
-   say    STDERR "\$Predicate = $Predicate" ;
+   my $pname = substr $0, 1 + rindex $0, '/';
 
+   # Process @ARGV:
+   argv;
+
+   # Print entry message if being at least somewhat verbose:
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now entering program \"$pname\"." ;
+      say    STDERR "\$Db        = $Db"        ;
+      say    STDERR "\$Verbose   = $Verbose"   ;
+      say    STDERR "\$Recurse   = $Recurse"   ;
+      say    STDERR "\$Target    = $Target"    ;
+      say    STDERR "\$RegExp    = $RegExp"    ;
+      say    STDERR "\$Predicate = $Predicate" ;
+   }
+
+   # Process current directory (and all subdirectories if recursing):
    $Recurse and RecurseDirs {curdire} or curdire;
 
+   # Print stats:
    stats;
-   say    STDERR '';
-   say    STDERR "Now exiting program \"$pname\".";
-   printf STDERR "Execution time was %.3f seconds.", time - $t0;
+
+   # Print exit message if being at least somewhat verbose:
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now exiting program \"$pname\".";
+      printf STDERR "Execution time was %.3f seconds.", time - $t0;
+   }
+
+   # Exit program, returning success code "0" to caller:
    exit 0;
 } # end main
 
@@ -217,15 +232,14 @@ sub argv {
       say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
-   # Count args:
-   my $NA = scalar @args;
+   # Count arguments:
+   my $NA = scalar(@args);     # Get number of arguments.
 
    # Use all arguments as RegExps?
    # my $re; $NA >= 1 and $re = join '|', @args and $RegExp = qr/$re/o;
 
    # Use positional arguments instead?
    # Process arguments:
-   my $NA = scalar(@args);     # Get number of arguments.
    $NA >= 1                    # If number of arguments >= 1,
    and $RegExp = qr/$args[0]/; # set $RegExp.
    $NA >= 2                    # If number of arguments >= 2,
@@ -371,7 +385,7 @@ sub help {
 
    Option:            Meaning:
    -h or --help       Print help and exit.
-   -e or --debug      DO    print diagnostics and exit.
+   -e or --debug      Print diagnostics.
    -q or --quiet      Be quiet.                         (DEFAULT)
    -t or --terse      Be terse.
    -v or --verbose    Be verbose.

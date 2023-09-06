@@ -1,10 +1,10 @@
 #! /bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # /rhe/scripts/util/census.pl
 # Robbie Hatley's nifty file-system census utility. Prints how many files and bytes are in the current
 # directory and each of its subdirectories.
@@ -20,262 +20,318 @@
 #                   ANDing "--gb=" and "--files=" together.
 # Wed Feb 17, 2021: Refactored to use the new GetFiles(), which now requires a fully-qualified directory as
 #                   its first argument, target as second, and regexp (instead of wildcard) as third.
-# Wed Nov 17, 2021: Added "use common::sense;", shortened sub names, added comments, corrected errors in help, wrapped
-#                   regexp in qr//, refactored argv(), added sub dirstats(), and unscrambled the logic in curdire().
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-########################################################################################################################
+# Wed Nov 17, 2021: Added "use common::sense;", shortened sub names, added comments, corrected errors in help,
+#                   wrapped regexp in qr//, refactored argv(), added sub dirstats(), and unscrambled the logic
+#                   in curdire().
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
+# Mon Sep 04, 2023: Upgraded from "v5.32" to "v5.36". Got rid of "common::sense" (antiquated). Got rid of all
+#                   prototypes. Now using signatures. Reduced width from 120 to 110. Removed '/o' from all
+#                   qr(). Added debug, quiet, verbose, local, recurse options. Entry/stats/exit messages are
+#                   now printed only if being verbose. Entry/stats/exit are to STDERR and header and dir info
+#                   are to STDOUT. $direcount, $filecount, and $gigacount now count only directories and files
+#                   which obey the restrictions imposed by $RegExp, $Empty, $GB, and $Files. Improved help.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+use experimental 'switch';
+
 use Sys::Binmode;
-
+use Cwd;
 use Time::HiRes 'time';
 
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv     ();
-sub dirstats ($$$);
-sub curdire  ();
-sub stats    ();
-sub error    ($);
-sub help     ();
+sub argv       ;
+sub curdire    ;
+sub dire_stats ;
+sub tree_stats ;
+sub error      ;
+sub help       ;
 
-# ======= LEXICAL VARIABLES: ===========================================================================================
+# ======= LEXICAL VARIABLES: =================================================================================
 
 # Debug?
-my $db = 0;
 
-# Settings:                  Description:                          Range:                  Defaults:
-my $Recurse   = 1        ; # Recurse subdirectories?               (bool)                  1
-my $Regexp    = qr/^.+$/ ; # Regular expression.                   (regexp)                qr/^.+$/
-my $Empty     = 0        ; # Show only empty directories?          (bool)                  0
-my $GB        = 0.0      ; # Show only dirs with >= $GB GB?        (non-negative real)     0.0
-my $Files     = 0        ; # Show only dirs with >= $Files files.  (non-negative integer)  0
+# Settings:     Default:   # Meaning of setting:                   Range:        Meaning of default:
+my $Db        = 0        ; # Print diagnostics?                    bool          Don't print diagnostics.
+my $Verbose   = 0        ; # Print entry/stats/exist msgs?         bool          Don't print the messages.
+my $Recurse   = 0        ; # Recurse subdirectories?               bool          Don't recurse.
+my $RegExp    = qr/^.+$/ ; # Regular expression.                   regexp        Process all file names.
+my $Empty     = 0        ; # Show only empty directories?          bool          Show empty AND non-empty.
+my $GB        = 0.0      ; # Show only dirs with >= $GB GB?        non-neg real  Show dirs of all sizes.
+my $Files     = 0        ; # Show only dirs with >= $Files files.  non-neg int   Show dirs of all file counts.
 
-# Counters of events in "census.pl" only:
+# NOTE: One may be forgiven for thinking that we'd OR together the $GB and $Files predicates, but no, we need
+# to AND them together instead. If you think about it, you'll see why: the defaults already allow all files,
+# so if we OR the restrictions, then neither $GB nor $Files will have any effect at all, because the OTHER
+# restriction will still be at max laxness. So we need to AND them instead; that way, the two restrictions can
+# be used either independently or together.
+
+# NOTE: There are no $Target or $Predicate variables in this program, because we're interested only in
+# regular files, because those are the files that are using all the storage space, and answering the question
+# "What's using the storage space???" is what this program is all about.
+
+# NOTE: When I say "regular files", I mean Perl file-test-operator predicate "-f _ && !-d _ && !-l _".
+# That still allows any of -b -c -p -S -t to be true, but that's OK, because "weird" files can still take-up
+# storage space, and we are interested in tallying ALL files ("weird" or not) that take-up storage space.
+
+# Counters:
 my $direcount = 0; # Count of directories processed.
-my $gigacount = 0; # Count of gigabytes of data processed.
+my $filecount = 0; # Count of files       processed.
+my $gigacount = 0; # Count of gigabytes   processed.
 
-# Accumulations of counters from RH::Dir::GetFiles():
-my $regfcount = 0; # Count of all regular files seen.
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
-
-{
-   say "\nNow entering program \"census.pl\".";
-   my $enter_time = time;
+{ # begin main
+   # Set time and program variables:
+   my $t0 = time;
+   my $pname = substr $0, 1 + rindex $0, '/';
 
    # Process @ARGV:
-   argv();
+   argv;
 
-   say '';
-   say "\$Recurse  = $Recurse";
-   say "\$Regexp   = $Regexp";
-   say "Minimum dir size  = ${GB}GB.";
-   say "Minimum dir files = $Files files.";
+   # Print entry message if being verbose:
+   if ( $Verbose >= 1 ) {
+      say STDERR '';
+      say STDERR "Now entering program \"$pname\"."  ;
+      say STDERR "\$Db      = $Db"                   ;
+      say STDERR "\$Verbose = $Verbose"              ;
+      say STDERR "\$Recurse = $Recurse"              ;
+      say STDERR "\$RegExp  = $RegExp"               ;
+      say STDERR "Minimum dir size  = ${GB}GB."      ;
+      say STDERR "Minimum dir files = $Files files." ;
+   }
 
-   say '';
-   say 'Populations of directories in this tree:';
+   # Print header to STDOUT regardless of verbosity level:
+   say STDOUT 'Storage space in GB used by each directory in this tree:';
 
+   # Process current directory (and all subdirectories if recursing):
    $Recurse and RecurseDirs {curdire} or curdire;
 
    # Print stats:
-   stats;
+   tree_stats;
 
-   my $exit_time = time;
-   my $elapsed_time = $exit_time - $enter_time;
-   say "\nNow exiting program \"census.pl\".";
-   say "\nExecution time for \"census.pl\" was $elapsed_time seconds.";
+   # Print exit message if being verbose
+   if ( $Verbose >= 1 ) {
+      say    STDERR '';
+      say    STDERR "Now exiting program \"$pname\".";
+      printf STDERR "Execution time was %.3f seconds.", time - $t0;
+   }
+
+   # Exit program, returning success code "0" to caller:
    exit 0;
 } # end MAIN
 
-# ======= SUBROUTINE DEFINITIONS ================================================================
+# ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub argv ()
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if (/^-h$/ || /^--help$/ ) {help; exit 777;}
-         elsif (/^-l$/ || /^--local$/) {$Recurse =  0 ;} # Default is 1.
-         elsif (/^-e$/ || /^--empty$/) {$Empty   =  1 ;} # Default is 0.
-         elsif (/^--gb=(\d+\.?\d*)$/ ) {$GB      = $1 ;} # Default is 0.0.
-         elsif (/^--files=(\d+)$/    ) {$Files   = $1 ;} # Default is 0.
+sub argv {
+   # Get options and arguments:
+   my @opts = ();            # options
+   my @args = ();            # arguments
+   my $end = 0;              # end-of-options flag
+   my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   for ( @ARGV ) {
+      /^--$/                 # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1           # so if we see that, then set the "end-of-options" flag
+      and next;              # and skip to next element of @ARGV.
+      !$end                  # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/     # and if we get a valid short option
+      ||  /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_     # then push item to @opts
+      or  push @args, $_;    # else push item to @args.
+   }
 
-         # Remove option from @ARGV:
-         splice @ARGV, $i, 1;
-
-         # Move the index 1-left, so that the "++$i" above
-         # moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right
-         # due to deletion of previous element contents:
-         --$i;
+   # Process options:
+   for ( @opts ) {
+      /^-$s*h/ || /^--help$/      and help and exit 777 ;
+      /^-$s*d/ || /^--debug$/     and $Db      =  1     ; # Default is 0.
+      /^-$s*q/ || /^--quiet$/     and $Verbose =  0     ; # Default is 0.
+      /^-$s*v/ || /^--verbose$/   and $Verbose =  1     ;
+      /^-$s*l/ || /^--local$/     and $Recurse =  0     ; # Default is 0.
+      /^-$s*r/ || /^--recurse$/   and $Recurse =  1     ;
+      /^-$s*e/ || /^--empty$/     and $Empty   =  1     ;
+      if ( $_ =~ m/^--gb=(\d+\.?\d*)$/ ) {
+         $GB = $1;
+         say "set \$GB = $1" if $Db;
+      }
+      if ( $_ =~ m/^--files=(\d+)$/ ) {
+         $Files = $1;
+         say "set \$Files = $1" if $Db;
       }
    }
-   my $NA = scalar(@ARGV);
-   given ($NA)                            # Given the number of remaining items in @ARGV,
-   {
-      when (0) {;}                        # if =0, do nothing;
-      when (1) {$Regexp = qr/$ARGV[0]/;}  # if =1, set $Regexp;
-      default  {error($NA); exit(666);}   # if >1, print error and help messages and exit.
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
+
+   # Count arguments:
+   my $NA = scalar(@args);     # Get number of arguments.
+
+   # Process arguments:
+   $NA >= 1                    # If number of arguments >= 1,
+   and $RegExp = qr/$args[0]/; # set $RegExp.
+   $NA >= 2 && !$Db            # If number of arguments >= 2 and we're not debugging,
+   and error($NA)              # then print error message,
+   and help                    # and print help message,
+   and exit 666;               # and exit, returning The Number Of The Beast.
+
+   # Return success code 1 to caller:
    return 1;
-} # end sub argv ()
+} # end sub argv
 
-sub dirstats ($$$)
-{
-   my $files     = shift;
-   my $gigabytes = shift;
-   my $directory = shift;
-   printf("%5d Files  %6.3fGB  %s\n", $files, $gigabytes, $directory);
-   return 1;
-} # end sub dirstats ($$$)
-
-sub curdire ()
-{
-   # Were's starting to process a directory, so increment $dircount:
-   ++$direcount;
-
+sub curdire {
    # Get CWD:
-   my $curdir = cwd_utf8;
+   my $curdir = d getcwd;
 
-   # Get files:
-   my $curdirfiles = GetFiles($curdir, 'F', $Regexp);
+   # Get ref to array of refs to hashes of info on all regular files in current working directory:
+   my $curdirfiles = GetFiles($curdir, 'F', $RegExp);
+   # Note: these files might also be b,c,p,S,t, but those can take-up space also, and we're interested in
+   # tallying ALL storage space used, including storage space used by weird files.
 
-   # How many gigabytes of regular-file data are in this directory? Don't assume that all files in $curdirfiles will
-   # have their ->{Type} field set to "F"! Some won't be, because GetFiles() uses a different file typing criteria than
-   # glob_regexp_utf8 (which uses a simple -f check), so even if you request "naught but regular files" from GetFiles,
-   # some of the files it returns may have ->{Type} set to something else because while those files may be "regular
-   # files", they may also be something else! But we're only interested here in normal data files (txt, jpg, mp3, etc),
-   # so lets restrict ourselves to tallying the sizes of files with ->{Type} set to 'F':
+   # Tally bytes of data stored in all regular files in current directory:
    my $bytes = 0;
-   foreach my $file (@{$curdirfiles})
-   {
-      if ('F' eq $file->{Type})
-      {
-         $bytes += $file->{Size};
-      }
+   foreach my $file ( @$curdirfiles ) {
+      $bytes += $file->{Size};
    }
    my $gigabytes = $bytes/1000000000.0;
-   $gigacount += $gigabytes;
-
-   # Append count of regular files from RH::Dir to local counter:
-   $regfcount += $RH::Dir::regfcount; # regular files
 
    # If in "show empties only" mode,
    # then only print directories which contain zero regular files:
-   if ($Empty) 
+   if ($Empty)
    {
-      if (0 == $RH::Dir::regfcount)
-      {
-         say "Empty: $curdir";
+      if ( 0 == $RH::Dir::totfcount ) {
+         ++$direcount;
+         say STDOUT "Empty: $curdir";
       }
-      else
-      {
+      else {
          ; # Do nothing.
       }
    }
 
-   # Otherwise,
-   # display info for this directory if it contains at-least $Files files and at-least $GB gigabytes of data:
-   else
-   {
-      if ($RH::Dir::regfcount >= $Files && $gigabytes >= $GB)
-      {
-         dirstats($RH::Dir::regfcount, $gigabytes, $curdir);
+   # Otherwise, we're NOT in "show empties only" mode, so display info for this directory
+   # if it contains at-least $Files files or at-least $GB gigabytesf data:
+   else {
+      if ($RH::Dir::totfcount >= $Files && $gigabytes >= $GB) {
+         ++$direcount;
+         $filecount += $RH::Dir::totfcount;
+         $gigacount += $gigabytes;
+         printf STDOUT "%7d Files %9.3fGB: %s\n", $RH::Dir::totfcount, $gigabytes, $curdir;
       }
-      else
-      {
+      else {
          ; # Do nothing.
       }
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-sub stats ()
-{
-   say "";
-   say "Navigated $direcount directories.";
-   say "Encountered $regfcount regular files matching regexp \"$Regexp\",";
-   say "taking up $gigacount GB of disk space.";
+sub tree_stats {
+   if ( $Verbose >= 1 ) {
+      say STDERR '';
+      say STDERR "Found $direcount directories matching given files limit and size limit.";
+      say STDERR "Those directories contain $filecount regular files matching given regexp,";
+      say STDERR "and take-up $gigacount GB of storage space.";
+   }
    return 1;
-} # end sub stats ()
+} # end sub tree_stats
 
-sub error ($)
-{
-   my $NumArgs = shift;
+sub error ($NA) {
    print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
-   Error: You typed $NumArgs arguments, but Census takes at most 1 argument,
-   which (if present) must be a regular expression specifying which directories
-   and/or files to process. Help follows:
 
+   Error: You typed $NA arguments, but Census takes at most 1 argument,
+   which, if present, must be a Perl-Compliant Regular Expression specifying
+   which files to tally sizes for. Help follows:
    END_OF_ERROR
    help;
    return 1;
-} # end sub error ($)
+} # end sub error
 
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to "census.pl", Robbie Hatley's nifty directory-tree census utility.
-   This program prints how many files and bytes are in the current directory and
-   each of its subdirectories.
+   This program prints how many files are in the current directory and each of its
+   subdirectories, and how many gigabytes of storage space they use.
 
-   Command line to get help:
-   census.pl [-h|--help]
+   -------------------------------------------------------------------------------
+   Command lines:
 
-   Regular command line:
-   census.pl [-l|--local] [-t|--terse] [--files=####] [--gb=##] [Arg1]
+   census.pl -h | --help        (to print this help and exit)
+   census.pl [options] [Arg]    (to tally files & gigabytes in directories)
 
+   -------------------------------------------------------------------------------
    Description of options:
-   Option:                Meaning:
-   "-h" or "--help"       Print help and exit.
-   "-l" or "--local"      DON'T recurse subdirectories. (Default is to recurse.)
-   "--files=####"         Only display directories containing at least ####
-                          files, where #### is any non-negative integer.
-                          Note that --atleast=#### must be all one token,
-                          and hence it cannot contain spaces.
-                          Valid:   --atleast=350
-                          Invalid: --atleast = 350
-   "--gb=##"              Only display directories containing at least ##
-                          gigabytes, where ## is any non-negative integer.
-                          Note that --gb=## must be all one token,
-                          and hence it cannot contain spaces.
-                          Valid:   --gb=350
-                          Invalid: --gb = 350
-   "-e" or "--empty"      Only display directories containing 0 regular files.
 
-   NOTE: "-e" overrides "gb=" and/or "files=" and prints info ONLY on
-   directories which are empty.
+   Option:            Meaning:
+   -h or --help       Print help and exit.
+   -d or --debug      Print diagnostics.
+   -q or --quiet      Don't print entry/exit/stats messages.             (DEFAULT)
+   -v or --verbose    Do    print entry/exit/stats messages.
+   -l or --local      Don't recurse subdirectories.                      (DEFAULT)
+   -r or --recurse    Do    recurse subdirectories.
+   -e or --empty      Only display directories containing 0 regular files.
+   --files=####       Only display directories containing at least ####
+                      files, where #### is any non-negative integer.
+   --gb=##            Only display directories containing at least ##
+                      gigabytes, where ## is any non-negative integer.
+         --           End of options (all further CL items are arguments).
 
-   NOTE: "--gb=" and "--files=" do NOT contradict or override; instead,
-   they are logically ANDed together. So if you command:
-   census.pl --gb=1.3 --files=500
-   then census.pl will print info on only those folders which contain both
-   1.3GB-or-more of content AND 500+ files.
+   "-e" overrides "gb=" and/or "files=" and prints info ONLY on directories
+   which are empty.
+
+   If both "--gb=" and "--files=" are BOTH used, they are logically ANDed
+   together. So if you command "census.pl --gb=1.3 --files=500", then
+   census.pl will print info on any directories which contain either
+   1.3GB-or-more of content OR 500+ files.
 
    If "-e|--empty", "--gb=", or "--files=" are NOT used, then this program prints
    info on ALL directories in the directory tree descending from the cwd.
 
+   Multiple single-letter options may be piled-up after a single hyphen. For
+   example, use -dl to print diagnostics and process the current directory
+   only.
+
+   If you want to use an argument that looks like an option (say, you want to
+   process only files which contain "--recurse" as part of their name), use a "--"
+   option; that will force all command-line entries to its right to be considered
+   "arguments" rather than "options".
+
+   All options not listed above are ignored.
+
+   -------------------------------------------------------------------------------
    Description of arguments:
-   In addition to options, "census.pl" can take one optional argument which, if
-   present, must be a Perl-Compliant Regular Expression specifying which items to
-   process. To specify multiple patterns, use the | alternation operator.
-   To apply pattern modifier letters, use an Extended RegExp Sequence.
-   For example, if you want to search for items with names containing "cat",
-   "dog", or "horse", title-cased or not, you could use this regexp:
-   '(?i:c)at|(?i:d)og|(?i:h)orse'
+
+   In addition to options, this program can take optional argument.
+
+   Arg1 (OPTIONAL), if present, must be a Perl-Compliant Regular Expression
+   specifying which file names to process. To specify multiple patterns, use the
+   | alternation operator. To apply pattern modifier letters, use an Extended
+   RegExp Sequence. For example, if you want to process items with names
+   containing "cat", "dog", or "horse", title-cased or not, you could use this
+   regexp: '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
+
+   A number of arguments other than 0 or 1 will cause this program to print an
+   error message and this help message and exit.
+
+   Happy directory storage-space-usage reporting!
 
    Cheers,
    Robbie Hatley,
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help
