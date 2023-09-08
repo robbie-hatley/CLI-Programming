@@ -6,7 +6,7 @@
 
 ########################################################################################################################
 # move-files.pl
-# Given the paths of two directories, Source and Destination, this program moves all files matching a wildcard
+# Given the paths of two directories, Source and Destination, this program moves all files matching a regexp
 # from Source to Destination, enumerating each file for which a file exists in Destination with the same name root.
 # Optionally, this program can be instructed to NOT move any files for which duplicates exist in the destination,
 # and/or change the name of the file to its own SHA1 hash.
@@ -15,10 +15,10 @@
 # at <lonewolf@well.com> and I'll send my RH::Dir module to you.
 #
 # Edit history:
-# Sat Jan 02, 2021: Wrote it. 
+# Sat Jan 02, 2021: Wrote it.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Mon Nov 22, 2021: Fixed several places which were running file tests on unencoded paths. (Fixed by adding e.)
-# Mon Nov 22, 2021: Heavily refactored. Now using sub "move_files" in RH::Dir instead of local, and using 
+# Mon Nov 22, 2021: Heavily refactored. Now using sub "move_files" in RH::Dir instead of local, and using
 #                   a regular expression instead of a wildcard to specify files to move. Also, now subsumes
 #                   the script "move-large-images.pl".
 # Tue Nov 23, 2021: Fixed "won't handle relative directories" bug by using the chdir & cwd trick.
@@ -191,7 +191,7 @@ sub help_msg ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Also note that this program cannot act recursively; it moves files only from
    the root level of dir1 to the root level of dir2; the contents of any

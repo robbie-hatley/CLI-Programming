@@ -173,21 +173,22 @@ sub argv {
       say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
-   # Count arguments:
-   my $NA = scalar(@args);     # Get number of arguments.
-
    # Process arguments:
-   $NA >= 1                    # If number of arguments >= 1,
-   and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 2 && !$Db            # If number of arguments >= 2 and we're not debugging,
-   and error($NA)              # then print error message,
-   and help                    # and print help message,
-   and exit 666;               # and exit, returning The Number Of The Beast.
+   my $NA = scalar(@args);     # Get number of arguments.
+   if ( $NA >= 1 ) {           # If number of arguments >= 1,
+      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+   }
+   if ( $NA >= 2 && !$Db ) {   # If number of arguments >= 2 and we're not debugging,
+      error($NA);              # print error message,
+      help;                    # and print help message,
+      exit 666;                # and exit, returning The Number Of The Beast.
+   }
 
    # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
+# Process current directory:
 sub curdire {
    # Get CWD:
    my $curdir = d getcwd;

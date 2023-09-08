@@ -180,19 +180,24 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar(@args);     # Get number of arguments.
-   $NA >= 1                    # If number of arguments >= 1,
-   and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 2                    # If number of arguments >= 2,
-   and $Predicate = $args[1];  # set $Predicate.
-   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
-   and error($NA)              # print error message
-   and help                    # and print help message
-   and exit 666;               # and exit, returning The Number Of The Beast.
+   if ( $NA >= 1 ) {           # If number of arguments >= 1,
+      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+   }
+   if ( $NA >= 2 ) {           # If number of arguments >= 2,
+      $Predicate = $args[1];   # set $Predicate to $args[1]
+      $Target = 'A';           # and set $Target to 'A' to avoid conflicts with $Predicate.
+   }
+   if ( $NA >= 3 && !$Db ) {   # If number of arguments >= 3 and we're not debugging,
+      error($NA);              # print error message,
+      help;                    # and print help message,
+      exit 666;                # and exit, returning The Number Of The Beast.
+   }
 
    # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
+# Process current directory:
 sub curdire {
    ++$direcount;
    my $curdir = d getcwd;

@@ -74,6 +74,7 @@
 #                   from 'F' to 'A' so as not to conflict with predicates. Entry/stats/exit messages are
 #                   now printed to STDERR only if $Verbose >= 1. Directory headings are printed to STDOUT
 #                   only if $Verbose >= 2. Found paths are printed to STDOUT regardless of verbosity level.
+# Wed Sep 06, 2023: Set default target back to 'F', and set predicate to override target and force it to 'A'.
 ##############################################################################################################
 
 use v5.36;
@@ -104,7 +105,7 @@ sub help    ; # Print help and exit.
 my $Db        = 0            ; # Print diagnostics?          bool       Don't print diagnostics.
 my $Verbose   = 1            ; # Quiet, terse, or verbose?   0,1,2      Be terse.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
-my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Find all directory entries.
+my $Target    = 'F'          ; # Files, dirs, both, all?     F|D|B|A    Find all directory entries.
 my $RegExp    = qr/^.+$/     ; # Regular expression.         regexp     Find all file names.
 my $Predicate = 1            ; # Boolean predicate.          bool       Find all file-type combos.
 
@@ -182,10 +183,10 @@ sub argv {
       /^-$s*v/ || /^--verbose$/ and $Verbose =  2     ;
       /^-$s*l/ || /^--local$/   and $Recurse =  0     ; # DEFAULT
       /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
-      /^-$s*f/ || /^--files$/   and $Target  = 'F'    ;
+      /^-$s*f/ || /^--files$/   and $Target  = 'F'    ; # DEFAULT
       /^-$s*d/ || /^--dirs$/    and $Target  = 'D'    ;
       /^-$s*b/ || /^--both$/    and $Target  = 'B'    ;
-      /^-$s*a/ || /^--all$/     and $Target  = 'A'    ; # DEFAULT
+      /^-$s*a/ || /^--all$/     and $Target  = 'A'    ;
    }
    if ( $Db ) {
       say STDERR '';
@@ -195,14 +196,18 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar(@args);     # Get number of arguments.
-   $NA >= 1                    # If number of arguments >= 1,
-   and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 2                    # If number of arguments >= 2,
-   and $Predicate = $args[1];  # set $Predicate.
-   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
-   and error($NA)              # print error message,
-   and help                    # and print help message,
-   and exit 666;               # and exit, returning The Number Of The Beast.
+   if ( $NA >= 1 ) {           # If number of arguments >= 1,
+      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+   }
+   if ( $NA >= 2 ) {           # If number of arguments >= 2,
+      $Predicate = $args[1];   # set $Predicate to $args[1]
+      $Target = 'A';           # and set $Target to 'A' to avoid conflicts with $Predicate.
+   }
+   if ( $NA >= 3 && !$Db ) {   # If number of arguments >= 3 and we're not debugging,
+      error($NA);              # print error message,
+      help;                    # and print help message,
+      exit 666;                # and exit, returning The Number Of The Beast.
+   }
 
    # Return success code 1 to caller:
    return 1;
@@ -326,7 +331,7 @@ sub help {
    -------------------------------------------------------------------------------
    Description of arguments:
 
-   "find-files-by-type.pl" takes 0, 1, or 2 arguments.
+   "find-files.pl" takes 0, 1, or 2 arguments.
 
    Arg1 (OPTIONAL), if present, must be a Perl-Compliant Regular Expression
    specifying which file names to look for. To specify multiple patterns, use the
@@ -338,24 +343,23 @@ sub help {
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
 
-   Arg2 (OPTIONAL), if present, must be a boolean expression using Perl
+   Arg2 (OPTIONAL), if present, must be a boolean predicate using Perl
    file-test operators. The expression must be enclosed in parentheses (else
    this program will confuse your file-test operators for options), and then
    enclosed in single quotes (else the shell won't pass your expression to this
-   program intact). Here are some examples of valid and invalid second arguments:
+   program intact). If this argument is used, it overrides "--files", "--dirs",
+   or "--both", and sets target to "--all" in order to avoid conflicts with
+   the predicate.
+
+   Here are some examples of valid and invalid predicate arguments:
    '(-d && -l)'  # VALID:   Finds symbolic links to directories
    '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
    '(-b)'        # VALID:   Finds block special files
    '(-c)'        # VALID:   Finds character special files
-   '(-S || -p)'  # VALID:   Finds sockets and pipes.  (S must be CAPITAL S!  )
+   '(-S || -p)'  # VALID:   Finds sockets and pipes.  (S must be CAPITAL S   )
     '-d && -l'   # INVALID: missing parentheses       (confuses program      )
     (-d && -l)   # INVALID: missing quotes            (confuses shell        )
      -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
-   WARNING: If you use a file-test boolean, also use a "-a" option, otherwise
-   you may not find what you're looking for, be
-   (Exception: Technically, you can use an integer as a boolean, and it doesn't
-   need quotes or parentheses; but if you use an integer, any non-zero integer
-   will print all paths and 0 will print no paths, so this isn't very useful.)
 
    Arguments and options may be freely mixed, but the arguments must appear in
    the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them

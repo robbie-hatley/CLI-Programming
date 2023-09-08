@@ -1,8 +1,6 @@
-/****************************************************************************\
- * julia.cpp
- * Julia Set graphing program.
- * Written Thu. Jan. 24, 2002, by Robbie Hatley
- * Last updated Fri. Dec. 6, 2002
+/************************************************************************************************************\
+ * rhjulia.cpp
+ * Robbie Hatley's Julia Set graphing program.
  *
  * Abstract:
  *   A "Julia Set" is a graph in the complex plane of all complex numbers
@@ -21,7 +19,7 @@
  *   Eight command-line arguments:
  *     width     (width  of image in pixels)
  *     height    (height of image in pixels)
- *     filename  (file name for image)
+ *     bmpfilename  (file name for image)
  *     p         (real seed)
  *     q         (imag seed)
  *     iter      (maximum number of iterations to loop equation)
@@ -38,7 +36,12 @@
  *   403 - Output file already exists.
  *   500 - Debug.
  *
-\****************************************************************************/
+ * Written by Robbie Hatley on Thursday January 24, 2002.
+ * Edit history:
+ * Thu Jan 24, 2002: Wrote first draft.
+ * Fri Dec 06, 2002: Updated.
+ * Thu Sep 07, 2023: Renamed from "hennon.cpp" to "rhhennon.cpp". Increased width from 78 to 110.
+\************************************************************************************************************/
 
 #include <iostream>
 #include <fstream>
@@ -74,7 +77,7 @@ int main(int argc, char *argv[])
     cout << "width        (width  of image in pixels)"                    << endl;
     cout << "height       (height of image in pixels)"                    << endl;
     cout << "colorswitch  (d or c for color, g for greyscale, b for b&w)" << endl;
-    cout << "filename     (name of *.bmp file for image)"                 << endl;
+    cout << "bmpfilename     (name of *.bmp file for image)"              << endl;
     exit(401);
   }
 
@@ -85,7 +88,7 @@ int main(int argc, char *argv[])
   short       width       {short(atol(argv[4]))};  // image width
   short       height      {short(atol(argv[5]))};  // image height
   char        colorswitch {argv[6][0]};            // color or b&w
-  std::string filename    {argv[7]};               // file name for *.bmp file
+  std::string bmpfilename    {argv[7]};            // file name for *.bmp file
 
   try {
     char tag[128];
@@ -115,14 +118,14 @@ int main(int argc, char *argv[])
     }
     if
     (
-       colorswitch != 'b' 
+       colorswitch != 'b'
        &&
        colorswitch != 'c'
        &&
        colorswitch != 'd'
        &&
        colorswitch != 'g'
-    ) 
+    )
     {
       strcpy(tag, "color switch");
       throw tag;
@@ -140,10 +143,10 @@ int main(int argc, char *argv[])
   }
 
   try {
-    std::ifstream file_01_in (filename.c_str());
+    std::ifstream file_01_in (bmpfilename.c_str());
     bool flag = file_01_in.is_open();
     if (flag) file_01_in.close();
-    if (flag) throw filename.c_str();
+    if (flag) throw bmpfilename.c_str();
   }
   catch(char* name) {
     cout<<"File "<<name<<" already exists."<<endl;
@@ -159,8 +162,8 @@ int main(int argc, char *argv[])
   // Declare and initialize color table to 256 colors, all black:
   static Color color[256]={Color (0,0,0)};
 
-  // Define colors to use for colored Julia graphs, and store these colors 
-  // in the array color[], in order of increasing "iterations lasted", 
+  // Define colors to use for colored Julia graphs, and store these colors
+  // in the array color[], in order of increasing "iterations lasted",
   // and also set bitcnt and compress:
 
   switch (colorswitch) {
@@ -310,14 +313,19 @@ int main(int argc, char *argv[])
         julia.setcolor(i, j, colorSelect);
     }
   }
-  julia.filewrite(filename.c_str());       // write bitmap to disk file
+
+  // Write bitmap to file:
+  julia.filewrite(bmpfilename.c_str());
+
   // Display image:
-  std::string Command {};
-  Command = std::string("chmod u=rwx,g=rwx,o=rx '") + filename + "'";
-  std::system(Command.c_str());
-  Command = std::string("cmd /C '") + filename + "'";
-  std::system(Command.c_str());
-  return 0;
+  //std::string Command {};
+  //Command = std::string("chmod u=rwx,g=rwx,o=rx '") + bmpfilename + "'";
+  //std::system(Command.c_str());
+  //Command = std::string("cmd /C '") + bmpfilename + "'";
+  //std::system(Command.c_str());
+
+   // Return to operating system:
+   return 0;
 } // end main()
 
 

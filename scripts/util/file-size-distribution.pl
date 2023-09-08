@@ -5,7 +5,7 @@
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
-# file-size-stats.pl
+# file-size-distribution.pl
 # Prints the distribution of file sizes in the current directory (and all subdirs if a -r or --recurse option
 # is used).
 #
@@ -25,6 +25,9 @@
 #                   signatures instead. Renamed from "file-size-statistics.pl" to "file-size-stats.pl".
 #                   Got ride of "common::sense" (antiquated). Reduced width from 120 to 110. Improved help.
 # Sat Sep 02, 2023: Updated main. Updated argv. Got rid of all /o on qr().
+# Wed Sep 06, 2023: Re-named from "file-size-stats.pl" to "file-size-distribution.pl".
+# Thu Sep 07, 2023: No-longer printing directories (no point, just spams scrollback). Entry, exit, error,
+#                   debug, and help messages are to STDERR, but size distribution is now to STDOUT.
 ##############################################################################################################
 
 use v5.36;
@@ -44,7 +47,7 @@ use RH::Dir;
 sub argv    ;
 sub curdire ;
 sub logsize ;
-sub stats   ;
+sub dist    ;
 sub error   ;
 sub help    ;
 
@@ -55,9 +58,20 @@ my $Db = 0                 ; # Print diagnostics?         bool                Do
 my $Recurse   = 0          ; # Recurse subdirectories?    bool                Don't recurse.
 my $RegExp    = qr/^.+$/   ; # Regular expression.        regexp              Process all file names.
 
+# NOTE: There is no $Verbose variable in this program, because the whole point of this program is to print
+# information on file sizes, to telling the program to be quiet would be prevent it from doing its job.
+
+# NOTE: There are no $Target or $Predicate variables in this program, because we're interested only in
+# regular files, because those are the files that are using all the storage space, and answering the question
+# "What's using the storage space???" is what this program is all about.
+
+# NOTE: When I say "regular files", I mean Perl file-test-operator predicate "-f _ && !-d _ && !-l _".
+# That still allows any of -b -c -p -S -t to be true, but that's OK, because "weird" files can still take-up
+# storage space, and we are interested in tallying ALL files ("weird" or not) that take-up storage space.
+
 # Counters:
 my $direcount = 0          ; # Count of directories navigated.
-my $filecount = 0          ; # Count of files matching $RegExp.
+my $filecount = 0          ; # Count of regular files matching $RegExp.
 
 # Make array of 13 size bins. $size_bins[i] represents number of files with int(floor(log(size)) = i.
 my @size_bins;
@@ -67,28 +81,29 @@ foreach (0..12) {$size_bins[$_] = 0};
 
 { # begin main
    # Load time and program variables:
-   my $t0 = time()                                          ;
-   my $pname = substr $0,1+rindex $0,'/'                    ;
+   my $t0 = time;
+   my $pname = substr $0,1+rindex $0,'/';
 
    # Get and process options and arguments:
-   argv                                                     ;
+   argv;
 
    # Print entry message:
-   say    STDERR "Now entering program \"$pname\"."         ;
-   say    STDERR "\$Db        = $Db"                        ;
-   say    STDERR "\$Recurse   = $Recurse"                   ;
-   say    STDERR "\$RegExp    = $RegExp"                    ;
+   say    STDERR "Now entering program \"$pname\".";
+   say    STDERR "\$Db        = $Db";
+   say    STDERR "\$Recurse   = $Recurse";
+   say    STDERR "\$RegExp    = $RegExp";
 
    # Load size bins:
-   $Recurse and RecurseDirs {curdire} or curdire            ;
+   $Recurse and RecurseDirs {curdire} or curdire;
 
-   # Print size bins:
-   stats                                                    ;
+   # Print size distribution
+   dist;
 
    # Print exit message and exit:
-   say    STDERR "Now exiting program \"$pname\"."          ;
-   printf STDERR "Execution time was %.3fms.\n", time - $t0 ;
-   exit 0                                                   ;
+   say    STDERR '';
+   say    STDERR "Now exiting program \"$pname\".";
+   printf STDERR "Execution time was %.3f seconds.\n", time - $t0;
+   exit 0;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS: ============================================================================
@@ -125,12 +140,14 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar(@args);     # Get number of arguments.
-   $NA >= 1                    # If number of arguments >= 1,
-   and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 2 && !$Db            # If number of arguments >= 2 and we're not debugging,
-   and error($NA)              # print error message,
-   and help                    # and print help message,
-   and exit 666;               # and exit, returning The Number Of The Beast.
+   if ( $NA >= 1 ) {           # If number of arguments >= 1,
+      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+   }
+   if ( $NA >= 2 && !$Db ) {   # If number of arguments >= 2 and we're not debugging,
+      error($NA);              # print error message,
+      help;                    # and print help message,
+      exit 666;                # and exit, returning The Number Of The Beast.
+   }
 
    # Return success code 1 to caller:
    return 1;
@@ -147,18 +164,18 @@ sub logsize ($file) {
    return $size_bin;                      # Return bin.
 } # end sub logsize ($file)
 
+# Process current directory:
 sub curdire {
    ++$direcount;
 
-   # Get and announce current working directory:
+   # Get current working directory:
    my $curdir = d getcwd;
-   say "Dir #$direcount: $curdir";
 
    # Get list of entries in current directory matching $RegExp:
    my $curdirfiles = GetFiles($curdir, 'F', $RegExp);
 
-   # Iterate through all entries in current directory which match $RegExp,
-   # incrementing appropriate size_bin counter for each file which also matches $Predicate:
+   # Iterate through all entries in current directory which match $RegExp
+   # and increment the appropriate size_bin counter for each file:
    foreach my $file (@{$curdirfiles}) {
       ++$filecount;
       ++$size_bins[logsize($file)];
@@ -168,21 +185,19 @@ sub curdire {
    return 1;
 } # end sub curdire
 
-sub stats
-{
-   say STDERR "File-size statistics for this tree:";
-   say STDERR "Navigated $direcount directories.";
-   say STDERR "Found $filecount regular files matching RegExp \"$RegExp\".";
-   for (0..12)
-   {
-      printf
-      ("Number of files with size 10^%2d bytes = %6d\n", $_, $size_bins[$_]);
+sub dist {
+   say STDOUT '';
+   say STDOUT "Navigated $direcount directories.";
+   say STDOUT "Found $filecount regular files matching RegExp \"$RegExp\".";
+   say STDOUT "File-size distribution for this tree:";
+   for (0..12) {
+      printf STDOUT "Number of files with size 10^%2d bytes = %6d\n", $_, $size_bins[$_];
    }
    return 1;
 } # end sub stats
 
 sub error ($NA) {
-   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+   print STDERR ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
    Error: You typed $NA arguments, but this program takes 0 or 1 arguments.
    Help follows:
@@ -190,7 +205,7 @@ sub error ($NA) {
 } # end sub error ($NA)
 
 sub help {
-   print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+   print STDERR ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
    -------------------------------------------------------------------------------
    Introduction:

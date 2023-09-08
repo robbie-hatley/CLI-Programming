@@ -13,12 +13,15 @@
 # Mon Mar 20, 2023: Wrote it.
 # Thu Aug 03, 2023: Renamed from "file-types.pl" to "file-mime-types.pl". Reduced width from 120 to 110.
 #                   Removed "-l", and "--local" options, as these are already default. Improved help.
+# Thu Sep 07, 2023: Nixed superfluous "double quotes" in help. Got rid of "/o" on all qr().
+#                   Improved entry/exit message-printing in main (now using $pname).
 ##############################################################################################################
 
 use v5.36;
 use strict;
 use warnings;
 use utf8;
+use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
 use Cwd;
@@ -39,27 +42,28 @@ sub help    ; # Print help and exit.
 
 # ======= VARIABLES: =========================================================================================
 
-# Settings:                    Meaning:                     Range:    Default:
-my $db        = 0          ; # Debug (print diagnostics)?   bool      0 (Don't print diagnostics.)
-my $Recurse   = 0          ; # Recurse subdirectories?      bool      0 (Don't recurse.)
-my $RegExp    = qr/^.+$/o  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
+# Settings:                   Meaning:                     Range:    Default:
+my $Db        = 0         ; # Debug (print diagnostics)?   bool      0 (Don't print diagnostics.)
+my $Recurse   = 0         ; # Recurse subdirectories?      bool      0 (Don't recurse.)
+my $RegExp    = qr/^.+$/  ; # Regular Expression.          regexp    qr/^.+$/o (matches all strings)
 
 # Counters:
-my $direcount = 0          ; # Count of directories processed by curdire().
-my $filecount = 0          ; # Count of dir entries processed by curfile().
+my $direcount = 0         ; # Count of directories processed by curdire().
+my $filecount = 0         ; # Count of dir entries processed by curfile().
 
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    my $t0 = time;
+   my $pname = get_name_from_path($0);
    argv;
-   say STDERR "Now entering program \"" . get_name_from_path($0) . "\".";
-   say STDERR "RegExp  = $RegExp";
-   say STDERR "Recurse = $Recurse";
+   say    STDERR "Now entering program \"$pname\".";
+   say    STDERR "RegExp  = $RegExp";
+   say    STDERR "Recurse = $Recurse";
    $Recurse and RecurseDirs {curdire} or curdire;
    stats;
    my $ms = 1000 * (time - $t0);
-   print  STDERR "Now exiting program \"" . get_name_from_path($0) . "\".\n";
+   print  STDERR "Now exiting program \"$pname\".\n";
    printf STDERR "Execution time was %.3fms.\n", $ms;
    exit 0;
 } # end main
@@ -67,30 +71,49 @@ my $filecount = 0          ; # Count of dir entries processed by curfile().
 # ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
-sub argv
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
-
-         # Remove option from @ARGV:
-         splice @ARGV, $i, 1;
-
-         # Move the index 1-left, so that the "++$i" above
-         # moves the index back to the current @ARGV element,
-         # but with the new content which slid-in from the right
-         # due to deletion of previous element contents:
-         --$i;
-      }
+sub argv {
+   # Get options and arguments:
+   my @opts = ();            # options
+   my @args = ();            # arguments
+   my $end = 0;              # end-of-options flag
+   my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   for ( @ARGV ) {
+      /^--$/                 # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1           # so if we see that, then set the "end-of-options" flag
+      and next;              # and skip to next element of @ARGV.
+      !$end                  # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/     # and if we get a valid short option
+      ||  /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_     # then push item to @opts
+      or  push @args, $_;    # else push item to @args.
    }
-   my $NA = scalar(@ARGV);
-   if    ( 0 == $NA ) {                                  } # Do nothing.
-   elsif ( 1 == $NA ) {$RegExp = qr/$ARGV[0]/o           } # Set $RegExp.
-   else               {error($NA); say ''; help; exit 666} # Print error and help messages and exit 666.
+
+   # Process options:
+   for ( @opts ) {
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
+   }
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
+   }
+
+   # Process arguments:
+   my $NA = scalar(@args);     # Get number of arguments.
+   if ( $NA >= 1 ) {           # If number of arguments >= 1,
+      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+   }
+   if ( $NA >= 2 && !$Db ) {   # If number of arguments >= 2 and we're not debugging,
+      error($NA);              # print error message,
+      help;                    # and print help message,
+      exit 666;                # and exit, returning The Number Of The Beast.
+   }
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
@@ -116,7 +139,8 @@ sub curdire
    {
       ++$filecount;
       $type = $typer->checktype_filename($file->{Path});
-      printf("%-95s = %-30s\n", $file->{Name}, $type);
+      if ( ! defined $type ) {$type = 'undefined';}
+      printf("%-80s = %-30s\n", $file->{Name}, $type);
    }
    return 1;
 } # end sub curdire
@@ -162,9 +186,11 @@ sub help
    -------------------------------------------------------------------------------
    Description of options:
 
-   Option:                 Meaning:
-   "-h" or "--help"        Print this help.
-   "-r" or "--recurse"     Recurse subdirectories.
+   Option:             Meaning:
+   -h or --help        Print this help.
+   -e or --debug       Print diagnostics
+   -l or --local       Don't recurse subdirectories.    (DEFAULT)
+   -r or --recurse     Do    recurse subdirectories.
    All other options are ignored.
 
    -------------------------------------------------------------------------------

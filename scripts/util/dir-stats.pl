@@ -17,6 +17,7 @@
 #                   to print (variables in RH::Dir have changed, causing errors in this program). All messages
 #                   and stats are to STDOUT; STDERR in this program is for errors and debugging only. There
 #                   are no verbosity controls, as the whole purpose of this program is to print statistics.
+# Wed Sep 06, 2023: Predicate now overrides target and forces it to 'A' to avoid conflicts with predicate.
 ##############################################################################################################
 
 use v5.36;
@@ -149,19 +150,24 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar(@args);     # Get number of arguments.
-   $NA >= 1                    # If number of arguments >= 1,
-   and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 2                    # If number of arguments >= 2,
-   and $Predicate = $args[1];  # set $Predicate.
-   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
-   and error($NA)              # print error message,
-   and help                    # and print help message,
-   and exit 666;               # and exit, returning The Number Of The Beast.
+   if ( $NA >= 1 ) {           # If number of arguments >= 1,
+      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+   }
+   if ( $NA >= 2 ) {           # If number of arguments >= 2,
+      $Predicate = $args[1];   # set $Predicate to $args[1]
+      $Target = 'A';           # and set $Target to 'A' to avoid conflicts with $Predicate.
+   }
+   if ( $NA >= 3 && !$Db ) {   # If number of arguments >= 3 and we're not debugging,
+      error($NA);              # print error message,
+      help;                    # and print help message,
+      exit 666;                # and exit, returning The Number Of The Beast.
+   }
 
    # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
+# Process current directory:
 sub curdire {
    # Increment directory counter.
    ++$direcount;
@@ -352,12 +358,15 @@ sub help {
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
 
-   Arg2 (OPTIONAL), if present, must be a boolean expression using Perl
+   Arg2 (OPTIONAL), if present, must be a boolean predicate using Perl
    file-test operators. The expression must be enclosed in parentheses (else
    this program will confuse your file-test operators for options), and then
    enclosed in single quotes (else the shell won't pass your expression to this
-   program intact). Here are some examples of valid and invalid second arguments:
+   program intact). If this argument is used, it overrides "--files", "--dirs",
+   or "--both", and sets target to "--all" in order to avoid conflicts with
+   the predicate.
 
+   Here are some examples of valid and invalid predicate arguments:
    '(-d && -l)'  # VALID:   Finds symbolic links to directories
    '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
    '(-b)'        # VALID:   Finds block special files
@@ -366,10 +375,6 @@ sub help {
     '-d && -l'   # INVALID: missing parentheses       (confuses program      )
     (-d && -l)   # INVALID: missing quotes            (confuses shell        )
      -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
-
-   (Exception: Technically, you can use an integer as a boolean, and it doesn't
-   need quotes or parentheses; but if you use an integer, any non-zero integer
-   will process all paths and 0 will process no paths, so this isn't very useful.)
 
    Arguments and options may be freely mixed, but the arguments must appear in
    the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them

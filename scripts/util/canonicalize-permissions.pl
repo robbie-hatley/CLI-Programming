@@ -31,6 +31,7 @@
 #                   Removed "no debug" option as that's already default in all of my programs.
 #                   Variable "$Verbose" now means "print per-file info", and default is to NOT do that.
 #                   STDERR = "stats and serious errors". STDOUT = "file permissions set, and dirs if verbose".
+# Wed Sep 06, 2023: Predicate now overrides target and forces it to 'A' to avoid conflicts with predicate.
 ##############################################################################################################
 
 use v5.36;
@@ -59,13 +60,14 @@ sub help     ; # Print help and exit.
 
 # ======= VARIABLES: =========================================================================================
 
-# Settings:     Default:       Meaning of setting:          Range:    Meaning of default:
-my $Db        = 0          ; # Print diagnostics?           bool      Don't print diagnostics.
-my $Verbose   = 0          ; # Print stats?                 bool      Don't print stats.
-my $Recurse   = 0          ; # Recurse subdirectories?      bool      Don't recurse.
-my $RegExp    = qr/^.+$/   ; # Regular Expression.          regexp    Process all file names.
-my $Target    = 'F'        ; # Files, dirs, both, all?      F|D|B|A   Process regular files only.
-my $Predicate = 1          ; # Boolean predicate.           bool      Process files of all types.
+# Settings:     Default:       Meaning of setting:           Range:    Meaning of default:
+my $Db        = 0          ; # Print diagnostics?            bool      Don't print diagnostics.
+my $Verbose   = 0          ; # Print stats?                  bool      Don't print stats.
+my $Recurse   = 0          ; # Recurse subdirectories?       bool      Don't recurse.
+my $RegExp    = qr/^.+$/   ; # Regular Expression.           regexp    Process all file names.
+my $Target    = 'A'        ; # Files, dirs, both, all?       F|D|B|A   Process regular files only.
+my $Predicate = 1          ; # Boolean file-type predicate.  bool      Process files of all types.
+my $Hidden    = 0          ; # Also process hidden items?    bool      Don't process hidden items.
 
 # Counters:
 my $direcount = 0          ; # Count of directories processed by curdire().
@@ -82,16 +84,17 @@ my $simucount = 0          ; # Count of all simulated setting of permissions.
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 { # begin main
    my $t0 = time;
-   argv;
    my $pname = get_name_from_path($0);
+   argv;
    say    STDERR '';
-   say    STDERR "Now entering program \"$pname\".   ";
-   say    STDERR "\$Db        = $Db                  ";
-   say    STDERR "\$Verbose   = $Verbose             ";
-   say    STDERR "\$Recurse   = $Recurse             ";
-   say    STDERR "\$RegExp    = $RegExp              ";
-   say    STDERR "\$Target    = $Target              ";
-   say    STDERR "\$Predicate = $Predicate           ";
+   say    STDERR "Now entering program \"$pname\"." ;
+   say    STDERR "\$Db        = $Db"                ;
+   say    STDERR "\$Verbose   = $Verbose"           ;
+   say    STDERR "\$Recurse   = $Recurse"           ;
+   say    STDERR "\$RegExp    = $RegExp"            ;
+   say    STDERR "\$Target    = $Target"            ;
+   say    STDERR "\$Predicate = $Predicate"         ;
+   say    STDERR "\$Hidden    = $Hidden"            ;
 
    # Run sub curdire() for desired directories:
    $Recurse and RecurseDirs {curdire} or curdire;
@@ -139,6 +142,7 @@ sub argv {
       /^-$s*d/ || /^--dirs$/    and $Target  = 'D'    ;
       /^-$s*b/ || /^--both$/    and $Target  = 'B'    ;
       /^-$s*a/ || /^--all$/     and $Target  = 'A'    ;
+      /^-$s*n/ || /^--hidden$/  and $Hidden  =  1     ;
    }
    if ( $Db ) {
       say STDERR '';
@@ -148,14 +152,18 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar(@args);     # Get number of arguments.
-   $NA >= 1                    # If number of arguments >= 1,
-   and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 2                    # If number of arguments >= 2,
-   and $Predicate = $args[1];  # set $Predicate.
-   $NA >= 3 && !$Db            # If number of arguments >= 3 and we're not debugging,
-   and error($NA)              # print error message,
-   and help                    # and print help message,
-   and exit 666;               # and exit, returning The Number Of The Beast.
+   if ( $NA >= 1 ) {           # If number of arguments >= 1,
+      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+   }
+   if ( $NA >= 2 ) {           # If number of arguments >= 2,
+      $Predicate = $args[1];   # set $Predicate to $args[1]
+      $Target = 'A';           # and set $Target to 'A' to avoid conflicts with $Predicate.
+   }
+   if ( $NA >= 3 && !$Db ) {   # If number of arguments >= 3 and we're not debugging,
+      error($NA);              # print error message,
+      help;                    # and print help message,
+      exit 666;                # and exit, returning The Number Of The Beast.
+   }
 
    # Return success code 1 to caller:
    return 1;
@@ -187,7 +195,14 @@ sub curdire {
 
    # Send each file that matches $RegExp, $Target, and $Predicate to curfile():
    foreach my $file (@$curdirfiles) {
+      # Count ALL files, even ones we skip (because hidden or doesn't match predicate), in $filecount:
       ++$filecount;
+      # Don't process hidden items unless user requests that:
+      if ( '.' eq substr($file->{Name}, 0, 1) && ! $Hidden ) {
+         ++$hidncount;
+         next;
+      }
+      # If we're NOT skipping this item, if it matches predicate, increment $predcount and send it to curfile:
       local $_ = e $file->{Path};
       if (eval($Predicate)) {
          ++$predcount;
@@ -199,120 +214,139 @@ sub curdire {
 
 # Set a directory to "navigable":
 sub set_navi ($file) {
-   chmod 0775, e($file->{Path}) if !$Db;
-   say STDOUT "Set directory \"$file->{Name}\" to navigable." if !$Db && $Verbose;
-   ++$permcount if !$Db;
-   say STDOUT "Simulation: would have set directory \"$file->{Name}\" to navigable." if $Db;
-   ++$simucount if $Db;
+   # If debugging, just simulate:
+   if ( $Db ) {
+      ++$simucount;
+      say STDOUT "Simulation: would have set directory \"$file->{Name}\" to navigable.";
+   }
+
+   # Else if NOT debugging, change permissions:
+   else {
+      ++$permcount;
+      chmod 0775, e($file->{Path});
+      if ( $Verbose ) {
+         say STDOUT "Set directory \"$file->{Name}\" to navigable.";
+      }
+   }
 }
 
 # Set a file to "executable":
 sub set_exec ($file) {
-   chmod 0775, e($file->{Path}) if !$Db;
-   say STDOUT "Set file \"$file->{Name}\" to executable." if !$Db && $Verbose;
-   ++$permcount if !$Db;
-   say STDOUT "Simulation: would have set file \"$file->{Name}\" to executable." if $Db;
-   ++$simucount if $Db;
+   # If debugging, just simulate:
+   if ( $Db ) {
+      ++$simucount;
+      say STDOUT "Simulation: would have set file \"$file->{Name}\" to executable.";
+   }
+
+   # Else if NOT debugging, change permissions:
+   else {
+      ++$permcount;
+      chmod 0775, e($file->{Path});
+      if ( $Verbose ) {
+         say STDOUT "Set file \"$file->{Name}\" to executable.";
+      }
+   }
 }
 
 # Set a file to "not executable":
 sub set_noex ($file) {
-   chmod 0664, e($file->{Path}) if !$Db;
-   say STDOUT "Set file \"$file->{Name}\" to NOT-executable." if !$Db && $Verbose;
-   ++$permcount if !$Db;
-   say STDOUT "Simulation: would have set file \"$file->{Name}\" to NOT-executable." if $Db;
-   ++$simucount if $Db;
+   # If debugging, just simulate:
+   if ( $Db ) {
+      ++$simucount;
+      say STDOUT "Simulation: would have set file \"$file->{Name}\" to NOT-executable.";
+   }
+
+   # Else if NOT debugging, change permissions:
+   else {
+      ++$permcount;
+      chmod 0664, e($file->{Path});
+      if ( $Verbose ) {
+         say STDOUT "Set file \"$file->{Name}\" to NOT-executable.";
+      }
+   }
 }
 
 # Process current file:
 sub curfile ($file) {
-   # If this file is hidden, just return:
-   if ( '.' eq substr($file->{Name}, 0, 1) ) {
-      ++$hidncount;
-      return;
+   # If this is a directory, set it to "navigable":
+   if    ( 'D' eq $file->{Type} ) {
+      set_navi($file);
    }
 
-   # If we get to here, this file is NOT hidden, so process it normally.
+   # Else if this is a regular file, those are mixed bags:
+   elsif ( 'F' eq $file->{Type} ) {
+      # Make variables for raw and lower-case-dotless suffix:
+      my ($suff, $lsuf);
 
-   if    ( 'D' eq $file->{Type} ) { # Directories need to be navigable.
-      unless ( $Db ) {
-         set_navi($file);
-      }
-      else {
-         sim_navi($file);
-      }
-   }
-   elsif ( 'F' eq $file->{Type} ) { # Regular files, however, are a mixed bag.
-      my $suf = get_suffix($file->{Name});
-      if ( 0 != length $suf ) { # File name DOES have a suffix.
-         my $lsuf = lc substr $suf, 1;
+      # Get existing suffix:
+      $suff = get_suffix($file->{Name});
+
+      # Get lower-case dot-less version of suffix:
+      $lsuf = lc $suff =~ s/^\.//r;
+
+      # If $lsuf is NOT blank:
+      if ( length($lsuf) > 0 ) {
+         say STDERR "Debug msg in canoperm, in curfile: file $file->{Name} has suffix \"$lsuf\"." if $Db;
          for ( $lsuf ) {
-            # EX: Scripts:
-            if ( /^(apl|awk|pl|perl|py|raku|sed|sh)$/ ) {
+            # Scripts in known languages need to be executable:
+            if ( /^(apl|au3|awk|bat|pl|perl|ps1|py|raku|sed|sh|vbs)$/ ) {
                set_exec($file);
             }
-            # NOEX: Source, header, library, module, documen, archivet, picture, sound, and video files:
-            elsif ( /^(c|cpp|cppism)$/                  || # source
-                    /^(h|hpp|cppismh)$/                 || # header
-                    /^(a|pm)$/                          || # library
-                    /^(chm|epub|txt|pdf|ion|eml|log)$/  || # document
-                    /^(doc|odt|ods)$/                   || # office
-                    /^(htm|html)$/                      || # html
-                    /^(zip|rar|tar|tgz)$/               || # archive
-                    /^(jpg|jpeg|tif|tiff|bmp|gif|png)$/ || # picture
-                    /^(xcf)$/                           || # gimp
-                    /^(mp3|ogg|flac|wav)$/              || # sound
-                    /^(mpg|mpeg|mp4|mov|avi|flv)$/ ) {     # video
+
+            # Files with any other non-blank suffixes do NOT need to be executable:
+            else {
                set_noex($file);
             }
-            # Other suffixes:
-            else {
-               ; # Do nothing.
+         }
+      }
+
+      # Else if $lsuf is blank, try to open the file and grab its first 4 bytes:
+      else {
+         say STDERR "Debug msg in canoperm, in curfile: file $file->{Name} has blank suffix." if $Db;
+         my $buffer = ''    ;
+         my $fh     = undef ;
+         my $bytes  = 0     ;
+         if ( open($fh, '< :raw', e $file->{Path}) ) {
+            ++$opencount;
+            if ( read($fh, $buffer, 4) ) {
+               $bytes = length($buffer);
+               say "Debug msg in canoperm, in curfile: Read $bytes bytes from file \"$file->{Name}\"." if $Db;
+            }
+            close($fh);
+         }
+         else {
+            ++$noopcount;
+         }
+
+         # If we managed to grab the first 128 bytes of data from the file, make a decision based on that:
+         if ( 4 == $bytes ) {
+            ++$readcount;
+            if ( '#!' eq substr($buffer, 0, 2) ) {             # Hashbang script.
+               say STDERR "Debug msg in canoperm, in curfile: file $file->{Name} is a hashbang script" if $Db;
+               set_exec($file);                                # Set it to "executable".
+            }
+            elsif ( "\x{7F}ELF" eq substr($buffer, 0, 4) ) {   # Linux ELF "executable".
+               say STDERR "Debug msg in canoperm, in curfile: file $file->{Name} is an ELF executable" if $Db;
+               set_exec($file);                                # Set it to "executable".
+            }
+            else {                                             # Data file.
+               say STDERR "Debug msg in canoperm, in curfile: file $file->{Name} is a datafile" if $Db;
+               set_noex($file);                                # Set it to "NOT executable".
             }
          }
-      } # end if (files with suffix)
 
-      # Make files DON'T need to be executable:
-      elsif ( (lc $file->{Name}) =~ m/^make(file|tail)$/ ) {
-         set_noex($file);
-      } # end elsif (make files with no suffix)
-
-      # If this file's name doesn't have a suffix, open the file and scrutinize its first 4 bytes:
-      else {
-         my $fh;
-         my $buffer;
-         if ( open $fh, "< :raw", e $file->{Path} ) {
-            # We WERE able to open this file:
-            ++$opencount;
-            if ( read($fh, $buffer, 4) && 4 == length($buffer) ) {
-               # We WERE able to read this file:
-               ++$readcount;
-
-               # Shebang scripts and ELF files need to be executable:
-               if ( '#!' eq substr($buffer, 0, 2) || "\x{7F}ELF" eq substr($buffer, 0, 4) ) {
-                  unless ( $Db ) {
-                     set_exec($file);
-                  }
-                  else {
-                     sim_exex($file);
-                  }
-               }
-            } # end could read
-            else {
-               # We WEREN'T able to read this file:
-               ++$nordcount;
-            } # end couldn't read
-            close($fh);
-         } # end could open
+         # Else if we did NOT manage to read the first 128 bytes of data from the file, don't mess with it:
          else {
-            # We WEREN'T able to open this file:
-            ++$noopcount;
-         } # end couldn't open
-      } # end else (other regular files with no suffix)
+            ++$nordcount;
+            say STDERR "Debug msg in canoperm, in curfile: couldn't read file $file->{Name}" if $Db;
+            ; # Do nothing.
+         }
+      } # end else ($lsuf is blank)
    } # end if (regular file)
 
-   # For things OTHER THAN regular files and directories, do nothing:
+   # For things OTHER THAN hidden files, regular files, and directories, do nothing:
    else {
+      say STDERR "Debug msg in canoperm, in curfile: file \"$file->{Name}\" is one of the weird ones." if $Db;
       ; # Do nothing.
    } # end else (neither dir nor file)
 
@@ -356,13 +390,11 @@ sub help
    Introduction:
 
    Welcome to "canononicalize-permissions.pl". This program canonicalizes the
-   permissions of non-hidden directory entries. Permissions for directories are
-   set to "rwxrwxr-x"; things which should be executable are set to "rwxrwxr-x";
-   text, pictures, sounds, and videos are set to "-rw-rw-r--"; and everything else
-   (links, sockets, hidden files, etc) is left unaltered.
-
-   By default, this program acts on regular files only and in the current working
-   directory only, but this can be altered (see "Description of Option" below).
+   permissions of non-hidden directory entries (and also hidden items if a -n or
+   --hidden option is used). Permissions for directories are set to "rwxrwxr-x";
+   things which should be executable are set to "rwxrwxr-x"; text, pictures,
+   sounds, and videos are set to "-rw-rw-r--"; and everything else (links,
+   pipes, sockets, etc) is left unaltered.
 
    -------------------------------------------------------------------------------
    Command Lines:
@@ -380,17 +412,18 @@ sub help
    -v or --verbose   DO    print per-file info.
    -l or --local     DON'T recurse subdirectories (but not links).  (DEFAULT)
    -r or --recurse   DO    recurse subdirectories (but not links).
-   -f or --files     Target files only.                             (DEFAULT)
+   -f or --files     Target files only.
    -d or --dirs      Target directories only.
    -b or --both      Target both files and directories.
-   -a or --all       Target all directory entries.
+   -a or --all       Target all directory entries.                  (DEFAULT)
+   -n or --hidden    Also process hidden items.
 
    Multiple single-letter options may be piled-up after a single hyphen.
    For example, use -vr to verbosely and recursively process items.
 
    If multiple conflicting separate options are given, later overrides earlier.
    If multiple conflicting single-letter options are piled after a single hyphen,
-   the result is determined by this descending order of precedence: heabdfrlvq.
+   the result is determined by this descending order of precedence: henabdfrlvq.
 
    If you want to use an argument that looks like an option (say, you want to
    search for files which contain "--recurse" as part of their name), use a "--"
@@ -414,12 +447,15 @@ sub help
    with matching names of entities in the current directory and send THOSE to
    this program, whereas this program needs the raw regexp instead.
 
-   Arg2 (OPTIONAL), if present, must be a boolean expression using Perl
+   Arg2 (OPTIONAL), if present, must be a boolean predicate using Perl
    file-test operators. The expression must be enclosed in parentheses (else
    this program will confuse your file-test operators for options), and then
    enclosed in single quotes (else the shell won't pass your expression to this
-   program intact). Here are some examples of valid and invalid second arguments:
+   program intact). If this argument is used, it overrides "--files", "--dirs",
+   or "--both", and sets target to "--all" in order to avoid conflicts with
+   the predicate.
 
+   Here are some examples of valid and invalid predicate arguments:
    '(-d && -l)'  # VALID:   Finds symbolic links to directories
    '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
    '(-b)'        # VALID:   Finds block special files
@@ -429,10 +465,6 @@ sub help
     (-d && -l)   # INVALID: missing quotes            (confuses shell        )
      -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
 
-   (Exception: Technically, you can use an integer as a boolean, and it doesn't
-   need quotes or parentheses; but if you use an integer, any non-zero integer
-   will process all paths and 0 will process no paths, so this isn't very useful.)
-
    Arguments and options may be freely mixed, but the arguments must appear in
    the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them
    backwards, they won't do what you want, as most predicates aren't valid regexps
@@ -440,16 +472,6 @@ sub help
 
    A number of arguments greater than 2 will cause this program to print an error
    message and abort.
-
-   A number of arguments less than 0 will likely rupture our spacetime manifold
-   and destroy everything. But if you DO somehow manage to use a negative number
-   of arguments without destroying the universe, please send me an email at
-   "Hatley.Software@gmail.com", because I'd like to know how you did that!
-
-   However, if you somehow manage to use a number of arguments which is an
-   irrational and/or complex number, please keep THAT to yourself. Some things
-   are better for me NOT to to know. I don't want to find myself enthralled to
-   Cthulhu.
 
    Happy directory tree permissions canonicalizing!
 

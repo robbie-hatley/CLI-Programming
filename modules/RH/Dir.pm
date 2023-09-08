@@ -711,7 +711,7 @@ sub RecurseDirs :prototype(&) ($f) {
    and return 1; # This allows directory-tree-walking to continue.
 
    # Try to read current directory; if that fails, print warning and return 1:
-   my @subdirs = d readdir $dh; # Subdirs & files. (We'll get rid of the files down below.)
+   my @subdirs = sort(d(readdir($dh))); # Subdirs & files. (We'll get rid of the files down below.)
    if ( scalar(@subdirs) < 2 ) {
       warn "Error in RecurseDirs: Couldn't read this directory:\n".
            "\"$curdir\"\n".
@@ -2123,7 +2123,7 @@ sub get_correct_suffix :prototype($) ($path) {
       m%^image/vnd.microsoft.icon$%                        and return '.ico'  ;
       m%^application/java-archive$%                        and return '.jar'  ;
       m%^image/jpeg$%                                      and return '.jpg'  ;
-      #m%javascript%                                        and return '.js'   ;
+      m%javascript%                                        and return '.js'   ;
       m%^application/json$%                                and return '.json' ;
       m%^audio/midi$%                                      and return '.mid'  ;
       m%^audio/mp3$%                                       and return '.mp3'  ;
@@ -2161,14 +2161,14 @@ sub get_correct_suffix :prototype($) ($path) {
    # module "File::Type" was NOT able to determine the type of this file. So we'll have to use other methods.
 
    # If this file is at-least 32 bytes in size, let's grab AT-LEAST the first 32 bytes of its contents,
-   # up to a max of 1048576 bytes, and examine the contents for clues as to what kind of file this is,
+   # up to a max of 512 bytes, and examine the contents for clues as to what kind of file this is,
    # or if we CAN'T read at least 32 bytes, return "***ERROR***":
    my $size = -s e $path;
    my $buffer = '';
    if ( $size >= 32 ) {
       my $fh = undef;
       open($fh, '< :raw', e $path)                    or return '***ERROR***' ; # File can't be opened.
-      read($fh, $buffer, 1048576)                     or return '***ERROR***' ; # File can't be read.
+      read($fh, $buffer, 512)                         or return '***ERROR***' ; # File can't be read.
       close($fh)                                      or return '***ERROR***' ; # File can't be closed.
       my $bytes = length($buffer);
       $bytes >= 32                                    or return '***ERROR***' ; # Didn't read 32 bytes.
@@ -2181,6 +2181,22 @@ sub get_correct_suffix :prototype($) ($path) {
       }
 
       # Pore over the contents of $buffer and try to glean clues as to what type of file this is:
+
+      # Is this a Linux executable?
+      "\x{7F}ELF" eq substr($buffer, 0, 4)                 and return ''      ; # Linux ELF executable
+
+      # Is this a hashbang script?
+      if ( '#!' eq substr($buffer, 0, 2) ) {
+         substr($buffer, 0, 75) =~ m%^#!.*apl%i            and return '.apl'  ; # APL
+         substr($buffer, 0, 75) =~ m%^#!.*awk%i            and return '.awk'  ; # AWK
+         substr($buffer, 0, 75) =~ m%^#!.*node%i           and return '.js'   ; # Javascript
+         substr($buffer, 0, 75) =~ m%^#!.*perl%i           and return '.pl'   ; # Perl
+         substr($buffer, 0, 75) =~ m%^#!.*python%i         and return '.py'   ; # Python
+         substr($buffer, 0, 75) =~ m%^#!.*raku%i           and return '.raku' ; # Raku
+         substr($buffer, 0, 75) =~ m%^#!.*sed%i            and return '.js'   ; # Sed
+      }
+
+      # Next, see if this file is any of various non-text non-executable types:
       "AVI" eq substr($buffer, 8, 3)                       and return '.avi'  ; # AVI (Windows video)
       pack('C4',195,202,4,193) eq substr($buffer,0,4)      and return '.ccf'  ; # CCF (Chrome Cache File)
       'fLaC' eq substr($buffer,0,4)                        and return '.flac' ; # fLaC (high-quality sound)
@@ -2201,17 +2217,21 @@ sub get_correct_suffix :prototype($) ($path) {
          eq substr($buffer,0,16)                           and return '.wmv'  ; # WMV (Windows Media Video)
       'wOFF' eq substr($buffer,0,4)                        and return '.woff' ; # Web Open Font Format
 
-      # HTML needs to be before JS and CSS, else it may be mistaken for one of those. HTML may have both
-      # JS functions and CSS traits, but CSS doesn't have functions, so order must be HTML, JS, CSS:
-      $buffer =~ m%^<!doctype\s*html%i                     and return '.html' ; # HTML (markup)
-      $buffer =~ m%function\s*\w*\s*\(%i                   and return '.js'   ; # Javascript
-      $buffer =~
-      m% background.*: | border.*:     | margin.*:    |
-         padding.*:    |font-family.*: | font-size.*: |
-         font-weight.*:                                %ix and return '.css'  ; # CSS (style sheets)
+      # Might this be a CSS file?
+      # WOMBAT RH 2023-09-06: For now, I'm commenting this out, as it's too dangerous to search the entire
+      # buffer for these terms, as the buffer may be huge and these terms are a bit ubiquitous:
+      # $buffer =~
+      # m% background.*: | border.*:      | margin.*:    |
+      #    padding.*:    | font-family.*: | font-size.*: |
+      #    font-weight.*:                                %ix and return '.css'  ; # CSS (style sheets)
+
+      # Might this be an HTML file?
+      $type eq 'application/octet-stream'
+      && is_utf8($buffer)
+      && substr($buffer, 0, 75) =~ m%^<!doctype\s*html%i   and return '.html' ; # HTML (markup)
 
       # Save "txt" for last, else other types (eg, html)
-      # will falsely be reported as being "txt":
+      # may falsely be reported as being "txt":
       if ( $type eq 'application/octet-stream' ) {
          is_ascii($buffer)                                 and return '.txt'  ; # ASCII      text file.
          is_iso_8859_1($buffer)                            and return '.txt'  ; # ISO-8859-1 text file.

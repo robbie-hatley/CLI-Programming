@@ -1,55 +1,57 @@
 /************************************************************************************************************\
- * mandelbrot.cpp
- * Mandelbrot Set graphing program,
- * Written Wednesday January 16, 2002 by Robbie Hatley.
- * 
+ * rhmandelbrot.cpp
+ * Robbie Hatley's Mandelbrot Set graphing program,
+ *
  * Description:
  *    This program graphs any desired portion of the complex plane, displaying points of the plane as pixels
- *    with colors indicating how mathematically "close" the points are to The Mandelbrot Set.  
- * 
+ *    with colors indicating how mathematically "close" the points are to The Mandelbrot Set.
+ *
  * Abstract:
  *    So...  what is "The Mandlebrot Set"?
  *    The Mandelbrot Set is the graph in the complex plane, within 3 units of 0+0i, of all complex numbers c
- *    for which the iterated equation z(n+1)=z(n)^d+c (where d is the "degree" of the Mandelbrot set being 
- *    graphed and must be a positive integer in the range of 2-13, and z(0)=0) yields z values with absolute 
- *    values which remain less than 3 as n tends to infinity.  This might just be the most complex object in 
+ *    for which the iterated equation z(n+1)=z(n)^d+c (where d is the "degree" of the Mandelbrot set being
+ *    graphed and must be a positive integer in the range of 2-13, and z(0)=0) yields z values with absolute
+ *    values which remain less than 3 as n tends to infinity.  This might just be the most complex object in
  *    mathematics.
- * 
+ *
  * Inputs:
  *    Input is via eleven command-line arguments (for details, see Instructions()) and via an initialization
  *    file, "mandelbrot.ini", currently used to initialize a color table.
- * 
+ *
  * Outputs:
  *    This program generates a bitmap graph of a region of the complex plane, coloring each pixel commensurate
- *    with the the mathematical "nearness" of the pixel's point to The Mandelbrot Set.  ("Nearness" is 
- *    determined by how many iterations the defining equation can be looped before the z value exceeds 3, 
+ *    with the the mathematical "nearness" of the pixel's point to The Mandelbrot Set.  ("Nearness" is
+ *    determined by how many iterations the defining equation can be looped before the z value exceeds 3,
  *    since once z exceeds 3, it will explode towards infinity exponentially).  The bitmap is then written
  *    to the file path given on the command line.  (See Instructions() for details on command-line fields.)
- * 
+ *
  * To make:
  *    Compile with a C++ compiler and link with rhutil.o , rhmath.o , and rhbitmap.o in SLL librh.a .
  *
+ * Written by Robbie Hatley on Wednesday January 16, 2002.
  * Edit history:
- *    Sun Sep 26, 2004: Added some comments and improved formatting.
- *    Mon Oct 04, 2004: Converted to a "neighborhood shotgun set" approach.
- *    Tue Oct 05, 2004: Re-wrote CyclicRainbow() (simplified dramatically).
- *    Thu Oct 14, 2004: Corrected ini-file path to "C:/Software/mandelbrot.ini"
- *    Sun Feb 20, 2005: Corrected ini-file path to "C:/bin/mandelbrot.ini"; corrected errors in help.
- *    Mon May 03, 2016: Corrected ini-file path to "/rhe/bin/fractals" for use with Cygwin64.
- *    Wed Jun 01, 2016: Added argument for "degree" 2-13 to make cubic, quartic, quintic, etc, sets.
- *    Thu Dec 14, 2017: Corrected comments and Help(). 
- *    Thu Jan 04, 2018: Corrected ini-file location to "/cygdrive/d/rhe/bin/fractals".
- *    Thu Jan 11, 2018: Corrected errors in help.
- *    Tue Jan 16, 2018: Increased max degree to 13. Changed limit from multiple-choice to formula.
- *    Wed Jan 17, 2018: Increased max size to 10001x10001 (about 100MB).
- *    Sun Jan 18, 2018: Altered Color-Table Mode to force iterations=COLORS-1 & skew_factor=0.0 .
- *    Thu Dec 19, 2019: Changed ini-file location to "/cygdrive/d/rhe/bin_64_bash/fractals".
- *    Fri Dec 20, 2019: Added arg for ini file selection (use "NULL" or whatever if not using an ini file).
- *    Sun Mar 01, 2020: Refactored. Removed functions "InitializeColorTable" and "DefaultColorTable" (both
- *                      now subsumed into DefineColors). Removed try/catch blocks and reverted to 
- *                      non-"Exception" error handling. 
- *    Sat Feb 20, 2021: Changed ini-file location to "/cygdrive/d/rhe/bin/fractals".
-\***********************************************************************************************************/
+ * Wed Jan 16, 2002: Wrote first draft
+ * Sun Sep 26, 2004: Added some comments and improved formatting.
+ * Mon Oct 04, 2004: Converted to a "neighborhood shotgun set" approach.
+ * Tue Oct 05, 2004: Re-wrote CyclicRainbow() (simplified dramatically).
+ * Thu Oct 14, 2004: Corrected ini-file path to "C:/Software/mandelbrot.ini"
+ * Sun Feb 20, 2005: Corrected ini-file path to "C:/bin/mandelbrot.ini"; corrected errors in help.
+ * Mon May 03, 2016: Corrected ini-file path to "/rhe/bin/fractals" for use with Cygwin64.
+ * Wed Jun 01, 2016: Added argument for "degree" 2-13 to make cubic, quartic, quintic, etc, sets.
+ * Thu Dec 14, 2017: Corrected comments and Help().
+ * Thu Jan 04, 2018: Corrected ini-file location to "/cygdrive/d/rhe/bin/fractals".
+ * Thu Jan 11, 2018: Corrected errors in help.
+ * Tue Jan 16, 2018: Increased max degree to 13. Changed limit from multiple-choice to formula.
+ * Wed Jan 17, 2018: Increased max size to 10001x10001 (about 100MB).
+ * Sun Jan 18, 2018: Altered Color-Table Mode to force iterations=COLORS-1 & skew_factor=0.0 .
+ * Thu Dec 19, 2019: Changed ini-file location to "/cygdrive/d/rhe/bin_64_bash/fractals".
+ * Fri Dec 20, 2019: Added arg for ini file selection (use "NULL" or whatever if not using an ini file).
+ * Sun Mar 01, 2020: Refactored. Removed functions "InitializeColorTable" and "DefaultColorTable" (both
+ *                   now subsumed into DefineColors). Removed try/catch blocks and reverted to
+ *                   non-"Exception" error handling.
+ * Sat Feb 20, 2021: Changed ini-file location to "/cygdrive/d/rhe/bin/fractals".
+ * Thu Sep 07, 2023: Renamed from "mandelbrot.cpp" to "rhmandelbrot.cpp".
+\************************************************************************************************************/
 
 // Includes:
 
@@ -112,10 +114,10 @@ namespace ns_Mandelbrot
       string path;
       NoIniFileError(string s) : path(s) {}
    };
-   
+
    // Function prototypes:
 
-   void 
+   void
    DefineColors
       (
          char         & colorswitch, // b&w? grey? inifile? continuous rainbow? cyclic rainbow?
@@ -124,21 +126,21 @@ namespace ns_Mandelbrot
          string const & inifilename  // color-table initialization file
       );
 
-   void 
+   void
    SetupBitmapParameters
       (
-         int    const & COLORS,      // number of colors used by fractal image (<= number of colors in table) 
+         int    const & COLORS,      // number of colors used by fractal image (<= number of colors in table)
          int          & bitcount,    // bit-depth of pixels (always 1, 4, 8, or 24)
          bool         & compress     // use compression? (0 or 1)
       );
 
-   void 
+   void
    ProcessPixels
       (
          rhbitmap::Fractal  &  mandelbrot  // fractal object containing headers, color table, pixels, etc
       );
 
-   double 
+   double
    Fate
       (
          int     degree,     // degree of equation
@@ -147,21 +149,21 @@ namespace ns_Mandelbrot
          int     iterations  // target number of iterations
       );
 
-   inline 
-   double 
+   inline
+   double
    Skew
       (
          double s, // Skew Factor
          double f  // Longevity Fraction
       );
 
-   rhbitmap::Color 
+   rhbitmap::Color
    ContinuousRainbow
       (
          double f // Longevity Fraction
       );
 
-   rhbitmap::Color 
+   rhbitmap::Color
    CyclicRainbow
       (
          const double & f,  // Longevity Fraction
@@ -177,7 +179,7 @@ namespace ns_Mandelbrot
          long double        &  yi  // output, imaginary part
       );
 
-   void 
+   void
    Help
    (
       void
@@ -197,19 +199,19 @@ int main(int Gaston, char *Benoit[])
    exefile = string(Benoit[0]);
 
    // ============= Process command-line arguments: ===========================================================
-   
+
    // If user wants help, print help and exit:
    if (rhutil::HelpDecider(Gaston, Benoit, Help)) {exit(777);}
-   
+
    // Otherwise, did user enter the correct number of arguments?
    if (!(15==Gaston))
    {
-      cerr 
+      cerr
       << "Error in Mandelbrot: This program takes 14 arguments, but you only typed"               << endl
       << Gaston - 1 << " arguments. Type \"mandelbrot -h\" or \"mandelbrot --help\" for help."    << endl;
       exit(666);
    }
-   
+
    // Store arguments:
    int     degree      = atoi   (Benoit[ 1]);      // degree (2-13)
    double  x_min       = strtod (Benoit[ 2],NULL); // minimum x value
@@ -225,7 +227,7 @@ int main(int Gaston, char *Benoit[])
    double  skew_factor = strtod (Benoit[12],NULL); // skew_factor
    int     granularity = atoi   (Benoit[13]);      // Granularity
    string  bmpfilename = string (Benoit[14]);      // file name for bmp file
-   
+
    // Check arguments for validity:
    try
    {
@@ -261,7 +263,7 @@ int main(int Gaston, char *Benoit[])
          if (file_exist_flag) hIniFile.close();
          if (!file_exist_flag)                   throw NoIniFileError (inifilepath);
       }
-   } 
+   }
    catch(ArgRngError incoming_error)
    {
       cerr
@@ -283,27 +285,27 @@ int main(int Gaston, char *Benoit[])
          << "No inifile with path " << File.path << " exists.  Exiting program." << endl;
       exit(EXIT_FAILURE);
    }
-   
+
    // ============= Decide what colors to use: ===============================================================
 
    int COLORS; // number of colors used by fractal image
-   
+
    // Declare and initialize a color table to 256 colors, all black (this color table is not always used,
    // but function "DefineColors" below will need access to it if 256-or-fewer colors will be used):
    std::vector<rhbitmap::Color> colortable (256, rhbitmap::Color (0x00, 0x00, 0x00));
-   
-   // Determine what kind of color scheme (b&w? greyscale? inifile? continuous rainbow? cyclic rainbow?) to 
+
+   // Determine what kind of color scheme (b&w? greyscale? inifile? continuous rainbow? cyclic rainbow?) to
    // use for our "mandelbrot" fractal object which we create below. If 256-or-fewer colors are being used,
    // store these colors in colortable, in order from mathematically "farthest" to mathematically "closest"
    // from The Mandelbrot Set (they'll get copied to mandebrot's own color table by a for loop below).
-   // If COLORS > 256, the color table isn't used and isn't written to the bmp file. 
+   // If COLORS > 256, the color table isn't used and isn't written to the bmp file.
    // The following function sets colortable (maybe) and COLORS, based on colorswitch and inifilename (maybe):
    DefineColors(colorswitch, colortable, COLORS, inifilename);
-   
+
    // ============= Warn about iterations!=COLORS-1 in color-table mode: =====================================
    if ( COLORS <= 256 && iterations != COLORS - 1 )
    {
-      cerr 
+      cerr
          << "WARNING: If iterations > COLORS-1 in color-table mode, non-zero-potential"       << endl
          << "points may be colored the zero-potential color, and if iterations < COLORS-1,"   << endl
          << "some colors will be skipped."                                                    << endl;
@@ -312,7 +314,7 @@ int main(int Gaston, char *Benoit[])
    // ============= Warn about skew>0 in color-table mode: ===================================================
    if (COLORS <= 256 && skew_factor > 0.0 )
    {
-      cerr 
+      cerr
          << "WARNING: Using a non-zero skew in color-table mode may cause some colors to be"  << endl
          << "skipped or re-used."                                                             << endl;
    }
@@ -323,24 +325,24 @@ int main(int Gaston, char *Benoit[])
    SetupBitmapParameters(COLORS, bitcount, compress); // loads values into "bitcount" and "compress"
 
    // ============= Create a Fractal object to hold the fractal: =============================================
-   static rhbitmap::Fractal mandelbrot = 
+   static rhbitmap::Fractal mandelbrot =
       rhbitmap::Fractal
       (
          degree,
-         iterations, 
-         colorswitch, 
-         COLORS, 
-         cyclicity, 
-         skew_factor, 
-         granularity, 
-         bmpfilename, 
-         x_min, 
-         x_max, 
-         y_min, 
-         y_max, 
-         width, 
-         height, 
-         bitcount, 
+         iterations,
+         colorswitch,
+         COLORS,
+         cyclicity,
+         skew_factor,
+         granularity,
+         bmpfilename,
+         x_min,
+         x_max,
+         y_min,
+         y_max,
+         width,
+         height,
+         bitcount,
          compress
       );
 
@@ -355,23 +357,22 @@ int main(int Gaston, char *Benoit[])
          mandelbrot.settable(i, colortable[i]);
       }
    }
-   
+
    // Process pixels:
    ProcessPixels(mandelbrot);
-   
+
    // Write bitmap to disk file:
-   mandelbrot.filewrite(bmpfilename); 
+   mandelbrot.filewrite(bmpfilename);
 
    // Display image:
-   std::string Command {};
-   Command = std::string("chmod u=rwx,g=rwx,o=rx '") + bmpfilename + "'";
-   std::system(Command.c_str());
-   Command = std::string("cmd /C '") + bmpfilename + "' &";
-   std::system(Command.c_str());
+   //std::string Command {};
+   //Command = std::string("chmod u=rwx,g=rwx,o=rx '") + bmpfilename + "'";
+   //std::system(Command.c_str());
+   //Command = std::string("cmd /C '") + bmpfilename + "' &";
+   //std::system(Command.c_str());
 
    // Return to operating system:
    return 0;
-   
 } // end main()
 
 
@@ -379,7 +380,7 @@ int main(int Gaston, char *Benoit[])
  * DefineColors()
  * Sets colortable and COLORS based on colorswitch (and inifilename, if colorswitch is 'c').
 \************************************************************************************************************/
-void 
+void
 ns_Mandelbrot::
 DefineColors
    (
@@ -407,7 +408,7 @@ DefineColors
          std::ifstream init(inipath);
          if (!init)
          {
-            cerr 
+            cerr
                << "Error: can't open inifile " << inifilename << " for reading." << endl
                << "Make sure inifile is in this folder:"                         << endl
                << "/cygdrive/d/rhe/bin/fractals/"                                << endl;
@@ -433,7 +434,7 @@ DefineColors
             // If the problem was catastrophic, alert user and exit:
             if (init.bad())
             {
-               cerr 
+               cerr
                   << "SEVERE ERROR ENCOUNTERED while reading inifile " << inifilename << endl
                   << "on row " << row << " subpixel " << subpixel                     << endl;
                exit(EXIT_FAILURE);
@@ -450,7 +451,7 @@ DefineColors
                // Otherwise, we're missing data!
                else
                {
-                  cerr 
+                  cerr
                      << "Error: number of bytes in inifile " << inifilename << endl
                      << "is not a multiple of 3." << endl;
                   exit(EXIT_FAILURE);
@@ -459,7 +460,7 @@ DefineColors
             // Did the input file stream fail for some reason other than EOS?
             else if (init.fail())
             {
-               cerr 
+               cerr
                   << "Error: input file stream entered \"fail\" state while reading inifile" << endl
                   << inifilename << " at line " << row << " subpixel " << subpixel << endl;
                exit(EXIT_FAILURE);
@@ -467,13 +468,13 @@ DefineColors
             // We can't possibly get to here. But if we do...
             else
             {
-               cerr 
+               cerr
                   << "Error: something truly bizarre happened while reading inifile" << endl
                   << inifilename << " at line " << row << " subpixel " << subpixel << endl;
                exit(EXIT_FAILURE);
             }
          }
-         // If we get to here, we read the inifile correctly, so close the file and set COLORS to 
+         // If we get to here, we read the inifile correctly, so close the file and set COLORS to
          // the number of rows we read:
          init.close();
          COLORS=row;
@@ -524,18 +525,18 @@ DefineColors
             << "colorswitch.  (colorswitch must be b, c, g, or r.)  Exiting program." << endl;
          exit(EXIT_FAILURE);
    } // end switch (colorswitch)
-   
+
    // Check to see that at least 2 colors are being used:
    if (COLORS<2)
    {
       cerr << "Error: Must use at least two colors.  Exiting program." << endl;
       exit(EXIT_FAILURE);
    }
-   
+
    // Print number of colors allocated:
    cout << endl;
    cout << "Number of colors allocated for use by fractal image = " << COLORS << endl;
-   
+
 } // end DefineColors()
 
 
@@ -543,11 +544,11 @@ DefineColors
  * SetupBitmapParameters()
  * Sets-up parameters "bitcount" and "compress" for construction of a "bitmap, based on COLORS.
 \************************************************************************************************************/
-void 
+void
 ns_Mandelbrot::
 SetupBitmapParameters
    (
-      int   const  & COLORS,    // Number of colors allocated for use by fractal. 
+      int   const  & COLORS,    // Number of colors allocated for use by fractal.
       int          & bitcount,  // Bit depth of each pixel (always 1, 4, 8, or 24).
       bool         & compress   // Will compression be used? (0 or 1)
    )
@@ -568,14 +569,14 @@ SetupBitmapParameters
       bitcount=24;       // to get NO compression (16-million-color image)
       compress=false;    // to get NO compression (16-million-color image)
    }
-      
+
    cout
       << "\nParameters for bitmap:\n"
       << "bitcount     = " << bitcount << '\n'
       << "compression  = " << std::boolalpha << compress
       << endl;
- 
-   return;   
+
+   return;
 } // end SetupBitmapParameters()
 
 
@@ -585,7 +586,7 @@ SetupBitmapParameters
  * attained of target number of iterations the defining equation Z[n]=Z[n-1]^2+C underwent before abs(Z)
  * became greater than 2.1.
 \************************************************************************************************************/
-void 
+void
 ns_Mandelbrot::
 ProcessPixels
    (
@@ -606,24 +607,24 @@ ProcessPixels
    for (short int j = 0 ; j < height ; ++j)  // for each row in the raster...
    {
       if (j > 0) {for (short int k = 0 ; k < 20 ; ++k) {cout << "\010";}}
-      cout << setw(5) << j+1 << " of " << setw(5) << height 
+      cout << setw(5) << j+1 << " of " << setw(5) << height
            << " (" << setw(2) << int(double(j+1)/double(height)*100.0+0.000001) << "%)" << flush;
       for (short int i = 0 ; i < width ; ++i) // for each pixel in the current row...
       {
          // Neighborhood Issues:
          // For the purposes of this discussion, let M = The Mandelbrot Set, and let P(x) = the "Potential"
-         // of point x, which is the mathematical "closeness" of z to the Mandelbrot set, measured by 
+         // of point x, which is the mathematical "closeness" of z to the Mandelbrot set, measured by
          // the number n of iterations z lasts in the defining iterative equation z[n]=z[n-1]^2+x before
          // z[n] > 2.1 .
-         // 
-         // Consider the neighborhood of the current pixel consisting of all points which are closer to the 
-         // center point c of this pixel than to the center points of any adjacent pixels.  This pixel then 
+         //
+         // Consider the neighborhood of the current pixel consisting of all points which are closer to the
+         // center point c of this pixel than to the center points of any adjacent pixels.  This pixel then
          // represents that entire neighborhood.  There is a problem, however, in that this neighborhood
-         // may contain many points z with high P(z), and yet P(c) may be very low.  Therefore, if we base 
+         // may contain many points z with high P(z), and yet P(c) may be very low.  Therefore, if we base
          // the color of this pixel solely on P(c), the pixel may have a color which poorly represents
-         // the neighborhood as a whole.  
-         // 
-         // So what is the solution to this dilemma?  
+         // the neighborhood as a whole.
+         //
+         // So what is the solution to this dilemma?
          //
          // The solution is to form a "shotgun set" of points equally spaced throughout the neighborhood:
          //   ------------
@@ -635,16 +636,16 @@ ProcessPixels
          //   |          |    c is not a member of the shotgun set in this case.)
          //   |*  *  *  *|
          //   ------------
-         // Then we can base the color of the pixel on the potentials of all the points in the shotgun set, 
-         // not just center point c.  One could use average(P(x)) (for better representation of the 
-         // neighborhood as a whole), or maximum(P(x)) (for better depiction of the beautiful filimentary 
+         // Then we can base the color of the pixel on the potentials of all the points in the shotgun set,
+         // not just center point c.  One could use average(P(x)) (for better representation of the
+         // neighborhood as a whole), or maximum(P(x)) (for better depiction of the beautiful filimentary
          // connectedness of M), or perhaps a compromise, such as average(average(P(x)), maximum(P(x))).
          // For our purposes, let's use a weighted average: (66.6*maximum(P(x)) + 33.4*average(P(x)))/100.0.
          // This should help to darken-up thin filiments.
 
-         
+
          // Create a neighborhood and shotgun set for the current pixel:
-         rhmath::Neighborhood N = 
+         rhmath::Neighborhood N =
             rhmath::Neighborhood
             (
                mandelbrot.getx(i),    // real part of point c
@@ -653,10 +654,10 @@ ProcessPixels
                mandelbrot.verscale(), // height of one pixel
                mandelbrot.granularity // granularity
             );
-         
+
          // Calculate the fates of all the pellets in the shotgun set:
          N.transform(Fate, mandelbrot.degree, mandelbrot.iterations);
-         
+
          // Let Fraction equal a weighted average of the maximum and average potentials for the points
          // in the shotgun set:
          Fraction = (66.6 * N.maximum() + 33.4 * N.average()) / 100.0;
@@ -664,7 +665,7 @@ ProcessPixels
          // Apply the requested amount of parabolic skew (from none to heavy) to Fraction, and store in
          // skewed_fraction :
          skewed_fraction = Skew(mandelbrot.skew_factor, Fraction);
-         
+
          // Now paint the pixel commensurate with skewed_fraction and colorswitch:
          switch (mandelbrot.colorswitch)
          {
@@ -676,14 +677,14 @@ ProcessPixels
                break;
             case 'c': // (color-table mode)
             case 'd':
-               //cerr 
+               //cerr
                //   << "Row = "   << setw(5) << j << "  Pixel = " << setw(5) << i
                //   << "  Fraction = " << Fraction << endl;
                colorselect=int(floor((skewed_fraction+0.000001)*double(mandelbrot.colors_used-1)));
                mandelbrot.setcolor(i, j, colorselect);
                break;
             case 'g': // (grey-scale mode)
-               colorselect=int(floor(skewed_fraction * 255.999999)); // Give 0, 1, 254, 255 equal credence. 
+               colorselect=int(floor(skewed_fraction * 255.999999)); // Give 0, 1, 254, 255 equal credence.
                mandelbrot.setcolor(i, j, colorselect);
                break;
             case 'r': // (continuous-rainbow mode)
@@ -703,7 +704,7 @@ ProcessPixels
  * This function iterates the equation z[n] = z[n-1]^2 + c for the given value of c (z[0]=0).  The return
  * value is the fraction of the given total number of iterations the calculation lasted before z>2.1 .
 \************************************************************************************************************/
-double 
+double
 ns_Mandelbrot::
 Fate
    (
@@ -735,10 +736,10 @@ Fate
       curr_r += seed_r;
       curr_i += seed_i;
 
-      // If abs(curr)^2 >= limit^2, break, because this sequence will now explode to infinity, 
+      // If abs(curr)^2 >= limit^2, break, because this sequence will now explode to infinity,
       // hence current seed point ( seed_r + i * seed_i ) is not in The Mandelbrot Set:
       if ( curr_r * curr_r + curr_i * curr_i >= limit2 )
-         break; 
+         break;
 
       // Feed current z back into previous z for next loop:
       prev_r = curr_r;
@@ -759,40 +760,40 @@ Fate
  * This function applies a controled amount of parabolic skew to its input.
  * The first  argument, s, is the "Skew Factor", which should be in the range [0.0, 1.0].
  * The second argument, f, is the number to be skewed; it, too, should be in the range [0.0, 1.0].
- * The returned value will be equal to a linearly-weighted average of f and 1-(1-f)^2, with s as weighting 
- * factor.  
+ * The returned value will be equal to a linearly-weighted average of f and 1-(1-f)^2, with s as weighting
+ * factor.
  * (s == 0.0)       gives no skew at all.
  * (s == 1.0)       gives maximum parabolic skew.
  * (s>0.0 && s<1.0) gives a hybrid response.
  * I use this function to skew correspondance between logevity fraction and corresponding color, so as to
  * alter the slopes near the ends, in order to increase the contrast, so that fine details become clear.
- * 
+ *
  * In the following graphs, the horizontal axis is the longevity fraction f, and the vertical axis is
  * y = skew(s,f):
- * 
+ *
  * Linear response (s == 0.0;  y = f):
  *    |             *
  *    |           *
  *    |         *
  *    |       *
- *    |     * 
+ *    |     *
  *    |   *
  *    | *
  *    ---------------
- * 
+ *
  * Parabolic response (s == 1.0;  y = 1-(1-f)^2):
  *    |                *
- *    |           * 
+ *    |           *
  *    |       *
  *    |    *
  *    |  *
  *    | *
  *    |*
  *    ------------------
- * 
+ *
  * Hybrid response (s == 0.5;  y = 0.5*f + 0.5*(1-(1-f)^2)):
  *    |               *
- *    |          * 
+ *    |          *
  *    |       *
  *    |     *
  *    |   *
@@ -800,8 +801,8 @@ Fate
  *    |*
  *    ------------------
 \************************************************************************************************************/
-inline 
-double 
+inline
+double
 ns_Mandelbrot::
 Skew
    (
@@ -818,12 +819,12 @@ Skew
  * ContinuousRainbow()
  * This function maps longevity fraction f onto a single-cycle rainbow of colors.
  * Input:
- *   f = Logevity fraction (the fraction of maximum iterations (iter in main()) the calculation for this 
+ *   f = Logevity fraction (the fraction of maximum iterations (iter in main()) the calculation for this
  *       pixel lasted without going out of bounds)
  * Output:
  *   Returns a rhbitmap::Color object giving the color assigned to this pixel.
 \************************************************************************************************************/
-rhbitmap::Color 
+rhbitmap::Color
 ns_Mandelbrot::
 ContinuousRainbow
    (
@@ -832,22 +833,22 @@ ContinuousRainbow
 {
    // If f is within 1ppm of 1.0, the point is a member of The Mandelbrot Set, so return a black pixel:
    if (f > 0.999999) {return rhbitmap::Color (0,0,0);}
-   
+
    // Otherwise, calculate "normalized" version of f, mapped to the range from arcsine(0.25)=0.252680 to
    // 0.999*5(PI/2)=7.846128, which gives a span of 7.846128-0.252680=7.593447:
-   
+
    double n = asin(0.25) + (0.999 * 5.0 * Pi / 2.0 - asin(0.25)) * f;
-   
+
    // Then, using PI/2 as a unit, calculate the "unit" and "fractional"
    // parts of n, and store in "zone" and "angle" respectively:
-   
+
    int zone = int(floor(n/(Pi/2.0)));
    double angle = n - zone * Pi / 2.0;
-   
+
    // Now, assign colors depending on zone and angle:
-   
+
    double red, grn, blu;
-   switch (zone) 
+   switch (zone)
    {  // Blue -> Red
       case 0:                 // Dark Blue
          red = 0.0;
@@ -889,17 +890,17 @@ ContinuousRainbow
  * CyclicRainbow()
  * This function maps longevity fraction f onto a multi-cycle rainbow of colors.
  * Inputs:
- *   f         = Logevity fraction (the fraction of maximum iterations the calculation for this pixel lasted 
+ *   f         = Logevity fraction (the fraction of maximum iterations the calculation for this pixel lasted
  *               in the defining equation without going out of bounds)
  *   cyclicity = Cyclicity (the number of times the rainbow repeats from f = 0 to f = 1)
  * Output:
  *   Returns a rhbitmap::Color object giving the color assigned to this pixel.
 \************************************************************************************************************/
-rhbitmap::Color 
+rhbitmap::Color
 ns_Mandelbrot::
 CyclicRainbow
    (
-      const double & f, 
+      const double & f,
       const double & cyclicity
    )
 {
@@ -914,29 +915,29 @@ CyclicRainbow
       cerr << "Error: invalid cyclicity argument to CyclicRainbow. Aborting program." << endl;
       abort();
    }
-   
+
    // If f is within 1ppm of 1.0, the point is a member of The Mandelbrot Set, so return a black pixel:
    // (We can't do "if (f == 1)" for floating-point f, so we do "if (f > 0.999999)" instead.)
    if (f > 0.999999)
-      return rhbitmap::Color (0,0,0); 
-   
+      return rhbitmap::Color (0,0,0);
+
    // Chop the [0, 1) range of f into cyclicity cycles, and find the position of f within its cycle:
    double position = rhmath::IntegFract(rhmath::LinearRescale(1.0, cyclicity)(f)).fract();
-   
+
    // For each cycle, we want to cycle colors like this:
    // Red  Yellow  Green  Cyan  Blue  Magenta  Red
    //  ^                                        |
    //  |________________________________________|
-   
-   // So, we need to chop the [0, 1) range of position into 6 zones, find which zone position is in, 
+
+   // So, we need to chop the [0, 1) range of position into 6 zones, find which zone position is in,
    // and position's fraction within it's zone:
    rhmath::IntegFract zone_angle (rhmath::LinearRescale(1.0, 5.999999)(position));
    int    zone  = zone_angle.integ();
    double angle = zone_angle.fract();
-   
+
    // Assign colors depending on zone and angle:
    double red, grn, blu;
-   switch (zone) 
+   switch (zone)
    {
       case 0:                    // red-to-yellow
          red = 1.0;
@@ -975,14 +976,14 @@ CyclicRainbow
          blu = 9284768.20820;
          break;
    }
-   
+
    if (red<0.0 || red>1.0  || grn<0.0 || grn>1.0 || blu<0.0 || blu>1.0)
    {
       cerr << "Error: Invalid color value in CyclicRainbow. Aborting program." << endl;
       abort();
    }
-      
-   // Renormalize colors from interval [0.0, 1.0] (floating point numbers) 
+
+   // Renormalize colors from interval [0.0, 1.0] (floating point numbers)
    // to interval [0, 255] (integers):
    int redint = int(floor(255.9999*red));
    int grnint = int(floor(255.9999*grn));
@@ -992,7 +993,7 @@ CyclicRainbow
 
 
 // Return an integer power of a complex number:
-void 
+void
 ns_Mandelbrot::
 Pow
    (
@@ -1023,7 +1024,7 @@ Pow
 } // end Pow()
 
 
-void 
+void
 ns_Mandelbrot::
 Help
    (

@@ -17,12 +17,18 @@
 #                   to "file-extension-stats.pl". Got rid of "use common::sense;" (antiquated). Reduced
 #                   width from 120 to 110 for github. Shortened sub names. Got rid of prototypes and started
 #                   using signatures instead. Improved help.
+# Thu Sep 07, 2023: Updated and simplified argv. Removed "quotes" from help. Added "warnings Fatal => 'utf8'".
+#                   Added --debug and --local settings. Subsumed curfile() into curdir() as one-liner.
+#                   Now considering ".htm", ".html", ".HTM", ".HTML" as being 4 different extensions.
+#                   (Program was hiding those differences, but that's a mistake, as we need to see what
+#                   non-cannonical file-name extensions are being used, so we can fix them.)
 ##############################################################################################################
 
 use v5.36;
 use strict;
 use warnings;
 use utf8;
+use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
 use Cwd;
@@ -40,7 +46,7 @@ sub help    ;
 # ======= VARIABLES: =========================================================================================
 
 # Turn on debugging?
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
+my $Db = 0; # Set to 1 for debugging, 0 for no debugging.
 
 #Program Settings:
 #  Setting:           Meaning:                  Range:   Default:
@@ -66,12 +72,30 @@ my %file_types;
 # ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 sub argv {
-   foreach (@ARGV)
-   {
-      if ($_ eq '-h' || $_ eq '--help'   ) {help; exit 777 ; }
-      if ($_ eq '-r' || $_ eq '--recurse') {$Recurse = 1   ; }
-      if ($_ eq '-n' || $_ eq '--number' ) {$Number  = 1   ; }
+   # Get options and ignore arguments:
+   my @opts;                 # options
+   my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   for ( @ARGV ) {                             # For each command-line item,
+      if ( /^-(?!-)$s+$/ || /^--(?!-)$d+$/ ) { # if its a valid short or long option,
+         push @opts, $_;                       # push item to @opts.
+      }
    }
+
+   # Process options:
+   for ( @opts ) {
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
+      /^-$s*n/ || /^--number$/  and $Number  =  1     ;
+   }
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+   }
+
+   # Return success code 1 to caller:
    return 1;
 } # end sub process_argv ()
 
@@ -79,26 +103,12 @@ sub curdire {
    ++$direcount;
    my $curdir = d getcwd;
    my @curdirpaths = glob_regexp_utf8($curdir, 'F');
-   foreach my $path (@curdirpaths) {curfile($path)}
+   ++$file_types{get_suffix get_name_from_path $_} for @curdirpaths;
    return 1;
 } # end sub curdire
 
-sub curfile ($path) {
-   ++$filecount;
-   my $name = get_name_from_path($path);
-   if ($db) {say "In curfile. Current file name = \"$name\".";}
-   my $suff = get_suffix($name);
-   $suff =~ s/^\.htm$/.html/i;
-   $suff =~ s/^\.tif$/.tiff/i;
-   $suff =~ s/^\.jpeg$/.jpg/i;
-   $suff =~ s/^\.mpeg$/.mpg/i;
-   $suff = fc $suff;
-   ++$file_types{$suff};
-   return 1;
-} # end sub curfile ($path)
-
 sub stats {
-   say "\nFile-extension statistics for this tree:\n";
+   say 'File-extension statistics for this ' . ($Recurse ? 'tree:' : 'directory:');
    printf("Extension:  Count:\n");
    my @sorted_keys;
    if ($Number) {
@@ -130,19 +140,21 @@ sub help
    -------------------------------------------------------------------------------
    Description Of Options:
 
-   Option:               Meaning:
-   "-h" or "--help"      Print this help and exit.
-   "-r" or "--recurse"   Recurse subdirectories.
-   "-n" or "--number"    Sort by number-of-files instead of by extension.
+   Option:           Meaning:
+   -h or --help      Print this help and exit.
+   -e or --debug     Print diagnostics.
+   -l or --local     Don't recurse subdirectories.   (DEFAULT)
+   -r or --recurse   Recurse subdirectories.
+   -n or --number    Sort by number-of-files instead of by extension.
 
    Any options not listed above will be ignored.
 
    -------------------------------------------------------------------------------
    Description Of Arguments:
 
-   Other than the options above, this program will ignore all arguments you type.
-   But hey, type some anyway; it's good typing practice. :-)
+   All non-option arguments will be ignored.
 
+   Happy file-extension stats printing!
    Cheers,
    Robbie Hatley,
    programmer.

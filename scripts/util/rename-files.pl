@@ -52,6 +52,8 @@
 #                   Removed "no debug" option as that's already default in all of my programs.
 #                   "$Verbose" now means "print directories"; all other info is now printed regardless.
 #                   STDERR = "stats and serious errors". STDOUT = "files renamed, and dirs if being verbose".
+# Thu Sep 07, 2023: Added $Predicate. Using a predicate argument forces $Target to be 'A' to avoid conflicts.
+#                   Fixed "--mode=xxxx" typos in help.
 ##############################################################################################################
 
 use v5.36;
@@ -78,19 +80,21 @@ sub help    ;
 
 # ======= VARIABLES: =========================================================================================
 
-# Settings:     Default Value:   Meaning of Setting:                 Range           Default
-my $Db        = 0            ; # Debug?                              bool            Don't debug.
-my $Verbose   = 0            ; # Print directories?                  bool            Don't print dirs.
-my $Recurse   = 0            ; # Recurse subdirectories?             bool            Be local.
-my $Target    = 'F'          ; # Files, directories, both, or All?   F|D|B|A         Regular files only.
-my $Mode      = 'P'          ; # Prompt mode                         P|S|Y           Prompt user.
-my $RegExp    = qr/^(.+)$/   ; # RegExp.                             RegExp          Match all file names.
-my $Replace   = '$1'         ; # Replacement string.                 string          Repl. is same as match.
-my $Flags     = ''           ; # Flags for s/// operator.            imsxopdualgre   No flags.
+# Settings:   Default Value:   Meaning of Setting:                Range:         Meaning of default:
+my $Db        = 0          ; # Debug?                             bool           Don't debug.
+my $Verbose   = 0          ; # Print directories?                 bool           Don't print dirs.
+my $Recurse   = 0          ; # Recurse subdirectories?            bool           Be local.
+my $Target    = 'F'        ; # Files, directories, both, or All?  F|D|B|A        Regular files only.
+my $Mode      = 'P'        ; # Prompt mode                        P|S|Y          Prompt user.
+my $RegExp    = qr/^(.+)$/ ; # RegExp.                            RegExp         Match all file names.
+my $Replace   = '$1'       ; # Replacement string.                string         Replacement is same as match.
+my $Flags     = ''         ; # Flags for s/// operator.           imsxopdualgre  No flags.
+my $Predicate = 1          ; # Boolean file-test predicate.       bool           All file-type combos.
 
 # Counters:
 my $dircount  = 0; # Count of directories processed.
 my $filecount = 0; # Count of files matching target and regexp.
+my $predcount = 0; # Count of files also matching $Predicate.
 my $samecount = 0; # Count of files for which NewName eq OldName.
 my $diffcount = 0; # Count of files for which NewName ne OldName.
 my $skipcount = 0; # Count of files skipped at user's request.
@@ -124,6 +128,7 @@ $Targets{A} = 'All Directory Entries';
    say    STDERR "Regular Expression = $RegExp";
    say    STDERR "Replacement String = $Replace";
    say    STDERR "Modifier Flags     = $Flags";
+   say    STDERR "Predicate          = $Predicate";
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
@@ -178,18 +183,27 @@ sub argv {
 
    # Process arguments:
    my $NA = scalar @args;      # Get number of arguments.
-   $NA >= 1                    # If number of arguments >= 1,
-   and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 2                    # If number of arguments >= 2,
-   and $Replace   = $args[1] ; # set $Replace.
-   $NA >= 3                    # If number of arguments >= 3,
-   and $Flags     = $args[2] ; # set $Flags.
-   $NA >= 4 && !$Db            # If number of arguments >= 4 and not debugging,
-   and error($NA)              # print error message,
-   and help                    # and print help message,
-   and exit 666;               # and exit, returning The Number Of The Beast.
+   if ( $NA >= 1 ) {           # If number of arguments >= 1,
+      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+   }
+   if ( $NA >= 2 ) {           # If number of arguments >= 2,
+      $Replace   = $args[1];   # set $Replace to $args[1].
+   }
+   if ( $NA >= 3 ) {           # If number of arguments >= 3,
+      $Flags     = $args[2];   # set $Flags to $args[2].
+   }
+   if ( $NA >= 4 ) {           # If number of arguments >= 4,
+      $Predicate = $args[3];   # set $Predicate to $args[3]
+      $Target = 'A';           # and set $Target to 'A' to avoid conflicts with $Predicate.
+   }
+   if ( ($NA < 2 || $NA > 4)   # If number of arguments < 2 or > 4
+      && !$Db ) {              # and we're not debugging,
+      error($NA);              # print error message,
+      help;                    # and print help message,
+      exit 666;                # and exit, returning The Number Of The Beast.
+   }
 
-   # Return success code to caller:
+   # Return success code 1 to caller:
    return 1;
 } # end sub argv
 
@@ -205,13 +219,15 @@ sub curdire {
    # Get list of targeted files in current directory:
    my $curdirfiles = GetFiles($curdir, $Target, $RegExp);
 
-   my $Success = 0;
-
-   # Iterate through these files, possibly renaming some depending on
-   # the arguments and options the user gave on the command line,
-   # and on the names of the files in the current directory:
-   for my $file ( @{$curdirfiles} ) {
-      curfile ($file);
+   # Process each path that matches $RegExp, $Target, and $Predicate:
+   foreach my $file (sort {$a->{Name} cmp $b->{Name}} @$curdirfiles) {
+      ++$filecount;
+      say STDERR "Debug msg in rnf, in curdire, in foreach: filename = $file->{Name}";
+      local $_ = e $file->{Path};
+      if (eval($Predicate)) {
+         ++$predcount;
+         curfile($file);
+      }
    }
 
    # Return success code 1 to caller:
@@ -219,9 +235,6 @@ sub curdire {
 } # end sub curdire
 
 sub curfile ($file) {
-   # Increment "files processed" counter:
-   ++$filecount;
-
    # Make variables for old and new names and paths:
    my $OldPath = $file->{Path};
    my $OldName = $file->{Name};
@@ -320,6 +333,7 @@ sub stats {
    printf STDERR "\n";
    printf STDERR "Processed %5d directories.\n",                                          $dircount;
    printf STDERR "Found     %5d files matching target and regexp.\n",                     $filecount;
+   printf STDERR "Found     %5d files also matching predicate.\n",                        $predcount;
    printf STDERR "Bypassed  %5d files because new name was same as old name.\n",          $samecount;
    printf STDERR "Examined  %5d files for which new name was different from old name.\n", $diffcount;
    printf STDERR "Skipped   %5d files at user's request.\n",                              $skipcount;
@@ -330,15 +344,9 @@ sub stats {
 
 sub error ($NA) {
    print STDERR ((<<"   END_OF_ERROR") =~ s/^   //gmr);
-
-   Error: You typed $NA arguments, but rename-files.pl takes 2 or 3 arguments:
-   a regular expression, a replacement string, and (optionally) a cluster of
-   s/// flag letters. Did you forget to put each argument in 'single quotes'?
-   Failure to do this can send dozens (or hundreds, or thousands) of arguments
-   to RenameFiles, instead of the required 2 or 3 arguments. Help follows:
+   Error: You typed $NA arguments, but rename-files.pl takes 2, 3, or 4 arguments.
+   Help follows:
    END_OF_ERROR
-
-   # Return success code 1 to caller:
    return 1;
 } # end sub error ($NA)
 
@@ -399,10 +407,11 @@ sub help {
    -------------------------------------------------------------------------------
    Description of arguments:
 
-   Renamefiles takes 2 or 3 command-line arguments:
+   Renamefiles takes 2, 3, or 4 command-line arguments:
    Arg1 (MANDATORY): "Regular Expression" giving pattern to search for.
    Arg2 (MANDATORY): "Replacement String" giving substitution for regex match.
    Arg3 (OPTIONAL ): "Substitution Flags" giving flags for s/// operator.
+   Arg4 (OPTIONAL ): "Predicate"          giving file-type boolean predicate.
 
    Arg1 must be a Perl-Compliant Regular Expression specifying which files
    to rename. To specify multiple patterns, use the | alternation operator.
@@ -420,34 +429,63 @@ sub help {
    Arg1 is '(\d{3})(\d{3})' and Arg2 is '$1-$2', then Rename-Files would rename
    "123456" to "123-456".
 
-   Arg3 (optional), if present, must be flags for the Perl s/// substitution
+   Arg3 (OPTIONAL), if present, must be flags for the Perl s/// substitution
    operator. For example, if Arg1 is 'dog' and Arg2 is 'cat', normally
    Rename-Files would rename "dogdog" to "catdog", but if Arg3 is 'g' then the
    result will be "catcat" instead.
 
-   Examples of argument usage:
+   Arg4 (OPTIONAL), if present, must be a boolean predicate using Perl
+   file-test operators. The expression must be enclosed in parentheses (else
+   this program will confuse your file-test operators for options), and then
+   enclosed in single quotes (else the shell won't pass your expression to this
+   program intact). If this argument is used, it overrides "--files", "--dirs",
+   or "--both", and sets target to "--all" in order to avoid conflicts with
+   the predicate.
 
-   rnf -f 'dog' 'cat'
-   (would rename "Dogdog.txt" to "Dogcat.txt")
+   Here are some examples of valid and invalid predicate arguments:
+   '(-d && -l)'  # VALID:   Finds symbolic links to directories
+   '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
+   '(-b)'        # VALID:   Finds block special files
+   '(-c)'        # VALID:   Finds character special files
+   '(-S || -p)'  # VALID:   Finds sockets and pipes.  (S must be CAPITAL S   )
+    '-d && -l'   # INVALID: missing parentheses       (confuses program      )
+    (-d && -l)   # INVALID: missing quotes            (confuses shell        )
+     -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
 
-   rnf -f '(?i:dog)' 'cat'
-   (would rename "Dogdog.txt" to "catdog.txt")
-
-   rnf -f '(?i:dog)' 'cat' 'g'
-   (would rename "Dogdog.txt" to "catcat.txt")
-
-   The arguments should be enclosed in 'single quotes'. Failure to do this may
+   All arguments should be enclosed in 'single quotes'. Failure to do this may
    cause the shell to decompose an argument to a list of entries in the current
    directory and send THOSE to Rename-Files, whereas Rename-Files needs the raw
    arguments.
 
-   Arguments may be freely mixed with options, but arguments must appear in
-   the order Arg1, Arg2, Arg3.
+   Arguments may be freely mixed with options, but arguments are "positional",
+   so they MUST appear in the order Arg1, Arg2, Arg3, Arg4. If you mix them up,
+   they won't work right.
 
    WARNING: If any of your arguments looks like an option (say, "--help"),
    use a "--" option and put any such arguments to the right of the "--"; that
    will force any items to the right of the "--" to be construed as arguments
    rather than as options.
+
+   -------------------------------------------------------------------------------
+   Usage Examples:
+
+   rename-files.pl -f 'dog' 'cat'
+   (would rename "Dogdog.txt" to "Dogcat.txt")
+
+   rename-files.pl -f '(?i:dog)' 'cat'
+   (would rename "Dogdog.txt" to "catdog.txt")
+
+   rename-files.pl -f '(?i:dog)' 'cat' 'g'
+   (would rename "Dogdog.txt" to "catcat.txt")
+
+   rename-files.pl -f '--help' 'cat' 'g' '' '(-p || -S)'
+   (would just print this help and exit, because the '--help' would be
+   construed as an option, not an argument)
+
+   rename-files.pl -f -- '--help' 'cat' 'g' '' '(-p || -S)'
+   (would rename pipe "bad---help.p" to "bad-cat.p"
+   and would rename socket "--help---help.s" to "cat-cat.s",
+   because the -- forces '--help' to be an argument, not an option)
 
    -------------------------------------------------------------------------------
    Directory Navigation:
@@ -464,6 +502,8 @@ sub help {
    "--both" option is used, it will rename both regular files and directories.
    And if a "-a" or "--all" switch is use, it will rename ALL directory entries
    (regular files, directories, links, pipes, sockets, etc, etc, etc).
+   And if a predicate argument (Arg4) is used, ANY combination of file types
+   can be renamed (say, sockets, pipes, and TTY files).
 
    -------------------------------------------------------------------------------
    Prompting:
@@ -471,24 +511,24 @@ sub help {
    By default, Renamefiles will prompt the user to confirm or reject each rename
    it proposes based on the settings the user gave.  However, this can be altered.
 
-   Using a "-s" or "--mode=simulate" switch will cause Renamefiles to simulate
+   Using a "-s" or "--simulate" switch will cause Renamefiles to simulate
    file renames rather than actually perform them, displaying the new names which
    would have been used had the rename actually occurred. No files will actually
    be renamed.
 
-   Using a "-y" or "--mode=noprompt" switch will have the opposite effect:
+   Using a "-y" or "--noprompt" switch will have the opposite effect:
    all renames will be executed automatically without prompting.
 
    Also, the prompt mode can be changed from "prompt" to "no-prompt" on the fly
    by tapping the 'a' key when prompted.  All remaining renames will then be
    performed automatically without further prompting.
 
+
    Happy file renaming!
    Cheers,
    Robbie Hatley,
    programmer.
    END_OF_HELP
-
    # Return success code 1 to caller:
    return 1;
 } # end sub help
