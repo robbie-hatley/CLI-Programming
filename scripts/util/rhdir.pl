@@ -72,7 +72,7 @@ my $Db        = 0          ; # Debug?                     0,1       Don't debug.
 my $Verbose   = 1          ; # Be verbose?                0,1,2     Be somewhat verbose.
 my $Recurse   = 0          ; # Recurse subdirectories?    bool      Don't recurse.
 my $Target    = 'A'        ; # Target                     F|D|B|A   List files of all types.
-my $RegExp    = qr/^.+$/   ; # Regular Expression.        regexp    List files of all names.
+my $RegExp    = qr/.+/     ; # Regular Expression.        regexp    List files of all names.
 my $Predicate = 1          ; # file-type boolean          bool      All file types.
 my $Inodes    = 0          ; # Print inodes?              bool      Don't print inodes.
 
@@ -82,16 +82,17 @@ my $filecount = 0 ; # Count of files matching $Target and $RegExp.
 my $predcount = 0 ; # Count of files also matching $Predicate.
 
 # Accumulations of counters from RH::Dir :
-my $ottycount = 0 ; # Count of all tty files.
-my $cspccount = 0 ; # Count of all character special files.
-my $bspccount = 0 ; # Count of all block special files.
-my $sockcount = 0 ; # Count of all sockets.
-my $pipecount = 0 ; # Count of all pipes.
-my $brkncount = 0 ; # Count of all symbolic links to nowhere.
+my $totfcount = 0 ; # Count of all files.
+my $sdircount = 0 ; # Count of all directories.
 my $slkdcount = 0 ; # Count of all symbolic links to directories.
 my $linkcount = 0 ; # Count of all symbolic links to files.
 my $weircount = 0 ; # Count of all symbolic links to weirdness.
-my $sdircount = 0 ; # Count of all directories.
+my $brkncount = 0 ; # Count of all symbolic links to nowhere.
+my $bspccount = 0 ; # Count of all block special files.
+my $cspccount = 0 ; # Count of all character special files.
+my $pipecount = 0 ; # Count of all pipes.
+my $sockcount = 0 ; # Count of all sockets.
+my $ottycount = 0 ; # Count of all tty files.
 my $hlnkcount = 0 ; # Count of all regular files with multiple hard links.
 my $regfcount = 0 ; # Count of all regular files.
 my $unkncount = 0 ; # Count of all unknown files.
@@ -217,18 +218,19 @@ sub curdire {
       say STDERR '';
    }
 
-   # If being "very verbose", append all 14 RH::Dir file-type counters to this program's accumulators:
+   # If being "very verbose", append all 15 RH::Dir file-type counters to this program's accumulators:
    if ( $Verbose >= 2 ) {
-      $ottycount += $RH::Dir::ottycount; # tty files
-      $cspccount += $RH::Dir::cspccount; # character special files
-      $bspccount += $RH::Dir::bspccount; # block special files
-      $sockcount += $RH::Dir::sockcount; # sockets
-      $pipecount += $RH::Dir::pipecount; # pipes
-      $brkncount += $RH::Dir::brkncount; # symbolic links to nowhere
+      $totfcount += $RH::Dir::totfcount; # all files
+      $sdircount += $RH::Dir::sdircount; # directories
       $slkdcount += $RH::Dir::slkdcount; # symbolic links to directories
       $linkcount += $RH::Dir::linkcount; # symbolic links to files
       $weircount += $RH::Dir::weircount; # symbolic links to weirdness
-      $sdircount += $RH::Dir::sdircount; # directories
+      $brkncount += $RH::Dir::brkncount; # symbolic links to nowhere
+      $bspccount += $RH::Dir::bspccount; # block special files
+      $cspccount += $RH::Dir::cspccount; # character special files
+      $pipecount += $RH::Dir::pipecount; # pipes
+      $sockcount += $RH::Dir::sockcount; # sockets
+      $ottycount += $RH::Dir::ottycount; # tty files
       $hlnkcount += $RH::Dir::hlnkcount; # regular files with multiple hard links
       $regfcount += $RH::Dir::regfcount; # regular files
       $unkncount += $RH::Dir::unkncount; # unknown files
@@ -261,7 +263,7 @@ sub curdire {
    if ($Db) {print Dumper \%TypeLists}
 
    # Make a list of types:
-   my @Types = split //,'NTYXOPBSLWDHFU';
+   my @Types = split //,'DRLWXBCPSTHFUN';
 
    # Directory Listing (if in inodes mode):
    if ($Inodes)
@@ -308,16 +310,17 @@ sub dir_stats ($curdir) {
    }
    if ( $Verbose >= 2 ) {
       say    STDERR "\nDirectory entries encountered in this directory included:";
-      printf STDERR "%7u tty files\n",                              $RH::Dir::ottycount;
-      printf STDERR "%7u character special files\n",                $RH::Dir::cspccount;
-      printf STDERR "%7u block special files\n",                    $RH::Dir::bspccount;
-      printf STDERR "%7u sockets\n",                                $RH::Dir::sockcount;
-      printf STDERR "%7u pipes\n",                                  $RH::Dir::pipecount;
-      printf STDERR "%7u symbolic links to nowhere\n",              $RH::Dir::brkncount;
+      printf STDERR "%7u total files\n",                            $RH::Dir::totfcount;
+      printf STDERR "%7u directories\n",                            $RH::Dir::sdircount;
       printf STDERR "%7u symbolic links to directories\n",          $RH::Dir::slkdcount;
       printf STDERR "%7u symbolic links to files\n",                $RH::Dir::linkcount;
       printf STDERR "%7u symbolic links to weirdness\n",            $RH::Dir::weircount;
-      printf STDERR "%7u directories\n",                            $RH::Dir::sdircount;
+      printf STDERR "%7u symbolic links to nowhere\n",              $RH::Dir::brkncount;
+      printf STDERR "%7u block special files\n",                    $RH::Dir::bspccount;
+      printf STDERR "%7u character special files\n",                $RH::Dir::cspccount;
+      printf STDERR "%7u pipes\n",                                  $RH::Dir::pipecount;
+      printf STDERR "%7u sockets\n",                                $RH::Dir::sockcount;
+      printf STDERR "%7u tty files\n",                              $RH::Dir::ottycount;
       printf STDERR "%7u regular files with multiple hard links\n", $RH::Dir::hlnkcount;
       printf STDERR "%7u regular files\n",                          $RH::Dir::regfcount;
       printf STDERR "%7u files of unknown type\n",                  $RH::Dir::unkncount;
@@ -336,16 +339,17 @@ sub tree_stats {
    }
    if ( $Verbose >= 2 ) {
       say    STDERR "\nDirectory entries encountered in this tree included:";
-      printf STDERR "%7u tty files\n",                              $ottycount;
-      printf STDERR "%7u character special files\n",                $cspccount;
-      printf STDERR "%7u block special files\n",                    $bspccount;
-      printf STDERR "%7u sockets\n",                                $sockcount;
-      printf STDERR "%7u pipes\n",                                  $pipecount;
-      printf STDERR "%7u symbolic links to nowhere\n",              $brkncount;
+      printf STDERR "%7u total files\n",                            $totfcount;
+      printf STDERR "%7u directories\n",                            $sdircount;
       printf STDERR "%7u symbolic links to directories\n",          $slkdcount;
       printf STDERR "%7u symbolic links to files\n",                $linkcount;
       printf STDERR "%7u symbolic links to weirdness\n",            $weircount;
-      printf STDERR "%7u directories\n",                            $sdircount;
+      printf STDERR "%7u symbolic links to nowhere\n",              $brkncount;
+      printf STDERR "%7u block special files\n",                    $bspccount;
+      printf STDERR "%7u character special files\n",                $cspccount;
+      printf STDERR "%7u pipes\n",                                  $pipecount;
+      printf STDERR "%7u sockets\n",                                $sockcount;
+      printf STDERR "%7u tty files\n",                              $ottycount;
       printf STDERR "%7u regular files with multiple hard links\n", $hlnkcount;
       printf STDERR "%7u regular files\n",                          $regfcount;
       printf STDERR "%7u files of unknown type\n",                  $unkncount;
@@ -387,21 +391,26 @@ sub help
    -------------------------------------------------------------------------------
    Type Letters:
 
-   The meanings of the Type letters are as follows:
-   B - Broken symbolic link
+   The meanings of the Type letters, in alphabetical order, are as follows:
+   B - block special file
+   C - character special file
    D - Directory
    F - regular File
    H - regular file with multiple Hard links
-   L - symbolic Link to regular file
+   L - symbolic link to regular fiLe
    N - Nonexistent
-   O - sOcket
+   S - Socket
    P - Pipe
-   S - Symbolic link to directory
+   R - symbolic link to diRectory
    T - opens to a Tty
    U - Unknown
    W - symbolic link to something Weird (not a regular file or directory)
-   X - block special file
-   Y - character special file
+   X - Broken symbolic link
+
+   NOTE: In listings, these will appear in order DRLWXBCPSTHFUN, so that we have
+   directories first (D), then links (RLWX), then non-link special files (BCPST),
+   files with multiple hard links (H), regular files (F), unknown files (U), and,
+   lastly, nonexistent files (N).
 
    -------------------------------------------------------------------------------
    Verbosity levels:

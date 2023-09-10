@@ -19,6 +19,7 @@
 #                   Now using "d getcwd" instead of "cwd_utf8". Changed "--target=xxxx" to just "--xxxx".
 #                   Put headers in help.
 # Fri Aug 11, 2023: Added end-of-options marker. Added debug option.
+# Sat Sep 09, 2023: Got rid of '/o' on all qr(). Applied qr($_) to all incoming arguments. Improved help.
 ##############################################################################################################
 
 use v5.36;
@@ -48,7 +49,7 @@ my $db      = 0           ; # Debug?                    bool      Don't debug.
 my $Verbose = 0           ; # Be verbose?               bool      Shhhh!! Be quiet!!
 my $Recurse = 0           ; # Recurse subdirectories?   bool      Don't recurse.
 my $Target  = 'F'         ; # Target                    F|D|B|A   Regular files only.
-my @RegExps = (qr/^.+$/o) ; # Regular Expressions.      regexps   All file names.
+my @RegExps = (qr/^.+$/)  ; # Regular Expressions.      regexps   All file names.
 
 # Counts of events in this program:
 my $direcount = 0; # Count of directories processed.
@@ -104,7 +105,7 @@ sub argv {
 
    # Interpret all arguments (if any) as being Perl-Compliant Regular Expressions specifying
    # which file names to process:
-   @args and @RegExps = @args;
+   @args and push @RegExps, map {qr($_)} @args;
 
    # Return success code 1 to caller:
    return 1;
@@ -172,8 +173,9 @@ sub help {
 
    Welcome to "age.pl", Robbie Hatley's Nifty list-files-by-age utility. This
    program will list all files in the current directory (and all subdirectories if
-   a -r or --recurse option is used) in increasing order of age. Each listing line
-   will give the following pieces of information about a file:
+   a -r or --recurse option is used) in increasing order of age (newest files on
+   top, oldest at bottom). Each listing line will give the following pieces of
+   information about a file:
    1. Age of file in days.
    2. Type of file (single-letter code, one of NTYXOPSLMDHFU).
    3. Size of file in format #.##E+##
@@ -222,16 +224,14 @@ sub help {
    In addition to options, this program can take one-or-more optional arguments,
    which, if present, will be interpreted as Perl-Compliant Regular Expressions
    specifying which items to process. To apply pattern modifier letters, use an
-   Extended RegExp Sequence. For example, if you want to search for items with
-   names containing "cat", "dog", or "horse", title-cased or not, you could use
-   this regexp: '(?i:c)at|(?i:d)og|(?i:h)orse'
+   Extended RegExp Sequence. For example, if you want to search for files with
+   names containing "Robbie" or "robbie", you could use '(?i:R)obbie'.
 
-   Be sure to enclose your regexp(s) in 'single quotes', else BASH may replace
-   them with matching names of entities in the current directory and send THOSE
-   to this program, whereas this program needs the raw regexp(s) instead.
+   Be sure to enclose each regexp in 'single quotes', else BASH may misintepret
+   your regexps as csh wildcards and replace your regexps with matching names of
+   files in the current directory and send THOSE to this program, whereas this
+   program needs the raw regexps instead.
 
-   A number of arguments other than 0 or 1 will cause this program to print an
-   error message and abort.
 
    Happy files-by-age listing!
    Cheers,

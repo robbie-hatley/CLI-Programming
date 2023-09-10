@@ -8,7 +8,7 @@ elif test "Square-Rigger" = $HOSTNAME ; then
    umount-KE
    umount-AV
 elif test "Ketch" = $HOSTNAME ; then
-   echo "Ketch doesn't use cifs mounts."
+   echo "Error in disnet: Ketch doesn't use cifs mounts."
 elif test "Avalon" = $HOSTNAME ; then
    umount-EX
    umount-SR

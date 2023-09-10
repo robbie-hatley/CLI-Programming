@@ -36,8 +36,8 @@ use warnings FATAL => 'utf8';
 
 use Sys::Binmode;
 use Cwd;
-use File::Type;
 use Time::HiRes 'time';
+use File::Type;
 
 use RH::Util;
 use RH::Dir;
@@ -74,7 +74,6 @@ my $failcount = 0; # Count of failed file-rename attempts.
    my $t0 = time;
    my $pname = get_name_from_path($0);
    argv;
-   say STDERR '';
    say STDERR "Now entering program \"$pname\".";
    say STDERR "\$Db      = \"$Db\".";
    say STDERR "\$Recurse = \"$Recurse\".";
@@ -233,7 +232,6 @@ sub stats {
 # Handle errors:
 sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
-
    Error: you typed $NA arguments, but this program takes at most
    one argument, which, if present, must be a regular expression describing
    which items to process. Help follows:

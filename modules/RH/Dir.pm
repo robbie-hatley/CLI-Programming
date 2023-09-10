@@ -353,8 +353,8 @@ sub GetFiles :prototype(;$$$) ($dir = d(getcwd), $target = 'A', $regexp = '^.+$'
          my $ml = $Lnlink > 1 ? 1 : 0;  # Do multiple incoming hard links exist to this inode?
          $l_targ = 'NO TARGET';         # Assume for now that no outgoing link target exists.
          if       (   -l _       ) {                            # IS a symbolic link to something.
-            if    ( ! -e e $path ) {$type = 'B'; ++$brkncount;} # Symbolic link to nowhere.
-            elsif (   -d _       ) {$type = 'S'; ++$slkdcount;} # Symbolic link to directory.
+            if    ( ! -e e $path ) {$type = 'X'; ++$brkncount;} # Symbolic link to nowhere.
+            elsif (   -d _       ) {$type = 'R'; ++$slkdcount;} # Symbolic link to directory.
             elsif (   -f _       ) {$type = 'L'; ++$linkcount;} # Symbolic link to file.
             else                   {$type = 'W'; ++$weircount;} # Symbolic link to weirdness.
             $l_targ = readlink_utf8 $path;
@@ -363,13 +363,13 @@ sub GetFiles :prototype(;$$$) ($dir = d(getcwd), $target = 'A', $regexp = '^.+$'
             }
          }
          else {                                                 # Is NOT a symbolic link to anything.
-            if    ( ! -e e $path ) {$type = 'N'; ++$noexcount;} # Spectre.
+            if    ( ! -e e $path ) {$type = 'N'; ++$noexcount;} # Nonexistent.
             elsif (   -d _       ) {$type = 'D'; ++$sdircount;} # Directory.
-            elsif (   -t _       ) {$type = 'T'; ++$ottycount;} # Opened to tty.
-            elsif (   -c _       ) {$type = 'Y'; ++$cspccount;} # Character special file.
-            elsif (   -b _       ) {$type = 'X'; ++$bspccount;} # Block special file.
-            elsif (   -S _       ) {$type = 'O'; ++$sockcount;} # Socket.
+            elsif (   -b _       ) {$type = 'B'; ++$bspccount;} # Block special file.
+            elsif (   -c _       ) {$type = 'C'; ++$cspccount;} # Character special file.
             elsif (   -p _       ) {$type = 'P'; ++$pipecount;} # Pipe.
+            elsif (   -S _       ) {$type = 'S'; ++$sockcount;} # Socket.
+            elsif (   -t _       ) {$type = 'T'; ++$ottycount;} # Opened to tty.
             elsif (   -f _       ) {                            # Regular file.
                if ($ml)            {$type = 'H'; ++$hlnkcount;} # File with multiple hard links.
                else                {$type = 'F'; ++$regfcount;} # Regular file.
