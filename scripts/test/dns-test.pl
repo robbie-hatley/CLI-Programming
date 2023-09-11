@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 use strict;
 use warnings;
 my $Valid = '[0-9a-z-]{2,63}';

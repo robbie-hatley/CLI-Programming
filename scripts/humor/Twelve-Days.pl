@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 # This is a 120-character-wide ASCII Perl source-code text file.
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
@@ -15,14 +15,14 @@ use v5.32;
 use strict;
 use warnings;
 
-our @ordinals = 
+our @ordinals =
 (
-   "first",    "second",   "third",    "fourth",   
+   "first",    "second",   "third",    "fourth",
    "fifth",    "sixth",    "seventh",  "eighth",
    "ninth",    "tenth",    "eleventh", "twelfth"
 );
 
-our @gifts = 
+our @gifts =
 (
    "a partridge in a pear tree.\n\n",
    "two turtle doves,\nand ",

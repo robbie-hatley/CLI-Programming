@@ -1,4 +1,4 @@
-#! /usr/bin/env perl
+#!/usr/bin/env perl
 # Finwë-test.pl
 use v5.36;
 use utf8;

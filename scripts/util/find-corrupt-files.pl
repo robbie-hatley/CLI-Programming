@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -109,7 +109,7 @@ sub curdire ()
    my $curdir = cwd_utf8;
    say "\nDir # $direcount: $curdir\n";
    my $curdirfiles = GetFiles($curdir, $Target, $Regexp);
-   foreach my $file (@{$curdirfiles}) 
+   foreach my $file (@{$curdirfiles})
    {
       curfile($file);
    }
@@ -123,7 +123,7 @@ BB 1A E3 1E 3C 26 C2 62 57 E2 63 F3 27 4F 7C A3
 
 =cut
 
-sub curfile ($) 
+sub curfile ($)
 {
    ++$filecount;
    my $file = shift;
@@ -135,7 +135,7 @@ sub curfile ($)
    read($fh, $buffer, 16, 0)
    or warn("Can't read  $file->{Path}\n") and close($fh) and return 1;
    close($fh);
-   my $regex = 
+   my $regex =
    qr/^\xBB\x1A\xE3\x1E\x3C\x26\xC2\x62\x57\xE2\x63\xF3\x27\x4F\x7C\xA3/;
    if ($buffer =~ m/$regex/)
    {
@@ -143,7 +143,7 @@ sub curfile ($)
       say "CORRUPT: $file->{Path}";
    }
    return 1;
-} # end sub curfile ($) 
+} # end sub curfile ($)
 
 sub stats ()
 {
@@ -184,7 +184,7 @@ sub help ()
    Option:                      Meaning:
    "-h" or "--help"             Print help and exit.
    "-r" or "--recurse"          Recurse subdirectories.
-   All other options are ignored. 
+   All other options are ignored.
 
    Description of arguments:
    In addition to options, this program can take one optional argument which, if
@@ -196,7 +196,7 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Cheers,
    Robbie Hatley,

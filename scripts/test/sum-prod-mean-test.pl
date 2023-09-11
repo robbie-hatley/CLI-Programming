@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # sum-prod-mean-test.pl
 use v5.32;
 use List::Util 'sum', 'product';

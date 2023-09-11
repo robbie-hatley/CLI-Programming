@@ -1,6 +1,7 @@
-#! /bin/perl
-# /rhe/scripts/test/poem-test.pl
-use v5.32;
+#!/usr/bin/perl
+# poem-test.pl
+use v5.18;
+no strict;
 no warnings;
 BEFOREHAND: close door, each window & exit; wait until time.
 open spellbook, study, read (scan, select, tell us);

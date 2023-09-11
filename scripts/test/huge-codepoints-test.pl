@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 #  /rhe/scripts/test/huge-codepoints-test.pl
 use v5.32;
 use strict;
@@ -14,10 +14,10 @@ my $chr1 = "\x{FFFFFFFFFFFFFFFF}";
 my $chr2 = "\x{9A7B3CDA578F9E27}";
 
 say "Length  of \$chr1 = ", length($chr1);
-say "Ordinal of \$chr1 = ", ord(   $chr1); 
+say "Ordinal of \$chr1 = ", ord(   $chr1);
 
 say "Length  of \$chr2 = ", length($chr2);
-printf("Ordinal of \$chr2 = %X\n", ord(   $chr2)); 
+printf("Ordinal of \$chr2 = %X\n", ord(   $chr2));
 
 my $max = 2**64 - 1;
 printf("\$max =    %21llu\n", $max);

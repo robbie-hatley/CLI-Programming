@@ -1,4 +1,4 @@
-#! /bin/awk -f 
+#!/usr/bin/awk -f
 # /rhe/scripts/util/present-jpg-images.awk
 
 # This is a 120-character-wide Unicode UTF-8 AWK-source-code text file with hard Unix line breaks ("\x0A").

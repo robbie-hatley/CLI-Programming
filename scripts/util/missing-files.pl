@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -82,22 +82,22 @@ sub get_options_and_arguments
    return 1;
 } # end sub get_options_and_arguments
 
-sub process_options_and_arguments 
+sub process_options_and_arguments
 {
-   foreach (@Options) 
+   foreach (@Options)
    {
       if ('-h' eq $_ || '--help' eq $_) {$Help = 1;}
    }
 
    # If user wants help, just print help and bail:
-   if ($Help) 
+   if ($Help)
    {
       help_msg;
       exit 777;
    }
 
    # If number of arguments is out of range, bail:
-   if ( @Arguments != 3 ) 
+   if ( @Arguments != 3 )
    {
       error_msg;
    }
@@ -141,7 +141,7 @@ sub find_missing_files
    my $prev_num = $First - 1;
    my $curr_num = $First - 1;
 
-   # For each existing file, print numbers of any non-existent 
+   # For each existing file, print numbers of any non-existent
    # files in the range (PreviousFile,CurrentFile) :
    foreach my $name (@sorted_names)
    {
@@ -173,7 +173,7 @@ sub get_numb
    return $filename;
 } # end sub get_numb
 
-sub error_msg 
+sub error_msg
 {
    say 'Error: This program takes exactly 3 arguments, which must be:';
    say '1. file name root (file name with digits replaced by octothorpes)';
@@ -182,9 +182,9 @@ sub error_msg
    say 'Help follows:';
    help_msg;
    exit 666;
-} # end sub error_msg 
+} # end sub error_msg
 
-sub help_msg 
+sub help_msg
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "missing-files.pl", Robbie Hatley's nifty program for determining
@@ -226,7 +226,7 @@ sub help_msg
    cases like this, it's best to run missing-files separately for each subseries.
 
    Also note that my 2015 Perl version of this program is fully Unicode-compliant,
-   so file names such as "茶色の猫3872.jpg" are perfectly fine. 
+   so file names such as "茶色の猫3872.jpg" are perfectly fine.
    ("茶色の猫" is pronounced "cha iro no neko" and is Japanese for "brown cat".
    Literally, the characters mean "tea color describes cat".)
 

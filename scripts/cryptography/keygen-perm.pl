@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -31,7 +31,7 @@ sub error_msg;
 sub help_msg;
 
 { # begin main
-   if (1 == scalar(@ARGV) && ("-h" eq $ARGV[0] || "--help" eq $ARGV[0])) 
+   if (1 == scalar(@ARGV) && ("-h" eq $ARGV[0] || "--help" eq $ARGV[0]))
    {
       help_msg;
       exit 777;
@@ -69,29 +69,29 @@ sub help_msg
    [10,2000000000], this program prints the first n non-negative integers to
    stdout, in random order, separated by commas.
 
-   The number n is given by the first argument ($ARGV[0]). If the number of 
+   The number n is given by the first argument ($ARGV[0]). If the number of
    arguments is not exactly 1, or if the argument is not a positive integer
    in the range [10,2000000000], this program will abort.
 
    Usage:
    rand-keygen.pl n
-   (Prints the first n non-negative integers in random order, separated by 
+   (Prints the first n non-negative integers in random order, separated by
    commas.)
 
    Example:
-   %rand-keygen.pl 10 
+   %rand-keygen.pl 10
    0,9,3,8,7,6,4,1,5,2
    %
 
-   The purpose of this program is to create keys for my rot48 and rot128 
-   cryptography programs, but it can also be used anytime you need a random 
+   The purpose of this program is to create keys for my rot48 and rot128
+   cryptography programs, but it can also be used anytime you need a random
    permutation of the first n non-negative integers, separated by commas,
    printed to stdout.
 
    Is this version of keygen safer than my "keygen-rand" program? I'm not sure.
    On the one hand, it prevents any line of the pad from being used more than
    once. But on the other hand, if an interloper were to realize that the key
-   is a permutation, he could attempt all possible permutations of (0..n), 
+   is a permutation, he could attempt all possible permutations of (0..n),
    which is a lot less than all possible sequences of n numbers from (0..n).
    So I'm not sure, but I'm leaning twoards "keygen-rand" as being safer.
 

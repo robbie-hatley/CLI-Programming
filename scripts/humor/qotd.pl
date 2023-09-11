@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is an 78-character-wide UTF-8-encoded Perl source-code text file.
 # ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。
@@ -22,7 +22,7 @@ our @Quotes;
 {
    $/ = '$';
    my $hndl;
-   open($hndl, '<', '/cygdrive/d/rhe/scripts/humor/qotd.txt') 
+   open($hndl, '<', '/cygdrive/d/rhe/scripts/humor/qotd.txt')
       or die "Couldn't open file \"/cygdrive/d/rhe/scripts/humor/qotd.txt\".\n";
    @Quotes = map { s/\r\n/\n/r =~ s/\$$//r } <$hndl>;
    close $hndl;

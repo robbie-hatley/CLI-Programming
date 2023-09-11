@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # number-in-array-test.pl
 
 use v5.36;

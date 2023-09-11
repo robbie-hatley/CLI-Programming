@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -90,14 +90,14 @@ sub help ()
    in the range [-26, 26]. This will be used as a "rotate" value for printing
    a "Caesar Cipher" rotation of the input. Negative values will perform a left
    rotate and Positive values will perform a right rotate.
-   
+
    Description of input:
    The input is via STDIN and should be an ASCII or UTF-8 string (or a series of
    such strings) containing English letters (and perhaps some other characters).
    The English letters will be alphabetically "rotated" to different letters and
    the other characters will be passed through unchanged. The input can be typed,
    or fed into this program via redirect or pipe.
-   
+
    Example using keyboard:
 
       $ caesar-cipher.pl 17

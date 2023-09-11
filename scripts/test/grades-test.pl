@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 use v5.32;
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ binmode(STDOUT, ':encoding(utf8)');
 my %grades;
 while (my $line = <GRADES>) {
    my ($student, $grade) = split(" ", $line);
-   if ($student) 
+   if ($student)
    {
       $grades{$student} .= $grade . " ";
    }

@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/bash
 raw=`df -l -BGB`
 usage=`echo -e "$raw" | awk '/^Filesystem/{print}/^\/dev\/nvme0n1p2/{print}/^\/dev\/nvme1n1p1/{print}'`
 max=`echo -e "$usage" | awk '/[0-9]+%/{print $5}' | cut -d "%" -s -f 1 | sort -n | tail -n 1`

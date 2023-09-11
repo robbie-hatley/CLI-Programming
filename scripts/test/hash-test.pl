@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # hash-test.pl
 use v5.32;
 my %Dog;

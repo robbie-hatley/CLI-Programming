@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # rad2deg.pl
 use v5.36;
 use Math::Trig;

@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file
 # with hard Unix line breaks ("\x0A").

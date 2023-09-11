@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -15,10 +15,10 @@
 # at <lonewolf@well.com> and I'll send my RH::Dir module to you.
 #
 # Edit history:
-# Sat Jan 02, 2021: Wrote it. 
+# Sat Jan 02, 2021: Wrote it.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Sun Nov 21, 2021: Fixed 4 missing encodes in process_argv.
-# Mon Nov 22, 2021: Heavily refactored. Now using sub "copy_files" in RH::Dir instead of local, and using 
+# Mon Nov 22, 2021: Heavily refactored. Now using sub "copy_files" in RH::Dir instead of local, and using
 #                   a regular expression instead of a wildcard to specify files to copy. Also, now subsumes
 #                   the script "copy-large-images.pl".
 # Tue Nov 23, 2021: Fixed "won't handle relative directories" bug by using the chdir & cwd trick.
@@ -180,8 +180,8 @@ sub help_msg ()
 
    Description of arguments:
    "copy-files.pl" takes two mandatory arguments which must be paths to existing
-   directories; dir1 is the source directory and dir2 is the destination 
-   directory. 
+   directories; dir1 is the source directory and dir2 is the destination
+   directory.
 
    Additionally, "copy-files.pl" can take a third, optional argument which,
    if present, must be a Perl-Compliant Regular Expression describing which files
@@ -192,7 +192,7 @@ sub help_msg ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Also note that this program cannot act recursively; it copies files only from
    the root level of dir1 to the root level of dir2; the contents of any

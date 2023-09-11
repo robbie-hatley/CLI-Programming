@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 use v5.32;
 use strict;
@@ -12,7 +12,7 @@ printf(" q = %qd\n"  , $asdf);
 =argle
 
 All 3 conversions have the same range:
-in exponential:  (-2^63, +2^63-1) 
+in exponential:  (-2^63, +2^63-1)
 in decimal:      (-9223372036854775808, +9223372036854775807)
 in E notation:   (-9.223372036854775808E18, +9.223372036854775807E18)
 in first approx: (-9.22 quintillion, +9.22 quintillion)

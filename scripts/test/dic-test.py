@@ -1,4 +1,4 @@
-#! /bin/python
+#!/bin/python
 user3704 = {}
 user3704['id'] = 3704
 user3704['wealth'] = '$35.42'

@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # /rhe/scripts/util/angle-unicode-test.pl
 
 use v5.32;
@@ -12,11 +12,11 @@ use utf8;
 while(<>)
 {
    print $_;
-   m/Газманов/ 
-   ? say('Газманов Text Match? YES!') 
+   m/Газманов/
+   ? say('Газманов Text Match? YES!')
    : say('Газманов Text Match? NO!') ;
    $_ eq "Олег Газманов русский поэт.\n"
-   ? say('Газманов Text Equality? YES!') 
+   ? say('Газманов Text Equality? YES!')
    : say('Газманов Text Equality? NO!') ;
    say 'Length of literal = ', length "Олег Газманов русский поэт.\n";
    say 'Length of data    = ', length $_;
@@ -25,8 +25,8 @@ while(<>)
 while(<*>)
 {
    $_ = decode 'UTF-8', $_;
-   m/Газманов/ 
-   ? say('Газманов File Name Match? YES!') 
+   m/Газманов/
+   ? say('Газманов File Name Match? YES!')
    : say('Газманов File Name Match? NO!') ;
 }
 

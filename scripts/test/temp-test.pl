@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # temp-check.pl
 use v5.32;
 exit if 1 != @ARGV;

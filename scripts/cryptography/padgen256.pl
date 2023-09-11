@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -91,7 +91,7 @@ sub print_help_msg
    That would be suitable for use with a message of up to 1000 characters if
    total unbreakability is needed. (Longer messages could be encoded, but the
    unbreakability would then drop below 100%.) Each pad should use its own key
-   to maintain complete unbreakability. 
+   to maintain complete unbreakability.
 
    For further information on Rot128 and its pads and keys, type:
    rot128.pl --help

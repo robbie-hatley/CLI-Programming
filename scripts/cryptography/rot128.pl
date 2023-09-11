@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -128,11 +128,11 @@ sub print_help_msg;
       push @InputChars, split //, $Buffer;
    }
 
-   # Clear the @OutputChars array here, preparing it to receive 
+   # Clear the @OutputChars array here, preparing it to receive
    # the encoded or decoded version of @InputChars:
    splice @OutputChars;
 
-   # For each character in @InputChars, 
+   # For each character in @InputChars,
    # push encoded version onto @OutputChars:
    CHAR_LOOP: foreach my $InputChar (@InputChars)
    {
@@ -180,7 +180,7 @@ sub print_help_msg;
       ++$CharIndex;
    } # end CHAR_LOOP
 
-   # Form and print the output string from the output array, using print 
+   # Form and print the output string from the output array, using print
    # rather than say, because Rot128 encodes/decodes line-breaks:
    print join '', @OutputChars;
 
@@ -211,7 +211,7 @@ sub print_help_msg
 
    Material to be encoded may be be anything that can be expressed as 8-bit bytes:
    ASCII text, ISO-8859-1 text, UTF-8 text, EBCDIC text, JPG files, BMP files,
-   MP3 files, OGG files, EXE files, etc, etc, etc. 
+   MP3 files, OGG files, EXE files, etc, etc, etc.
 
    The ciphertexts produced by this program will all look like random 8-bit binary
    gibberish if viewed in a text or binary editor, regardless of input.
@@ -233,12 +233,12 @@ sub print_help_msg
    our @Charset = map chr, (0..255);
 
    Each random permutation of CHARSET can be thought of as being a circular array,
-   with the end attached to the beginning.  Since there are 256 elements, one 
+   with the end attached to the beginning.  Since there are 256 elements, one
    128-position rotation through this circular array will take us to the far side,
    and another will take us back to where we started. Hence Rot128 is "invertible".
 
-   Rot128 works by comparing each incoming character to one such array. The 
-   character 128 positions around the circle (ie, the diametracally opposite 
+   Rot128 works by comparing each incoming character to one such array. The
+   character 128 positions around the circle (ie, the diametracally opposite
    character) is output. All possible 8-bit bytes are in each line of each pad,
    including glyphs, white-space, control characters, iso-8859-1 characters, and
    quite a few "forbidden" characters which are usually not used for anything.
@@ -259,15 +259,15 @@ sub print_help_msg
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    PADS:
 
-   To provide a separate, unique random permutation of CHARSET for each incoming 
+   To provide a separate, unique random permutation of CHARSET for each incoming
    plaintext character to be encrypted, files called "pads" must be constructed,
-   each "pad" consisting of hundreds or thousands of lines of text, each line 
+   each "pad" consisting of hundreds or thousands of lines of text, each line
    being a unique random permutation of CHARSET.
 
    Given a pad of at least 500 lines, a 500-character ciphertext could correspond
    to any of (256!)^500 possible plaintexts, and without the pad which was used to
    encrypt the original plaintext, there is no way of determining which of those
-   (256!)^500 plaintexts was intended. (In case you're wondering, (256!)^500 is 
+   (256!)^500 plaintexts was intended. (In case you're wondering, (256!)^500 is
    about (10^507)^500, or about 10^253500, or a 1 followed by 253500 zeros (about
    79 printed pages filled with all 0s).)
 
@@ -277,28 +277,28 @@ sub print_help_msg
    least two advantages over one-time pads. Firstly, it is invertible, in that
    running a text through the cipher twice returns the text to its previous state.
    Secondly, it allows for the lines of the pad to be used in orders other than
-   0,1,2,3..., by using a "key" which specifies line order. 
+   0,1,2,3..., by using a "key" which specifies line order.
 
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    KEYS:
 
    To increase security, this cipher can use the lines of the pad in an order
-   given by a "key", which is an ASCII text file containing a sequence of 
-   integers, in the range of the 0-indexed pad row indexes, separated by commas. 
+   given by a "key", which is an ASCII text file containing a sequence of
+   integers, in the range of the 0-indexed pad row indexes, separated by commas.
 
    The integers in the key can be in ascending-from-0 order (which is not advised,
-   as that would be the same as not using a key at all), or in random order, or a 
+   as that would be the same as not using a key at all), or in random order, or a
    permutation of the pad-row indexes, or some combination of those, or some
    other sequence altogether.
 
-   If a good key is used (such as random or permutation order), even if a third 
+   If a good key is used (such as random or permutation order), even if a third
    party gains access to the pad, it will be useless to him unless he also has
    the key, because he will not know which pad line is used for which character
    of the ciphertext. He'd be reduced to trying pad lines on characters at random.
 
    For example, given a 500-character ciphertext which was encrypted using a pad
    with 500 lines and a key of 500 random numbers in the 0-499 range, even if an
-   interloper has the correct pad, he would have to try all 500^500 (3x10^1349) 
+   interloper has the correct pad, he would have to try all 500^500 (3x10^1349)
    possible mappings of pad lines to ciphertext characters. That's far, far more
    astronomical than 1 googol. Even at 1 terraflop, that would take 10^1330 years.
    (The universe is less than 10^10 years old.)
@@ -311,7 +311,7 @@ sub print_help_msg
    (Or, if a key is used, the pattern of pad lines given by the key is reused
    if the size of the ciphertext is larger than the size of the key.) This allows
    for use of pads and keys which are smaller than the texts being encoded, at the
-   cost of sacrificing absolute 100% unbreakability. 
+   cost of sacrificing absolute 100% unbreakability.
 
    However, I think that for a would-be cracker to stand a reasonable chance of
    cracking this cipher, the length of the plaintext would have to be MANY TIMES

@@ -1,10 +1,10 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 use v5.32;
 use strict;
 use warnings;
 use Statistics::Descriptive;
-   
+
 sub StatSub {
    my @list    = sort @_;
    my $count   = 0;
@@ -12,7 +12,7 @@ sub StatSub {
    my $median  = 0;
    my $mean    = 0;
    my $std_dev = 0;
-   
+
    foreach my $item (@list) {
       ++$count;
       $sum += $item;
@@ -40,7 +40,7 @@ do {
    print "\nStatistics::Descriptive test:\n\n";
    my $stats = Statistics::Descriptive::Full->new();
    $stats->add_data(@list);
-   my ($count, $sum, $median, $mean, $var, $std_dev) = 
+   my ($count, $sum, $median, $mean, $var, $std_dev) =
       ($stats->count(), $stats->sum(), $stats->median(), $stats->mean(),
        $stats->variance(), $stats->standard_deviation() );
    print("List = @list\n");

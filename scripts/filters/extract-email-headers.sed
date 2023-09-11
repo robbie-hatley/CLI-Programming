@@ -1,4 +1,4 @@
-#! /bin/sed -nf 
+#!/usr/bin/sed -nf
 /^From:/p
 /^To:/p
 /^Subject:/p

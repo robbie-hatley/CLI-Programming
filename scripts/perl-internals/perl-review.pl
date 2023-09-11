@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -23,7 +23,7 @@ sub review()
        verbs %by @sigils. (Once you understand that,
        you'll start to appreciate its value.)
 
-    2. Perl's usage of "{", "}", and ";" is exactly 
+    2. Perl's usage of "{", "}", and ";" is exactly
        like in C, C++, CSS, Sed, Awk, etc, so people
        who are familiar with any of the older languages
        will find Perl a breeze.
@@ -50,7 +50,7 @@ sub review()
     6. Perl scripts are often able to combine a sequence
        of operations in one short line, whereas the same
        thing in other languages would be many pages of code.
-       Print-out the lines of a text file in reverse-sorted 
+       Print-out the lines of a text file in reverse-sorted
        order? Easy: "print for reverse sort <>;" That's the
        entire Perl program for that!
 
@@ -75,10 +75,10 @@ sub review()
        is a vast global network of Perl modules you can
        download, install, and use for free, to accomplish
        nearly any task you can imagine (and some that you
-       CAN'T imagine). 
+       CAN'T imagine).
 
    So there's a lot to like about Perl, which is why it's
-   on my short list of the first 4 languages every 
+   on my short list of the first 4 languages every
    computer programmer should learn: C, C++, Perl, Python.
 
    Cheers,

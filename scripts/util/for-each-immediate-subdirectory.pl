@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -127,12 +127,12 @@ sub error ($)
 sub help ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "for-each-subdir.pl", Robbie Hatley's nifty program for 
-   executing a given command once in each immediate subdirectory of 
+   Welcome to "for-each-subdir.pl", Robbie Hatley's nifty program for
+   executing a given command once in each immediate subdirectory of
    the current directory (but NOT the current directory or any lower-level
    subdirectories). This program will chdir to each immediate subdirectory,
    execute the given command, chdir back to the starting directory, chdir to
-   the next immediate subdirectory, etc, eventually ending back in the 
+   the next immediate subdirectory, etc, eventually ending back in the
    starting directory.
 
    Command lines:

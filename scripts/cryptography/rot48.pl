@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -44,7 +44,7 @@ sub print_help_msg;
             exit;
          }
          splice @ARGV, $i, 1; # Remove option from @ARGV.
-         --$i; # Re-sync to new item in same spot. 
+         --$i; # Re-sync to new item in same spot.
       }
    }
 
@@ -126,11 +126,11 @@ sub print_help_msg;
       push @InputChars, split //, $_;
    }
 
-   # Clear the @OutputChars array here, preparing it to receive 
+   # Clear the @OutputChars array here, preparing it to receive
    # the encoded or decoded version of @InputChars:
    splice @OutputChars;
 
-   # For each character in @InputChars, 
+   # For each character in @InputChars,
    # push encoded version onto @OutputChars:
    CHAR_LOOP: foreach $InputChar (@InputChars)
    {
@@ -174,7 +174,7 @@ sub print_help_msg;
             $OutputChar = $Pad[$RowNum]->[($ColNum+48)%96];
             ++$CrypCount;
          }
-         
+
          # Otherwise, a severe error has occurred; output the input character
          # verbatim and warn user:
          else
@@ -187,7 +187,7 @@ sub print_help_msg;
             warn("WARNING: Can't find ordinal ",$Ord," in pad row; ");
             warn("outputing raw input character.\n");
             warn("WARNING: Your pad may be corrupt.\n");
-         } # end if 
+         } # end if
       } # end else if input character IS in standard character set
 
       # Push $OutputChar onto @OutputChars.
@@ -196,11 +196,11 @@ sub print_help_msg;
       # Increment $CharCount here to indicate 1 more character has been
       # appended to @OutputChars. Since $CharIndex is never reset, and is
       # incremented ONLY here, it is literally "character count within entire
-      # input text". 
+      # input text".
       ++$CharCount;
    } # end CHAR_LOOP
 
-   # Form and print the output string from the output array, using print 
+   # Form and print the output string from the output array, using print
    # rather than say, because line-breaks are just fed straight-through:
    print join '', @OutputChars;
 
@@ -276,17 +276,17 @@ sub print_help_msg
    our @Charset = map chr, (9, 32..126);
 
    Each random permutation of CHARSET can be thought of as being a circular array,
-   with the end attached to the beginning.  Since there are 96 elements, one 
+   with the end attached to the beginning.  Since there are 96 elements, one
    48-position rotation through this circular array will take us to the far side,
    and another will take us back to where we started. Hence Rot48 is "invertible".
 
-   Rot48 works by comparing each incoming character to one such array. If the 
+   Rot48 works by comparing each incoming character to one such array. If the
    character is found in the array, the character 48 positions around the circle
    (ie, the diametracally opposite character) is output; otherwise, the incoming
-   character is output unchanged. Hence control characters, white-space 
-   characters other than space and tab, and non-ASCII characters will not be 
+   character is output unchanged. Hence control characters, white-space
+   characters other than space and tab, and non-ASCII characters will not be
    encrypted. Hence it is advisible to use almost entirely characters from CHARSET
-   in plaintexts to be encrypted to avoid giving an interloper too many clues 
+   in plaintexts to be encrypted to avoid giving an interloper too many clues
    about the structure of the text.
 
    Since rotating twice takes us back to the beginning, feeding an encrypted
@@ -304,15 +304,15 @@ sub print_help_msg
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    PADS:
 
-   To provide a separate, unique random permutation of CHARSET for each incoming 
+   To provide a separate, unique random permutation of CHARSET for each incoming
    plaintext character to be encrypted, files called "pads" must be constructed,
-   each "pad" consisting of hundreds or thousands of lines of text, each line 
+   each "pad" consisting of hundreds or thousands of lines of text, each line
    being a unique random permutation of CHARSET.
 
    Given a pad of at least 500 lines, a 500-character ciphertext could correspond
    to any of (96!)^500 possible plaintexts, and without the pad which was used to
    encrypt the original plaintext, there is no way of determining which of those
-   (96!)^500 plaintexts was intended. (In case you're wondering, (96!)^500 is 
+   (96!)^500 plaintexts was intended. (In case you're wondering, (96!)^500 is
    about (10^150)^500, or about 10^75000, or a 1 followed by 75000 zeros (about
    23 printed pages filled with all 0s).)
 
@@ -322,28 +322,28 @@ sub print_help_msg
    least two advantages over one-time pads. Firstly, it is invertible, in that
    running a text through the cipher twice returns the text to its previous state.
    Secondly, it allows for the lines of the pad to be used in orders other than
-   0,1,2,3..., by using a "key" which specifies line order. 
+   0,1,2,3..., by using a "key" which specifies line order.
 
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    KEYS:
 
    To increase security, this cipher can use the lines of the pad in an order
-   given by a "key", which is an ASCII text file containing a sequence of 
-   integers, in the range of the 0-indexed pad row indexes, separated by commas. 
+   given by a "key", which is an ASCII text file containing a sequence of
+   integers, in the range of the 0-indexed pad row indexes, separated by commas.
 
    The integers in the key can be in ascending-from-0 order (which is not advised,
-   as that would be the same as not using a key at all), or in random order, or a 
+   as that would be the same as not using a key at all), or in random order, or a
    permutation of the pad-row indexes, or some combination of those, or some
    other sequence altogether.
 
-   If a good key is used (such as random or permutation order), even if a third 
+   If a good key is used (such as random or permutation order), even if a third
    party gains access to the pad, it will be useless to him unless he also has
    the key, because he will not know which pad line is used for which character
    of the ciphertext. He'd be reduced to trying pad lines on characters at random.
 
    For example, given a 500-character ciphertext which was encrypted using a pad
    with 500 lines and a key of 500 random numbers in the 0-499 range, even if an
-   interloper has the correct pad, he would have to try all 500^500 (3x10^1349) 
+   interloper has the correct pad, he would have to try all 500^500 (3x10^1349)
    possible mappings of pad lines to ciphertext characters. That's far, far more
    astronomical than 1 googol. Even at 1 terraflop, that would take 10^1330 years.
    (The universe is less than 10^10 years old.)
@@ -356,7 +356,7 @@ sub print_help_msg
    (Or, if a key is used, the pattern of pad lines given by the key is reused
    if the size of the ciphertext is larger than the size of the key.) This allows
    for use of pads and keys which are smaller than the texts being encoded, at the
-   cost of sacrificing absolute 100% unbreakability. 
+   cost of sacrificing absolute 100% unbreakability.
 
    However, I think that for a would-be cracker to stand a reasonable chance of
    cracking this cipher, the length of the plaintext would have to be MANY TIMES

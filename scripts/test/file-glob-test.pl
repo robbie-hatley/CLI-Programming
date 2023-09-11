@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 # file-glob-test-1.pl
 
 use v5.32;

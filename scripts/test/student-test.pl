@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 use v5.36;
 use Scalar::Util 'looks_like_number';
 my $name;

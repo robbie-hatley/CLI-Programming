@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -58,7 +58,7 @@ sub process_argv ()
          if ('-e' eq $_ || '--zone=eastern'  eq $_) {$Zone   = 'eastern' ;}
          if ('-u' eq $_ || '--zone=utc'      eq $_) {$Zone   = 'utc'     ;}
          if ('-a' eq $_ || '--style=ampm'    eq $_) {$Style  = 'ampm'    ;}
-         if ('-t' eq $_ || '--style=24h'     eq $_) {$Style  = '24h'     ;} 
+         if ('-t' eq $_ || '--style=24h'     eq $_) {$Style  = '24h'     ;}
          if ('-l' eq $_ || '--length=long'   eq $_) {$Length = 'long'    ;}
          if ('-s' eq $_ || '--length=short'  eq $_) {$Length = 'short'   ;}
          if ('-u' eq $_ || '--length=micro'  eq $_) {$Length = 'micro'   ;}
@@ -116,7 +116,7 @@ sub days_in_month ($$)
 # valid values of "epoch_time" are integers 0 through 9223372036854775807.
 # valid values of "location"   are:
 #    "pacific", "mountain", "central", "eastern", and "utc".
-# valid values of "style"      are "ampm" and "24H". 
+# valid values of "style"      are "ampm" and "24H".
 # valid values of "length"     are "micro", "short", and "long".
 sub format_time (;$$$$)
 {
@@ -195,20 +195,20 @@ sub format_time (;$$$$)
       say 'ARGLE' if $db;
       $zt_hour += 24;              #    add 24 to hour
       --$zt_day_of_week;           #    subtract 1 from day-of-week
-      if ($zt_day_of_week == -1)   #    if DOW == -1, 
+      if ($zt_day_of_week == -1)   #    if DOW == -1,
       {
          say 'BARGLE' if $db;
          $zt_day_of_week = 6;      #       set DOW to 6.
       }
       --$zt_day_of_month;          #    subtract 1 from day-of-month
-      if ($zt_day_of_month == 0)   #    if DOM == 0, 
+      if ($zt_day_of_month == 0)   #    if DOM == 0,
       {
          say 'FARGLE' if $db;
          --$zt_month;              #       subtract 1 from month
          if ($zt_month == -1)      #       if month is -1,
          {
             say 'GARGLE' if $db;
-            $zt_month = 11;        #          set month to 11 
+            $zt_month = 11;        #          set month to 11
             --$zt_year;            #          and subtract 1 from year
          }
          $zt_day_of_month = days_in_month($zt_year,$zt_month);
@@ -246,7 +246,7 @@ sub format_time (;$$$$)
    }
    elsif ($length =~ m/long/i)
    {
-      my @months   = qw( January February March     April     May      June 
+      my @months   = qw( January February March     April     May      June
                          July    August   September October   November December );
       my $month = $months[$zt_month];
       my @weekdays = qw( Sunday Monday Tuesday Wednesday Thursday Friday Saturday );
@@ -297,19 +297,19 @@ sub help ()
 
    Any combination of these options may be used in a command line.
 
-   If two options contradict, the right-most over-rides the other. 
+   If two options contradict, the right-most over-rides the other.
 
    Default Location is "pacific"
    Default Style    is "ampm"
    Default Length   is "short"
 
-   Note: The only time zones I currently have written into this program 
-   are Pacific, Mountain, Central, Eastern, and UTC. Standard Time or 
-   Daylight Saving Time is automatically selected, and should be correct 
-   for all parts of the contiguous 48 states of continental USA except for 
-   non-reservation portions of Arizona, for which the times given will be 
-   incorrect. (Use PDT for non-reservation Arizona when the rest of the 
-   country is on daylight saving time. It will give the same time as MST 
+   Note: The only time zones I currently have written into this program
+   are Pacific, Mountain, Central, Eastern, and UTC. Standard Time or
+   Daylight Saving Time is automatically selected, and should be correct
+   for all parts of the contiguous 48 states of continental USA except for
+   non-reservation portions of Arizona, for which the times given will be
+   incorrect. (Use PDT for non-reservation Arizona when the rest of the
+   country is on daylight saving time. It will give the same time as MST
    would have; just replace the letters "PDT" with "MST" in your mind.)
 
    Maybe someday if I get bored, I'll put all of Earth's time zones in here.

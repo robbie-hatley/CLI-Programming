@@ -1,3 +1,3 @@
-#! /bin/sed -nf
+#!/bin/sed -nf
 # list-test.sed
 l

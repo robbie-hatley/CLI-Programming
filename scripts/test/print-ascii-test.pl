@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 # print-ascii-test.pl
 use v5.32;
 use warnings FATAL => "utf8";
@@ -52,6 +52,6 @@ say '';
 system 'echo', 'épée';
 
 say '';
-chdir 
+chdir
 `mkdir 'épée_ASCII'`;
 `ls`;

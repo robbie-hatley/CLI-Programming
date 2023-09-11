@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -52,7 +52,7 @@ say '<pre>';
 #    special:            $_.+!*'(),-     11
 #                                 Total: 82
 
-# Make a regex character class string consisting of the above 82 
+# Make a regex character class string consisting of the above 82
 # URL-legal characters:
 my $Legal = q<[[:alnum:];/?:@=&#%$_.+!*'(),-]>;
 

@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -111,7 +111,7 @@ sub curdire ()
    if ($Verbose) {say "\nDir # $direcount: $curdir\n";}
    my $curdirfiles = GetFiles($curdir, $Target, $Regexp);
 
-   foreach my $file (@{$curdirfiles}) 
+   foreach my $file (@{$curdirfiles})
    {
       curfile($file);
    }
@@ -176,15 +176,15 @@ sub error ($)
 sub help ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "find-bad-jpegs.pl". 
-   This program examines all files in the current directory (and all of its 
-   subdirectories if an -r or --recurse option is used) which have one of the 
+   Welcome to "find-bad-jpegs.pl".
+   This program examines all files in the current directory (and all of its
+   subdirectories if an -r or --recurse option is used) which have one of the
    following extentions:
    *.jpg
    *.jpeg
    *.pjpeg
-   This program looks at the first few bytes of each such file, and prints 
-   to STDERR the full path of any such files which do not start with bytes 
+   This program looks at the first few bytes of each such file, and prints
+   to STDERR the full path of any such files which do not start with bytes
    255, 216, 255. (Valid jpeg files should always start with those 3 bytes.)
 
    Command line:
@@ -196,7 +196,7 @@ sub help ()
    "-r" or "--recurse"          Recurse subdirectories (but not links).
    "-v" or "--verbose"          Print directory headings and stats.
 
-   All other options are ignored. 
+   All other options are ignored.
 
    Description of arguments:
    In addition to options, this program can take one optional argument which, if
@@ -208,15 +208,15 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
-   WARNING: Don't specify file extentions other than jpg, jpeg, or pjpeg 
-   unless you have reason to believe that the files you want to test 
-   actually should be jpeg files. Otherwise, you're likely to get a lot 
-   of false positives due to the files you're testing never having been 
-   intended to be jpeg files in the first place. Usually, it's best to 
-   use no argument, so that this program will look at files with names 
-   ending in ".jpg", ".jpeg", and ".pjpeg" only. 
+   WARNING: Don't specify file extentions other than jpg, jpeg, or pjpeg
+   unless you have reason to believe that the files you want to test
+   actually should be jpeg files. Otherwise, you're likely to get a lot
+   of false positives due to the files you're testing never having been
+   intended to be jpeg files in the first place. Usually, it's best to
+   use no argument, so that this program will look at files with names
+   ending in ".jpg", ".jpeg", and ".pjpeg" only.
 
    Cheers,
    Robbie Hatley,

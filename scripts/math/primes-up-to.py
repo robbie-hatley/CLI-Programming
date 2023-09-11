@@ -1,9 +1,9 @@
-#! /bin/python3
+#!/usr/bin/python3
 import math
 import sys
 if len(sys.argv) != 2: sys.exit()
 max=int(sys.argv[1], 10)
-if max>=2: print(2) 
+if max>=2: print(2)
 for x in range(3,max+1,2):
    if 0==x%2: continue
    limit=math.floor(math.sqrt(x))

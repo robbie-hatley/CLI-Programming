@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -37,12 +37,12 @@ use Sys::Binmode;
 
 # ======= SUBROUTINE PRE-DECLARATIONS ==================================================================================
 
-sub process_argv    ();     # Process @ARGV and set settings accordingly. 
+sub process_argv    ();     # Process @ARGV and set settings accordingly.
 sub days_per_year   ($$);   # How many days in given whole year?
 sub days_per_month  ($$$);  # How many days in given whole month?
 sub is_leap_year    ($$);   # Is given year a leap year?
 sub elapsed_time    ($$$$); # Days elapsed since Dec 31 1BCJ to given date.
-sub emit_despale    ($$);   # Get date from elapsed days. 
+sub emit_despale    ($$);   # Get date from elapsed days.
 sub day_of_week     ($);    # Determine day-of-week for a given date.
 sub print_warnings  ($$$$); # Print warnings.
 sub print_proleptic ();     # Print proleptic message.
@@ -59,7 +59,7 @@ my $A_Year   = 0;  # Year  from CL arguments.
 my $A_Month  = 0;  # Month from CL arguments.
 my $A_Day    = 0;  # Day   from CL arguments.
 
-my @DaysOfWeek 
+my @DaysOfWeek
    = qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday);
 
 my @Months
@@ -139,7 +139,7 @@ sub process_argv ()
    my @CLArgs = (); # Command-Line Arguments (not including options).
 
    # Get and process options and arguments.
-   # An "option" is "-a" where "a" is any single alphanumeric character, 
+   # An "option" is "-a" where "a" is any single alphanumeric character,
    # or "--b" where "b" is any cluster of 2-or-more printable characters.
    foreach (@ARGV)
    {
@@ -162,7 +162,7 @@ sub process_argv ()
    if (3 != scalar(@CLArgs)) {error_msg(); help_msg(); exit(666);}
 
    # If value of arguments is egregiously invalid, bail:
-   if 
+   if
    (
          $CLArgs[0] < 0                                               # not earlier than 1BCG
       || $CLArgs[1] < 1 || $CLArgs[1] > 12                            # Jan-Dec only
@@ -234,13 +234,13 @@ sub is_leap_year ($$)
 
 # Calculate days elapsed since Dec 31, 1BC JULIAN through given date.
 # Here "days elapsed" means "midnights transitioned-through since
-# Dec 31, 1BC Julian = Dec 29, 1BC Gregorian". Hence "days elapsed" 
+# Dec 31, 1BC Julian = Dec 29, 1BC Gregorian". Hence "days elapsed"
 # for Jan 1, 1CE Julian is 1 because only one midnight was transitioned-through
 # in order to get from Dec 31, 1BCJ to Jan 1, 1CEJ.
 #
 # Note that the "zero reference time" is always 23:59:59UTC on
-# Dec 31, 1BC Julian, NEVER Gregorian, for the simple reason that 
-# the Gregorian calendar didn't exist yet, and wouldn't for another 
+# Dec 31, 1BC Julian, NEVER Gregorian, for the simple reason that
+# the Gregorian calendar didn't exist yet, and wouldn't for another
 # 1582 years! So when history books say "event x happened on January 1, 1CE",
 # that always means Jan 1, 1CE Julian.
 sub elapsed_time ($$$$)
@@ -255,7 +255,7 @@ sub elapsed_time ($$$$)
    # ===================================================================================================================
    # First of all, the incoming date must not be before Jan 1, 1CEJ, as that
    # is the earliest date this program can handle:
-   if 
+   if
    (
       $Julian && 10000*$Year + 100*$Month + $Day < 10101
       ||
@@ -267,10 +267,10 @@ sub elapsed_time ($$$$)
    }
 
    # ===================================================================================================================
-   # Now for two special cases: 
+   # Now for two special cases:
 
    # Jan 1, 1CEJ = Dec 30, 1BCG:
-   if 
+   if
    (
       $Julian && 10000*$Year + 100*$Month + $Day == 10101
       ||
@@ -281,7 +281,7 @@ sub elapsed_time ($$$$)
    }
 
    # Jan 2, 1CEJ = Dec 31, 1BCG:
-   if 
+   if
    (
       $Julian && 10000*$Year + 100*$Month + $Day == 10102
       ||
@@ -293,7 +293,7 @@ sub elapsed_time ($$$$)
 
    # ===================================================================================================================
    # If we get to here, the date is Jan 3, 1CEJ or later.
-   # If the given date is Gregorian, add 2 to $Elapsed, 
+   # If the given date is Gregorian, add 2 to $Elapsed,
    # because Dec 31, 1BCJ = Dec 29, 1BCG:
    if (!$Julian) {$Elapsed += 2;}
 
@@ -353,7 +353,7 @@ sub emit_despale ($$)
    }
 
    # ===================================================================================================================
-   # Now, two special cases I can't see how to calculate systematically: 
+   # Now, two special cases I can't see how to calculate systematically:
 
    given ($Elapsed)
    {
@@ -386,7 +386,7 @@ sub emit_despale ($$)
 
    # ===================================================================================================================
    # If we get to here, the date is Jan 3, 1CEJ or more recent.
-   # If user requested Gregorian date, add 2 TO $Accum, 
+   # If user requested Gregorian date, add 2 TO $Accum,
    # because Jan 1, 1CEG = Jan 3, 1CEJ:
    if (!$Julian) {$Accum += 2;}
 
@@ -435,15 +435,15 @@ sub day_of_week ($)
    # There are only 7 possible values for "day of week" to correspond to the
    # infinity of all dates. The day-of-week values are cycled-through from
    # left to right, then repeated starting again at left, endlessly. This
-   # is a "cyclic Abelian group". 
+   # is a "cyclic Abelian group".
 
-   # Hence the only questions are, what leap-days are we using (Julian or 
+   # Hence the only questions are, what leap-days are we using (Julian or
    # Gregorian), and which group-start-point or "offset" are we using
    # (Julian or Gregorian).
 
    # This program uses a "base time" of 23:59:59UTC, Fri Dec 31, 1BCJ
    #(which is equivalent to             23:59:59UTC, Fri Dec 29, 1BCG)
-   # to calculate all dates, Julian and Gregorian. 
+   # to calculate all dates, Julian and Gregorian.
 
    # Jan 1, 1CEJ is a Saturday (index 6), so we need to add an offset of 5
    # to the elapsed days since 23:59:59UTC on Dec 31, 1BCJ:
@@ -554,7 +554,7 @@ sub error_msg ()
    print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
    Error: day-of-week.pl takes exactly 3 arguments, which must be
    year, month, and day, with the date being no earlier than
-   0 12 30 Gregorian or 1 1 1 Julian. Help follows: 
+   0 12 30 Gregorian or 1 1 1 Julian. Help follows:
 
    END_OF_ERROR
    return 1;
@@ -579,7 +579,7 @@ sub help_msg ()
    and this application will terminate; any arguments will be ignored.
 
    Otherwise, this program must be given exactly 3 arguments, which must be
-   the year, month, and day for which you want day-of-week. This date must 
+   the year, month, and day for which you want day-of-week. This date must
    be no earlier than Jan 1 1CE Julian = Dec 30 1BCE Gregorian.
    (To enter either of the last two days of 1BCE Gregorian, use "0000" as year.)
 

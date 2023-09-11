@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # make-heavy-numeration-test.pl
 use v5.32;
 use strict;

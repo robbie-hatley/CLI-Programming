@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # data-test.pl
 use v5.32;
 use Inline::Files;
@@ -18,7 +18,7 @@ Finally, after her seventh blow,
 her foe fell lifeless.
 
 __DATA__
-If this had been a real program, 
+If this had been a real program,
 there would be some actual data here;
 but it isn't, so there isn't.
 

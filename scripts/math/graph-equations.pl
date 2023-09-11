@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -37,7 +37,7 @@ use warnings;
 use utf8;
 use warnings FATAL => "utf8";
 
-use Getopt::Long qw( :config bundling permute no_ignore_case 
+use Getopt::Long qw( :config bundling permute no_ignore_case
                       no_auto_abbrev pass_through );
 use Math::Trig;
 use Math::Counting ':student';
@@ -132,7 +132,7 @@ sub help_msg;
    # Write array to data file, one point per line, each point
    # written as the 3 numbers x y c separated by spaces:
    my $fh;
-   open($fh, '>', $dpath) 
+   open($fh, '>', $dpath)
       or die "Couldn't open file $dpath for output.\n$!\n";
 
    foreach my $Point (@Points)
@@ -170,7 +170,7 @@ sub help_msg;
    exit 0;
 } # end MAIN
 
-sub help_msg 
+sub help_msg
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "graph-equations.pl". This program graphs equations to a bmp file,
@@ -188,7 +188,7 @@ sub help_msg
 
    The following options are optional, but typically you'll want to specify
    most of these, else this program will use set defaults, which usually
-   aren't what you want. The values shown are just examples; substitute any 
+   aren't what you want. The values shown are just examples; substitute any
    values you want. These can appear in any order.
 
    --help          # use this as sole argument to get this help
@@ -221,10 +221,10 @@ sub help_msg
 
    NOTE: for the bmp file path, specify a name only, because the path needs
    to be valid in both Windows and BASH, because it's going to be launched in
-   a Windows program. This is especially a problem if you're using Cygwin, 
-   because Windows doesn't understand "/cygdrive/d/argle/abc.bmp". 
-   So insted, manually cd to "/cygdrive/d/argle" in cygwin's BASH, which 
-   will put you in Windows folder "D:\argle". Then use "--bpath=abc.bmp", 
+   a Windows program. This is especially a problem if you're using Cygwin,
+   because Windows doesn't understand "/cygdrive/d/argle/abc.bmp".
+   So insted, manually cd to "/cygdrive/d/argle" in cygwin's BASH, which
+   will put you in Windows folder "D:\argle". Then use "--bpath=abc.bmp",
    which will write abc.bmp to folder "D:\argle".
 
    NOTE: You'll probably need to change the "my $command = " line to something

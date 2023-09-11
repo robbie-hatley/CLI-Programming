@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -33,7 +33,7 @@ sub process_argv;
 # int main (@ARGV)
 {
    process_argv;
-   my $chars = 
+   my $chars =
    "ABCDEFGHIJKLMNOPQRSTUVWXYZ".
    "abcdefghijklmnopqrstuvwxyz".
    "abcdefghijklmnopqrstuvwxyz".
@@ -43,9 +43,9 @@ sub process_argv;
    "                          ";
    my $numchars = length($chars);
    say "Number of chars = $numchars" if $db;
-   for ( my $i = 0 ; $i < $rows ; ++$i ) 
+   for ( my $i = 0 ; $i < $rows ; ++$i )
    {
-      for ( my $j = 0 ; $j < $cols ; ++$j ) 
+      for ( my $j = 0 ; $j < $cols ; ++$j )
       {
          my $nextchar = substr($chars, int(rand($numchars)), 1);
          print("$nextchar");

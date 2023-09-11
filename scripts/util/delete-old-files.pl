@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -164,9 +164,9 @@ sub curfile ($)
    my $age    = time() - $file->{Mtime};
 
    # Skip this file if its suffix is '.ini', '.db', or '.jbf':
-   if ($suffix eq '.ini' || $suffix eq '.db' || $suffix eq '.jbf') 
+   if ($suffix eq '.ini' || $suffix eq '.db' || $suffix eq '.jbf')
    {
-      ++$skipcount; 
+      ++$skipcount;
       return 1;
    }
 
@@ -281,7 +281,7 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Example program invocation:
    To delete all files with "cat", "dog", or "horse" (title-cased or not) in

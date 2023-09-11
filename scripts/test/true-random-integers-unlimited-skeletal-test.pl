@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # true-random-integers-unlimited-skeletal-test.pl
 use v5.32;
 use bignum;
@@ -16,7 +16,7 @@ sub print_rand_ints ()
    or die "Can't open \"/dev/random\".\n$!.\n";
    for ( $i = 0 ; $i < $N ; ++$i )
    {
-      read($fh, $bytes, 43); 
+      read($fh, $bytes, 43);
       @bytes = split //,$bytes;
       @ordinals = map {0+ord($_)} @bytes;
       $rand344 = Math::BigInt->new(0);

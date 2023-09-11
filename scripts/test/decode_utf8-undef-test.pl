@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 # decode_utf8-undef-test.pl
 use v5.32;
 use utf8;

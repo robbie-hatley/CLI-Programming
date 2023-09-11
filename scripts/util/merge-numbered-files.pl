@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -18,12 +18,12 @@
 # Written by Robbie Hatley, starting Sunday February 07, 2016.
 #
 # Edit history:
-# 
+#
 # Sun Feb 07, 2016: Starting writing it as "merge-batches.pl".
 # Sun Dec 26, 2017: Created this version, "merge-numbered-files.pl", and now using 5.026_001.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate.
 # Sat Nov 20, 2021: Now using "v5.32", "common::sense", and "Sys::Binmode"
-# Tue Nov 30, 2021: Fixed wide-character bug due to bad use of d and readdir in while loop (again!!!). 
+# Tue Nov 30, 2021: Fixed wide-character bug due to bad use of d and readdir in while loop (again!!!).
 # Tue Nov 30, 2021: Fixed "finds no files" bug due to not coupling appropriate variable to m//. Tested: Now works.
 # Sat Dec 04, 2021: Reformatted and corrected titlecard.
 ########################################################################################################################
@@ -61,23 +61,23 @@ my $bothcount = 0  ; # Count of files in combined batch.
 {
    print("\nNow entering program \"merge-numbered-files.pl\".\n\n");
 
-   # Extract arguments and options from @ARGV 
+   # Extract arguments and options from @ARGV
    # and store in @main::Arguments and @main::Options:
    get_options_and_arguments;
 
-   # Interpret option and argument strings from command line 
+   # Interpret option and argument strings from command line
    # and set settings accordingly:
    process_options_and_arguments;
 
    # If user wants help, just print help and bail:
-   if ($Help) 
+   if ($Help)
    {
       help_msg;
       exit 777;
    }
 
    # If number of arguments is out of range, bail:
-   if ( 5 != @Arguments ) 
+   if ( 5 != @Arguments )
    {
       error_msg;
       exit 666;
@@ -106,7 +106,7 @@ sub get_options_and_arguments
    return 1;
 }
 
-sub process_options_and_arguments 
+sub process_options_and_arguments
 {
    foreach (@Options)
    {
@@ -130,7 +130,7 @@ sub process_options_and_arguments
 
 sub merge_numbered_files
 {
-   # Get lists of files matching $prefix, $digits, $suffix 
+   # Get lists of files matching $prefix, $digits, $suffix
    # in $dir1 and $dir2:
    my $dir1handle = undef             ; # Handle for directory 1.
    my $dir2handle = undef             ; # Handle for directory 2.
@@ -183,7 +183,7 @@ sub merge_numbered_files
    say "\$max1  = $max1";
    say "\$min2  = $min2";
    say "\$boost = $boost";
-   
+
    # Riffle backwards through all of the serial numbers used by
    # batch #2, renaming and moving the files in reverse order:
    for (reverse sort @numbers2)
@@ -206,7 +206,7 @@ sub print_stats
    return 1;
 } # end sub print_stats
 
-sub error_msg 
+sub error_msg
 {
    print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
    Error in "merge-files.pl": this program requires exactly 5 arguments:
@@ -218,13 +218,13 @@ sub error_msg
    For further help, type "merge-files.pl -h".
    END_OF_ERROR
    return 1;
-} # end sub error_msg 
+} # end sub error_msg
 
-sub help_msg 
+sub help_msg
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "merge-files".   This program merges-together two batches of
-   numbered files with same prefix, number of digits, and suffix. 
+   numbered files with same prefix, number of digits, and suffix.
    This program does any necessary number corrections to the files of the second
    batch, then moves the files of the second batch to the folder of the first
    batch.

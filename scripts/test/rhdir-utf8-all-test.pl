@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 # This is an 120-character-wide UTF-8-encoded Perl source-code text file.
 # ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。
@@ -153,7 +153,7 @@ sub process_current_directory
    # Get list of targeted files in current directory:
    my $records = GetFiles($curdir, $Settings{Target}, $Settings{Regexp});
 
-   # Append counts of total and regular files from RH::Dir:: to main:: : 
+   # Append counts of total and regular files from RH::Dir:: to main:: :
    $totfcount += $RH::Dir::totfcount; # Count of all "files" (directory entities) seen, of all types.
    $regfcount += $RH::Dir::regfcount; # Count of all regular files seen.
    $sdircount += $RH::Dir::sdircount; # Count of all immediate subdirectories of current directory found.
@@ -254,7 +254,7 @@ sub process_current_directory
 
    foreach my $file (@files)
    {
-      printf("%1s  %-10s  %-11s  %8.2E  %s\n", 
+      printf("%1s  %-10s  %-11s  %8.2E  %s\n",
       $file->{Type}, $file->{Date}, $file->{Time}, $file->{Size}, $file->{Name});
    }
    return 1;

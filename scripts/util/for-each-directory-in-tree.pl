@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -31,7 +31,7 @@ use RH::Dir;
 sub argv    ()  ; # Process @ARGV.
 sub curdire ()  ; # Process current directory.
 sub stats   ()  ; # Print statistics.
-sub error   ($) ; # 
+sub error   ($) ; #
 sub help    ()  ; # Print help.
 
 # ======= VARIABLES: ===================================================================================================
@@ -118,7 +118,7 @@ sub help ()
    print ((<<"   END_OF_HELP") =~ s/^   //gmr);
    Welcome to "for-each-dir.pl", Robbie Hatley's nifty program for
    executing a given command once for each directory of the current
-   directory tree descending from the current node. 
+   directory tree descending from the current node.
 
    Command lines:
    for-each-dir.pl [-h|--help]  (to print this help and exit)

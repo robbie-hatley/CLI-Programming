@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -36,7 +36,7 @@ foreach my $index ( 0 .. $L/$S - 1 )
       next if $group == $index;
       foreach my $digit ( 0 .. $S - 1 )
       {
-         ++$flips[$index] if substr($substrs[$group], $digit, 1) 
+         ++$flips[$index] if substr($substrs[$group], $digit, 1)
                           != substr($substrs[$index], $digit, 1);
       }
    }

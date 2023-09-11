@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # /rhe/scripts/test/xor-mask-test.pl
 use v5.32;
 

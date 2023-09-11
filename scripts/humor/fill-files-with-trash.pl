@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file.
 # ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。
@@ -53,14 +53,14 @@ my $filecount = 0;
    process_options_and_arguments;
 
    # If user wants help, just print help and bail:
-   if ($Settings{Help}) 
+   if ($Settings{Help})
    {
       help_msg;
       exit 777;
    }
 
    # If number of arguments is out of range, bail:
-   if ( @Arguments > 1 ) 
+   if ( @Arguments > 1 )
    {
       error_msg;
       exit 666;
@@ -90,18 +90,18 @@ my $filecount = 0;
    exit 0;
 }#end main
 
-sub get_options_and_arguments 
+sub get_options_and_arguments
 {
-   foreach (@ARGV) 
+   foreach (@ARGV)
    {
       if ('-' eq substr($_,0,1)) {push(@Options  , $_);}
       else                       {push(@Arguments, $_);}
    }
 }
 
-sub process_options_and_arguments 
+sub process_options_and_arguments
 {
-   foreach (@Options) 
+   foreach (@Options)
    {
       if ('-h' eq $_ || '--help'    eq $_) {$Settings{Help}    = 1;}
       if ('-r' eq $_ || '--recurse' eq $_) {$Settings{Recurse} = 1;}
@@ -109,7 +109,7 @@ sub process_options_and_arguments
    if (@Arguments >= 1) {$Settings{Regexp} = $Arguments[0];}
 }
 
-sub process_current_directory 
+sub process_current_directory
 {
    ++$direcount;
 
@@ -121,18 +121,18 @@ sub process_current_directory
    say $curdir;
 
    my $curdirfiles = GetFiles($curdir, 'F', $Settings{Regexp});
-   foreach my $file (@{$curdirfiles}) 
+   foreach my $file (@{$curdirfiles})
    {
       process_current_file($file);
    }
 }
 
-sub process_current_file ($) 
+sub process_current_file ($)
 {
    my $file = shift;
    my $fh;
    my $nextchar;
-   my $chars = 
+   my $chars =
    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'              .
    'abcdefghijklmnopqrstuvwxyz'         x  2 .
    'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ'          .
@@ -168,7 +168,7 @@ sub print_stats
    say "Overwrote $filecount files in $direcount directories with gibberish.";
 }
 
-sub error_msg 
+sub error_msg
 {
    print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
    Error: This program takes at most 1 argument, which (if present) must be
@@ -177,7 +177,7 @@ sub error_msg
    return 1;
 }
 
-sub help_msg 
+sub help_msg
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "Fill Files With Trash", Robbie Hatley's file trashing Utility.

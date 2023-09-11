@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -16,7 +16,7 @@
 # Edit history:
 # ??? Dec ??, 2014: Wrote it.
 # Fri Jul 17, 2015: Upgraded for utf8.
-# Sat Apr 02, 2016: Added help. Added "#! /bin/perl -CSDA".
+# Sat Apr 02, 2016: Added help. Added "#!/usr/bin/perl -CSDA".
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
 ########################################################################################################################
@@ -64,12 +64,12 @@ my $db = 0;
    exit 0;
 }
 
-sub Help 
+sub Help
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "s". Like the Perl s/// function (which it uses), this program 
+   Welcome to "s". Like the Perl s/// function (which it uses), this program
    performs regular-expression substitution on whatever lines of text are
-   fed to it via STDIN. 
+   fed to it via STDIN.
 
    Command lines for help:
    s -h
@@ -81,19 +81,19 @@ sub Help
    s arg1 arg2              s/arg1/arg2/
    s arg1 arg2 arg3         s/arg1/arg2/arg3
 
-   Basically, s examines each line of text coming in on STDIN, looking for 
-   matches to the regular expression in arg1, and substituting the replacement 
-   pattern in arg2 for those matches, while obeying the s/// flags given via 
+   Basically, s examines each line of text coming in on STDIN, looking for
+   matches to the regular expression in arg1, and substituting the replacement
+   pattern in arg2 for those matches, while obeying the s/// flags given via
    arg3 (if present).
 
    Output is written to STDOUT.
 
-   The original text coming in via STDIN is not altered. 
+   The original text coming in via STDIN is not altered.
 
    NEEDLESS TO SAY, THIS IS AN EXTREMELY DANGEROUS PERL SCRIPT. THIS SCRIPT
    IS INTENDED FOR USE BY EXPERIENCED PERL PROGRAMMERS WITH NO ILL INTENT.
    IT IS BEST NOT TO SHARE THIS SCRIPT WITH THE GENERAL PUBLIC, AS SOME
-   PERSONS MIGHT USE IT FOR NEFARIOUS PURPOSES. 
+   PERSONS MIGHT USE IT FOR NEFARIOUS PURPOSES.
 
    AND I'M NOT EVEN GOING TO MENTION HOW DANGEROUS IT IS TO FEED AN 'e' FLAG
    TO THIS SCRIPT AS PART OF ITS THIRD ARGUMENT.

@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -100,14 +100,14 @@ sub process_current_directory ()
    my $curdirfiles = GetFiles($curdir, $Target, $Regexp);
 
    # Iterate through these files, title-casing them:
-   foreach my $file (@{$curdirfiles}) 
+   foreach my $file (@{$curdirfiles})
    {
       process_current_file($file);
    }
    return 1;
 } # end sub process_current_directory ()
 
-sub process_current_file ($) 
+sub process_current_file ($)
 {
    ++$filecount;                       # increment file counter
    my $file = shift;                   # reference to file-info record
@@ -115,7 +115,7 @@ sub process_current_file ($)
    my $oldpref = get_prefix($oldname); # get old prefix
    my $oldsuff = get_suffix($oldname); # get old suffix
    my $newpref = uc $oldpref;          # convert prefix to upper-case
-   my $newsuff = uc $oldsuff;          # convert suffix to upper-case  
+   my $newsuff = uc $oldsuff;          # convert suffix to upper-case
    my $newname = $newpref . $newsuff;  # create new name
    my $success = 0;                    # Did we succeed?
 
@@ -139,7 +139,7 @@ sub process_current_file ($)
       ++$skipcount;
    }
    return $success;
-} # end sub process_current_file ($) 
+} # end sub process_current_file ($)
 
 sub stats ()
 {
@@ -160,7 +160,7 @@ sub error ($)
    1 argument which, if present, must be a regular expression
    specifying which files and/or directories to process.
    Help follows:
-   
+
    END_OF_ERROR
    help;
    exit 666;
@@ -195,7 +195,7 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Cheers,
    Robbie Hatley,

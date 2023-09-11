@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # encoded-regex-test.pl
 use v5.32;
 use utf8;

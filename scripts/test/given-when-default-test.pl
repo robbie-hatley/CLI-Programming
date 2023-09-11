@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # given-when-default-test.pl
 use v5.36;
 use experimental "switch";

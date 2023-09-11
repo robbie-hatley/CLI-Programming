@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 use v5.32;
 use strict;
 use warnings;
@@ -15,7 +15,7 @@ sub get_options_and_arguments
    push /^-/ ? \@Options : \@Arguments , $_ for @ARGV ;
 }
 
-sub process_options_and_arguments 
+sub process_options_and_arguments
 {
    foreach (@Options)
    {

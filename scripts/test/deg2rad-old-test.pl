@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # deg2rad-old-test.pl
 use v5.32;
 use Math::Trig;

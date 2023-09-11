@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -36,7 +36,7 @@ sub divide($$);
 }
 
 # Divide one positive integer by another, returning floating-point quotient
-# up to repetition point (if any), periodicity of repeating decimal (0 if none), 
+# up to repetition point (if any), periodicity of repeating decimal (0 if none),
 # and repeated string of digits ('' if none):
 sub divide($$)
 {
@@ -53,7 +53,7 @@ sub divide($$)
    my $offset      = 0;
    my $period      = 0;
 
-   # If dividend >= divisor, this is an "improper fraction", 
+   # If dividend >= divisor, this is an "improper fraction",
    # so make it "proper":
    if ($dividend >= $divisor )               # eg, 36/7
    {
@@ -68,7 +68,7 @@ sub divide($$)
    # Leave the quotient as it is, an integer with no decimal point.
    # Leave the period   as it is, 0.
    # Leave the pattern  as it is, ''.
-      
+
    # But if there IS a fractional part to this quotient, then:
    # 1. Find the quotient (up to repetition point, if any).
    # 2. Find the period  of repetition (if any).

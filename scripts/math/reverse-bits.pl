@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # reverse-bits.pl
 use v5.30;
 use Scalar::Util qw( looks_like_number );

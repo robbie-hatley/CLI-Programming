@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # "our-vs-local-test.pl"
 use v5.32;
 use strict;
@@ -7,7 +7,7 @@ use warnings;
 our $Fred   = 17;
 our $Jeremy = 32;
 
-sub Ralph 
+sub Ralph
 {
    our $Fred;
    our $Jeremy;

@@ -1,4 +1,4 @@
-#! /bin/sed -f 
+#!/usr/bin/sed -f
 
 # This is a 120-character-wide Unicode UTF-8 sed-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -31,7 +31,7 @@ s/[[:blank:]]\+$//
 #Get rid of any blanks before or after newlines:
 s/[[:blank:]]*\n[[:blank:]]*/\n/g
 
-#Consolidate any mid-line multiple spaces (due to proportional spacing) 
+#Consolidate any mid-line multiple spaces (due to proportional spacing)
 #to single spaces:
 s/  \+/ /g
 

@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/bash
 factor 9
 factor 99
 factor 999

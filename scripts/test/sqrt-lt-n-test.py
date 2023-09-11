@@ -1,4 +1,4 @@
-#! /bin/python3
+#!/bin/python3
 import sys
 import math
 n=int(sys.argv[1])

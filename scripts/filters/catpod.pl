@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -20,7 +20,7 @@ use common::sense;
 use Sys::Binmode;
 
 my $inpod = 0;
-while (<>) 
+while (<>)
 {
    if ($inpod)
    {
@@ -44,11 +44,11 @@ while (<>)
          ; # Do nothing.
       }
    }
-} 
+}
 
 =pod
 
-This really is a pretty ridiculous program. 
+This really is a pretty ridiculous program.
 It's about as useful to a human as a bicycle is to a fish.
 
 =cut

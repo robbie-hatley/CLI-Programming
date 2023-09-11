@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # debug-test.pl
 use v5.32;
 use strict;

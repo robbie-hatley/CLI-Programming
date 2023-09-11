@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#!/usr/bin/bash
 sudo mount /home/aragorn/net/KE/Valinor
 sudo mount /home/aragorn/net/KE/Beleriand
 sudo mount /home/aragorn/net/KE/Eriador

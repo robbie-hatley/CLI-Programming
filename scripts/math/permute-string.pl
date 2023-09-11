@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -20,7 +20,7 @@ use Time::HiRes 'time';
 use Carp "cluck";
 
 # Variables (WARNING: initializations in the "BEGIN" block below happen BEFORE any initializations here):
-my $db          = 1; # Set to 1 to cluck. 
+my $db          = 1; # Set to 1 to cluck.
 my $Perms       = 0; # Count of permutations found.
 my $EntryTime      ; # Time of program entry. (Initialized in BEGIN block below. Do NOT re-initialize here!)
 my $ExitTime       ; # Time of program exit.  (Initialized in  END  block below.)
@@ -38,14 +38,14 @@ BEGIN
 { # begin main
 
    # Print help and exist if user requests help:
-   if ((@ARGV > 0) && ('-h' eq $ARGV[0] || '--help' eq $ARGV[0])) 
+   if ((@ARGV > 0) && ('-h' eq $ARGV[0] || '--help' eq $ARGV[0]))
    {
       Help();
       exit 777;
    }
 
    # Otherwise, die if not exactly 1 arg:
-   if (1 != scalar(@ARGV)) 
+   if (1 != scalar(@ARGV))
    {
       say 'Error: Permute takes exactly 1 argument, which must be';
       say 'a string with at least 2 characters and at most 20 characters.';
@@ -54,7 +54,7 @@ BEGIN
    }
 
    # Die if arg is too short or too long:
-   if (length($ARGV[0]) < 2 || length($ARGV[0]) > 20) 
+   if (length($ARGV[0]) < 2 || length($ARGV[0]) > 20)
    {
       say 'Error: Permute takes exactly 1 argument, which must be';
       say 'a string with at least 2 characters and at most 20 characters.';
@@ -78,7 +78,7 @@ END
 # SUBROUTINE DEFINITIONS:
 
 # Extract one character from a given index of a given string,
-# close-up the gap, and return extracted character. 
+# close-up the gap, and return extracted character.
 # (NOTE: alters thing pointed-to by its first argument.)
 sub Extract ($$)
 {
@@ -104,14 +104,14 @@ sub Permute ($$)
    my $length_left  = length($left);
    my $length_right = length($right);
    my $i;
-   if (1 == $length_right) 
+   if (1 == $length_right)
    {
       say $left . $right;
       ++$Perms;
    }
-   else 
+   else
    {
-      for ( $i = 0 ; $i < $length_right ; ++$i ) 
+      for ( $i = 0 ; $i < $length_right ; ++$i )
       {
          my $temp_left  = $left;
          my $temp_right = $right;

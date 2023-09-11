@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 ################################################
 # /rhe/scripts/test/winchomp-bom-test.pl

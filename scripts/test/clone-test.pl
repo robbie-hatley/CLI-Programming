@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # clone-test.pl
 use v5.36;
 use strict;

@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # string-partitions-test.pl
 
 use v5.36;

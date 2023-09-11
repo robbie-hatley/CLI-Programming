@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 use v5.32;
 use strict;
 use warnings;
@@ -13,5 +13,5 @@ BEGIN
    }
 }
 
-say "Eventually, we ", BLUE("want"), " to have ", 
+say "Eventually, we ", BLUE("want"), " to have ",
    GREEN("control"), " over color.";

@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 ##########################################################
 # file-test.pl
@@ -61,7 +61,7 @@ use RH::Dir;
    {
       printf
       (
-        "%-40s %18s %10s %1s %2d %10d %10d\n", 
+        "%-40s %18s %10s %1s %2d %10d %10d\n",
         $fileinfo->{Name},
         $fileinfo->{Inode},
         $fileinfo->{Mode},
@@ -87,7 +87,7 @@ use RH::Dir;
          {
             print("\nThese two files share inode $inode1:\n$name1\n$name2\n");
          }
-         
+
       }
    }
 
@@ -98,7 +98,7 @@ use RH::Dir;
 
       # If current file has more than 1 nlink, alert user:
       if ($nlinks >1)
-      {     
+      {
          print("\nThis file has $nlinks nlinks:\n$name\n");
       }
    }

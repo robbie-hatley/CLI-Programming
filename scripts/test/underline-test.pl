@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 #  underline-test.pl
 use v5.32;
 use Term::ANSIColor qw(:constants);

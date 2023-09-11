@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # random-shift-test.pl
 use v5.32;
 use bignum;
@@ -6,7 +6,7 @@ Math::BigFloat->accuracy(250);
 my  ($fh, $i, $bytes, @bytes, @ordinals, $ord, $rand336, $randfloat, $randshift, $randmant);
 open($fh, '< :raw', '/dev/random')
 or die "Can't open \"/dev/random\".\n$!.\n";
-read($fh, $bytes, 42); 
+read($fh, $bytes, 42);
 close($fh);
 @bytes = split //,$bytes;
 @ordinals = map {0+ord($_)} @bytes;

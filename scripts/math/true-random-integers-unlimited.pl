@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -71,7 +71,7 @@ sub process_argv ()
    my $NA = scalar(@ARGV);                   # Get number of arguments.
    my $msg;                                  # Message for sending to error().
 
-   if ($NA !=  3) 
+   if ($NA !=  3)
       {$msg = 'wrong number of arguments.'                      ; error($msg); print for <DATA>; exit(666);}
 
    # Assign $N, $A, $B based on $ARGV[0], $ARGV[0], $ARGV[0]:
@@ -116,7 +116,7 @@ sub print_rand_ints ()
    or die "Can't open \"/dev/random\".\n$!.\n";
    for ( $i = 0 ; $i < $N ; ++$i )
    {
-      read($fh, $bytes, 43); 
+      read($fh, $bytes, 43);
       @bytes = split //,$bytes;
       @ordinals = map {0+ord($_)} @bytes; # "0+" forces ord($_) to become a BigInt object.
       if ($db) {for my $ord (@ordinals) {printf("%02s", $ord->to_hex);} printf(" (ords)\n");}
@@ -159,7 +159,7 @@ sub number_of_digits ($)
 
 =pod
 
-10e100 = 
+10e100 =
 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 
 10e100 - 1 =
@@ -184,7 +184,7 @@ arg1 = number of random integers to print
 arg2 = begin range of integers to choose random integers from
 arg3 = end   range of integers to choose random integers from
 
-Argument range limits: 
+Argument range limits:
 arg1 must be a positive integer in the range 1 through 100000
 arg2 must be an integer in the range -1E100 through +1E100
 arg3 must be an integer in the range -1E100 through +1E100

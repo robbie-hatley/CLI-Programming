@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -30,9 +30,9 @@ my $NumWords = scalar(@Words);
 my $Rows =  5; $Rows = shift if @ARGV;
 my $Cols = 50; $Cols = shift if @ARGV;
 
-for my $Row (0..$Rows-1) 
+for my $Row (0..$Rows-1)
 {
-   for my $Col (0..$Cols-1) 
+   for my $Col (0..$Cols-1)
    {
       my $Word = $Words[rand_int(0,$NumWords-1)];
       if (0 == $Col%20) {$Word =~ s/^(\pL)/\u$1/;}

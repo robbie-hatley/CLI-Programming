@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/usr/bin/sh
 # random-characters.sh
 printf " \$ti";
 read pngs</dev/urandom;

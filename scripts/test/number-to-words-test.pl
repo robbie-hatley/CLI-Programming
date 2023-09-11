@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 ########################################################################################################################
 # /rhe/scripts/math/number-to-words.pl
 # Writes a number in words.
@@ -57,10 +57,10 @@ sub number_to_words ($)
       push @digits, 0;
    }
 
-   my @groups = 
+   my @groups =
    ( '' , qw(
-      thousand       million           billion             trillion    
-      quadrillion    quintillion       sextillion          septillion  
+      thousand       million           billion             trillion
+      quadrillion    quintillion       sextillion          septillion
       octillion      nonillion         decillion           undecillion
       duodecillion   tredecillion      quattuordecillion   quindecillion
       sexdecillion   septendecillion   octodecillion       novemdecillion
@@ -68,14 +68,14 @@ sub number_to_words ($)
    ) );
 
    my @ones = ( '', qw(  one       two       three
-                         four      five      six 
+                         four      five      six
                          seven     eight     nine   ) );
 
    my @teens = ( '', qw( eleven    twelve    thirteen
                          fourteen  fifteen   sixteen
                          seventeen eighteen  nineteen ) );
 
-   my @tens = ( '', qw(  ten       twenty    thirty 
+   my @tens = ( '', qw(  ten       twenty    thirty
                          forty     fifty     sixty
                          seventy   eighty    ninety ) );
 
@@ -154,6 +154,6 @@ sub number_to_words ($)
       } # end if (slice is populated)
    } # end for (each group)
 
-   # We're done, so return $string:   
+   # We're done, so return $string:
    return $string;
 }

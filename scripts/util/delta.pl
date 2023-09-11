@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -8,7 +8,7 @@
 # delta.pl
 # Presents "added" lines which are in a second file but not in a first,
 # and "subtracted" lines which are in a first file but not in a second.
-# 
+#
 # Edit history:
 # Sat May 07, 2016 - Wrote it.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
@@ -44,14 +44,14 @@ our $Help = 0;   # Print help and exit?
    process_options;
 
    # If user wants help, just print help and bail:
-   if ($Help) 
+   if ($Help)
    {
       help_msg;
       exit 777;
    }
 
    # If number of arguments is out of range, bail:
-   if ( @Arguments != 2 ) 
+   if ( @Arguments != 2 )
    {
       error_msg;
       exit 666;
@@ -66,7 +66,7 @@ our $Help = 0;   # Print help and exit?
    open($fh2, '<', encode_utf8 $Arguments[1]) or die "Can't open second file.\n$!\n";
    my @Second = <$fh2>;
    close($fh2);
-   
+
    my @Added;
    foreach (@Second)
    {
@@ -115,7 +115,7 @@ sub get_options_and_arguments
 
 sub process_options
 {
-   foreach (@Options) 
+   foreach (@Options)
    {
       if ('-h' eq $_ || '--help' eq $_) {$Help = 1;}
    }
@@ -130,7 +130,7 @@ sub element_is_in_array($$)
    return 0;
 }
 
-sub error_msg 
+sub error_msg
 {
    say "Error: you typed ${\scalar(@Arguments)} arguments,";
    say 'but delta.pl takes exactly 2 arguments, which must be';
@@ -139,12 +139,12 @@ sub error_msg
    return 1;
 }
 
-sub help_msg 
+sub help_msg
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "delta.pl". This program presents "added" lines which are in 
-   a second file but not in a first, and "subtracted" lines which are in 
-   a first file but not in a second. 
+   Welcome to "delta.pl". This program presents "added" lines which are in
+   a second file but not in a first, and "subtracted" lines which are in
+   a first file but not in a second.
 
    So, the output of this program will make sense only if the first and second
    arguments are paths of two text files, "File1" and "File2", in the current

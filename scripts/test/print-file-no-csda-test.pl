@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # print-file-no-csda-test.pl
 use v5.32;
 use warnings FATAL => "utf8";

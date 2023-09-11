@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -80,7 +80,7 @@ sub process_argv ()
 sub help ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "strip-marks.pl". This program strips all "combining marks", 
+   Welcome to "strip-marks.pl". This program strips all "combining marks",
    aka "diacriticals", from Unicode input text, to the maximum extent possible.
    It does this by fully decomposing each Unicode character to a "base" character
    plus separate "combining marks" (to the extent possible) then erases those
@@ -100,7 +100,7 @@ sub help ()
    Output is to STDOUT.
    (Output can also be redirected or piped to where you like.)
 
-   All input and output is UTF-8-encoded Unicode-encoded text. 
+   All input and output is UTF-8-encoded Unicode-encoded text.
 
    Happy mark stripping!
 

@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # for-and-last-test.pl
 use v5.36;
 while (<>)

@@ -1,4 +1,4 @@
-#! /bin/perl -CSD
+#!/usr/bin/perl -CSD
 #  begin-decode-test.pl
 use v5.32;
 use RH::Dir;

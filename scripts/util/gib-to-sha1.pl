@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -13,7 +13,7 @@
 # Edit history:
 # Wed Nov 11, 2020: Wrote it. (Converts gibberish names to sha1 names only.)
 # Mon Dec 21, 2020: Now also has recursion available.
-# Sun Jan 03, 2021: Now also processes many other file types besides just jpg. 
+# Sun Jan 03, 2021: Now also processes many other file types besides just jpg.
 # Mon Feb 15, 2021: Split into "gib-to-sha1.pl" and "wsl-to-sha1.pl". "gib-to-sha1.pl" now handles gib only, with no
 #                   extension discrimination.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".

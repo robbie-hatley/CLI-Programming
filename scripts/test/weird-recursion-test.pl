@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # weird-recursion-test.pl
 use v5.32;
 sub f

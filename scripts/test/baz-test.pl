@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 use v5.32;
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ when([qw(foo bar)] && /baz/)
 =>
 (
    Numeric($x)
-   ~~ 
+   ~~
    (
       Numeric([qw(foo bar)]))
       &&
@@ -33,7 +33,7 @@ when([qw(foo bar)] && /baz/)
    )
 )
 
-But the boolean value of an array ref is always 1, 
+But the boolean value of an array ref is always 1,
 so this is actually:
 
 when([qw(foo bar)] && /baz/)

@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # parity.pl
 use v5.10;
 my $odds = 0;

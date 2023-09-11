@@ -1,10 +1,10 @@
-#! /bin/perl
+#!/usr/bin/perl
 use v5.32;
 use strict;
 use warnings;
 
 %::fav_foods = (
-   "dog"       => "bone", 
+   "dog"       => "bone",
    "cat"       => "chicken",
    "rat"       => "meatloaf",
    "bat"       => "cricket"

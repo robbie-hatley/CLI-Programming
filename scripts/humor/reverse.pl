@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file.
 # ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。
@@ -12,7 +12,7 @@
 #
 # Text is input  from STDIN , or via redirects from files, or via pipes, or via file-name arguments.
 # Text is output to   STDOUT, or via redirects from files, or via pipes.
-# 
+#
 # Edit history:
 #    Thu Mar 18, 2021: Wrote it.
 ########################################################################################################################
@@ -67,8 +67,8 @@ sub help ()
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "reverse.pl", Robbie Hatley's nifty text reverser.
    This program reverses all text fed to it, both horizontally
-   AND vertically. Extended grapheme clusters (such as in 
-   fully-decomposed Vietnamese) are not mangled. 
+   AND vertically. Extended grapheme clusters (such as in
+   fully-decomposed Vietnamese) are not mangled.
 
    Command lines:
    reverse.pl -h|--help              (prints this help)

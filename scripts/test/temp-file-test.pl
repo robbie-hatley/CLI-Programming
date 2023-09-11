@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 #temp-file-test.p
 use strict;
 use warnings;

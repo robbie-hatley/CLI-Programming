@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/python
 import sys
 import os
 for i,x in enumerate(sys.argv):

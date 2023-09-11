@@ -1,4 +1,4 @@
-#!/bin/perl
+#!/usr/bin/perl
 # This is a 85-character-wide ASCII Perl source-code text file with Unix line breaks.
 #####################################################################################
 # make-month-dirs.pl                                                                #

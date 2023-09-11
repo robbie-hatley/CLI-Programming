@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # factorial.pl
 # Copyright Robbie Hatley, Monday April 16, 2018
 use v5.32;

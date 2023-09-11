@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -139,14 +139,14 @@ sub curdire ()
       );
    }
    my $curdirfiles = GetFiles($curdir, $Target, $Regexp);
-   foreach my $file (@{$curdirfiles}) 
+   foreach my $file (@{$curdirfiles})
    {
       curfile($file);
    }
    return 1;
 } # end sub curdire ()
 
-sub curfile ($) 
+sub curfile ($)
 {
    ++$filecount;
    my $file = shift;
@@ -160,7 +160,7 @@ sub curfile ($)
       );
    }
    return 1;
-} # end sub curfile ($) 
+} # end sub curfile ($)
 
 sub stats ()
 {
@@ -220,7 +220,7 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    If the number of arguments is not 0 or 1, this program will print an
    error message and abort.

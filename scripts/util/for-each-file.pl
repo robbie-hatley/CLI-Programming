@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -103,14 +103,14 @@ sub curdire ()
    my $curdir = cwd_utf8;
    say "\nDir # $direcount: $curdir\n";
    my $curdirfiles = GetFiles($curdir, $Target, $Regexp);
-   foreach my $file (@{$curdirfiles}) 
+   foreach my $file (@{$curdirfiles})
    {
       curfile($file);
    }
    return 1;
 } # end sub curdire ()
 
-sub curfile ($) 
+sub curfile ($)
 {
    ++$filecount;
    my $file = shift;
@@ -118,7 +118,7 @@ sub curfile ($)
    say      "$Command '$file->{Path}'";
    system e "$Command '$file->{Path}'";
    return 1;
-} # end sub curfile ($) 
+} # end sub curfile ($)
 
 sub stats ()
 {
@@ -170,15 +170,15 @@ sub help ()
       Command 'FileName'
 
    Argument 2 (optional), if present, must be a Perl-Compliant Regular Expression
-   specifying which items to process. To specify multiple patterns, use the | 
-   alternation operator. To apply pattern modifier letters, use an Extended 
-   RegExp Sequence. For example, if you want to search for items with names 
-   containing "cat", "dog", or "horse", title-cased or not, you could use this 
+   specifying which items to process. To specify multiple patterns, use the |
+   alternation operator. To apply pattern modifier letters, use an Extended
+   RegExp Sequence. For example, if you want to search for items with names
+   containing "cat", "dog", or "horse", title-cased or not, you could use this
    regexp:
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    If the number of arguments is not 1 or 2, this program will print an
    error message and abort.

@@ -1,4 +1,4 @@
-#! /bin/python
+#!/usr/bin/python
 import sys
 a=1
 b=float(sys.argv[1])

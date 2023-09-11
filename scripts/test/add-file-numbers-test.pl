@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # add-file-numbers-test.pl
 use v5.32;
 

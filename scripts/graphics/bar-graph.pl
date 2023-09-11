@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -8,7 +8,7 @@
 # bar-graph.pl
 # Prints a percentile bar graph, given a Perl hash.
 # Edit history:
-#    Tue Nov 09, 2021: 
+#    Tue Nov 09, 2021:
 #       Refreshed colophon, title card, and boilerplate.
 #       Also fixed some bugs (such as, wrong graph height).
 ########################################################################################################################

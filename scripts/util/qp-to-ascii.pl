@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -51,11 +51,11 @@ FILE: while (readdir $dh)
    # etc), so if current file isn't a regular file, move on to next file:
    next FILE if not -f e $filename;
 
-   # We're only interested in "*.eml" files, so if $filename is less than 
+   # We're only interested in "*.eml" files, so if $filename is less than
    # 5 characters in length, move on to next file:
-   next FILE if (length($filename) < 5);   
+   next FILE if (length($filename) < 5);
 
-   # We're only interested in "*.eml" files, so if last 4 characters of 
+   # We're only interested in "*.eml" files, so if last 4 characters of
    # file name are not ".eml", move on to next file:
    next FILE if (not(substr($filename,-4,4) eq '.eml'));
 
@@ -70,12 +70,12 @@ EMAIL: foreach my $emlname (@filenames)
    say "Processing file $emlname.";
    my $txtname = $emlname;
    substr($txtname,-4,4,'.txt');
-   open(EHANDLE, '< :encoding(windows-1252)', e $emlname) 
+   open(EHANDLE, '< :encoding(windows-1252)', e $emlname)
       or warn "Cannot open email file $emlname for  input."
       and next EMAIL;
-   open(THANDLE, '> :encoding(windows-1252)', e $txtname) 
+   open(THANDLE, '> :encoding(windows-1252)', e $txtname)
       or warn "Cannot open text  file $txtname for output."
-      and close(EHANDLE) 
+      and close(EHANDLE)
       and next EMAIL;
 
    $section = 'head';  # The first few lines are always the header.
@@ -83,7 +83,7 @@ EMAIL: foreach my $emlname (@filenames)
 
    # Process each line of text in current email, converting from
    # "quoted printable" to ASCII and deleting junk lines:
-   LINE: while (<EHANDLE>) 
+   LINE: while (<EHANDLE>)
    {
       # INITIAL GLOBAL ACTIONS (actions I take regardless of section):
 
@@ -109,25 +109,25 @@ EMAIL: foreach my $emlname (@filenames)
       # Body section:
       else
       {
-         # If this line starts with 'PPID' do not print this line and exit 
+         # If this line starts with 'PPID' do not print this line and exit
          # LINE loop here, because the first line marked 'PPID' is the first
          # line of the lengthy HTML gibberish section which comes after the
          # legible "plain text" section:
          last LINE if 'PPID' eq substr($_, 0, 4);
 
-         # Otherwise, decode from quoted-printable to ASCII. 
-         # 
-         # Note that I'm purposely mis-using decode_qp() here. Normally, it converts 
-         # each " =\x0d\x0a" at line ends into a single space, so that the lines of 
+         # Otherwise, decode from quoted-printable to ASCII.
+         #
+         # Note that I'm purposely mis-using decode_qp() here. Normally, it converts
+         # each " =\x0d\x0a" at line ends into a single space, so that the lines of
          # each paragraph are merged into one paragraph with one "\x0d\x0a" at the end.
-         # 
-         # But the emails I'm printing already have lines chopped to just the length 
-         # I like, so I'm retaining "one CRLF per line" instead of going over to 
-         # "one CRLF per paragraph". So to purposely sabotage decode_qp() from merging 
+         #
+         # But the emails I'm printing already have lines chopped to just the length
+         # I like, so I'm retaining "one CRLF per line" instead of going over to
+         # "one CRLF per paragraph". So to purposely sabotage decode_qp() from merging
          # lines, I chomp-off the \x0d\x0a at the ends of all lines (see "INITAL GLOBAL
-         # ACTIONS section above). 
-         # 
-         # This does necessitate manually getting rid of the " =" at the ends of lines, 
+         # ACTIONS section above).
+         #
+         # This does necessitate manually getting rid of the " =" at the ends of lines,
          # but that is easily accomplished:
 
          $_ = decode_qp($_); # Decode quoted-printable to ASCII.
@@ -137,7 +137,7 @@ EMAIL: foreach my $emlname (@filenames)
 
       # FINAL GLOBAL ACTIONS (actions I take regardless of section):
 
-      # Strip all leading and trailing whitespace from current line. 
+      # Strip all leading and trailing whitespace from current line.
       # (If line consists only of whitespace, line will now become ''.)
       s/^\s+//g; # strip all leading  whitespace
       s/\s+$//g; # strip all trailing whitespace
@@ -150,7 +150,7 @@ EMAIL: foreach my $emlname (@filenames)
          if ($_ eq '')    #    if current line is also blank,
          {
             next LINE;    #       skip current line.
-         }                # 
+         }                #
          else             #    otherwise,
          {
             $blflag = 0;  #       reset "blank line" flag to false

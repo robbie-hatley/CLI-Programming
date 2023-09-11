@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # Robbie-Hatley-2.pl
 use v5.32;
 
@@ -6,7 +6,7 @@ use v5.32;
 my $string = "526f62626965204861746c6579E";
 
 # Declare an array to hold the desired 2-char snippets:
-my @array; 
+my @array;
 
 # Snip snippets from string and put in array:
 while ($string) {push @array, substr($string,0,2,"");}

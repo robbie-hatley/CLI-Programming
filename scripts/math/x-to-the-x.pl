@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -39,24 +39,24 @@ Now, if x is a positive real number, |x| = x and ϕ = 0 so this just boils down 
 y = (x^x)(e^0)
 y = (x^x)(1)
 y = x^x
-which is where we started. 
+which is where we started.
 
-However, if x is a NEGATIVE real number, ϕ = π which will cause y to take on complex values: 
+However, if x is a NEGATIVE real number, ϕ = π which will cause y to take on complex values:
 y = |x|^x e^(xiπ)                    POLAR FORM
 y = |x|^x cos(πx) + |x|^x sin(πx)i   RECTANGULAR FORM
 
-Therefore, the function y=x^x R->C is defined for all real numbers x. 
+Therefore, the function y=x^x R->C is defined for all real numbers x.
 For x=0, y=1. (lim[x->0+](y) = 1.)
 For x>0, y = x^x = e^(x ln x).
 For x<0, y = |x|^x cos(πx) + |x|^x sin(πx)i
 
-Hence, if we create a z axis perpendicular to the x and y axes, pointing out of the plane of the computer screen toward the viewer, and use that z axis to plot the imaginary part of y=x^x, then the left half of the graph is a helix of period 2 around the negative x axis, diminishing in amplitude as the graph goes leftward. 
+Hence, if we create a z axis perpendicular to the x and y axes, pointing out of the plane of the computer screen toward the viewer, and use that z axis to plot the imaginary part of y=x^x, then the left half of the graph is a helix of period 2 around the negative x axis, diminishing in amplitude as the graph goes leftward.
 
 At each integer value of x (-1, -2, -3...), the helix punctures the x/y plane, and at those points, y has a pure-real value. (Eg: (-2)^(-2) = 0.25)
 
 At each half-integer value of x (-0.5, -1.5, -2.5...), the helix punctures the x/z plane, and at those points, y has a pure-imaginary value. (Eg: (-0.5)^(-0.5) = sqrt(0.5)i = about 0.707i)
-  
-At all other points, y has a single well-defined non-real non-imaginary complex value. 
+
+At all other points, y has a single well-defined non-real non-imaginary complex value.
 
 =cut
 

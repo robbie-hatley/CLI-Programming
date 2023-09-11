@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
@@ -69,13 +69,13 @@ sub argv {
 # Print help:
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "wrap.pl". This program wraps lines of text according to 
-   either built-in default settings (width=72, no first-line indent, 
-   no blank line between paragraphs), or according to settings supplied 
+   Welcome to "wrap.pl". This program wraps lines of text according to
+   either built-in default settings (width=72, no first-line indent,
+   no blank line between paragraphs), or according to settings supplied
    by user via options. Input is via STDIN and output is via STDOUT.
 
-   The input is not altered. This program is intended to be used as a 
-   "filter" in a Unix or Linux "pipeline", so it prints no text other than 
+   The input is not altered. This program is intended to be used as a
+   "filter" in a Unix or Linux "pipeline", so it prints no text other than
    a wrapped version of its input.
 
    Command lines:
@@ -89,7 +89,7 @@ sub help {
    "-i"  or "--indent"      Indent first line.
    "-b"  or "--blank"       Insert blank lines between paragraphs.
 
-   Single-letter options may be combined. For example, -bc010i would give 
+   Single-letter options may be combined. For example, -bc010i would give
    blank lines between paragraphs, 8 columns (010 is octal for 8), and
    first-line indenting.
 

@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is an 78-character-wide UTF-8-encoded Perl source-code text file.
 # ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。
@@ -21,7 +21,7 @@ while (<>)                   # Get a line.
 
 =pod
 
-A pretty ridiculous program, but I find it amusing. Replaces each :alpha: 
+A pretty ridiculous program, but I find it amusing. Replaces each :alpha:
 character received via STDIN into a 茶 (cha) character, which is Chinese and
 Japanese for "tea".
 

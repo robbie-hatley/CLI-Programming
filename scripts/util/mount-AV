@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#!/usr/bin/bash
 sudo mount /home/aragorn/net/AV/Skyport
 sudo mount /home/aragorn/net/AV/Avalon
 sudo mount /home/aragorn/net/AV/Jungle

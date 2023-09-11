@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 use v5.32;
 use common::sense
 say "\"The things that you're liable to read in the Bible,";

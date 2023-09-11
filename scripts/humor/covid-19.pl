@@ -1,9 +1,9 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 sub Live
 {
    stay_at_home();
-	sip_gin(); 
+	sip_gin();
 	eat_nachos();
 	watch_youtube();
 	write_programs();

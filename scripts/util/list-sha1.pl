@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -116,7 +116,7 @@ sub help ()
    "-r" or "--recurse"          Recurse subdirectories (but not links).
 
    Any other options are ignored.
-   
+
    Any non-option arguments are ignored.
 
    Cheers,

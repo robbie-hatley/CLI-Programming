@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -19,9 +19,9 @@
 # Sun Oct 13, 2019: Expanded range from 10^66-1 to 10^102-1.
 # Thu Jan 23, 2020: Fixed bug on line 65 where @digits was 66 elements long
 #                   instead of 102 as it should have been.
-# Tue Feb 09, 2021: Refactored. Now using bignum, and input can be any non-negative real number from 0 
+# Tue Feb 09, 2021: Refactored. Now using bignum, and input can be any non-negative real number from 0
 #                   through 1e102-1. The fractional part of a non-integer input is truncated and the
-#                   integral part is converted to a Math::BigInt object. Non-numeric, negative, and 
+#                   integral part is converted to a Math::BigInt object. Non-numeric, negative, and
 #                   too-large inputs are rejected. Argument lists of length other than 1 are rejected.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Mon Jul 11, 2022: Added help; renamed "argv" to "process_arguments"; subsumed "error" into "process_arguments";
@@ -115,7 +115,7 @@ sub number_to_words ()
       print "Number of digits = "; say scalar(@digits);
    }
 
-   my @groups = 
+   my @groups =
    ( '' , qw(
       thousand              million               billion
       trillion              quadrillion           quintillion
@@ -131,14 +131,14 @@ sub number_to_words ()
    ) );
 
    my @ones     = ( '',         'one',           'two',         'three',
-                               'four',          'five',           'six', 
+                               'four',          'five',           'six',
                               'seven',         'eight',          'nine' );
 
    my @teens    = ( '',      'eleven',        'twelve',      'thirteen',
                            'fourteen',       'fifteen',       'sixteen',
                           'seventeen',      'eighteen',      'nineteen' );
 
-   my @tens     = ( '',         'ten',        'twenty',        'thirty', 
+   my @tens     = ( '',         'ten',        'twenty',        'thirty',
                               'forty',         'fifty',         'sixty',
                             'seventy',        'eighty',        'ninety' );
 
@@ -150,8 +150,8 @@ sub number_to_words ()
    my $output  = '';
 
    # Iterate through digit groups of @digits in reverse order, right-to-left,
-   # most-significant to least-significant, remembering that @digits is 
-   # written BACKWARDS, so that $digits[i] is the 10^i column, 
+   # most-significant to least-significant, remembering that @digits is
+   # written BACKWARDS, so that $digits[i] is the 10^i column,
    # and separate out each group in turn as a slice:
    for (reverse 0..33)
    {
@@ -234,7 +234,7 @@ sub help ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "number-to-words.pl". This program prints the words for the integer
-   part of the number given as its argument, provided that that number is a real 
+   part of the number given as its argument, provided that that number is a real
    number in the closed interval [0, 10^102-1]. The words given for a non-integer
    number will be for the integer part only. If the number of arguments is not 1,
    or if the argument is not a number, or if the argument is out-of-range, this

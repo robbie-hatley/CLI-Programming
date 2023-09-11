@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 BEFOREHAND: close door, each window & exit; wait until time.
 open spellbook, study, read (scan, select, tell us);
 write it, print the hex while each watches,

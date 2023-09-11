@@ -1,4 +1,4 @@
-#!/bin/perl
+#!/usr/bin/perl
 # randhex.pl
 use v5.36;
 use strict; use warnings; no warnings 'numeric';

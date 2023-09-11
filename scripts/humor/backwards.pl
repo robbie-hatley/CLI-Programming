@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -10,7 +10,7 @@
 # clusters!)
 # Text is input  from STDIN , or via redirects from files, or via pipes, or via file-name arguments.
 # Text is output to   STDOUT, or via redirects from files, or via pipes.
-# 
+#
 # Edit history:
 #    Tue Mar 08, 2016: Wrote it.
 #    Mon Apr 04, 2016: Simplified and now using -CSDA.

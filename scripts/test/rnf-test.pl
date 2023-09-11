@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 # /rhe/scripts/util/rnf-test.pl
 use v5.32;
 use strict;

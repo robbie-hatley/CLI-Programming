@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 use v5.01;
 no strict;
 no warnings;

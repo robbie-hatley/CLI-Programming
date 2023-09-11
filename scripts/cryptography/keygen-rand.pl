@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -30,7 +30,7 @@ sub print_error_msg;
 sub print_help_msg;
 
 { # begin main
-   if (1 == scalar(@ARGV) && ("-h" eq $ARGV[0] || "--help" eq $ARGV[0])) 
+   if (1 == scalar(@ARGV) && ("-h" eq $ARGV[0] || "--help" eq $ARGV[0]))
    {
       print_help_msg;
       exit 777;
@@ -54,7 +54,7 @@ sub print_help_msg;
 sub print_error_msg
 {
    print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
-   Error: This program takes exactly two arguments, which must be 
+   Error: This program takes exactly two arguments, which must be
    integers in the 10 to 2000000000 range.
    END_OF_ERROR
    return 1;
@@ -65,12 +65,12 @@ sub print_help_msg
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "keygen-rand.pl", Robbie Hatley's nifty random non-negative
    integer generator. This program writes m random non-negative integers from
-   the range [0,n) (where m and n are integers in the range 
-   [10,2000000000]) to stdout, separated by commas. 
+   the range [0,n) (where m and n are integers in the range
+   [10,2000000000]) to stdout, separated by commas.
 
    The number m is given by the first  argument, $ARGV[0].
    The number n is given by the second argument, $ARGV[1].
-   If the number of arguments is not exactly 2, or if either argument is not 
+   If the number of arguments is not exactly 2, or if either argument is not
    a positive integer in the range [10,2000000000], this program will abort.
 
    Usage:
@@ -82,8 +82,8 @@ sub print_help_msg
    0,9,3,9,4,7,2,3,8,
    %
 
-   The purpose of this program is to create keys for my rot48 and rot128 
-   cryptography programs, but it can also be used anytime you need m random 
+   The purpose of this program is to create keys for my rot48 and rot128
+   cryptography programs, but it can also be used anytime you need m random
    non-negative integers less than n, separated by commas, printed to stdout.
 
    Note that it is NOT guaranteed that there will be no duplicates.
@@ -96,15 +96,15 @@ sub print_help_msg
    m is a specific integer in the 10-10000 range.
 
    This program has both advantages and disadvantages over my "keygen-perm.pl"
-   program. 
+   program.
 
    On the plus side, it allows for messages to be larger than pads. For example,
    you could use a 1000-number key and a 100-row pad to encrypt/decrypt messages
-   up to 1000 characters. 
+   up to 1000 characters.
 
    On the minus side, using messages bigger than pads decreases security, and
    allowing duplication (same pad row used for multiple characters) also decreases
-   security. 
+   security.
 
    Happy random non-negative-integer generating!
 

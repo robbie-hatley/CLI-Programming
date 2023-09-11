@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 #  /rhe/scripts/test/unicode-collate-array-of-hashes-test.pl
 
 use v5.32;

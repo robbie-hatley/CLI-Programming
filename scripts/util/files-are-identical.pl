@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -35,7 +35,7 @@ sub help_msg;
    }
 
    # If number of arguments is out of range, bail:
-   if ( @ARGV != 2 ) 
+   if ( @ARGV != 2 )
    {
       die
       "\nError: files-are-identical.pl takes 2 arguments, which must be paths to\n".
@@ -56,12 +56,12 @@ sub help_msg;
    exit 0;
 } # end main
 
-sub help_msg 
+sub help_msg
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "files-are-identical.pl". This program simply compares two files
-   and says whether or not they have identical content. (Name, size, date, and 
-   attributes need not be the same for two files to be considered "identical"; 
+   and says whether or not they have identical content. (Name, size, date, and
+   attributes need not be the same for two files to be considered "identical";
    this program only compares contents.)
 
    Command line to get help:
@@ -71,8 +71,8 @@ sub help_msg
    files-are-identical.pl 'file1' 'file2'
 
    'file1' and 'file2' must be valid paths to two files to be compared.
-   Enclosing both paths with 'single quotes' is highly recommended, 
-   because otherwise, if either path contains spaces or certain other characters, 
+   Enclosing both paths with 'single quotes' is highly recommended,
+   because otherwise, if either path contains spaces or certain other characters,
    the shell may not properly pass the paths to the program.
 
    files-are-identical.pl   hi there 1.txt   hi there 2.txt   # FAILS

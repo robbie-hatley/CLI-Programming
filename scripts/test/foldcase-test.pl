@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # /rhe/scripts/util/Template.pl
 # ¡España! Олег Газманов русский поэт. Þórinn Eikinskjaldi. 麦藁雪、富士川町、山梨県。
 

@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 # say-utf8-test.pl
 use v5.32;
 use strict;
@@ -33,6 +33,6 @@ print $line
 say $line =~ m/欛/ ? "Matches 欛." : "Doesn't match 欛.";
 say $line =~ m/譄/ ? "Matches 譄." : "Doesn't match 譄.";
 close $fh;
-unlink_utf8 'Ёщтu♂.txt' 
+unlink_utf8 'Ёщтu♂.txt'
    or warn "Couldn't unlink file 'Ёщтu♂.txt'.\n$!\n";
 say("Wow, we actually succeeded!");

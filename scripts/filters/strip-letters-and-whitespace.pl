@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 # strip-letters-and-whitespace.pl
 use v5.36;
 for (<>)

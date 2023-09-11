@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is an 120-character-wide UTF-8-encoded Perl source-code text file.
 # ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。
@@ -23,7 +23,7 @@ for (1..10010)
 {
    clone_file
    (
-      'test-file.txt', 
+      'test-file.txt',
       '/D/test-range/clone-test-dest'
    );
 }

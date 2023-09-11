@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -98,7 +98,7 @@ sub argv
    }
 
    # Get number of non-option arguments:
-   my $NA = scalar(@ARGV);            
+   my $NA = scalar(@ARGV);
 
    # Croak if number of arguments is not 2:
    if ( 2 != $NA )                                         {croak "Error: number of arguments is not two.          ";}
@@ -107,7 +107,7 @@ sub argv
    $srcedire = $ARGV[0];
    $destdire = $ARGV[1];
 
-   # Die if either does not exist, 
+   # Die if either does not exist,
    # or of either directory is not a directory,
    # or if either directory cannot be opened,
    # or if destination directory is not empty:

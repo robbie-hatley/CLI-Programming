@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # "no-strict-test.pl"
 use v5.32;
 no strict;
@@ -6,7 +6,7 @@ use warnings;
 
 $Fred   = 17;
 $Jeremy = 32;
-sub Ralph 
+sub Ralph
 {
    state $Albert = 41;
    ++$Albert;

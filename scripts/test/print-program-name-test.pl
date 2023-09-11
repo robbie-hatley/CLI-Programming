@@ -1,9 +1,9 @@
-#!/bin/perl
+#!/usr/bin/perl
 # print-program-name-test.pl
 use v5.36;
-$0=~/.*\//;say$';
 say$0=~s%^.*/%%r;
 say$0=~/[^\/]+$/g;
+$0=~/.*\//;say$';
 $0=~/[^\/]+$/;say$&;
 /[^\/]+$/,say$&for$0;
 say [split m%/%,$0]->[-1];

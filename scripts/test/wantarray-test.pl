@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 use v5.32;
 use strict;
@@ -13,7 +13,7 @@ say "@::List";
 
 say 'argle';
 my $retval = wantarray;
-if    (not defined $retval) {say "main undef"; } 
+if    (not defined $retval) {say "main undef"; }
 elsif (            $retval) {say "main true" ; }
 elsif (      !     $retval) {say "main false"; }
 
@@ -28,7 +28,7 @@ exit 0;
 sub void_context {
    say "bargle";
    my $retval = wantarray;
-   if    (not defined $retval) {say "void undef"; return 1;} 
+   if    (not defined $retval) {say "void undef"; return 1;}
    elsif (            $retval) {say "void true" ; return @_;}
    elsif (      !     $retval) {say "void false"; return scalar(@_);}
 }
@@ -36,7 +36,7 @@ sub void_context {
 sub scalar_context {
    say "fargle";
    my $retval = wantarray;
-   if    (not defined $retval) {say "scalar undef"; return 1;} 
+   if    (not defined $retval) {say "scalar undef"; return 1;}
    elsif (            $retval) {say "scalar true" ; return @_;}
    elsif (      !     $retval) {say "scalar false"; return scalar(@_);}
 }
@@ -44,12 +44,12 @@ sub scalar_context {
 sub list_context {
    say "gargle";
    my $retval = wantarray;
-   if    (not defined $retval) {say "list undef"; return 1;} 
+   if    (not defined $retval) {say "list undef"; return 1;}
    elsif (            $retval) {say "list true" ; return @_;}
    elsif (      !     $retval) {say "list false"; return scalar(@_);}
 }
 
-   
+
 
 
 

@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 =head1 Synopsis:
 
@@ -26,8 +26,8 @@ use strict;
 use warnings;
 
 =for html
-<p style="font-size: 24pt"> The snazzle() function will behave in the most 
-spectacular form that you can possibly imagine, not even excepting 
+<p style="font-size: 24pt"> The snazzle() function will behave in the most
+spectacular form that you can possibly imagine, not even excepting
 cybernetic pyrotechnics. </p>
 
 =cut
@@ -39,7 +39,7 @@ sub snazzle
 }
 
 =for html
-<p style="font-size: 24pt">The razzle() function enables autodidactic 
+<p style="font-size: 24pt">The razzle() function enables autodidactic
 epistemology generation.</p>
 
 =cut

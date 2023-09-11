@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 # round-to-int-test.pl
 use v5.32;
 use RH::Util;

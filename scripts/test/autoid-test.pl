@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 use v5.36;
 my $auto_id = 0;
 sub foo ($thing, $id = $auto_id++) {

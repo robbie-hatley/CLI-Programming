@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/python
 # for-while-test.py
 
 import timeit

@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 #  even-odd-test.pl
 use v5.20;
 for (@ARGV)

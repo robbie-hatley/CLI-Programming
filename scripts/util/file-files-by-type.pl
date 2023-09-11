@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -7,9 +7,9 @@
 ########################################################################################################################
 # file-files-by-type.pl
 # Moves files from current directory into appropriate subdirectories of the current directory (by default), or of the
-# parent directory (if a "--one" or "-1" option is used), or of the grandparent directory (if a "--two" or "-2" option 
-# is used), based on file name extension. If the appropriate subdirectory does not exist, it will be created. If a file 
-# of the same name exists, the moved file will be enumerated. 
+# parent directory (if a "--one" or "-1" option is used), or of the grandparent directory (if a "--two" or "-2" option
+# is used), based on file name extension. If the appropriate subdirectory does not exist, it will be created. If a file
+# of the same name exists, the moved file will be enumerated.
 #
 # Edit history:
 # Wed Nov 28, 2018: Started writing it.
@@ -86,7 +86,7 @@ sub argv ()
    return 1;
 } # end sub argv ()
 
-sub curfile ($) 
+sub curfile ($)
 {
    ++$filecount;
    my $file = shift;
@@ -105,7 +105,7 @@ sub curfile ($)
       default  {die "Error in \"file-files-by-type.pl\": Invalid \$Levels.\n$!\n";}
    }
    mkdir $dir unless -e e $dir;
-   move_file("$file->{Name}", $dir) and ++$succcount and return 1 
+   move_file("$file->{Name}", $dir) and ++$succcount and return 1
                                     or  ++$failcount and return 0;
 } # end sub curfile ($)
 
@@ -125,7 +125,7 @@ sub help ()
    current directory into appropriate subdirectories of the current (or parent,
    or grandparent) directory, based on file type (eg: jpg, mp3, txt, exe).
    If the appropriate subdirectory of the target directory does not exist,
-   it will be created. If a file of the same name exists, the moved file will 
+   it will be created. If a file of the same name exists, the moved file will
    be enumerated.
 
    Command line:
@@ -149,7 +149,7 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Happy file filing!
    Robbie Hatley,

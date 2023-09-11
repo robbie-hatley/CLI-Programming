@@ -1,4 +1,4 @@
-#! /usr/bin/env perl
+#!/usr/bin/env perl
 #  prepend-to-array-ref-test.pl
 use v5.36;
 my @a = ([1,3,5],[36,84],[0,-2]);

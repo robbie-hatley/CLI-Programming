@@ -1,4 +1,4 @@
-#! /bin/perl
+#!/usr/bin/perl
 
 # xor-every-third-with-4.pl
 

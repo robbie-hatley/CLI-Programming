@@ -1,4 +1,4 @@
-#! /bin/perl -COEoA
+#!/usr/bin/perl -COEoA
 use v5.32;
 use strict;
 use warnings;

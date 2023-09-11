@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -67,7 +67,7 @@ my $db = 0; # Use debugging? (Ie, print diagnostics?)
 # Counts of events:
 my $delecount = 0; # Count of all files deleted from Dir1
 my $mergcount = 0; # Count of all files successfully merged.
-my $failcount = 0; # Count of all files which couldn't be merged. 
+my $failcount = 0; # Count of all files which couldn't be merged.
 
 # ======= MAIN BODY OF PROGRAM: ========================================================================================
 
@@ -215,7 +215,7 @@ sub help_msg ()
    but the subdirectories and their contents will not be touched and
    dir1 will not be erased after file merging. I suggest first merging all
    subdirectories of dir1 upward one at a time, from the bottom up, before merging
-   dir1 to dir2. 
+   dir1 to dir2.
 
    Or, run this program through "for-each-immediate-subdirectory.pl" with
    arguments "." and "..":

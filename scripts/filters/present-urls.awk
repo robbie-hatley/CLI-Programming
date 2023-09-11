@@ -1,4 +1,4 @@
-#! /bin/awk -f 
+#!/usr/bin/awk -f
 
 # This is a 120-character-wide Unicode UTF-8 AWK-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -9,8 +9,8 @@
 #then it starts reading its input file.  For each line of the input file,
 #if the line does NOT contain "http", the whole line is printed to the HTML
 #file unexpurgated.  If the line DOES contain "http", any valid urls are
-#extracted, and each such valid url is written to the HTML file on its own 
-#line, formatted as a hyperlink.  When the script finishes reading the input 
+#extracted, and each such valid url is written to the HTML file on its own
+#line, formatted as a hyperlink.  When the script finishes reading the input
 #file, it prints a footer block to the HTML file, writes and closes the HTML
 #file, and exits.
 
@@ -54,10 +54,10 @@ BEGIN {
 #If the current line of the input file that DOES have an "http" in it,
 #print each URL as an HTML "a" element on its own line, ending with "<br />":
 /http/ {
-   
+
    #Split the line into words delimited by spaces or URL-illegal chars.:
    split($0, Words, /[[:blank:]<>\(\)\{\}\\^~\]\[`'"]/)
-   
+
    #iterate through array elements, extracting all URLs and formatting
    #them as http hyperlinks and printing them to stdout as we go:
    for (i in Words)

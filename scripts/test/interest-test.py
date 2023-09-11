@@ -1,4 +1,4 @@
-#! /bin/python
+#!/bin/python
 def main():
 	print("This program calculates the future value of a 10 - year investment.")
 	principal = eval(input("Enter the initial principle:"))

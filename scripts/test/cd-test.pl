@@ -1,2 +1,2 @@
-#! /bin/perl
+#!/usr/bin/perl
 system "source sl.sh";

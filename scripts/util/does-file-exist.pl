@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -64,13 +64,13 @@ sub err_msg
    return 1;
 }
 
-sub help_msg 
+sub help_msg
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "does-file-exist.pl", Robbie Hatley's nifty program for
    determining whether a file exists at a given path. This program takes
    exactly 1 argument, which will be interpreted as a proposed path
-   to be tested for file existance. 
+   to be tested for file existance.
 
    Exception: if the argument is -h or --help then this help will be given
    instead.

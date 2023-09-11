@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -10,7 +10,7 @@
 # then prints how many of the numbers ended up in each bin. Numbers must be in a file (or piped or redirected) with one
 # number per line.
 # Edit history:
-#    Tue Nov 09, 2021: 
+#    Tue Nov 09, 2021:
 #       Refreshed colophon, title card, and boilerplate.
 #       Also fixed some bugs. Now ignores garbage (non-number) lines, and now works even if some bins are empty.
 ########################################################################################################################

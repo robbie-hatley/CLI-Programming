@@ -1,4 +1,4 @@
-#! /bin/awk -f 
+#!/bin/awk -f
 BEGIN {print("AAARRRFFF!!!!!!!")}
 {print("arf arf")}
 END {print("Arf arf arf arf arf arf arf!!!")}

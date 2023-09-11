@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -148,7 +148,7 @@ sub help ()
    a -r or --recurse option is used) which have names which are the same if all
    of the non-alpha-numeric characters are removed. For example, this program
    would consider "Josh Bell.mp3", "Josh-Bell.mp3", and "Josh_Bell.mp3" to have
-   "duplicate" names.   
+   "duplicate" names.
 
    Command line:
    find-duplicate-names.pl [options and/or arguments]
@@ -164,7 +164,7 @@ sub help ()
                                 that would bypass glob_regexp_utf8's "noex"
                                 rejection.)
 
-   All other options are ignored. 
+   All other options are ignored.
 
    Description of arguments:
    In addition to options, this program can take one optional argument which, if
@@ -176,7 +176,7 @@ sub help ()
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead. 
+   this program, whereas this program needs the raw regexp instead.
 
    Cheers,
    Robbie Hatley,

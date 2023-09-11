@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -71,9 +71,9 @@ sub print_file_attributes (_)
 
    # Get current file's info, using lstat instead of stat, so that for
    # links, we get info for the link ITSELF, rather than what it links to:
-   my ( $dev,   $inode, $mode,  $nlink, 
-        $uid,   $gid,   $rdev,  $size,  
-        $atime, $mtime, $ctime          ) 
+   my ( $dev,   $inode, $mode,  $nlink,
+        $uid,   $gid,   $rdev,  $size,
+        $atime, $mtime, $ctime          )
       = lstat e $path;
 
    my @ModTimeFields = localtime($mtime);
@@ -114,7 +114,7 @@ sub print_file_attributes (_)
 sub help ()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
-   Welcome to "file-attributes.pl", Robbie Hatley's nifty program for 
+   Welcome to "file-attributes.pl", Robbie Hatley's nifty program for
    displaying file attributes.
 
    The only options are "-h" or "--help", both of which just print this
