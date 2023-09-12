@@ -35,7 +35,6 @@ Output: ("c", "o")
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 I think I'll solve this by making these subroutines:
-
 sub is_alpha ($aref); # Return boolean indicating whether-or-not an array contains only alphabetical strings.
 sub unique_letters ($aref); # Return list of unique letters in the strings of array.
 sub copies ($letter, $string); # Return number of copies of $letter which exist in string.
