@@ -9,12 +9,12 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge xxx-x.
+Solutions in Perl for The Weekly Challenge xxx-2.
 Written by Robbie Hatley on Xxx Xxx xx, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 1: Anamatu Serjianu
+Task 2: Anamatu Serjianu
 Submitted by: Mohammad S Anwar
 You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
 
@@ -38,7 +38,7 @@ To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit 
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-1.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+./ch-2.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
