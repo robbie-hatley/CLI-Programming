@@ -76,8 +76,8 @@ sub print_warnings  ; # Print warnings.
 sub print_proleptic ; # Print "proleptic use of Gregorian"  message.
 sub print_english   ; # Print "English transition period"   message.
 sub print_julian    ; # Print "anachronistic use of Julian" message.
-sub error           ; # Error message.
-sub help            ; # Help for user.
+sub error           ; # Print error message.
+sub help            ; # Print help  message.
 
 # ======= GLOBAL VARIABLES ===================================================================================
 
@@ -425,7 +425,7 @@ sub print_warnings ($y, $m, $d, $j) {
 } # end sub print_warnings
 
 sub print_proleptic {
-print ((<<'   END_OF_PROLEPTIC') =~ s/^   //gmr);
+   print ((<<'   END_OF_PROLEPTIC') =~ s/^   //gmr);
    ###############################################################################
    # WARNING: You entered a Gregorian date which is before the Gregorian         #
    # calendar came into existence on Friday, October 15, 1582CEG (October 5,     #
@@ -435,11 +435,11 @@ print ((<<'   END_OF_PROLEPTIC') =~ s/^   //gmr);
    # 11-13 days off from proleptically-applied Gregorian dates.                  #
    ###############################################################################
    END_OF_PROLEPTIC
-return 1;
+   return 1;
 } # end sub print_proleptic
 
 sub print_english {
-print ((<<'   END_OF_ENGLISH') =~ s/^   //gmr);
+   print ((<<'   END_OF_ENGLISH') =~ s/^   //gmr);
    ###############################################################################
    # WARNING: The date you entered is during the nearly-two-century-long period  #
    # during which The English-speaking world was still using The Julian Calendar #
@@ -471,7 +471,7 @@ print ((<<'   END_OF_ENGLISH') =~ s/^   //gmr);
 } # end sub print_english
 
 sub print_julian {
-print ((<<'   END_OF_JULIAN') =~ s/^   //gmr);
+   print ((<<'   END_OF_JULIAN') =~ s/^   //gmr);
    ###############################################################################
    # WARNING: You entered a Julian date which is after the Gregorian calendar    #
    # came into worldwide use on Thu Sep 14, 1752CEG (Thu Sep 03, 1752CEJ).       #
