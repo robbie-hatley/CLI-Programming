@@ -24,8 +24,10 @@
 # WARNING: this program is fully capable of specifying Gregorian dates for times in which the Gregorian
 # calendar did not yet exist (or was not yet in widespread use in English-speaking countries), and Julian
 # dates for times in which the Julian calendar was no-longer in widespread use. If in doubt, use a -w or
-# --warnings option, and this program will print warnings if you request such "proleptic" (meaning "not in-use
-# at that time") uses of dates.
+# --warnings option; this program will print appropriate warnings such "proleptic" (meaning "not in-use
+# at that time"), "English" (the English-speaking world was still using Julian for almost 2 centuries after
+# the rest of the world had upgraded to Gregorian), or "Julian" (usage of Julian after late 1752 is
+# anachronistic).
 #
 # Author: Robbie Hatley.
 #
@@ -59,6 +61,7 @@
 #                   "0 12 30" through "5000103 9 1" Gregorian. Re-wrote help(), both improving formatting and
 #                   adding new options and greatly-clarified limits on dates. I also added [-e|--debug] and
 #                   [-g|--gregorian] options.
+# Fri Sep 15, 2023: "Warnings" now come in 3 flavors: "Proleptic", "English", and "Anachronistic".
 ##############################################################################################################
 
 use v5.38;
