@@ -18,7 +18,7 @@
 # Usage examples:
 # %day-of-week.pl 1974 8 14
 # Gregorian = Wednesday August 14, 1974CEG
-# Julian    = Wednesday August 1, 1974CEJ
+# Julian    = Wednesday August  1, 1974CEJ
 # %day-of-week.pl 1490 3 18 -j
 # Gregorian = Thursday March 27, 1490CEG
 # Julian    = Thursday March 18, 1490CEJ
@@ -137,22 +137,16 @@ my @Months
       ($J_Y, $J_M, $J_D) = emit_despale($Elapsed, 1);
    }
 
-   # Calculate day of week from elapsed time since 23:59:59UTC, Dec 31, 1BCJ:
+   # Calculate day of week from elapsed time since 00:00:00UTC on the morning of Dec 31, 1BCJ:
    my $DayOfWeek = day_of_week($Elapsed);
 
-   # Jan 1 and Jan 2 of 1CE Julian are problematic because they're actually
-   # Dec 30 and Dec 31 in the year 1BC Gregorian, so we need to be able to
-   # print "1BCG" for the year 0 (meaning 1BC) Gregorian:
-   my $BCG = 'CEG';
-   if (0 == $G_Y)
-   {
-      $BCG = 'BCG';
-      $G_Y = 1;
-   }
+   # Negative year numbers mean BC:
+   my $BCJ = $G_Y < 0 ? 'BCJ' : 'CEJ';
+   my $BCG = $G_Y < 0 ? 'BCG' : 'CEG';
 
    # Print day-of-week, date, and elapsed time:
-   printf( "Gregorian = %-9s %-9s %2d, %7d%s\n",  $DayOfWeek, $Months[$G_M-1], $G_D, $G_Y, $BCG );
-   printf( "Julian    = %-9s %-9s %2d, %7dCEJ\n", $DayOfWeek, $Months[$J_M-1], $J_D, $J_Y       );
+   printf( "Gregorian = %-9s %-9s %2d, %7d%s\n", $DayOfWeek, $Months[$G_M-1], $G_D, $G_Y, $BCG );
+   printf( "Julian    = %-9s %-9s %2d, %7d%s\n", $DayOfWeek, $Months[$J_M-1], $J_D, $J_Y, $BCJ );
 
    # Depending on which calendar was actually IN-USE on the given date, possibly print a warning message:
    if ($Warnings) {
@@ -169,15 +163,10 @@ sub process_argv {
    # Get options and arguments:
    my @opts = ();            # options
    my @args = ();            # arguments
-   my $end = 0;              # end-of-options flag
-   my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
-   my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   my $s = '[a-zA-Z]';       # single-hyphen allowable chars (English letters only)
+   my $d = '[a-zA-Z]';       # double-hyphen allowable chars (English letters only)
    for ( @ARGV ) {
-      /^--$/                 # "--" = end-of-options marker = construe all further CL items as arguments,
-      and $end = 1           # so if we see that, then set the "end-of-options" flag
-      and next;              # and skip to next element of @ARGV.
-      !$end                  # If we haven't yet reached end-of-options,
-      && ( /^-(?!-)$s+$/     # and if we get a valid short option
+         ( /^-(?!-)$s+$/     # If we get a valid short option
       ||  /^--(?!-)$d+$/ )   # or a valid long option,
       and push @opts, $_     # then push item to @opts
       or  push @args, $_;    # else push item to @args.
@@ -198,11 +187,11 @@ sub process_argv {
    }
 
    # Process arguments:
-   my $NA = scalar(@args);     # Get number of arguments.
-   if (3 != $NA) {             # If number of arguments isn't 3,
-      error;                   # print error msg,
-      help;                    # and print help message,
-      exit 666;                # and return The Number Of The Beast.
+   my $NA = scalar(@args); # Get number of arguments.
+   if (3 != $NA) {         # If number of arguments isn't 3,
+      error;               # print error msg,
+      help;                # and print help message,
+      exit 666;            # and return The Number Of The Beast.
    }
 
    # Store arguments in variables:
@@ -210,22 +199,17 @@ sub process_argv {
    $A_M = $args[1];
    $A_D = $args[2];
 
-   # If input is invalid, bail:
+   # If input is invalid, abort:
    if
    (
-         $Julian && $A_Y <       1 || !$Julian && $A_Y <       0    # If year is too low,
-      || $Julian && $A_Y > 5000000 || !$Julian && $A_Y > 5000103    # or year is too high,
-      || $A_M < 1 || $A_M > 12                                      # or month is out-of-range,
-      || $A_D < 1 || $A_D > days_per_month($A_Y, $A_M, $Julian)     # or day   is out-of-range,
-      || !$Julian && $A_Y ==       0 && $A_M  < 12                  # or month is before Dec  1BCG,
-      || !$Julian && $A_Y ==       0 && $A_M == 12 && $A_D < 30     # or day is before Dec 30 1BCG,
-      || !$Julian && $A_Y == 5000103 && $A_M  >  9                  # or month is after Sep 5000103BCG
-      || !$Julian && $A_Y == 5000103 && $A_M ==  9 && $A_D >  1     # or day is after Sep 1 5000103BCG
+      $A_Y < -5000103 || $A_Y > 5000103                         # If year  is out-of-range
+      || $A_M < 1 || $A_M > 12                                  # or month is out-of-range,
+      || $A_D < 1 || $A_D > days_per_month($A_Y, $A_M, $Julian) # or day   is out-of-range,
    )
    {
-      error;                                                        # print error message,
-      help;                                                         # and print help message,
-      exit 666;                                                     # and return The Number Of The Beast.
+      error;                                                    # print error message,
+      help;                                                     # and print help message,
+      exit 666;                                                 # and return The Number Of The Beast.
    }
 
    # Return success code 1 to caller:
@@ -253,9 +237,9 @@ sub days_per_year ($Year, $Julian) {
 } # end sub days_per_year
 
 sub days_per_month ($Year, $Month, $Julian) {
-   my @dpm = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-   if ( is_leap_year($Year, $Julian) ) {++$dpm[1];}
-   return $dpm[$Month-1];
+   state @dpm = (0, 31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+   if ( 2 == $Month ) { return (is_leap_year($Year, $Julian) ? 29 : 28);}
+   else {return $dpm[$Month];}
 } # end sub days_per_month
 
 # Calculate days elapsed since Dec 31, 1BC JULIAN through given date. Here "days elapsed" means
@@ -267,55 +251,58 @@ sub days_per_month ($Year, $Month, $Julian) {
 # for the simple reason that the Gregorian calendar didn't exist yet, and wouldn't for another 1582 years!
 # So when history books say "event x happened on January 1, 1CE", that always means Jan 1, 1CE Julian.
 sub elapsed_time ($Year, $Month, $Day, $Julian) {
-   my $Elapsed = 0;
+   # This sub acts by counting time forward or backwards from Jan 1, 1CE, Julian OR Gregorian. However,
+   # Jan 1, 1CEG is Jan 3, 1CEJ, so if we're using Gregorian, we need to start with an offset of +2 days,
+   # because our "zero reference time" is actually 00:00:00UTC on Sat Jan 1, 1CEJ:
+   my $Elapsed = $Julian ? 0 : 2;
 
-   # First, we need to give these two cases special handling:
+   # BC:
+   if ( $Year <= -1 ) {
+      # Subtract-out days from whole years which have unelapsed from 00:00:00UTC on Jan 1, 1CEJ
+      # down-to (but not including) current year:
+      if ( $Year < -1 ) {
+         foreach my $PassingYear ( -1 .. $Year + 1 ) {
+            $Elapsed -= days_per_year($PassingYear, $Julian);
+         }
+      }
 
-   # Case 1: Jan 1, 1CEJ = Dec 30, 1BCG:
-   if    (     $Julian && 1 == $Year &&  1 == $Month &&  1 == $Day
-           || !$Julian && 0 == $Year && 12 == $Month && 30 == $Day ) {
-      $Elapsed = 0;
+      # Next, subtract-out days from whole months which have unelapsed this year down-to (but not including)
+      # the current month:
+      if ( $Month < 12 ) {
+         foreach my $PassingMonth ( 12 .. $Month + 1 ) {
+            $Elapsed -= days_per_month($Year, $PassingMonth, $Julian);
+         }
+      }
+
+      # Finally, substract-out days which have unelapsed in current month down-to (but not including) today:
+      $Elapsed -= (days_per_month($Year, $Month, $Julian) - $Day); #
    }
 
-   # Case 2: Jan 2, 1CEJ = Dec 31, 1BCG:
-   elsif (     $Julian && 1 == $Year &&  1 == $Month &&  2 == $Day
-           || !$Julian && 0 == $Year && 12 == $Month && 31 == $Day ) {
-      $Elapsed = 1;
-   }
-
-   # If we get to here, the date is Jan 3, 1CEJ (Jan 1, 1CEG) or later:
+   # CE:
    else {
-      # If user specified Gregorian date, add 2 to $Elapsed, because Gregorian dates in 1BC and 1CE are 2 days
-      # behind Julian dates:
-      if (!$Julian) {$Elapsed += 2;}
-
-      # Next, add-in days from whole years which have elapsed from 00:00:00UTC on Jan 1, 1CEJ
-      # up-to (but not including) the current year:
-      if ($Year > 1)
-      {
-         foreach my $PassingYear ( 1 .. $Year - 1 )
-         {
+      # Add-in days from whole years which have elapsed from 00:00:00UTC on Jan 1, 1CEJ
+      # up-to (but not including) current year:
+      if ($Year > 1) {
+         foreach my $PassingYear ( 1 .. $Year - 1 ) {
             $Elapsed += days_per_year($PassingYear, $Julian);
          }
       }
 
       # Next, add-in days from whole months which have elapsed this year up-to (but not including) the current
       # month, while taking
-      if ($Year > 0 && $Month > 1)
-      {
-         foreach my $PassingMonth ( 1 .. $Month - 1 )
-         {
+      if ( $Month > 1 ) {
+         foreach my $PassingMonth ( 1 .. $Month - 1 ) {
             $Elapsed += days_per_month($Year, $PassingMonth, $Julian);
          }
       }
 
-      # Finally, add-in days which have elapsed in current month up-to (but not including) today. Subtract 1 from
-      # $Day because it's 1-indexed and we need 0-indexed. For example, on June 1 1974, 0 full days have elapsed
-      # so far in June, because today has never "elapsed" yet, by definition of "elapsed":
+      # Finally, add-in days which have elapsed in current month up-to (but not including) today.
+      # Subtract 1 from $Day because it's 1-indexed and we need 0-indexed. For example, on June 1 1974,
+      # 0 full days have elapsed so far in June, because today hasn't "elapsed" yet:
       $Elapsed += ($Day - 1); #
    }
 
-   # Return elapsed time in days since 12:59:59UTC, Dec 31, 1BCJ:
+   # Return elapsed time in full days since 00:00:00UTC, Sat Jan 01, 1CEJ:
    if ( $Db ) {say "Debug msg at end of elapsed_time(): \$Elapsed = $Elapsed"}
    return $Elapsed;
 } # end sub elapsed_time
@@ -323,52 +310,44 @@ sub elapsed_time ($Year, $Month, $Day, $Julian) {
 # Given elapsed time in days since Dec 31, 1BCJ, return date as a ($Year, $Month, $Day) list,
 # Julian or Gregorian depending on user's request:
 sub emit_despale ($Elapsed, $Julian) {
-   my $Accum   = 0; # Accumulation of days elapsed.
-   my $DPY     = 0; # Days per year.
-   my $DPM     = 0; # Days per month.
-   my $Year    = 1; # Year.
-   my $Month   = 1; # Month.
-   my $Day     = 1; # Day.
+   my $Accum = $Julian ? 0 : 2 ; # Accumulation of days elapsed or unelapsed.
+   my $DPY   = 0               ; # Days per year.
+   my $DPM   = 0               ; # Days per month.
+   my ($Year, $Month, $Day);
 
-   # These two special cases need to be handled separately:
-
-   # If $Elapsed is 0, the date is Jan 01, 1CEJ = Dec 30, 1BCG:
-   elsif ( 0 == $Elapsed) {
-      if ($Julian) {
-         ($Year, $Month, $Day) = (1, 1, 1);
+   # If going backward in time from 00:00:00UTC on Jan 1, 1CE (Julian or Gregorian):
+   if ( $Elapsed < $Accum ) {
+      ($Year, $Month, $Day) = (-1,12,31);
+      # Determine $Year by subtracting-out days from whole years which have unelapsed:
+      while ( $Accum - ($DPY = days_per_year($Year, $Julian)) >= $Elapsed ) {
+         $Accum -= $DPY;
+         --$Year;
+         if ( $Year < -5000103 ) {die "Fatal error in emit_despale(): \$Year = $Year.\n";}
       }
-      else {
-         ($Year, $Month, $Day) =  (0, 12, 30);
+
+      # Determine $Month by subtracting-out days from whole months which have unelapsed:
+      while ( $Accum - ($DPM = days_per_month($Year, $Month, $Julian)) >= $Elapsed ) {
+         $Accum -= $DPM;
+         --$Month;
+         if ( $Month < 1 ) {die "Fatal error in emit_despale(): \$Month = $Month.\n";}
+      }
+
+      # Determine $Day by subtracting-out days in this month which have unelapsed:
+      while ( $Accum - 1 >= $Elapsed ) {
+         --$Accum;
+         --$Day;
+         if ( $Day < 1 ) {die "Fatal error in emit_despale(): \$Day = $Day.\n";}
       }
    }
 
-   # If $Elapsed is 1, the date is Jan 2, 1CEJ = Dec 31, 1BCG:
-   elsif ( 1 == $Elapsed ) {
-      if ($Julian) {
-         ($Year, $Month, $Day) =  (1, 1, 2);
-      }
-      else {
-         ($Year, $Month, $Day) =  (0, 12, 31);
-      }
-   }
-
-   # If $Elapsed is < -1, then the date is Dec 30, 1BCJ (Dec 28, 1BCG) or earlier:
-   elsif ( $Elapsed < -1 ) {
-      ; # To-do: Write this section!
-   }
-
-
-   # If $Elapsed is > 1, then the date is Jan 3, 1CEJ (Jan 1, 1CEG) or more recent:
-   elsif ( $Elapsed > 1 ) {
-      # If user requested Gregorian date, add 2 TO $Accum, because Gregorian dates in 1BC and 1CE are 2 days
-      # behind Julian dates:
-      if (!$Julian) {$Accum += 2;}
-
+   # If going foreward in time from 00:00:00UTC on Jan 1, 1CE (Julian or Gregorian):
+   else {
+      ($Year, $Month, $Day) = (1,1,1);
       # Determine $Year by adding elapsed days from whole years which have elapsed since 00:00:00UTC on
       # Saturday Jan 1, 1CEJ:
       while ( $Accum + ($DPY = days_per_year($Year, $Julian)) <= $Elapsed ) {
          $Accum += $DPY;
-         ++$Year;
+         ++$Year; if ( 0 == $Year ) {$Year = 1;}
          if ( $Year > 5000103 ) {die "Fatal error in emit_despale(): \$Year = $Year.\n";}
       }
 
@@ -508,12 +487,20 @@ sub help {
    -------------------------------------------------------------------------------
    Introduction:
 
-   Welcome to Robbie Hatley's nifty "Day Of Week" program. Given a date which is
-   no  earlier  than Jan 01       1CE Julian (Dec 30       1BCE Gregorian)
-   and no later than Dec 31 5000000CE Julian (Sep 01 5000103CE  Gregorian)
+   Welcome to Robbie Hatley's nifty "Day Of Week" program. Given a date
+   from    Fri Jan 01 5000000BC Julian (Fri Apr 29 5000103BC Gregorian)
+   through Sat Dec 31 5000000CE Julian (Sat Sep 01 5000103CE Gregorian)
    this program will tell you what day-of-week (Sun, Mon, Tue, Wed, Thu, Fri, Sat)
-   that date is. The date you enter will be construed as Gregorian unless you use
-   a -j or --julian option, in which case it will be construed as Julian.
+   that date is. Dates must be entered as three integer command-line arguments
+   in the order "year, month, day".
+   To enter CE dates, use positive year numbers (eg,  "1974" for 1974CE).
+   To enter BC dates, use negative year numbers (eg, "-5782" for 5782BC).
+   By default, dates entered will be construed as Gregorian, but if a -j or
+   --julian option is used, the input date will be construed as Julian.
+   The output will be to STDOUT and will consist of both Gregorian and Julian
+   dates in "Wednesday December 27, 2017" format. Thus this program serves
+   not-only to print day-of-week, but also as a Gregorian-to-Julian and
+   Julian-to-Gregorian date converter.
 
    -------------------------------------------------------------------------------
    Command lines:
@@ -531,8 +518,8 @@ sub help {
    -j or --julian     Construe entered date as Julian.
    -w or --warnings   Print "Proleptic" or "English" warnings if appropriate.
 
-   If a "-j" or "--julian" option is used, the date given will be assumed
-   to be Julian; otherwise, it will be assumed to be Gregorian.
+   If a "-j" or "--julian" option is used, the date given will be construed
+   to be Julian; otherwise, it will be construed to be Gregorian.
 
    If a "-w" or "--warnings" option is used, this program will warn you when you
    request a Gregorian date for a point in time in which the Gregorian calendar
@@ -543,10 +530,11 @@ sub help {
    Description Of Arguments:
 
    This program must be given exactly 3 arguments, which must be the year, month,
-   and day for which you want day-of-week. This date must be:
-   no  earlier  than Jan 01       1CE Julian (Dec 30       1BCE Gregorian)
-   and no later than Dec 31 5000000CE Julian (Sep 01 5000103CE  Gregorian).
-   To enter either of the last two days of 1BCE Gregorian, use "0" as year.
+   and day for which you want day-of-week. This date must be
+   from    Fri Jan 01 5000000BC Julian (Fri Apr 29 5000103BC Gregorian)
+   through Sat Dec 31 5000000CE Julian (Sat Sep 01 5000103CE Gregorian)
+   To enter CE dates, use positive year numbers (eg,  "1974" for 1974CE).
+   To enter BC dates, use negative year numbers (eg, "-5782" for 5782BC).
 
    -------------------------------------------------------------------------------
    Usage Examples:
@@ -560,6 +548,7 @@ sub help {
      input:   day-of-week.pl -j 874 5 8
      output:  Gregorian = Saturday May 12, 874CEG
               Julian    = Saturday May 8, 874CEJ
+
 
    Happy day-of-week printing!
 
