@@ -108,6 +108,11 @@ my @Months
    # Process @ARGV and set settings and arguments accordingly:
    process_argv();
 
+   if ( $Db ) {
+      say "\$Julian = $Julian";
+   }
+
+
    # Declare variables for year, month, day, elapsed-time, and Julian:
    my $G_Y;
    my $G_M;
@@ -261,7 +266,7 @@ sub elapsed_time ($Year, $Month, $Day, $Julian) {
       # Subtract-out days from whole years which have unelapsed from 00:00:00UTC on Jan 1, 1CEJ
       # down-to (but not including) current year:
       if ( $Year < -1 ) {
-         foreach my $PassingYear ( -1 .. $Year + 1 ) {
+         foreach my $PassingYear ( ($Year + 1) .. -1 ) {
             $Elapsed -= days_per_year($PassingYear, $Julian);
          }
       }
@@ -269,13 +274,13 @@ sub elapsed_time ($Year, $Month, $Day, $Julian) {
       # Next, subtract-out days from whole months which have unelapsed this year down-to (but not including)
       # the current month:
       if ( $Month < 12 ) {
-         foreach my $PassingMonth ( 12 .. $Month + 1 ) {
+         foreach my $PassingMonth ( ($Month + 1) .. 12 ) {
             $Elapsed -= days_per_month($Year, $PassingMonth, $Julian);
          }
       }
 
-      # Finally, substract-out days which have unelapsed in current month down-to (but not including) today:
-      $Elapsed -= (days_per_month($Year, $Month, $Julian) - $Day); #
+      # Finally, substract-out days which have unelapsed in current month down-to AND INCLUDING today:
+      $Elapsed -= (days_per_month($Year, $Month, $Julian) - $Day + 1);
    }
 
    # CE:
@@ -310,18 +315,23 @@ sub elapsed_time ($Year, $Month, $Day, $Julian) {
 # Given elapsed time in days since Dec 31, 1BCJ, return date as a ($Year, $Month, $Day) list,
 # Julian or Gregorian depending on user's request:
 sub emit_despale ($Elapsed, $Julian) {
-   my $Accum = $Julian ? 0 : 2 ; # Accumulation of days elapsed or unelapsed.
-   my $DPY   = 0               ; # Days per year.
-   my $DPM   = 0               ; # Days per month.
-   my ($Year, $Month, $Day);
+   my $Accum = ($Julian ? 0 : 2) ; # Accumulation of days elapsed or unelapsed.
+   my $DPY   = 0                 ; # Days per year.
+   my $DPM   = 0                 ; # Days per month.
+   my $Year                      ; # Year.
+   my $Month                     ; # Month.
+   my $Day                       ; # Day
+
+   if ( $Db ) {say "Debug msg near top of emit_despale: \$Accum = $Accum  \$Elapsed = $Elapsed"}
 
    # If going backward in time from 00:00:00UTC on Jan 1, 1CE (Julian or Gregorian):
    if ( $Elapsed < $Accum ) {
-      ($Year, $Month, $Day) = (-1,12,31);
+      ($Year,$Month,$Day) = (-1, 12, 31);
       # Determine $Year by subtracting-out days from whole years which have unelapsed:
       while ( $Accum - ($DPY = days_per_year($Year, $Julian)) >= $Elapsed ) {
          $Accum -= $DPY;
          --$Year;
+         if ( $Db ) {say "Debug msg in emit_despale: \$Year = $Year"}
          if ( $Year < -5000103 ) {die "Fatal error in emit_despale(): \$Year = $Year.\n";}
       }
 
@@ -329,20 +339,22 @@ sub emit_despale ($Elapsed, $Julian) {
       while ( $Accum - ($DPM = days_per_month($Year, $Month, $Julian)) >= $Elapsed ) {
          $Accum -= $DPM;
          --$Month;
+         if ( $Db ) {say "Debug msg in emit_despale: \$Month = $Month"}
          if ( $Month < 1 ) {die "Fatal error in emit_despale(): \$Month = $Month.\n";}
       }
 
       # Determine $Day by subtracting-out days in this month which have unelapsed:
-      while ( $Accum - 1 >= $Elapsed ) {
+      while ( $Accum - 1 > $Elapsed ) {
          --$Accum;
          --$Day;
+         if ( $Db ) {say "Debug msg in emit_despale: \$Day = $Day"}
          if ( $Day < 1 ) {die "Fatal error in emit_despale(): \$Day = $Day.\n";}
       }
    }
 
    # If going foreward in time from 00:00:00UTC on Jan 1, 1CE (Julian or Gregorian):
    else {
-      ($Year, $Month, $Day) = (1,1,1);
+      ($Year,$Month,$Day) = (1,1,1);
       # Determine $Year by adding elapsed days from whole years which have elapsed since 00:00:00UTC on
       # Saturday Jan 1, 1CEJ:
       while ( $Accum + ($DPY = days_per_year($Year, $Julian)) <= $Elapsed ) {
@@ -385,8 +397,8 @@ sub day_of_week ($Elapsed) {
    # which is equivalent to             00:00:00UTC, Sad Dec 30, 1BCG
    # to calculate all dates, Julian and Gregorian.
 
-   # Jan 1, 1CEJ is a Saturday (index 6), and the "days elapsed" from Jan 1, 1CEJ to Jan 1, 1CEJ is 0 day,
-   # so to get "day of week", we need only to add an offset of 6 to the "days elapsed" then apply modulo 7:
+   # Our zero-reference time is Jan 1, 1CEJ, which is a Saturday (index 6), so to get "day of week",
+   # we need only to add an offset of 6 to the "days elapsed" then apply modulo 7:
    return $DaysOfWeek[($Elapsed + 6) % 7];
 } # end sub day_of_week
 
