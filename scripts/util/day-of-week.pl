@@ -5,9 +5,11 @@
 
 ##############################################################################################################
 # day-of-week.pl
-# Prints day-of-week for dates from Jan 1, 1CEJ (Dec 30, 1BCG) to Dec 31, 5000000CEJ (Sep 1, 5000103CEG).
+# Prints day-of-week for dates from Fri Jan  1, 5000000BCJ (Fri Apr 29, 5000103BCG)
+#                                to Sat Dec 31, 5000000CEJ (Sat Sep 01, 5000103CEG).
 # Dates must be entered as three integer command-line arguments in the order "year, month, day".
-# To enter dates Dec 30, 1BCG or Dec 31, 1BCG, use "0" as "year".
+# To enter CE dates, use positive year numbers (eg,  "1974" for 1974CE).
+# To enter BC dates, use negative year numbers (eg, "-5782" for 5782BC).
 # By default, dates entered will be construed as being Gregorian, but if a -j or --julian option is used,
 # the input date will be construed as being Julian. The output will be to STDOUT and will consist of both
 # Gregorian and Julian dates in "Wednesday December 27, 2017" format. Thus this program serves not-only
@@ -62,6 +64,7 @@
 #                   adding new options and greatly-clarified limits on dates. I also added [-e|--debug] and
 #                   [-g|--gregorian] options.
 # Fri Sep 15, 2023: "Warnings" now come in 3 flavors: "Proleptic", "English", and "Anachronistic".
+# Tue Sep 19, 2023: Started work expanding the range to 10 million years centered around the day 1/1/1CEJ.
 ##############################################################################################################
 
 use v5.38;
@@ -327,15 +330,9 @@ sub emit_despale ($Elapsed, $Julian) {
    my $Month   = 1; # Month.
    my $Day     = 1; # Day.
 
-   # First of all, if $Elapsed is negative, that's an error:
-   if ( $Elapsed < 0 ) {
-      die "Fatal error in program \"day-of-week.pl\" in sub emit_despale():\n",
-          "This program can only handle dates on or after Dec 31, 1BCG (Jan 1, 1CEJ).\n";
-   }
+   # These two special cases need to be handled separately:
 
-   # The first 2 days of 1CEJ (which are the last two days of 1BCG) need to be handled separately:
-
-   # If $Elapsed is 0, the date is Jan 1, 1CEJ = Dec 30, 1BCG:
+   # If $Elapsed is 0, the date is Jan 01, 1CEJ = Dec 30, 1BCG:
    elsif ( 0 == $Elapsed) {
       if ($Julian) {
          ($Year, $Month, $Day) = (1, 1, 1);
@@ -355,8 +352,14 @@ sub emit_despale ($Elapsed, $Julian) {
       }
    }
 
-   # If we get to here, $Elapsed is >= 2 and the date is Jan 3, 1CEJ (Jan 1, 1CEG) or more recent.
-   else {
+   # If $Elapsed is < -1, then the date is Dec 30, 1BCJ (Dec 28, 1BCG) or earlier:
+   elsif ( $Elapsed < -1 ) {
+      ; # To-do: Write this section!
+   }
+
+
+   # If $Elapsed is > 1, then the date is Jan 3, 1CEJ (Jan 1, 1CEG) or more recent:
+   elsif ( $Elapsed > 1 ) {
       # If user requested Gregorian date, add 2 TO $Accum, because Gregorian dates in 1BC and 1CE are 2 days
       # behind Julian dates:
       if (!$Julian) {$Accum += 2;}
