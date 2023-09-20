@@ -72,23 +72,23 @@ use v5.38;
 
 # ======= SUBROUTINE PRE-DECLARATIONS ========================================================================
 
-sub process_argv    ; # Process @ARGV and set settings accordingly.
-sub days_per_year   ; # How many days in given whole year?
-sub days_per_month  ; # How many days in given whole month?
-sub is_leap_year    ; # Is given year a leap year?
-sub elapsed_time    ; # Days elapsed since Dec 31 1BCJ to given date.
-sub prev_year       ; # Same time last year.
-sub prev_mnth       ; # Same time last month.
-sub prev_daay       ; # Same time last day.
-sub emit_despale    ; # Get date from elapsed days.
-sub day_of_week     ; # Determine day-of-week for a given date.
-sub print_warnings  ; # Print warnings.
-sub print_proleptic ; # Print "proleptic use of Gregorian"  message.
-sub print_english   ; # Print "English transition period"   message.
-sub print_julian    ; # Print "anachronistic use of Julian" message.
-sub error           ; # Print error message.
-sub help            ; # Print help  message.
-sub highwayman      ; # He tapped with his whip on the shutters, but all was locked and barred.
+sub process_argv   ; # Process @ARGV and set settings accordingly.
+sub days_per_year  ; # How many days in given whole year?
+sub days_per_month ; # How many days in given whole month?
+sub is_leap_year   ; # Is given year a leap year?
+sub elapsed_time   ; # Days elapsed since Dec 31 1BCJ to given date.
+sub prev_year      ; # Same time last year.
+sub prev_mnth      ; # Same time last month.
+sub prev_daay      ; # Same time last day.
+sub emit_despale   ; # Get date from elapsed days.
+sub day_of_week    ; # Determine day-of-week for a given date.
+sub print_warnings ; # Print warnings.
+sub proleptic      ; # Print "proleptic use of Gregorian"  message.
+sub english        ; # Print "English transition period"   message.
+sub anachronistic  ; # Print "anachronistic use of Julian" message.
+sub error          ; # Print error message.
+sub help           ; # Print help  message.
+sub highwayman     ; # He tapped with his whip on the shutters, but all was locked and barred.
 
 # ======= GLOBAL VARIABLES ===================================================================================
 
@@ -476,23 +476,23 @@ sub day_of_week ($Elapsed) {
 sub print_warnings ($y, $m, $d, $j) {
    if ( $Db ) {say "Debug msg in print_warnings(): \$y = $y  \$m = $m  \$d = $d  \$j = $j"}
    if ( !$j && ($y < 1582 || $y == 1582 && $m < 10 || $y == 1582 && $m == 10 && $d < 15) ) {
-      print_proleptic();
+      proleptic;
    }
    if ( !$j && ($y > 1582 || $y == 1582 && $m > 10 || $y == 1582 && $m == 10 && $d > 14)
             && ($y < 1752 || $y == 1752 && $m <  9 || $y == 1752 && $m ==  9 && $d < 14) ) {
-      print_english();
+      english;
    }
    if (  $j && ($y > 1582 || $y == 1582 && $m > 10 || $y == 1582 && $m == 10 && $d >  4)
             && ($y < 1752 || $y == 1752 && $m <  9 || $y == 1752 && $m ==  9 && $d <  3) ) {
-      print_english();
+      english;
    }
    if (  $j && ($y > 1752 || $y == 1752 && $m >  9 || $y == 1752 && $m ==  9 && $d >  2) ) {
-      print_anachronistic();
+      anachronistic;
    }
    return 1;
 } # end sub print_warnings
 
-sub print_proleptic {
+sub proleptic {
    print ((<<'   END_OF_PROLEPTIC') =~ s/^   //gmr);
    ###############################################################################
    # WARNING: You entered a Gregorian date which is before the Gregorian         #
@@ -506,7 +506,7 @@ sub print_proleptic {
    return 1;
 } # end sub print_proleptic
 
-sub print_english {
+sub english {
    print ((<<'   END_OF_ENGLISH') =~ s/^   //gmr);
    ###############################################################################
    # WARNING: The date you entered is during the nearly-two-century-long period  #
@@ -538,7 +538,7 @@ sub print_english {
    return 1;
 } # end sub print_english
 
-sub print_anachronistic {
+sub anachronistic {
    print ((<<'   END_OF_JULIAN') =~ s/^   //gmr);
    ###############################################################################
    # WARNING: You entered a Julian date which is after the Gregorian calendar    #
