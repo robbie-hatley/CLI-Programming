@@ -621,8 +621,8 @@ sub help {
 
    This program must be given exactly 3 arguments, which must be the year, month,
    and day for which you want day-of-week. This date must be
-   from    Fri Jan 01 5000000BC Julian (Fri Apr 29 5000103BC Gregorian)
-   through Sat Dec 31 5000000CE Julian (Sat Sep 01 5000103CE Gregorian)
+   from Sun Jan  1, 100000000 BC Julian (Sun Jul 27, 100002054BCG)
+   to   Thu Dec 31, 100000000 CE Julian (Thu Jun  4, 100002054CEG)
    To enter CE dates, use positive year numbers (eg,  "1974" for 1974CE).
    To enter BC dates, use negative year numbers (eg, "-5782" for 5782BC).
 
