@@ -229,7 +229,7 @@ sub argv {
    # If input is invalid, abort:
    if
    (
-         $A_Y < -100002054 || $A_Y > -100002054                 # If year  is out-of-range,
+         $A_Y < -100002054 || $A_Y > 100002054                  # If year  is out-of-range,
       || $A_M < 1 || $A_M > 12                                  # or month is out-of-range,
       || $A_D < 1 || $A_D > days_per_month($A_Y, $A_M, $Julian) # or day   is out-of-range,
    )
