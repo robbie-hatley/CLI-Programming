@@ -567,8 +567,8 @@ sub help {
    Introduction:
 
    Welcome to Robbie Hatley's nifty "Day Of Week" program. Given any date,
-   from Sun Jan  1, 100000000 BC Julian (Sun Jul 27, 100002054BCG)
-   to   Thu Dec 31, 100000000 CE Julian (Thu Jun  4, 100002054CEG)
+   from Sun Jan  1, 100000000 BC Julian (Sun Jul 27, 100002054 BC Gregorian)
+   to   Thu Dec 31, 100000000 CE Julian (Thu Jun  4, 100002054 CE Gregorian)
    this program will tell you what day-of-week (Sun, Mon, Tue, Wed, Thu, Fri, Sat)
    that date is.
 
@@ -617,8 +617,8 @@ sub help {
 
    This program must be given exactly 3 arguments, which must be the year, month,
    and day for which you want day-of-week. This date must be
-   from Sun Jan  1, 100000000 BC Julian (Sun Jul 27, 100002054BCG)
-   to   Thu Dec 31, 100000000 CE Julian (Thu Jun  4, 100002054CEG)
+   from Sun Jan  1, 100000000 BC Julian (Sun Jul 27, 100002054 BC Gregorian)
+   to   Thu Dec 31, 100000000 CE Julian (Thu Jun  4, 100002054 CE Gregorian)
    To enter CE dates, use positive year numbers (eg,  "1974" for 1974CE).
    To enter BC dates, use negative year numbers (eg, "-5782" for 5782BC).
 
