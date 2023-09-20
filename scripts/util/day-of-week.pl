@@ -64,7 +64,7 @@
 #                   adding new options and greatly-clarified limits on dates. I also added [-e|--debug] and
 #                   [-g|--gregorian] options.
 # Fri Sep 15, 2023: "Warnings" now come in 3 flavors: "Proleptic", "English", and "Anachronistic".
-# Tue Sep 19, 2023: Started work expanding the range to 100 million years centered around the day 1/1/1CEJ.
+# Tue Sep 19, 2023: Started work expanding the range to 200 million years centered around the day 1/1/1CEJ.
 # Wed Sep 20, 2023: Completed upgrade: date range is limited only by integer range and computation time.
 ##############################################################################################################
 
