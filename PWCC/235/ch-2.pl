@@ -14,31 +14,34 @@ Written by Robbie Hatley on Wed Sep 20, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 2: Anamatu Serjianu
+Task 2: Duplicate Zeros
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
+Given an array of integers, write a script to duplicate each
+occurrence of ZERO in the given array and shift the remaining
+to the right but make sure the size of array remains the same.
 
 Example 1:
-Input:   ('dog', 'cow', 'pig'),
-Output:  ('horse')
+Input: @ints = (1, 0, 2, 3, 0, 4, 5, 0)
+Ouput: (1, 0, 0, 2, 3, 0, 0, 4)
 
 Example 2:
-Input:   ('apple', 'pear', 'peach'),
-Output:  ('grape')
+Input: @ints = (1, 2, 3)
+Ouput: (1, 2, 3)
 
 Example 3:
-Input:   ('Sam', 'Bob', 'Pete'),
-Output:  ('Susan')
+Input: @ints = (0, 3, 0, 4, 5)
+Ouput: (0, 0, 3, 0, 0)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I'll solve this by making a sub called "double_aught" which converts all single-aught buckshot
+into double-aught, discarding any pellets which are too large to fit into the shell.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-2.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+double-quoted array of arrays of integers, in proper Perl syntax, like so:
+./ch-2.pl "([3, 7, 0, -2, 13],[7, 0, 0, 0, 17, 45, 62, 10])"
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -58,22 +61,21 @@ use Time::HiRes 'time';
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+sub double_aught ($aref) {
+   my @double = @$aref;
+   my $last_idx = $#double;
+   for ( my $idx = 0 ; $idx <= $#double ; ++$idx ) {
+      if ( 0 == $double[$idx] ) {
+         splice @double, $idx+1, 0, 0;
+         # Increment $idx here so that it points to the added 0,
+         # so that the "++$idx" above will skip past it:
+         ++$idx;
       }
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   # Trim size of @double back to its original size
+   # (right-most elements will be removed as-necessary):
+   $#double = $last_idx;
+   return @double;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -82,26 +84,19 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # Start timer:
 my $t0 = time;
 
-# Default inputs:
-my @arrays =
+# Inputs:
+my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   [1, 0, 2, 3, 0, 4, 5, 0],
+   [1, 2, 3],
+   [0, 3, 0, 4, 5],
 );
-
-# Non-default inputs:
-@arrays = eval($ARGV[0]) if @ARGV;
 
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say '  Original   array = (', join(', ', @$aref), ')';
+   say 'Double-aught array = (', join(', ', double_aught($aref)), ')';
 }
 
 # Determine and print execution time:
