@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# This is a 120-character-wide ASCII-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide ASCII-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -65,24 +65,29 @@
 #                   [-g|--gregorian] options.
 # Fri Sep 15, 2023: "Warnings" now come in 3 flavors: "Proleptic", "English", and "Anachronistic".
 # Tue Sep 19, 2023: Started work expanding the range to 200 million years centered around the day 1/1/1CEJ.
-# Wed Sep 20, 2023: Completed upgrade: date range is limited only by integer range and computation time.
+# Wed Sep 20, 2023: Completed upgrade: date range is now 100 million BC to 100 million CE. I chose this limit
+#                   due to computation time running over 1 minute for dates outside that range, even on a fast
+#                   computer. Perl 32-bit signed integer range actually allows dates of +- 2 billion; however,
+#                   computation time would be in the hours or days, and there were no multi-cell life forms
+#                   on earth in 2 billion BC anyway, so who cares what day-of-week 2 billion BC is? At least
+#                   in 100 million BC, humans existed, though at that time we were small furry rodents.
 ##############################################################################################################
 
 use v5.38;
 
 # ======= SUBROUTINE PRE-DECLARATIONS ========================================================================
 
-sub process_argv   ; # Process @ARGV and set settings accordingly.
+sub argv           ; # Process @ARGV and set settings accordingly.
 sub days_per_year  ; # How many days in given whole year?
 sub days_per_month ; # How many days in given whole month?
 sub is_leap_year   ; # Is given year a leap year?
-sub elapsed_time   ; # Days elapsed since Dec 31 1BCJ to given date.
+sub elapsed_time   ; # Full days elapsed from 00:00:00UTC on morning of Sat Jan 1, 1CEJ, to given date.
 sub prev_year      ; # Same time last year.
 sub prev_mnth      ; # Same time last month.
 sub prev_daay      ; # Same time last day.
-sub emit_despale   ; # Get date from elapsed days.
+sub emit_despale   ; # Given full days elapsed since 00:00:00UTC Sat Jan 1 1CEJ, determine date.
 sub day_of_week    ; # Determine day-of-week for a given date.
-sub print_warnings ; # Print warnings.
+sub warnings       ; # Print appropriate warnings if use used a -w or --warnings option.
 sub proleptic      ; # Print "proleptic use of Gregorian"  message.
 sub english        ; # Print "English transition period"   message.
 sub anachronistic  ; # Print "anachronistic use of Julian" message.
@@ -92,13 +97,13 @@ sub highwayman     ; # He tapped with his whip on the shutters, but all was lock
 
 # ======= GLOBAL VARIABLES ===================================================================================
 
-# Settings:         # Meaning of setting:        Range:    Meaning of default:
-my $Db        = 0 ; # Print diagnostics?         bool      Don't print diagnostics.
-my $Warnings  = 0 ; # Emit proleptic warnings?   bool      Don't print proleptic or English warnings.
-my $A_Y       = 0 ; # Year  from CL arguments.   pos int   None; 0 is just a "not-yet-initialized" indicator.
-my $A_M       = 0 ; # Month from CL arguments.   pos int   None; 0 is just a "not-yet-initialized" indicator.
-my $A_D       = 0 ; # Day   from CL arguments.   pos int   None; 0 is just a "not-yet-initialized" indicator.
-my $Julian    = 0 ; # Construe input as Julian?  bool      Construe input as Gregorian.
+# Settings:         # Meaning of setting:          Range:   Meaning of default:
+my $Db        = 0 ; # Print diagnostics?           bool     Don't print diagnostics.
+my $Warnings  = 0 ; # Emit calendar use warnings?  bool     Don't print calendar-use warnings.
+my $A_Y       = 0 ; # Year  from CL arguments.     pos int  "not-yet-initialized".
+my $A_M       = 0 ; # Month from CL arguments.     pos int  "not-yet-initialized".
+my $A_D       = 0 ; # Day   from CL arguments.     pos int  "not-yet-initialized".
+my $Julian    = 0 ; # Construe input as Julian?    bool     Construe input as Gregorian.
 
 my @DaysOfWeek
    = qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday);
@@ -111,7 +116,7 @@ my @Months
 
 { # begin main
    # Process @ARGV and set settings and arguments accordingly:
-   process_argv();
+   argv;
 
    if ( $Db ) {
       say "\$Julian = $Julian";
@@ -129,8 +134,7 @@ my @Months
    my $BCG     ; # Gregorian era string ("BCG" or "CEG").
 
    # If user specified that input date is Julian, Convert from Julian to Gregorian:
-   if ($Julian)
-   {
+   if ( $Julian ) {
       $J_Y = $A_Y;
       $J_M = $A_M;
       $J_D = $A_D;
@@ -139,8 +143,7 @@ my @Months
    }
 
    # Otherwise, construe input as Gregorian and convert to Julian:
-   else
-   {
+   else {
       $G_Y = $A_Y;
       $G_M = $A_M;
       $G_D = $A_D;
@@ -167,32 +170,33 @@ my @Months
       $BCG = 'CEG';
    }
 
-   # Print day-of-week and Gregorian and Julia dates:
+   # Print day-of-week and Gregorian and Julian dates:
    printf( "Gregorian = %-9s %-9s %2d, %7d%s\n", $DayOfWeek, $Months[$G_M-1], $G_D, $G_Y, $BCG );
    printf( "Julian    = %-9s %-9s %2d, %7d%s\n", $DayOfWeek, $Months[$J_M-1], $J_D, $J_Y, $BCJ );
 
-   # Depending on which calendar was actually IN-USE on the given date, possibly print a warning message:
+   # Depending on which calendar was actually IN-USE on the given date, print a warning message if user used
+   # a -w or --warnings option:
    if ($Warnings) {
-      print_warnings($A_Y, $A_M, $A_D, $Julian);
+      warnings($A_Y, $A_M, $A_D, $Julian);
    }
 
-   # We be done, so scram:
+   # Return success code 0 to operating system:
    exit 0;
 } # end main
 
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub process_argv {
+sub argv {
    # Get options and arguments:
-   my @opts = ();            # options
-   my @args = ();            # arguments
-   my $s = '[a-zA-Z]';       # single-hyphen allowable chars (English letters only)
-   my $d = '[a-zA-Z]';       # double-hyphen allowable chars (English letters only)
+   my @opts = ();          # options
+   my @args = ();          # arguments
+   my $s = '[a-zA-Z]';     # single-hyphen allowable chars (English letters only)
+   my $d = '[a-zA-Z]';     # double-hyphen allowable chars (English letters only)
    for ( @ARGV ) {
-         ( /^-(?!-)$s+$/     # If we get a valid short option
-      ||  /^--(?!-)$d+$/ )   # or a valid long option,
-      and push @opts, $_     # then push item to @opts
-      or  push @args, $_;    # else push item to @args.
+         ( /^-$s+$/        # If we get a valid short option
+      ||  /^--$d+$/ )      # or a valid long option,
+      and push @opts, $_   # then push item to @opts
+      or  push @args, $_;  # else push item to @args.
    }
 
    # Process options:
@@ -212,7 +216,7 @@ sub process_argv {
    # Process arguments:
    my $NA = scalar(@args); # Get number of arguments.
    if (3 != $NA) {         # If number of arguments isn't 3,
-      error;               # print error msg,
+      error;               # print error message,
       help;                # and print help message,
       exit 666;            # and return The Number Of The Beast.
    }
@@ -225,7 +229,7 @@ sub process_argv {
    # If input is invalid, abort:
    if
    (
-         $A_Y < -100050000 || $A_Y > 100050000                  # If year  is out-of-range,
+         $A_Y < -100002054 || $A_Y > -100002054                 # If year  is out-of-range,
       || $A_M < 1 || $A_M > 12                                  # or month is out-of-range,
       || $A_D < 1 || $A_D > days_per_month($A_Y, $A_M, $Julian) # or day   is out-of-range,
    )
@@ -249,7 +253,7 @@ sub process_argv {
 
    # Return success code 1 to caller:
    return 1;
-} # end sub process_argv
+} # end sub argv
 
 sub is_leap_year ($year, $julian) {
    # Julian Calendar:
@@ -277,18 +281,12 @@ sub days_per_month ($year, $month, $julian) {
    else {return $dpm[$month];}
 } # end sub days_per_month
 
-# Calculate days elapsed since Dec 31, 1BC JULIAN through given date. Here "days elapsed" means
-# "midnights transitioned-through since Dec 31, 1BC Julian = Dec 29, 1BC Gregorian".
-# Hence "days elapsed" for Jan 1, 1CE Julian is 1 because only one midnight was transitioned-through
-# in order to get from Dec 31, 1BCJ to Jan 1, 1CEJ.
-#
-# Note that the "zero reference time" is always 23:59:59UTC on Dec 31, 1BC Julian, NEVER Gregorian,
-# for the simple reason that the Gregorian calendar didn't exist yet, and wouldn't for another 1582 years!
-# So when history books say "event x happened on January 1, 1CE", that always means Jan 1, 1CE Julian.
+# Calculate midnights transited-through from 00:00:00.1UTC Sat Jan 1 1CEJ to 00:00:00.1UTC on given date:
 sub elapsed_time ($year, $month, $day, $julian) {
    # This sub acts by counting time forward or backwards from Jan 1, 1CE, Julian OR Gregorian. However,
-   # Jan 1, 1CEG is Jan 3, 1CEJ, so if we're using Gregorian, we need to start with an offset of +2 days,
-   # because our "zero reference time" is actually 00:00:00UTC on Sat Jan 1, 1CEJ:
+   # Jan 1 1CEJ is Dec 30 1BCG, so if we're using Gregorian, we need to start with an offset of +2 days,
+   # because in Gregorian, our "zero reference time" is 00:00:00.1UTC on Dec 30 1BCG, so Jan 1 1CEG already
+   # has an elapsed time of +2 days to start with:
    my $elapsed = $julian ? 0 : 2;
 
    # BC:
@@ -374,8 +372,8 @@ sub prev_daay ($year, $mnth, $daay, $julian) {
    return ($pyear, $pmnth, $pdaay);
 }
 
-# Given elapsed time in days since Dec 31, 1BCJ, return date as a ($Year, $Month, $Day) list,
-# Julian or Gregorian depending on user's request:
+# Given elapsed time in days since 00:00:00.1 Sat Jan 1 1CEJ, return date as a ($Year, $Month, $Day) list,
+# in either Julian or Gregorian depending on user's request:
 sub emit_despale ($elapsed, $julian) {
    my $accum = ($julian ? 0 : 2) ; # Accumulation of days elapsed or unelapsed.
    my $pyear = 0                 ; # Previous year.
@@ -421,7 +419,7 @@ sub emit_despale ($elapsed, $julian) {
       }
    }
 
-   # If going foreward in time from 00:00:00UTC on Jan 1, 1CE (Julian or Gregorian):
+   # If going forward in time from 00:00:00UTC on Jan 1, 1CE (Julian or Gregorian):
    else {
       # Determine $year by adding elapsed days from whole years which have elapsed since 00:00:00UTC on
       # Saturday Jan 1, 1CEJ:
@@ -464,17 +462,15 @@ sub day_of_week ($Elapsed) {
    # the day-of-week of that "base date", and by the number of "days elapsed" which have occurred
    # after that "base day", where "days elapsed" means "midnights transitioned-through".
 
-   # This program uses a "base time" of 00:00:00UTC, Sat Jan 01, 1CEJ
-   # which is equivalent to             00:00:00UTC, Sad Dec 30, 1BCG
-   # to calculate all dates, Julian and Gregorian.
-
-   # Our zero-reference time is Jan 1, 1CEJ, which is a Saturday (index 6), so to get "day of week",
-   # we need only to add an offset of 6 to the "days elapsed" then apply modulo 7:
+   # This program uses a "base time" of 00:00:00.1UTC, Saturday Jan 01, 1CEJ
+   # which is equivalent to             00:00:00.1UTC, Saturday Dec 30, 1BCG
+   # to calculate all dates, Julian and Gregorian. Because our zero-reference time is a Saturday (index 6),
+   # to get "day of week" we need only add an offset of 6 to the "days elapsed" then apply modulo 7:
    return $DaysOfWeek[($Elapsed + 6) % 7];
 } # end sub day_of_week
 
-sub print_warnings ($y, $m, $d, $j) {
-   if ( $Db ) {say "Debug msg in print_warnings(): \$y = $y  \$m = $m  \$d = $d  \$j = $j"}
+sub warnings ($y, $m, $d, $j) {
+   if ( $Db ) {say "Debug msg in warnings(): \$y = $y  \$m = $m  \$d = $d  \$j = $j"}
    if ( !$j && ($y < 1582 || $y == 1582 && $m < 10 || $y == 1582 && $m == 10 && $d < 15) ) {
       proleptic;
    }
@@ -490,7 +486,7 @@ sub print_warnings ($y, $m, $d, $j) {
       anachronistic;
    }
    return 1;
-} # end sub print_warnings
+} # end sub warnings
 
 sub proleptic {
    print ((<<'   END_OF_PROLEPTIC') =~ s/^   //gmr);
@@ -499,8 +495,7 @@ sub proleptic {
    # calendar came into existence on Friday, October 15, 1582CEG (October 5,     #
    # 1582CEJ). Hence, the date you gave is a "proleptic" application of          #
    # The Gregorian Calendar to a point in time in which it did not yet exist.    #
-   # Literature of that time used Julian Calendar dates, which are typically     #
-   # 11-13 days off from proleptically-applied Gregorian dates.                  #
+   # People in those times used The Julian Calendar.                             #
    ###############################################################################
    END_OF_PROLEPTIC
    return 1;
@@ -517,7 +512,7 @@ sub english {
    # The British Empire and it's colonies (including those which later became    #
    # USA) didn't adopt The Gregorian calendar until September 14, 1752. Thus     #
    # all dates in English-language literature before that date are in            #
-   # The Julian Calendar, and are 11-to-13 days off from The Gregorian Calendar. #
+   # The Julian Calendar.                                                        #
    #                                                                             #
    # When The British Empire adopted The Gregorian Calendar on 1752-09-14, the   #
    # date jumped from September 2, 1752 to September 14, 1752, thus seemingly    #
@@ -557,9 +552,10 @@ sub error {
    print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
 
    Error: day-of-week.pl takes exactly 3 integer arguments which must be year,
-   month, and day, in that order. To specify BC, use a negative year. To specify
-   Julian, use a -j or --julian option. If you enter 0 for year, something bizarre
-   will happen. Help follows:
+   month, and day, in that order. Use negative year numbers for BC, positive for
+   CE. To specify Julian, use a -j or --julian option. (There WAS NO "year 0" in
+   ANY calendar, so if you enter 0 for year, something bizarre will happen.)
+   Help follows:
    END_OF_ERROR
    return 1;
 } # end sub error
