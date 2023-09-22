@@ -6,7 +6,7 @@
 
 ##############################################################################################################
 # Template.pl
-# "Template" serves as a template for making new file and directory maintenance scripts.
+# This file serves as a template for making new file and directory maintenance scripts.
 #
 # Edit history:
 # Mon May 04, 2015: Wrote first draft.

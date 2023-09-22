@@ -994,7 +994,7 @@ sub copy_file :prototype($$;@)
    my $dstpsh = path($dstdsh, $dstfsh); # Destination path (short version)
 
    # Attempt to copy the file:
-   my $success  = ! system(e "cp -p '$spath' '$dpath'");
+   my $success  = ! system(e "cp --preserve=timestamps '$spath' '$dpath'");
    if ($success) {
       print "Copied \"$srcpsh\" to \"$dstpsh\"\n";
       return 1;
