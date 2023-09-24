@@ -58,7 +58,6 @@ my @args = (); # arguments
    for my $RE ( @args ) {
       my $tester = RH::RegTest->new($RE);
       for my $line ( @input_lines ) {
-         $line =~ s/\s+$//;
          $tester->match($line);
       }
    }
