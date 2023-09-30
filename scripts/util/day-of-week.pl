@@ -1,6 +1,7 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -CSDA
 
-# This is a 110-character-wide ASCII-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -30,6 +31,10 @@
 # at that time"), "English" (the English-speaking world was still using Julian for almost 2 centuries after
 # the rest of the world had upgraded to Gregorian), or "Julian" (usage of Julian after late 1752 is
 # anachronistic).
+#
+# NOTE: There WAS NO "Year Zero" in either the Julian OR Gregorian calendars. So what happens if you enter 0
+# as year number? Well, you no-clip out of ordinary reality and into Year Zero, The Year That Stretches.
+# Exactly what will happen is a bit random, but try it and see.
 #
 # Author: Robbie Hatley.
 #
@@ -71,9 +76,15 @@
 #                   computation time would be in the hours or days, and there were no multi-cell life forms
 #                   on earth in 2 billion BC anyway, so who cares what day-of-week 2 billion BC is? At least
 #                   in 100 million BC, humans existed, though at that time we were small furry rodents.
+# Sat Sep 30, 2023: Converted back to UTF-8, and added-in a few more pieces of poetry.
 ##############################################################################################################
 
-use v5.38;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+use Sys::Binmode;
 
 # ======= SUBROUTINE PRE-DECLARATIONS ========================================================================
 
@@ -96,7 +107,10 @@ sub help           ; # Print help  message.
 sub year_zero      ; # The Year That Stretches.
 sub second         ; # What rough beast slouches towards Bethlehem?
 sub invictus       ; # I am the captain of my soul.
-sub highway        ; # He tapped with his whip on the sutters, but all was locked and barred.
+sub highway        ; # He tapped with his whip on the shutters, but all was locked and barred.
+sub swagman        ; # "You'll never catch me alive!"
+sub nazgûl         ; # Agh burzum-ishi krimpatul
+sub cthulhu        ; # Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn
 
 # ======= PAGE-GLOBAL LEXICAL VARIABLES: =====================================================================
 
@@ -669,12 +683,15 @@ sub year_zero {
    parchment onto your feet. You pick it up. It has a poem written on it. It
    appears to have been written in black ink with a quill pen. You begin to read.
    END_OF_ZERO
-   my $idx = int(time)%3;
+   my $idx = int(time)%6;
    for ($idx) {
       $Db and say "DBM in year_zero: \$idx = $idx";
       /0/ and second;
       /1/ and invictus;
       /2/ and highway;
+      /3/ and swagman;
+      /4/ and nazgûl;
+      /5/ and cthulhu;
    }
    return -8765432;
 } # end sub year_zero
@@ -875,7 +892,116 @@ sub highway {
    But the landlord’s black-eyed daughter,
             Bess, the landlord’s daughter,
    Plaiting a dark red love-knot into her long black hair.
+
+   -------------------------------------------------------------------------------
+
+   As you finish reading this poem, a horse appears from around a bend in a road
+   and gallops up to you. On the back of the horse is The Highwayman and his wife,
+   Bess. In THIS reality, the Ostler never betrayed The Highwayman, and he and the
+   innkeeper's daughter Bess eloped. They prove friendly. They dismount from their
+   horse and set-up camp near the side of the road and share food and drink with
+   you. After spending some hours story-telling and sharing experiences, the three
+   of you grow tired and lie down and sleep. When you awake in the morning, The
+   Highwayman and Bess are gone, and so are several valuable items which you had
+   in your possession. He couldn't help it, you see; it's his nature.
    END_OF_HIGHWAY
    return;
 } # end sub highway
+
+sub swagman {
+   print ((<<'   END_OF_SWAGMAN') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+
+   Waltzing Matilda
+   By Andrew Barton "Banjo" Paterson, CBE
+
+   Oh there once was a swagman camped in the billabong,
+   under the shade of a coolibah tree.
+   And he sang as he looked at the old billy boiling:
+   "Who'll come a waltzing matilda with me?"
+
+   Who'll come a waltzing matilda my darling
+   Who'll come a waltzing matilda with me
+   Waltzing matilda and leading a water bag
+   Who'll come a waltzing matilda with me
+
+   Down came a jumbuck to drink at the billabong;
+   up jumped the swagman and grabbed him with glee.
+   And he said as he put him away in the tucker bag
+   "You'll come a'waltzing matilda with me!"
+
+   Who'll come a waltzing matilda my darling
+   Who'll come a waltzing matilda with me
+   Waltzing matilda and leading a water bag
+   Who'll come a waltzing matilda with me
+
+   Down came the squatter a'riding his thoroughbred.
+   Down came policemen, one, two, and three.
+   "Whose is the jumbuck you've got in the tucker bag?
+   You'll come a'waltzing matilda with we!"
+
+   Who'll come a waltzing matilda my darling
+   Who'll come a waltzing matilda with me
+   Waltzing matilda and leading a water bag
+   Who'll come a waltzing matilda with me
+
+   But the swagman he up and he jumped in the water-hole
+   Drowning himself by the coolibah tree
+   And his ghost may be heard as it sings by the billabong:
+   "Who'll come a'waltzing matilda with me?"
+
+   Who'll come a waltzing matilda my darling
+   Who'll come a waltzing matilda with me
+   Waltzing matilda and leading a water bag
+   Who'll come a waltzing matilda with me
+   END_OF_SWAGMAN
+   return;
+} # end sub swagman
+
+sub nazgûl {
+   print ((<<'   END_OF_NAZGÛL') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+
+   Ash nazg durbatulûk
+   Ash nazg gimbatul
+   Ash nazg thrakatulûk
+   Agh burzum-ishi krimpatul
+
+   -------------------------------------------------------------------------------
+
+   As you finish reading this vile poem, the parchment falls from your hands
+   onto the dusty ground. Nine all-black figures ride up on nine black horses
+   with glowing red eyes. You are about to have the worst day of your life.
+   Unfortunately it will also be the last day of your life has a human.
+   You are about to be stabbed with a morgul knife and become a wraith. Sayonara.
+
+   END_OF_NAZGÛL
+   return;
+} # end sub nazgûl
+
+sub cthulhu {
+   print ((<<'   END_OF_CTHULHU') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+
+   Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn.
+
+   -------------------------------------------------------------------------------
+
+   As you finish reading this vile poem, the parchment falls from your hands onto
+   the ground. The spacetime continuum in front of you shatters and a hideous
+   monster erupts from the breech and stands in front of you, gazing into your
+   soul with glowing red eyes. You are about to have the worst day of your life.
+   Unfortunately it will also be the LAST day of your life has a free, sane human.
+   You are about to be enthralled to Cthulhu and become his slave. Sayonara.
+
+   END_OF_CTHULHU
+   return;
+} # end sub cthulhu
+
+
+
+
 __END__
