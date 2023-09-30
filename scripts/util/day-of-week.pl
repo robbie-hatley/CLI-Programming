@@ -93,9 +93,12 @@ sub english        ; # Print "English transition period"   message.
 sub anachronistic  ; # Print "anachronistic use of Julian" message.
 sub error          ; # Print error message.
 sub help           ; # Print help  message.
-sub highwayman     ; # He tapped with his whip on the shutters, but all was locked and barred.
+sub year_zero      ; # The Year That Stretches.
+sub second         ; # What rough beast slouches towards Bethlehem?
+sub invictus       ; # I am the captain of my soul.
+sub highway        ; # He tapped with his whip on the sutters, but all was locked and barred.
 
-# ======= GLOBAL VARIABLES ===================================================================================
+# ======= PAGE-GLOBAL LEXICAL VARIABLES: =====================================================================
 
 # Settings:         # Meaning of setting:          Range:   Meaning of default:
 my $Db        = 0 ; # Print diagnostics?           bool     Don't print diagnostics.
@@ -104,6 +107,13 @@ my $A_Y       = 0 ; # Year  from CL arguments.     pos int  "not-yet-initialized
 my $A_M       = 0 ; # Month from CL arguments.     pos int  "not-yet-initialized".
 my $A_D       = 0 ; # Day   from CL arguments.     pos int  "not-yet-initialized".
 my $Julian    = 0 ; # Construe input as Julian?    bool     Construe input as Gregorian.
+my $Sector    = 0 ; # What time sector are we in?  int      Base time is 00:00:00UTC, 1/1/1CE Julian
+
+my @SecElapsed
+   = ();
+
+my @SecDowOffs
+   = ();
 
 my @DaysOfWeek
    = qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday);
@@ -112,16 +122,9 @@ my @Months
    = qw(January   February  March     April     May       June
         July      August    September October   November  December);
 
-# ======= MAIN BODY OF PROGRAM ===============================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
-   # Process @ARGV and set settings and arguments accordingly:
-   argv;
-
-   if ( $Db ) {
-      say "\$Julian = $Julian";
-   }
-
    # Declare all local variables for use in main only here:
    my $G_Y     ; # Gregorian year.
    my $G_M     ; # Gregorian month.
@@ -132,6 +135,13 @@ my @Months
    my $Elapsed ; # Elapsed time.
    my $BCJ     ; # Julian    era string ("BCJ" or "CEJ").
    my $BCG     ; # Gregorian era string ("BCG" or "CEG").
+
+   # Process @ARGV and set settings and arguments accordingly:
+   argv;
+
+   if ( $Db ) {
+      say "\$Julian = $Julian";
+   }
 
    # If user specified that input date is Julian, Convert from Julian to Gregorian:
    if ( $Julian ) {
@@ -184,7 +194,7 @@ my @Months
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS =============================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 sub argv {
    # Get options and arguments:
@@ -241,7 +251,7 @@ sub argv {
 
    # If the user has entered the non-existent year "0", no-clip use into The Year That Stretches:
    if ( 0 == $A_Y ) {
-      exit highwayman;
+      exit year_zero;
    }
 
    # VITALLY IMPORTANT: If year is negative, increase it by one, because our year numbers MUST BE 0-indexed
@@ -645,10 +655,11 @@ sub help {
    return 1;
 } # end sub help
 
-sub highwayman {
-   print ((<<'   END_OF_THE_ROAD') =~ s/^   //gmr);
+sub year_zero {
+   print ((<<'   END_OF_ZERO') =~ s/^   //gmr);
 
    -------------------------------------------------------------------------------
+
    You have no-clipped into Year Zero, The Year That Stretches. The days of this
    year have no names, and their number is uncountable. Enjoy your stay here.
    Maybe you will eventually be able to no-clip back to normal reality, or maybe
@@ -657,8 +668,88 @@ sub highwayman {
    As you look around this accursed place, a warm dry wind blows a sheet of
    parchment onto your feet. You pick it up. It has a poem written on it. It
    appears to have been written in black ink with a quill pen. You begin to read.
+   END_OF_ZERO
+   my $idx = int(time)%3;
+   for ($idx) {
+      $Db and say "DBM in year_zero: \$idx = $idx";
+      /0/ and second;
+      /1/ and invictus;
+      /2/ and highway;
+   }
+   return -8765432;
+} # end sub year_zero
+
+sub second {
+   print ((<<'   END_OF_SECOND') =~ s/^   //gmr);
 
    -------------------------------------------------------------------------------
+
+   The Second Coming
+   by William Butler Yeats
+
+   Turning and turning in the widening gyre
+   The falcon cannot hear the falconer;
+   Things fall apart; the centre cannot hold;
+   Mere anarchy is loosed upon the world,
+   The blood-dimmed tide is loosed, and everywhere
+   The ceremony of innocence is drowned;
+   The best lack all conviction, while the worst
+   Are full of passionate intensity.
+
+   Surely some revelation is at hand;
+   Surely the Second Coming is at hand.
+   The Second Coming! Hardly are those words out
+   When a vast image out of Spiritus Mundi
+   Troubles my sight: somewhere in sands of the desert
+   A shape with lion body and the head of a man,
+   A gaze blank and pitiless as the sun,
+   Is moving its slow thighs, while all about it
+   Reel shadows of the indignant desert birds.
+   The darkness drops again; but now I know
+   That twenty centuries of stony sleep
+   Were vexed to nightmare by a rocking cradle,
+   And what rough beast, its hour come round at last,
+   Slouches towards Bethlehem to be born?
+   END_OF_SECOND
+   return;
+} # end sub second
+
+sub invictus {
+   print ((<<'   END_OF_INVICTUS') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+
+   Invictus
+   by William Ernest Henley
+
+   Out of the night that covers me,
+      Black as the pit from pole to pole,
+   I thank whatever gods may be
+      For my unconquerable soul.
+
+   In the fell clutch of circumstance
+      I have not winced nor cried aloud.
+   Under the bludgeonings of chance
+      My head is bloody, but unbowed.
+
+   Beyond this place of wrath and tears
+      Looms but the Horror of the shade,
+   And yet the menace of the years
+      Finds and shall find me unafraid.
+
+   It matters not how strait the gate,
+      How charged with punishments the scroll,
+   I am the master of my fate,
+      I am the captain of my soul.
+   END_OF_INVICTUS
+   return;
+} # end sub invictus
+
+sub highway {
+   print ((<<'   END_OF_HIGHWAY') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+
    The Highwayman
    By Alfred Noyes
 
@@ -784,7 +875,7 @@ sub highwayman {
    But the landlord’s black-eyed daughter,
             Bess, the landlord’s daughter,
    Plaiting a dark red love-knot into her long black hair.
-   END_OF_THE_ROAD
-   return -8765432;
-} # end sub highwayman
+   END_OF_HIGHWAY
+   return;
+} # end sub highway
 __END__
