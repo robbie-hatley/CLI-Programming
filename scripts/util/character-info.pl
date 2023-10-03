@@ -1,36 +1,45 @@
 #!/usr/bin/perl -CSDA
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # character-info.pl
 #
 # Edit history:
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-########################################################################################################################
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
+# Tue Oct 03, 2023: Got rid of "common::sense" (who needs it, anyway?). Corrected broken variable inits.
+#                   Decreased width from 120 to 110. Upgraged to "v5.36".
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+
 use Sys::Binmode;
-
 use Unicode::Normalize 'NFD';
 
 use RH::Dir;
 
-my ($line, $char, $j, $i, $rep, $ord, $type);
-
-$j = 0;
+my $line    = '' ; # Line of text.
+my $char    = '' ; # Character.
+my $lin_num = 0  ; # Line number.
+my $chr_num = 0  ; # Character number.
+my $rep     = '' ; # Glyphical representation.
+my $ord     = 0  ; # Unicode ordinal.
+my $type    = '' ; # Character type.
 foreach $line (<>)
 {
-   ++$j;
-   say "Line #$i:\n$line";
+   ++$lin_num;
+   say "Line #$lin_num:\n$line";
    my @chars = split '',$line;
-   $i = 0;
    foreach $char (@chars)
    {
-      ++$i;
+      ++$chr_num;
 
       # Decide representation:
       if    ($char =~ m/\pC/)                          {$rep = "\x{2423}"             ;}
@@ -67,7 +76,8 @@ foreach $line (<>)
       if ($char =~ m/\p{Block: CJK}/)                  {$type .= ' CJK Character'     ;}
       if ($char =~ m/\pS/)                             {$type .= ' Symbol'            ;}
       if ($char =~ m/\pP/)                             {$type .= ' Punctuation'       ;}
-      printf("line# %3d char# %2d char = %s\tord = %7d(dec) = %5X(hex)%s\n", $j, $i, $rep, $ord, $ord, $type);
+      printf("line# %3d char# %2d char = %s\tord = %7d(dec) = %5X(hex)%s\n",
+             $lin_num, $chr_num, $rep, $ord, $ord, $type);
    } # end for each character
 }
 exit 0;
