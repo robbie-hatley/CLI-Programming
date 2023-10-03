@@ -1,46 +1,55 @@
 #!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # copy-files.pl
-# Given the paths of two directories, Source and Destination, this program copies all regular files matching a regexp
-# from Source to Destination, enumerating each file for which a file exists in Destination with the same name root.
-# Optionally, the program can be instructed to NOT copy any files for which duplicates exist in the destination,
-# and/or change the name of the file to its own SHA1 hash.
+# Given the paths of two directories, Source and Destination, this program copies all regular files matching
+# a regexp from Source to Destination, enumerating each file for which a file exists in Destination with the
+# same name root. Optionally, the program can be instructed to NOT copy any files for which duplicates exist
+# in the destination, and/or change the name of the file to its own SHA1 hash.
 #
 # NOTE: You must have Perl and my RH::Dir module installed in order to use this script. Contact Robbie Hatley
 # at <lonewolf@well.com> and I'll send my RH::Dir module to you.
 #
 # Edit history:
 # Sat Jan 02, 2021: Wrote it.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
 # Sun Nov 21, 2021: Fixed 4 missing encodes in process_argv.
 # Mon Nov 22, 2021: Heavily refactored. Now using sub "copy_files" in RH::Dir instead of local, and using
 #                   a regular expression instead of a wildcard to specify files to copy. Also, now subsumes
 #                   the script "copy-large-images.pl".
 # Tue Nov 23, 2021: Fixed "won't handle relative directories" bug by using the chdir & cwd trick.
 # Sat Dec 04, 2021: Fixed minor error in titlecard ("wildcard"->"regexp").
-########################################################################################################################
+# Tue Oct 03, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". Got rid of CPAN module
+#                   "common::sense" (antiquated). Now using "d getcwd" instead of "cwd_utf8".
+##############################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+
 use Sys::Binmode;
+use Cwd;
 use Time::HiRes 'time';
+
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub process_argv  ();
-sub error_msg     ($);
-sub help_msg      ();
+sub process_argv ;
+sub error_msg    ;
+sub help_msg     ;
 
-# ======= PAGE-GLOBAL LEXICAL VARIABLES: ===============================================================================
+# ======= PAGE-GLOBAL LEXICAL VARIABLES: =====================================================================
 
 # Debugging:
-my $db = 0; # Use debugging? (Ie, print diagnostics?)
+my $db = 0; # Print diagnostics?
 
 # Settings:
 my $src       = ''; # Srce directory.
@@ -48,14 +57,13 @@ my $dst       = ''; # Dest directory.
 my $cur       = ''; # Curr directory.
 my @CopyArgs  = (); # Arguments for copy_files().
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    say "\nNow entering program \"" . get_name_from_path($0) . "\".\n";
    my $t0 = time;
    process_argv;
-   if ($db)
-   {
+   if ($db) {
       warn "In main body of program \"copy-files.pl\"\n",
            "Just ran process_argv().\n",
            "\$src = \"$src\"\n",
@@ -68,17 +76,17 @@ my @CopyArgs  = (); # Arguments for copy_files().
    # Get FULLY-QUALIFIED versions of current, source, and destination directories:
 
    # Get current working directory:
-   $cur = cwd_utf8;
+   $cur = d getcwd;
 
    # CD to src, grab full path, then CD back to cur:
-   chdir_utf8 $src;
-   $src = cwd_utf8;
-   chdir_utf8 $cur;
+   chdir e $src;
+   $src = d getcwd;
+   chdir e $cur;
 
    # CD to dst, grab full path, then CD back to cur:
-   chdir_utf8 $dst;
-   $dst = cwd_utf8;
-   chdir_utf8 $cur;
+   chdir e $dst;
+   $dst = d getcwd;
+   chdir e $cur;
 
    # Copy files:
    copy_files($src, $dst, @CopyArgs);
@@ -89,10 +97,9 @@ my @CopyArgs  = (); # Arguments for copy_files().
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
-sub process_argv ()
-{
+sub process_argv {
    my @CLArgs   = ();     # Command-Line Arguments from @ARGV (not including options).
 
    if ($db)
@@ -141,8 +148,7 @@ sub process_argv ()
    return 1;
 } # end sub process_argv
 
-sub error_msg ($)
-{
+sub error_msg {
    my $NA = shift;
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
    Error: \"copy-files.pl\" takes 2 mandatory arguments (which must be paths to
@@ -152,10 +158,9 @@ sub error_msg ($)
 
    END_OF_ERROR
    return 1;
-}
+} # end sub error_msgr
 
-sub help_msg ()
-{
+sub help_msg {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "copy-files.pl", Robbie Hatley's nifty file-copying utility.
    This program copies all files matching a regexp from a source directory
@@ -204,4 +209,4 @@ sub help_msg ()
    programmer.
    END_OF_HELP
    return 1;
-}
+} # end sub help
