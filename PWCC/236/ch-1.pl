@@ -49,8 +49,8 @@ PROBLEM NOTES:
 Since ability to give change is determined by what's in the till, I'll start by making an array "@arrays" to
 hold multiple input "@bills" arrays, then for each "@bills" array I'll make a "@till" array that starts-off
 empty. For each "$bill" in "@bills", I'll push "$bill" to "@till", set "$change" to "$bill-5", and see if I
-can get "$change" down to 0 by subtracting bills from till. If I can get "$change" down to 0 for all customers
-I'll return "true" else "false".
+can get "$change" down to 0 by subtracting bills from till. If I can't get "$change" down to 0 for all
+customers I'll return "true" else "false".
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
