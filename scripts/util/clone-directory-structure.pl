@@ -17,8 +17,7 @@
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Thu Nov 25, 2021: Renamed to "for-each-directory-in-tree.pl" to avoid confusion with other programs.
 #                   Shortened subroutine names. Added time stamping.
-# Wed Feb 08, 2023: Forked to "/d/rhe/PWCC/203/ch-2.pl" and to "clone-directory-structure.pl".
-#                   Made THIS file NOT dependent on my RH::Dir module by copy-pasting needed subs.
+# Wed Feb 08, 2023: Forked a copy of "clone-directory-structure.pl" to "/d/rhe/PWCC/203/ch-2.pl".
 ########################################################################################################################
 
 # ======================================================================================================================
