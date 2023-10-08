@@ -45,7 +45,7 @@ Output is to STDOUT and will be each input array followed by the corresponding o
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
-# PRELIMINARIES:
+# PRAGMAS AND MODULES USED:
 
 use v5.38;
 use strict;
@@ -54,6 +54,10 @@ use utf8;
 use warnings FATAL => 'utf8';
 use Sys::Binmode;
 use Time::HiRes 'time';
+
+# ------------------------------------------------------------------------------------------------------------
+# START TIMER:
+our $t0; BEGIN {$t0 = time}
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
@@ -79,19 +83,13 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 
-# Start timer:
-my $t0 = time;
-
-# Default inputs:
-my @arrays =
+# Inputs:
+my @arrays = @ARGV ? eval($ARGV[0]) :
 (
    ['abc', 'xyz'],
    ['scriptinglanguage', 'perl'],
    ['aabbcc', 'abc'],
 );
-
-# Non-default inputs:
-@arrays = eval($ARGV[0]) if @ARGV;
 
 # Main loop:
 for my $aref (@arrays) {
@@ -103,7 +101,12 @@ for my $aref (@arrays) {
    say "Target string: \"$target\"";
    say "Can build Target from Source?: $output";
 }
+exit;
 
-# Determine and print execution time:
-my $µs = 1000000 * (time - $t0);
-printf("\nExecution time was %.0fµs.\n", $µs);
+# ------------------------------------------------------------------------------------------------------------
+# DETERMINE AND PRINT EXECUTION TIME:
+END {
+   my $µs = 1000000 * (time - $t0);
+   printf("\nExecution time was %.0fµs.\n", $µs);
+}
+__END__
