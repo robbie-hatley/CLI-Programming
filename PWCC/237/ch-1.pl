@@ -37,9 +37,9 @@ There isn't a 5th Wed in Aug 2026
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 I am soooooo not going to pull in all of the heavy artillery from my "day-of-week.pl" script; it's just not
-needed for this. I'll use "use Time::Local 'timelocal_posix';" and "localtime" instead, and I'll use this
+needed for this. I'll use "use Time::Local 'timelocal_modern';" and "localtime" instead, and I'll use this
 algorithm:
-1. Use "timelocal_posix" to get seconds-since-epoch for 00:00:01 on morning of day 1 of GIVEN month.
+1. Use "timelocal_modern" to get seconds-since-epoch for 00:00:01 on morning of day 1 of GIVEN month.
 2. Use "localtime" to get $dow (day of week) for first day of GIVEN month
 3. Use modular arithmetic to get day-of-month.
 4. Alert user if no such day exists. (Easy for every month except February, which may have a leap day.)
