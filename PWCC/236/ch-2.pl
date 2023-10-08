@@ -87,13 +87,15 @@ our $t0; BEGIN {$t0 = time}
 # SUBROUTINES:
 
 sub loops ($aref) {
-   my $loops  = 0; # Count of cycles that  DO   pass through start.
-   my $cycles = 0; # Count of cycles that DON'T pass through start.
+   my $loops  = 0; # Count of cycles that pass through start.
    START: for ( my $i = 0 ; $i <= $#$aref ; ++$i ) {
       my $hops;
       HOP: for ( $hops = 0, my $j = $$aref[$i] ; $hops < scalar(@$aref) ; ++ $hops, $j = $$aref[$j] ) {
-         if
-
+         if ( $j == $i ) {
+            ++$loops;
+            next START;
+         }
+      }
    }
    return $loops;
 }
