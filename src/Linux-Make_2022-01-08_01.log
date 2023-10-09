@@ -1,8 +1,0 @@
-make -C fractals
-make[1]: Entering directory '/d/rhe/src/fractals'
-$PLATFORM is 
-$INCDIR   is /rhe/include
-$EXEDIR   is ~/.local/bin/fractals
-$LIBDIR   is ~/.local/lib
-gcc -I /rhe/include -DPLATFORM_IS_LINUX -D_GNU_SOURCE -Wall -Wextra -Wfloat-equal -Wshadow -Wcast-qual -Wcast-align -Wconversion -Wcomments -Wundef -Wunused-macros -Wold-style-definition -Wnested-externs -finput-charset=UTF-8 -std=gnu17   -c -O2 /rhe/src/librh/rhmathc.c -o ~/.local/lib/rhmathc.o
-make[1]: Leaving directory '/d/rhe/src/fractals'

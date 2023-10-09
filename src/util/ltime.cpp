@@ -3,15 +3,18 @@
 //=======|=========|=========|=========|=========|=========|=========|=========
 
 /****************************************************************************\
- * File name:   clock1.cpp
- * Title:       Clock1
+ * File name:   ltime.cpp
+ * Source for:  ltime or ltime.exe
+ * Title:       Local Time
  * Authorship:  Written Wednesday January 1, 2003, by Robbie Hatley.
- * Last edited: Sunday May 4, 2003.
  * Description: Prints current date and time.
  * Inputs:      None.
  * Outputs:     Date and time.
  * Notes:       A test of stringstream and altering arguments by reference.
  * To make:     Just compile.  (Doesn't use external object files.)
+ * Edit history:
+ *    Sun May 04 2003: Updated.
+ *    Sun Oct 08 2023: Renamed from "clock1.cpp" to "ltime.cpp".
 \****************************************************************************/
 
 

@@ -58,6 +58,10 @@ If we don't get back to our start point in scalar(@ints) tries, we never will, b
 mean either we've visited every element at least once and none point back to the origin, or we got
 caught in a cycle other than a loop, or we hit an element who's value points out of the array.
 
+I'll have to find a way, though, to avoid duplicating every loop on each of its vertices. I think I'll mark
+each array position with an "o" to begin with, then mark each position with "x" the first time each position
+is visited. Starting at each index in-turn, if we end up hopping to an x, don't count that path as a "loop".
+
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
@@ -87,17 +91,27 @@ our $t0; BEGIN {$t0 = time}
 # SUBROUTINES:
 
 sub loops ($aref) {
-   my $loops  = 0; # Count of cycles that pass through start.
+   my @loops; # Array of loops.
+   my @visited = ('o') x scalar(@$aref);
    START: for ( my $i = 0 ; $i <= $#$aref ; ++$i ) {
-      my $hops;
-      HOP: for ( $hops = 0, my $j = $$aref[$i] ; $hops < scalar(@$aref) ; ++ $hops, $j = $$aref[$j] ) {
+      my @path = (); # Path from this START point.
+      HOP: for ( my $hops = 0, my $j = $$aref[$i] ; $hops < scalar(@$aref) ; ++ $hops, $j = $$aref[$j] ) {
+         if ( 'x' eq $visited[$j] ) {
+            # Old loop, new starting point, so don't increment "$loops" here.
+            next START;
+         }
+         # THIS element has just been freshly visited right now,
+         # so record it in @path and so mark it "x":
+         push @path, $j;
+         $visited[$j] = 'x';
          if ( $j == $i ) {
-            ++$loops;
+            # If we get to here, we just closed a new loop, so push this path onto @loops:
+            push @loops, [@path];
             next START;
          }
       }
    }
-   return $loops;
+   return @loops;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -113,17 +127,17 @@ my @arrays = @ARGV ? eval($ARGV[0]) :
 
 # Main loop:
 for my $aref (@arrays) {
-   my $loops = loops($aref);
+   my @loops = loops($aref);
    say '';
    say 'Array = (', join(', ', @$aref), ')';
-   say "Loops = $loops";
+   say 'Number of loops = ', scalar(@loops), ':';
+   for ( @loops ) {
+      say '(', join(', ', @$_), ')';
+   }
 }
 exit;
 
 # ------------------------------------------------------------------------------------------------------------
 # DETERMINE AND PRINT EXECUTION TIME:
-END {
-   my $µs = 1000000 * (time - $t0);
-   printf("\nExecution time was %.0fµs.\n", $µs);
-}
+END {my $µs = 1000000 * (time - $t0); printf("\nExecution time was %.0fµs.\n", $µs)}
 __END__

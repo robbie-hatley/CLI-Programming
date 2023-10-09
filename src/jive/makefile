@@ -17,12 +17,12 @@ vpath %.cpp /d/rhe/src/jive
 
 # Set PLATFORM, EXEDIR, MACROS, and ALL:
 ifeq ($(PLATFORM),Win64)
-   EXEDIR   := /d/rhe/bin_cyg/jive
+   EXEDIR   := /d/rhe2/bin_cyg/jive
    MACROS   := -DPLATFORM_IS_WIN64 -D_GNU_SOURCE
    ALL      := piglatin.exe chef.exe jive.exe valspeak.exe
    EXEPATHS := $(EXEDIR)/piglatin.exe $(EXEDIR)/chef.exe $(EXEDIR)/jive.exe $(EXEDIR)/valspeak.exe
 else ifeq ($(PLATFORM),Linux)
-   EXEDIR   := /d/rhe/bin_lin/jive
+   EXEDIR   := /d/rhe2/bin_lin/jive
    MACROS   := -DPLATFORM_IS_LINUX -D_GNU_SOURCE
    ALL      := piglatin chef jive valspeak
    EXEPATHS := $(EXEDIR)/piglatin $(EXEDIR)/chef $(EXEDIR)/jive $(EXEDIR)/valspeak
@@ -37,7 +37,7 @@ $(info $$EXEDIR   is ${EXEDIR})
 # Set vpaths to tell GNU Make where to look for headers, objects, libraries, and executables:
 vpath %.exe $(EXEDIR)
 vpath %     $(EXEDIR)
-# Note: these are separate from variables which tell gcc & g++ where to find files; 
+# Note: these are separate from variables which tell gcc & g++ where to find files;
 # vpaths tell Make ITSELF where to find files. This helps it navigate dependencies.
 
 # ============================================================================================================
@@ -107,7 +107,7 @@ valspeak.c: valspeak.l
 # ============================================================================================================
 # CLEANUP RULES:
 
-clean:	
+clean:
 	rm -f $(EXEPATHS)
 
 clobber:
