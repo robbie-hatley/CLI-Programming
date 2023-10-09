@@ -54,6 +54,7 @@
 #                   STDERR = "stats and serious errors". STDOUT = "files renamed, and dirs if being verbose".
 # Thu Sep 07, 2023: Added $Predicate. Using a predicate argument forces $Target to be 'A' to avoid conflicts.
 #                   Fixed "--mode=xxxx" typos in help.
+# Mon Oct 09, 2023: Fixed bug in which debug msg in curdire was being printed even when not debugging.
 ##############################################################################################################
 
 use v5.36;
@@ -222,7 +223,7 @@ sub curdire {
    # Process each path that matches $RegExp, $Target, and $Predicate:
    foreach my $file (sort {$a->{Name} cmp $b->{Name}} @$curdirfiles) {
       ++$filecount;
-      say STDERR "Debug msg in rnf, in curdire, in foreach: filename = $file->{Name}";
+      say STDERR "Debug msg in rnf, in curdire, in foreach: filename = $file->{Name}" if $Db;
       local $_ = e $file->{Path};
       if (eval($Predicate)) {
          ++$predcount;

@@ -73,6 +73,10 @@ use Math::Combinatorics;
 our $t0; BEGIN {$t0 = time}
 
 # ------------------------------------------------------------------------------------------------------------
+# VARIABLES:
+my $Db = 1;
+
+# ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
 sub greatness ($a1ref, $a2ref) {
@@ -86,8 +90,9 @@ sub greatness ($a1ref, $a2ref) {
 sub max_greatness ($aref) {
    my $g  = 0; # greatness
    my $mg = 0; # max greatness
-   my $perms = Math::Combinatorics->new(count => $#$aref, data => $aref);
+   my $perms = Math::Combinatorics->new(count => scalar(@$aref), data => $aref);
    while ( my @perm = $perms->next_permutation ) {
+      say 'Db msg: Permutation = (', join(', ', @perm), ')';
       $g = greatness($aref, \@perm);
       $mg = $g if $g > $mg;
    }
