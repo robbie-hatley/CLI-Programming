@@ -370,7 +370,7 @@ sub help {
    rename-files.pl [-h|--help]
 
    To rename files:
-   rename-files.pl [-p -s -y] [-l -r] [-f -d -b -a] Arg1 Arg2 [Arg3]
+   rename-files.pl [options] Arg1 Arg2 [Arg3]
 
    -------------------------------------------------------------------------------
    Description of options:
@@ -394,7 +394,8 @@ sub help {
    Multiple single-letter options can be piled-up after a single hyphen.
    For example: "-ldqy" to rename local directories quietly and without prompting.
 
-   If conflicting separate options are given, later options overrule earlier.
+   If conflicting double-hyphen options are given, later options override earlier.
+
    If conflicting single-letter options are piled-up after a single hyphen,
    then the order of precedence from highest to lowest will be heyspabdfrlvq.
 
@@ -422,22 +423,22 @@ sub help {
    '(?i:c)at|(?i:d)og|(?i:h)orse'
    Be sure to enclose your regexp in 'single quotes', else BASH may replace it
    with matching names of entities in the current directory and send THOSE to
-   this program, whereas this program needs the raw regexp instead.
+   rename-files, whereas rename-files needs the raw regexp instead.
 
    Arg2 must be a replacement string giving the string to substitute for each
-   RegExp match this program finds for Arg1. Arg2 may contain backreferences to
+   RegExp match rename-files finds for Arg1. Arg2 may contain backreferences to
    items stored via (parenthetical groups) in the RegExp in Arg1. For example, if
-   Arg1 is '(\d{3})(\d{3})' and Arg2 is '$1-$2', then Rename-Files would rename
+   Arg1 is '(\d{3})(\d{3})' and Arg2 is '$1-$2', then rename-files would rename
    "123456" to "123-456".
 
    Arg3 (OPTIONAL), if present, must be flags for the Perl s/// substitution
    operator. For example, if Arg1 is 'dog' and Arg2 is 'cat', normally
-   Rename-Files would rename "dogdog" to "catdog", but if Arg3 is 'g' then the
+   rename-files would rename "dogdog" to "catdog", but if Arg3 is 'g' then the
    result will be "catcat" instead.
 
    Arg4 (OPTIONAL), if present, must be a boolean predicate using Perl
    file-test operators. The expression must be enclosed in parentheses (else
-   this program will confuse your file-test operators for options), and then
+   rename-files will confuse your file-test operators for options), and then
    enclosed in single quotes (else the shell won't pass your expression to this
    program intact). If this argument is used, it overrides "--files", "--dirs",
    or "--both", and sets target to "--all" in order to avoid conflicts with
@@ -455,7 +456,7 @@ sub help {
 
    All arguments should be enclosed in 'single quotes'. Failure to do this may
    cause the shell to decompose an argument to a list of entries in the current
-   directory and send THOSE to Rename-Files, whereas Rename-Files needs the raw
+   directory and send THOSE to rename-files, whereas rename-files needs the raw
    arguments.
 
    Arguments may be freely mixed with options, but arguments are "positional",
@@ -491,14 +492,14 @@ sub help {
    -------------------------------------------------------------------------------
    Directory Navigation:
 
-   By default, RenameFiles will rename files in the current directory only.
+   By default, rename-files will rename files in the current directory only.
    However, if a "-r" or "--recurse" switch is used, all subdirectories
    of the current directory will also be processed.
 
    -------------------------------------------------------------------------------
    Targets:
 
-   By default, RenameFiles renames regular files only. However, if a "-d" or
+   By default, rename-files renames regular files only. However, if a "-d" or
    "--dirs" option is used, it will rename directories instead. If a "-b" or
    "--both" option is used, it will rename both regular files and directories.
    And if a "-a" or "--all" switch is use, it will rename ALL directory entries
