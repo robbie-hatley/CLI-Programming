@@ -85,7 +85,7 @@ sub persistence ($x) {
 }
 
 sub by_persistence {
-   my $cmp = persistence($a) <=> persistence($b);
+   my $cmp = (persistence($a) <=> persistence($b));
    if ( 0 == $cmp ) {$cmp = ($a <=> $b)}
    return $cmp;
 }

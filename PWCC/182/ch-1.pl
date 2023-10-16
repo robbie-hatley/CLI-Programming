@@ -9,36 +9,41 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge xxx-2.
-Written by Robbie Hatley on Xxx Xxx xx, 2023.
+Solutions in Perl for The Weekly Challenge 182-1.
+Written by Robbie Hatley on Thu Oct 12, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 2: Anamatu Serjianu
+Task 1: Max Index
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
+Given a list of integers, write a script to find the index of
+the first biggest number in the list.
 
 Example 1:
-Input:   ('dog', 'cow', 'pig'),
-Output:  ('horse')
+Input: @n = (5, 2, 9, 1, 7, 6)
+Output: 2 (as 3rd element in the list is the biggest number)
 
 Example 2:
-Input:   ('apple', 'pear', 'peach'),
-Output:  ('grape')
-
-Example 3:
-Input:   ('Sam', 'Bob', 'Pete'),
-Output:  ('Susan')
+Input: @n = (4, 2, 3, 1, 5, 0)
+Output: 4 (as 5th element in the list is the biggest number)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This is just a matter of keeping track of "index of biggest seen so far", and only updating that if-and-when
+a bigger (not same-size) number is found.
+
+Mathematically, this should work for any ordered number set (such as integers, rationals, irrationals, reals,
+but not complex or quaterions or octonions which aren't ordered).
+
+However, in computation, only integers will work right, because the place-value (eg, binary or decimal)
+representations of many reals are infinite, whereas computers can only use a finite number of binary digits
+to represent any one number.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-2.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+single-quoted array of arrays of ingeters, in proper Perl syntax, like so:
+./ch-1.pl "([1,3,-7,3,2,1], [7,6,5,7,6,5])"
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -62,22 +67,16 @@ our $t0; BEGIN {$t0 = time}
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+sub index_of_greatest ($aref) {
+   my $vog = $$aref[0]; # $vog = Value Of Greatest
+   my $iog = 0;         # $iog = Index Of Greatest
+   for ( my $idx = 1 ; $idx <= $#$aref ; ++$idx ) {
+      if ( $$aref[$idx] > $vog ) {
+         $vog = $$aref[$idx];
+         $iog = $idx;
       }
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   return $iog;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -86,24 +85,26 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # Inputs:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 input:
+   [5, 2, 9, 1, 7, 6],
+
+   # Example 2 input:
+   [4, 2, 3, 1, 5, 0],
 );
 
 # Main loop:
 for my $aref (@arrays) {
+   my $iog = index_of_greatest($aref);
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say 'Array = (', join(', ', @$aref), ')';
+   say "Index of greatest element = $iog";
 }
 exit;
 
 # ------------------------------------------------------------------------------------------------------------
 # DETERMINE AND PRINT EXECUTION TIME:
-END {my $µs = 1000000 * (time - $t0);printf("\nExecution time was %.0fµs.\n", $µs)}
+END {
+   my $µs = 1000000 * (time - $t0);
+   printf("\nExecution time was %.0fµs.\n", $µs);
+}
 __END__

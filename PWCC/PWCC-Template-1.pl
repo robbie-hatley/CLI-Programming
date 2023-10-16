@@ -105,8 +105,5 @@ exit;
 
 # ------------------------------------------------------------------------------------------------------------
 # DETERMINE AND PRINT EXECUTION TIME:
-END {
-   my $µs = 1000000 * (time - $t0);
-   printf("\nExecution time was %.0fµs.\n", $µs);
-}
+END {my $µs = 1000000 * (time - $t0);printf("\nExecution time was %.0fµs.\n", $µs)}
 __END__
