@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file.
 # ¡Hablo Español!  Говорю Русский.  Björt skjöldur.  麦藁雪、富士川町、山梨県。

@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 #  autoload-test-2.pl
 use v5.32;
 use utf8;

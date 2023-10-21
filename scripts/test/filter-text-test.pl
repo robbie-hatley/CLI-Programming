@@ -1,2 +1,2 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 while (<>) {print $_ unless $_ =~ /\[text\]/;}

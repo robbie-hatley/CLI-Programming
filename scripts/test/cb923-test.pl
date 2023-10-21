@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 # cb923-test.pl
 use v5.36;
 use strict;

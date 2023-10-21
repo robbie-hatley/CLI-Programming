@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 # 麦藁.pl
 use v5.32;
 use utf8;

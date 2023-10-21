@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 # mkdir-chdir-rmdir-utf8-test.pl
 use v5.32;
 use strict;

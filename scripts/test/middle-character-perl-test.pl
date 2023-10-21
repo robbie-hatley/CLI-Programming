@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 # middle-character-test-perl.pl
 use v5.32;
 use strict;

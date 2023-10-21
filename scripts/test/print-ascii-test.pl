@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 # print-ascii-test.pl
 use v5.32;
 use warnings FATAL => "utf8";

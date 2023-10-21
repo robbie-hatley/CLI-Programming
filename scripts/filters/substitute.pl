@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -16,7 +16,7 @@
 # Edit history:
 # ??? Dec ??, 2014: Wrote it.
 # Fri Jul 17, 2015: Upgraded for utf8.
-# Sat Apr 02, 2016: Added help. Added "#!/usr/bin/perl -CSDA".
+# Sat Apr 02, 2016: Added help. Added "#!/usr/bin/env -S perl -CSDA".
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
 ########################################################################################################################

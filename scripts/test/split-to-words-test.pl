@@ -1,4 +1,4 @@
-#!/usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 # split-to-words-test.pl
 use v5.32;
 use strict;
