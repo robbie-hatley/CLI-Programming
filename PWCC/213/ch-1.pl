@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 =pod
 
@@ -17,8 +17,8 @@ Written by Robbie Hatley on Wed Apr 19, 2023.
 PROBLEM DESCRIPTION:
 Task 1: Fun Sort
 Submitted by: Mohammad S Anwar
-Write a script to sort a list of positive integers so that the sorted list consists of 
-the even integers in ascending order followed by the odd integers in ascending order. 
+Write a script to sort a list of positive integers so that the sorted list consists of
+the even integers in ascending order followed by the odd integers in ascending order.
 Example 1: Input: (1,2,3,4,5,6)         Output: (2,4,6,1,3,5)
 Example 2: Input: (1,2)                 Output: (2,1)
 Example 3: Input: (1)                   Output: (1)

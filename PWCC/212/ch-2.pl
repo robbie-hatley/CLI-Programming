@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 =pod
 
@@ -23,7 +23,7 @@ You are given a list of integers and group size greater than zero. Write a scrip
 the list into equal groups of the given size where integers are in sequential order. If it
 can’t be done then print -1.
 
-Example 1:  Input:  @list = (1,2,3,5,1,2,7,6,3) and $size = 3  
+Example 1:  Input:  @list = (1,2,3,5,1,2,7,6,3) and $size = 3
             Output: (1,2,3), (1,2,3), (5,6,7)
 
 Example 2:  Input:  @list = (1,2,3) and $size = 2
@@ -57,7 +57,7 @@ Then those axioms imply the following theorems:
 3. The remaining parts of a compliant partition must obey the same principle as #2 above
    relative to the "remaining" elements of the original set
 
-These theorems suggest an approach: 
+These theorems suggest an approach:
 1. Sort the original set in-situ.
 2. If C is not divisible by $size, print -1 and stop.
 3. Try to form a subset of cardinality C/$size consisting of consecutive integers starting
@@ -80,7 +80,7 @@ compliant partition or by "-1" if no compliant partition is possible.
 =cut
 
 # ======= PRELIMINARIES: =================================================================
-# 
+#
 use v5.36;
 use strict;
 use warnings;
@@ -137,7 +137,7 @@ sub consecutive_partition ($aref){
 
 # ======= DEFAULT INPUTS: ================================================================
 
-my @arrays = 
+my @arrays =
 (
    [1,2,3,5,1,2,7,6,3,3],
    [1,2,3,2],

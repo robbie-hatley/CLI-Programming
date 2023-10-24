@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -48,7 +48,7 @@ Input is either from built-in array of arrays or from @ARGV. If using @ARGV, the
 string consisting of an array of arrays of integers, in valid Perl syntax, such as:
 ./ch-2.pl '([5,-2,4,3,-1,4],[-3,-6,-2,-2,-5])'
 
-Output will be to STDOUT and will be the duplicate integer and missing integers (if there are one of each), 
+Output will be to STDOUT and will be the duplicate integer and missing integers (if there are one of each),
 or -1 (otherwise). Also output will be the original array, and arrays of any duplicate and missing integers found,
 keeping in-mind the Xmin-1 and Xmax+1 rules logically-implied by Example 3 but not given in the instructions.
 
@@ -57,7 +57,7 @@ keeping in-mind the Xmin-1 and Xmax+1 rules logically-implied by Example 3 but n
 # ======= INPUTS: ======================================================================================================
 
 # Default Inputs:
-my @arrays = 
+my @arrays =
 (
    [1,2,2,4],
    [1,2,3,4],

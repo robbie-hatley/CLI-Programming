@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 =pod
 
@@ -18,7 +18,7 @@ PROBLEM DESCRIPTION:
 
 Task 2: Shortest Route
 Submitted by: Mohammad S Anwar
-You are given a list of bidirectional routes defining a network of nodes, as well as 
+You are given a list of bidirectional routes defining a network of nodes, as well as
 source and destination node numbers. Write a script to find the route from source to
 destination that passes through fewest nodes, or print -1 of no such route exists.
 
@@ -57,7 +57,7 @@ INPUT / OUTPUT NOTES:
 
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument
 which must be a 'single-quoted' array of arrays in correct Perl syntax, with each array
-consisting of source, followed by destination, followed by a sequence of arrays of 
+consisting of source, followed by destination, followed by a sequence of arrays of
 integers representing various routes, like so:
 ./ch-2.pl '([4, -34, [5, -37, 4], [-3, 2, 5], [2, 6, -34]], [1, 5, [1,3,7], [5,6,7]])'
 
@@ -67,7 +67,7 @@ or -1 of no route exists from source to destination.
 =cut
 
 # ======= PRELIMINARIES: =================================================================
-# 
+#
 use v5.36;
 use strict;
 use warnings;
@@ -86,13 +86,13 @@ sub shortest ($srce, $dest, $routes, $path) {
       push @sri, $i if any { $_ == $srce } @{${$routes}[$i]};
       push @dri, $i if any { $_ == $dest } @{${$routes}[$i]};
    }
-   
+
    @$path = (-1);
 }
 
 # ======= DEFAULT INPUTS: ================================================================
 
-my @arrays = 
+my @arrays =
 (
    [1, 7, [1,2,6], [5,6,7]],
    [2, 5, [1,2,3], [4,5,6]],

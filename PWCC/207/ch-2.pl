@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -15,14 +15,14 @@
 
 Task 2: H-Index
 Submitted by: Mohammad S Anwar
-Write a script to compute the "H-Index" of an array of integers enumerating 
-the citations which a researcher has received for each of his/her papers. 
+Write a script to compute the "H-Index" of an array of integers enumerating
+the citations which a researcher has received for each of his/her papers.
 For more information please checkout the wikipedia page:
-"The H-Index is the largest number h such that h articles have at least h 
-citations each. For example, if an author has five publications, with 9, 7, 
-6, 2, and 1 citations (ordered from greatest to least), then the author’s 
-h-index is 3, because the author has three publications with 3 or more 
-citations. However, the author does not have four publications with 4 or 
+"The H-Index is the largest number h such that h articles have at least h
+citations each. For example, if an author has five publications, with 9, 7,
+6, 2, and 1 citations (ordered from greatest to least), then the author’s
+h-index is 3, because the author has three publications with 3 or more
+citations. However, the author does not have four publications with 4 or
 more citations."
 
 Example 1:  Input: (10,8,5,4,3)  Output: 4
@@ -75,6 +75,6 @@ my $t0 = time;
 for (@arrays){
    say '';
    my @array = @{$_};
-   my $h = h(@array);   
+   my $h = h(@array);
    say "\@array:    (@array)";
    say "h(\@array): $h      ";}

@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 =pod
 
@@ -30,11 +30,11 @@ INPUT / OUTPUT NOTES:
 
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument
 which must be a 'single-quoted' array of arrays in proper Perl syntax, with each array
-consisting of a "double-quoted" word followed by a sequence of integers equal in number 
+consisting of a "double-quoted" word followed by a sequence of integers equal in number
 to the number of letters in the word. For example:
 ./ch-1.pl '(["Frank", 2, 18, -37, 45, 6], ["cat", 3, 8, 72])'
 
-Output is to STDOUT and will be the input word and jump numbers followed by the "jumped" 
+Output is to STDOUT and will be the input word and jump numbers followed by the "jumped"
 output word (or by an error message if input is invalid).
 
 =cut

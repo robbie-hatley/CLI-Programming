@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 =pod
 
@@ -46,7 +46,7 @@ $" = ', ';
 # DEFAULT INPUTS:
 
 # Declare an Array of Arrays of Arrays called @aaa:
-my @array = 
+my @array =
 (
    [
       ['A', 'a1@a.com', 'a2@a.com'],

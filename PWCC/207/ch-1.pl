@@ -1,4 +1,4 @@
-#! /bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -28,7 +28,7 @@ Example 2:  Input: ("OMG","Bye")                     Output: ()
 # IO NOTES:
 # NOTE: Input is by either built-in array-of-arrays, or @ARGV. If using @ARGV,
 #       the args should be a space-separated sequence of 'single-quoted' words
-#       using only letters available on a standard QWERTY keyboard; this 
+#       using only letters available on a standard QWERTY keyboard; this
 #       sequence will be considered to be a single array of words.
 # NOTE: Output is to STDOUT and will be those words which can be typed on one
 #       row of a QWERTY keyboard.
@@ -58,7 +58,7 @@ sub one_row($word){
    else                                 {return 0}}
 
 # DEFAULT INPUTS:
-my @arrays = 
+my @arrays =
 (
    ['Hello','Alaska','Dad','Peace'],
    ['OMG','Bye'],
