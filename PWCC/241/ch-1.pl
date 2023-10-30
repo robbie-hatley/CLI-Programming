@@ -42,8 +42,8 @@ To solve this problem, I could resort to using CPAN module Math::Combinatorics a
 a problem involves permutations or combinations, but in this case that seems like overkill to me, so I'll
 use triple-nested three-part loops instead. I'll check to make sure all array elements are integers, but I
 won't enforce the restriction that they be in increasing order, because there's no need: it wouldn't make my
-program malfunction), and subsequences of non-monotonic sequences can still be arithmetic triplets (for
-example: (17, -32, 53, -34, 47, -36, 14) contains the arithmetic triplet (-32, -34, -36) with period -2.
+program malfunction), and subsequences of non-monotonic sequences can still be arithmetic triplets. For
+example, (17, -32, 53, -34, 47, -36, 14) contains the arithmetic triplet (-32, -34, -36) with period -2.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
