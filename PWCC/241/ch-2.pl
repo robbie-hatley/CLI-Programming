@@ -30,7 +30,16 @@ Prime factors of 27 => 3, 3, 3
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+To solve this problem requires finding all prime factors of any given positive integer > 2. Fortunately,
+I know a way to do that which doesn't require finding any prime numbers at all! The algorithm is like this:
+1. First, find-and-divide-out all copies of 2 from number "$x".
+2. Set variable "$divisor" to 3.
+3. Loop steps 3,4,5 while $x is greater than 1.
+4. Find-and-divide-out all copies of $divisor from $x.
+5. Increase $divisor by 2.
+That works because none of the divisors of $x we find will ever be non-prime, because all non-prime numbers
+have prime divisors, all of which are lesser than themselves, so THOSE divisors will already have been
+found-and-divided-out from $x.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
