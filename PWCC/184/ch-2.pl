@@ -10,35 +10,39 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
 Solutions in Perl for The Weekly Challenge 184-2.
-Written by Robbie Hatley on Tue Oct 24, 2023.
+Written by Robbie Hatley on Tue Nov 07, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 2: Anamatu Serjianu
+
+Task 2: Split Array
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
+You are given list of strings containing 0-9 and a-z separated by
+space only. Write a script to split the data into two arrays, one
+for integers and one for alphabets only.
 
-Example 1:
-Input:   ('dog', 'cow', 'pig'),
-Output:  ('horse')
+Example 1
+Input: @list = ( 'a 1 2 b 0', '3 c 4 d')
+Output: [[1,2,0], [3,4]] and [['a','b'], ['c','d']]
 
-Example 2:
-Input:   ('apple', 'pear', 'peach'),
-Output:  ('grape')
-
-Example 3:
-Input:   ('Sam', 'Bob', 'Pete'),
-Output:  ('Susan')
+Example 2
+Input: @list = ( '1 2', 'p q r', 's 3', '4 5 t')
+Output: [[1,2], [3], [4,5]] and [['p','q','r'], ['s'], ['t']]
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I don't like that the problem description indicates that I should elide empty arrays, so I'm not going to do
+that. Also, what's up with all the spaces? I'll write a script that's non-white-space-dependent, by splitting
+the strings on // instead of / / then just ignoring the spaces in the resulting arrays and cherry-picking
+the 0-9 and a-z characters only. Thus my input can be any array of any strings (including empty strings or NO
+strings) and yet the output will be the same for the given examples (with the exception that the empty output
+arrays won't be elided for Example 2).
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-2.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+./ch-2.pl "(['375/5=75', 'She ran home.', 'I ate 375 hot dogs.'],['She sat.', 'I didn\'t sit.'])"
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -57,27 +61,38 @@ use Time::HiRes 'time';
 
 # ------------------------------------------------------------------------------------------------------------
 # START TIMER:
-our $t0; BEGIN {$t0 = time}
+our $t0;
+BEGIN {$t0 = time}
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
+# Format an array of strings as ("str1", "str2", "str3") :
+sub arrstr ($aref) {
+   return '(' . join(', ', map {"\"$_\""} @$aref) . ')';
+}
+
+# Format an array of arrays of strings as ([str1, str2], [str3, str4]) :
+sub arrarrstr ($aref) {
+   return '(' . join(', ', map {'['.join(', ', @$_).']'} @$aref) . ')';
+}
+
+# For any array of strings, return an array of two arrays of arrays,
+# where the first  array of arrays contains the digits  [0-9] of the strings,
+# and   the second array of arrays contains the letters [a-z] of the strings:
+sub numslets ($aref) {
+   my @numslets = ([],[]);
+   for my $string (@$aref) {
+      my @nums;
+      my @lets;
+      for (split //, $string) {
+         /[0-9]/ and push @nums, $_;
+         /[a-z]/ and push @lets, $_;
       }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
-      }
+      push @{$numslets[0]}, [@nums];
+      push @{$numslets[1]}, [@lets];
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   return @numslets;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -86,20 +101,26 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # Inputs:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   ['a 1 2 b 0', '3 c 4 d'],
+   # Expected Outputs:
+   # Numbers: ([1, 2, 0], [3, 4])
+   # Letters: ([a, b], [c, d])
+
+   # Example 2 Input:
+   ['1 2', 'p q r', 's 3', '4 5 t'],
+   # Expected Outputs:
+   # Numbers: ([1,2], [], [3], [4,5])
+   # Letters: ([], [p, q, r], [s], [t])
 );
 
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   my @numslets = numslets($aref);
+   say 'Original Array  = ', arrstr    ( $aref        );
+   say 'Digit    Arrays = ', arrarrstr ( $numslets[0] );
+   say 'Letter   Arrays = ', arrarrstr ( $numslets[1] );
 }
 exit;
 
