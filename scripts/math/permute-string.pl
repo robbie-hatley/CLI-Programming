@@ -20,7 +20,7 @@ use Time::HiRes 'time';
 use Carp "cluck";
 
 # Variables (WARNING: initializations in the "BEGIN" block below happen BEFORE any initializations here):
-my $db          = 1; # Set to 1 to cluck.
+my $db          = 0; # Set to 1 to cluck.
 my $Perms       = 0; # Count of permutations found.
 my $EntryTime      ; # Time of program entry. (Initialized in BEGIN block below. Do NOT re-initialize here!)
 my $ExitTime       ; # Time of program exit.  (Initialized in  END  block below.)

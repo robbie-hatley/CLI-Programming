@@ -1,4 +1,4 @@
-usr/bin/perl -CSDA
+#!/usr/bin/env -S perl -CSDA
 
 # This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -153,8 +153,8 @@ sub argv {
    my @opts = ();             # options
    my @args = ();             # arguments
    my $end = 0;               # end-of-options flag
-   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
-   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (letters, numbers)
+   my $d = '[a-zA-Z0-9=.-_]'; # double-hyphen allowable chars (letters, numbers, equal, dot, hyphen, score)
    for ( @ARGV ) {
       /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
       and $end = 1            # so if we see that, then set the "end-of-options" flag
