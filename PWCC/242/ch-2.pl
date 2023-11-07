@@ -41,6 +41,7 @@ Output: ([1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 0, 1], [1, 0, 1, 0])
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 Reversing the rows is easily done with "reverse", and logically-inverting the elements can be done with "!".
+However, instead of doing that, I think I'll use a combined approach using ranged "for", "!", and "unshift":
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:

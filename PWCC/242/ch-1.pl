@@ -43,7 +43,7 @@ use List::Util 'uniq';
 @unique1 = uniq sort @arr1;
 @unique2 = uniq sort @arr2;
 Then I'll just see which elements of @unique1 aren't in @unique2 and vice-versa. I'll make subs "is_int",
-"are_ints", "is_in_array", and "missing" to do most of the work, then call these from a main array loop.
+"are_ints", "is_in", and "missing" to do most of the work, then call these from the main array loop:
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -75,9 +75,6 @@ BEGIN {$t0 = time}
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
-
-# Format an referred-to array of ints as (3, 17, -42, 487):
-sub arraystr ($aref) {return '(' . join(', ', @$aref) . ')'}
 
 # Is a given scalar a decimal representation of an integer?
 sub is_int ($x) {
@@ -126,16 +123,16 @@ my @arrays = @ARGV ? eval($ARGV[0]) :
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   say 'Array1 = ', arraystr($$aref[0]);
-   say 'Array2 = ', arraystr($$aref[1]);
+   say 'Array1 = (' . join(', ', @{$$aref[0]}) . ')';
+   say 'Array2 = (' . join(', ', @{$$aref[1]}) . ')';
    if ( !are_ints($$aref[0]) || !are_ints($$aref[1]) ) {
       say 'Error: array pair contains non-integer elements;';
       say 'skipping to next array pair.';
       next;
    }
    my @missing = missing($$aref[0],$$aref[1]);
-   say 'Mssng1 = ', arraystr($missing[0]);
-   say 'Mssng2 = ', arraystr($missing[1]);
+   say 'Mssng1 = (' . join(', ', @{$missing[0]}) . ')';
+   say 'Mssng2 = (' . join(', ', @{$missing[1]}) . ')';
 }
 exit;
 
