@@ -9,36 +9,36 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge xxx-1.
-Written by Robbie Hatley on Xxx Xxx xx, 2023.
+Solutions in Perl for The Weekly Challenge 186-2.
+Written by Robbie Hatley on Fri Nov 10, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 1: Anamatu Serjianu
+Task 2: Unicode Makeover
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
+You are given a string with possible unicode characters.
+Create a subroutine sub makeover($str) that replace the
+unicode characters with ascii equivalent. For this task,
+let us assume it only contains alphabets.
 
 Example 1:
-Input:   ('dog', 'cow', 'pig'),
-Output:  ('horse')
+Input: $str = 'ÃÊÍÒÙ';
+Output: 'AEIOU'
 
 Example 2:
-Input:   ('apple', 'pear', 'peach'),
-Output:  ('grape')
-
-Example 3:
-Input:   ('Sam', 'Bob', 'Pete'),
-Output:  ('Susan')
+Input: $str = 'âÊíÒÙ';
+Output: 'aEiOU'
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I'll use "use Unicode::Normalize 'NFD';" to decompose all the diacriticals from their base letters,
+then I'll use "s/\pM//" to erase the diacriticals from the strings.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
-Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-1.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be
+a double-quoted array of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
+./ch-2.pl "('金ÂЩg茶ýöё♪', '♫mêиlàlóxц', '狗ТüCâб金川', 'Cân\'t!')"
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -54,53 +54,41 @@ use utf8;
 use warnings FATAL => 'utf8';
 use Sys::Binmode;
 use Time::HiRes 'time';
+use Unicode::Normalize 'NFD';
 
 # ------------------------------------------------------------------------------------------------------------
 # START TIMER:
-our $t0;
-BEGIN {$t0 = time}
+our $t0; BEGIN {$t0 = time}
 
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
-      }
-   }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+sub strip ($x) {
+   return (NFD $x) =~ s/\pM//gr;
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 
 # Inputs:
-my @arrays = @ARGV ? eval($ARGV[0]) :
+my @strings = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+     'ÃÊÍÒÙ',
+   # Expected Output:
+   # 'AEIOU'
+
+   # Example 2 Input:
+     'âÊíÒÙ',
+   # Expected Output:
+   # 'aEiOU'
 );
 
 # Main loop:
-for my $aref (@arrays) {
+for my $string (@strings) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say 'Original string: ', $string;
+   say 'Stripped string: ', strip $string;
 }
 exit;
 

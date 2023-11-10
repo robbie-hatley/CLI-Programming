@@ -1,10 +1,10 @@
 #!/usr/bin/env -S perl -CSDA
 
-# This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # strip-marks.pl
 # Removes all combining marks from unicode text.
 #
@@ -17,56 +17,41 @@
 # Sat Dec 23, 2017: Added help and verbose, and revamped getting options.
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
-########################################################################################################################
+# Thu Nov 09, 2023: Updated Perl version to 5.36. Simplified code. Reduced width from 120 to 110.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
-use Unicode::Normalize qw( NFD );
-use RH::Dir;
-use RH::WinChomp;
+use v5.36;
+use Unicode::Normalize 'NFD';
 
-sub process_argv () ;
-sub help         () ;
+sub argv ;
+sub help ;
 
 my $verbose = 0;
 
-{ # begin main
-   process_argv;
-   while (<>)
-   {
-      winchomp;
-      if (not $verbose)
-      {
-         $_ = NFD $_;
-         s/\pM//g;
-         say;
-      }
-      else
-      {
-         say("Raw string = $_");
-         say("Length of raw string = ", length($_));
-         $_ = NFD $_;
-         s/\pM//g;
-         say("Stripped string = $_");
-         say("Length of stripped string = ", length($_));
-         say('');
-      }
-   }
-   exit 0;
-} # end main
+# begin main
+argv;
+while (<>) {
+   s/[\pZ\pC]+$//;
+   $verbose and say "Raw string = $_"
+            and say "Length of raw string = ", length($_);
+   s/\p{Mc}/ /g; # Convert each spacing combining mark into a single space.
+   $_ = NFD $_;  # Fully-decompose all extended grapheme clusters.
+   s/\p{Mn}//g;  # Git rid of all non-spacing combining marks.
+   $verbose and say "Stripped string = $_"
+            and say "Length of stripped string = ", length($_);
+  !$verbose and say $_;
+}
+exit 0;
+# end main
 
-# ======= SUBROUTINE DEFINITIONS =======================================================================================
+# ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub process_argv ()
-{
+sub argv {
    my $help  = 0;
    my $index = 0;
-   for ( $index = 0 ; $index < @ARGV ; ++$index )
-   {
+   for ( $index = 0 ; $index < @ARGV ; ++$index ) {
       $_ = $ARGV[$index];
-      if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
+      if (/^-[\pL\pN]{1}$/ || /^--[\pL\pN=_-]{2,}$/) {
          if ('-h' eq $_ || '--help'    eq $_) {$help    =  1;}
          if ('-v' eq $_ || '--verbose' eq $_) {$verbose =  1;}
          splice @ARGV, $index, 1;
@@ -74,11 +59,9 @@ sub process_argv ()
       }
    }
    if ($help) {help; exit 777;}
-   return 1;
-} # end sub process_argv ()
+} # end sub process_argv
 
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "strip-marks.pl". This program strips all "combining marks",
    aka "diacriticals", from Unicode input text, to the maximum extent possible.
@@ -100,7 +83,7 @@ sub help ()
    Output is to STDOUT.
    (Output can also be redirected or piped to where you like.)
 
-   All input and output is UTF-8-encoded Unicode-encoded text.
+   All input and output is UTF-8-transformed Unicode-encoded text.
 
    Happy mark stripping!
 
@@ -109,4 +92,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help

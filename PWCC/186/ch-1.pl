@@ -9,36 +9,33 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge xxx-1.
-Written by Robbie Hatley on Xxx Xxx xx, 2023.
+Solutions in Perl for The Weekly Challenge 186-1.
+Written by Robbie Hatley on Fri Nov 10, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 1: Anamatu Serjianu
+Task 1: Zip List
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
+You are given two list @a and @b of same size. Create a
+subroutine sub zip(@a, @b) that merge the two list as shown in
+the example below.
 
 Example 1:
-Input:   ('dog', 'cow', 'pig'),
-Output:  ('horse')
-
-Example 2:
-Input:   ('apple', 'pear', 'peach'),
-Output:  ('grape')
-
-Example 3:
-Input:   ('Sam', 'Bob', 'Pete'),
-Output:  ('Susan')
+Input:  @a = qw/1 2 3/; @b = qw/a b c/;
+Output: zip(@a, @b) should return qw/1 a 2 b 3 c/;
+        zip(@b, @a) should return qw/a 1 b 2 c 3/;
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This is incredibly simple, and there's probably a CPAN module for it, but then what would be the point? No,
+I'll make a "zip" sub instead. And I won't even insist on the arrays being the same length, or even being
+non-empty. (The zip of two empty arrays is just an empty array.)
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
-Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-1.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be
+a double-quoted array of arrays of two qw-quoted arrays bare-word strings, in proper Perl syntax, like so:
+./ch-1.pl "([[qw(Fred Barney)], [qw(cat dog)]], [[qw(1 2 3)],[qw(apple ball candy dune)]])"
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -63,22 +60,16 @@ BEGIN {$t0 = time}
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
-      }
+# Zip-together two arrays of anything, of any sizes,
+# even if one-or-both arrays are empty:
+sub zip ($aref1, $aref2) {
+   my @zipped = ();
+   my $maxidx = $#$aref1; $maxidx = $#$aref2 if $#$aref2 > $#$aref1;
+   for ( my $idx = 0 ; $idx <= $maxidx ; ++$idx ) {
+      push @zipped, $$aref1[$idx] if $idx <= $#$aref1;
+      push @zipped, $$aref2[$idx] if $idx <= $#$aref2;
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   return @zipped;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -87,20 +78,19 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # Inputs:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   [[qw/1 2 3/], [qw/a b c/]],
+   # Expected Output:
+   # qw/1 a 2 b 3 c/;
 );
 
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   my @zipped = zip($$aref[0], $$aref[1]);
+   say 'first  array = qw/', join(' ', @{$$aref[0]}), '/';
+   say 'second array = qw/', join(' ', @{$$aref[1]}), '/';
+   say 'zipped array = qw/', join(' ', @{zipped   }), '/';
 }
 exit;
 
