@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 #include <error.h>
 #include <errno.h>
 
@@ -29,6 +30,7 @@ typedef union Data64_tag {
 } Data64;
 
 void Help (void);
+bool OOR64 (char *input);
 
 int main (int Beren, char *Luthien[]) {
    __int128_t N;
@@ -52,8 +54,8 @@ int main (int Beren, char *Luthien[]) {
       );
    }
 
-   N = strtol(Luthien[1], NULL, 10);
-   X = strtol(Luthien[2], NULL, 10);
+   N = (__int128_t)strtol(Luthien[1], NULL, 10);
+   X = (__int128_t)strtol(Luthien[2], NULL, 10);
 
    if ( 8 != N && 16 != N && 32 != N && 64 != N ) {
       error
@@ -118,7 +120,7 @@ int main (int Beren, char *Luthien[]) {
    }
 
    if ( 64 == N ) {
-      if ( X < INT64_MIN || X > INT64_MAX ) {
+      if (OOR64(Luthien[2])) {
          error
          (
             666,
@@ -145,4 +147,39 @@ void Help (void) {
    printf("Arg2 is the integer to be represented, which must be\n");
    printf("representable by the number of bits in Arg1.\n");
    return;
+}
+
+bool OOR64 ( char *input ) {
+   // Declare and initialize-to-zero all variables we'll need here:
+   int   idx     = 0      ; // Index of first digit character of input.
+   char  val[95] = {'\0'} ; // Value to be compared to limit.
+   int   len     = 0      ; // Length of value.
+   char  lim[95] = {'\0'} ; // Limit for comparison.
+   bool  oor     = 0      ; // Boolean: out of range?
+
+   // Figure-out and set the values of those variables:
+   idx = ('-' == input[0]) ? 1 : 0;
+   strncpy(val, input+idx, 90);
+   len = (int)strlen(val);
+   idx
+   ? strncpy(lim, "9223372036854775808", 90)
+   : strncpy(lim, "9223372036854775807", 90);
+
+   // If length of value is less than 19, we're NOT out-of-range:
+   if ( len < 19 ) {
+      oor = 0;
+   }
+
+   // If length of value is more than 19, we ARE out-of-range:
+   else if ( len > 19 ) {
+      oor = 1;
+   }
+
+   // If length of value is exactly 19, use string comparison:
+   else {
+      oor = (strcmp(val, lim) > 0);
+   }
+
+   // Finally, return boolean indicating whether-or-not we're out-of-range:
+   return oor;
 }
