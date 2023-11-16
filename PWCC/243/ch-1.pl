@@ -76,8 +76,8 @@ sub are_pos_ints ($aref) {
 
 sub reverse_pairs ($aref) {
    my @rp = ();
-   for (    my $i =    0   ; $i <= $#$aref - 1 ; ++$i ) {
-      for ( my $j = $i + 1 ; $j <= $#$aref - 0 ; ++$j ) {
+   for    my $i (    0   .. $#$aref - 1 ) {
+      for my $j ( $i + 1 .. $#$aref - 0 ) {
          if ( $$aref[$i] > 2 * $$aref[$j] ) {
             push @rp, [$$aref[$i], $$aref[$j]];
          }
