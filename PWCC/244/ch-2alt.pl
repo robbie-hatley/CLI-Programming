@@ -16,6 +16,7 @@ Written by Robbie Hatley on Tue Nov 21, 2023.
 PROBLEM DESCRIPTION:
 Task 2: Group Hero
 Submitted by: Mohammad S Anwar
+
 You are given an array of integers representing the strength.
 Write a script to return the sum of the powers of all possible
 combinations; power is defined as the square of the largest
@@ -45,7 +46,7 @@ middle" and look at pairs only, by first sorting the array in descending numeric
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of integers, in proper Perl syntax, like so:
-./ch-2.pl '([4,8,16,32],[-3,45,-17,63,-54],[0,0,0,0,0])'
+./ch-2alt.pl '([4,8,16,32],[-3,45,-17,63,-54],[0,0,0,0,0])'
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -61,6 +62,8 @@ use utf8;
 use warnings FATAL => 'utf8';
 use Sys::Binmode;
 use Time::HiRes 'time';
+use Math::Combinatorics;
+use List::Util ('min', 'max');
 
 # ------------------------------------------------------------------------------------------------------------
 # START TIMER:
@@ -79,23 +82,18 @@ sub is_array_of_ints($aref) {
    return 1;
 }
 
-# How many combinations are there with given index limits?
-sub cmbs ($i, $j) {
-   my $span = abs($j-$i);
-   if    ( 0 == $span ) {return 1;}
-   else                 {return 2**($span-1);}
-}
-
 # What is the sum of the powers of all combinations?
 sub sum_pow_cmbs ($aref) {
-   my $totl = 0;
-   my @desc = sort {$b<=>$a} @$aref;
-   for    ( my $i =  0 ; $i <= $#$aref ; ++$i ) {
-      for ( my $j = $i ; $j <= $#$aref ; ++$j ) {
-         $totl += cmbs($i, $j)*$desc[$i]*$desc[$i]*$desc[$j];
-      }
+   my $total = 0;
+   my $asize = scalar(@$aref);
+   my @combs = ();
+   foreach my $csize ( 1 .. $asize ) {
+      push @combs, combine($csize,@$aref);
    }
-   return $totl;
+   foreach my $cref ( @combs ) {
+      $total += min(@$cref)*max(@$cref)*max(@$cref);
+   }
+   return $total;
 }
 
 # ------------------------------------------------------------------------------------------------------------
