@@ -32,15 +32,16 @@ my @dir_lines = `/usr/bin/ls -l`;
 # Make hash of directory lines for regular files only, keyed by file-name extension:
 my %exts;
 for my $line ( @dir_lines ) {
-   s/\s+$//;                               # Trim newline from each line.
-   next if $_ =~ m/^total/;                # Skip "total" line.
-   next if $_ =~ m/^d/;                    # Skip directory lines.
-   next if $_ =~ m/^l/;                    # Skip link lines.
+   $line =~ s/[\p{Zs}\p{Cc}]+$//g; # Trim whitespace and control characters (eg, newlines) from line ends.
+   next if $line =~ m/^total/;     # Skip "total" line.
+   next if $line =~ m/^d/;         # Skip directory lines.
+   next if $line =~ m/^l/;         # Skip link lines.
    push @{$exts{ext(name($line))}}, $line; # Store line in hash.
 }
 
 # Print "ls -l" list of regular files in current directory grouped by extension and case-insensitively sorted:
 for my $ext ( sort keys %exts ) {
    say '';
+   say "Files with extension \"$ext\":";
    say for sort {fc(name($a)) cmp fc(name($b))} @{$exts{$ext}};
 }

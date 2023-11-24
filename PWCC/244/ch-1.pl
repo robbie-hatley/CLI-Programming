@@ -38,13 +38,16 @@ Output: (0, 0, 0)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+Well, the obvious (mundane, prosaic) way is: for each element, riffle through the array and count smaller
+elements. But let's not do that. Instead, let's make a copy of the array sorted in increasing order. Then for
+each element of the original array, "number of smaller elements" can be found by counting elements of the
+sorted array until a "not smaller" element is found.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-1.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+single-quoted array of arrays of integers, in proper Perl syntax, like so:
+./ch-1.pl '([17,54,-72,13,83],[5,4,3,2,1,0],[3,3,3,3,3,3],[13,-7,5,1,5,22])'
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -69,22 +72,29 @@ BEGIN {$t0 = time}
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
-      }
+# Is a given array an array of integers?
+sub is_array_of_ints($aref) {
+   return 0 if 'ARRAY' ne ref $aref;
+   for (@$aref) {
+      return 0 if !/^-[1-9]\d*$|^0$|^[1-9]\d*$/;
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   return 1;
+}
+
+# Given an array of one-or-more integers, return the array
+# of numbers of elements of the original array which are
+# smaller than each element of the original array:
+sub count_smaller ($aref) {
+   my @sorted  = sort {$a<=>$b} @$aref;
+   my @smaller = ();
+   foreach my $x (@$aref) {
+      my $count = 0;
+      foreach my $y (@sorted) {
+         $y < $x and ++$count or last;
+      }
+      push @smaller, $count;
+   }
+   return @smaller;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -93,20 +103,27 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # Inputs:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   [8, 1, 2, 2, 3],
+   # Expected Output: (4, 0, 1, 1, 3)
+
+   # Example 2 Input:
+   [6, 5, 4, 8],
+   # Expected Output: (2, 1, 0, 3)
+
+   # Example 3 Input:
+   [2, 2, 2],
+   # Expected Output: (0, 0, 0)
 );
 
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say 'Original Array = (', join(', ', @$aref), ')';
+   !is_array_of_ints($aref)
+   and say 'Error: Not an array of ints. Moving on to next array.'
+   and next;
+   say 'Smaller Counts = (', join(', ', count_smaller($aref)), ')';
 }
 exit;
 

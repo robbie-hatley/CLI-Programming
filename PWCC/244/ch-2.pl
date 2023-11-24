@@ -45,8 +45,8 @@ middle" and look at pairs only, by first sorting the array in descending numeric
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-2.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+single-quoted array of arrays of integers, in proper Perl syntax, like so:
+./ch-2.pl '([4,8,16,32],[-3,45,-17,63,-54],[0,0,0,0,0])'
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -71,21 +71,29 @@ BEGIN {$t0 = time}
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
+# Is a given array an array of integers?
+sub is_array_of_ints($aref) {
+   return 0 if 'ARRAY' ne ref $aref;
+   for (@$aref) {
+      return 0 if !/^-[1-9]\d*$|^0$|^[1-9]\d*$/;
+   }
+   return 1;
+}
+
 # How many combinations are there with given index limits?
 sub cmbs ($i, $j) {
    my $span = abs($j-$i);
-   if      ( 0 == $span ) {return 1;}
-   else if ( 1 == $span ) {return 1;}
-   else                   {return 2**($span-1);}
+   if    ( 0 == $span ) {return 1;}
+   else                 {return 2**($span-1);}
 }
 
 # What is the sum of the powers of all combinations?
 sub sum_pow_cmbs ($aref) {
    my $totl = 0;
-   my $desc = sort {$b<=>$a} @$aref;
+   my @desc = sort {$b<=>$a} @$aref;
    for    ( my $i =  0 ; $i <= $#$aref ; ++$i ) {
       for ( my $j = $i ; $j <= $#$aref ; ++$j ) {
-         $totl += cmbs($i, $j)*$$aref[$i]*$$aref[$i]*$$aref[$j];
+         $totl += cmbs($i, $j)*$desc[$i]*$desc[$i]*$desc[$j];
       }
    }
    return $totl;
@@ -97,20 +105,19 @@ sub sum_pow_cmbs ($aref) {
 # Inputs:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   [2, 1, 4],
+   # Expected Output: 141
 );
 
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say 'Array = (', join(',',@$aref), ')';
+   is_array_of_ints($aref)
+   or say 'Error: Not an array of ints. Moving on to next array.'
+   and next;
+   say 'Sum of powers of combinations = ', sum_pow_cmbs($aref);
 }
 exit;
 
