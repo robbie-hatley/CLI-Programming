@@ -9,7 +9,7 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solution in Perl for The Weekly Challenge 244-1.
+Solution in Perl for The Weekly Challenge 244-1, Alternate Version.
 Written by Robbie Hatley on Tue Nov 21, 2023.
 
 --------------------------------------------------------------------------------------------------------------
@@ -38,16 +38,14 @@ Output: (0, 0, 0)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-Well, the obvious (mundane, prosaic) way is: for each element, riffle through the array and count smaller
-elements. But let's not do that. Instead, let's make a copy of the array sorted in increasing order. Then for
-each element of the sorted array which is greater than the element to its left, store its index as "count" in
-a hash (as suggested to me by Jason Mills in the "Perl Programmers" Facebook group).
+In this "alternate" version, I'll use the obvious (mundane, prosaic) way: for each element, riffle through the
+array and count smaller elements. Let's see how the run-time compares to my "sorted array" version.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of integers, in proper Perl syntax, like so:
-./ch-1.pl '([17,54,-72,13,83],[5,4,3,2,1,0],[3,3,3,3,3,3],[13,-7,5,1,5,22])'
+./ch-1alt.pl '([17,54,-72,13,83],[5,4,3,2,1,0],[3,3,3,3,3,3],[13,-7,5,1,5,22])'
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -81,18 +79,17 @@ sub is_array_of_ints($aref) {
    return 1;
 }
 
+# Given an array of one-or-more integers, return the array
+# of numbers of elements of the original array which are
+# smaller than each element of the original array:
 sub count_smaller ($aref) {
-   my @sorted = sort {$a<=>$b} @$aref;
-   my %hash;
-   $hash{$sorted[0]} = 0;
-   for (1..$#sorted) {
-      if ($sorted[$_]>$sorted[$_-1]) {
-         $hash{$sorted[$_]} = $_;
-      }
-   }
    my @smaller = ();
-   for (@$aref) {
-      push @smaller, $hash{$_};
+   foreach my $x (@$aref) {
+      my $count = 0;
+      foreach my $y (@$aref) {
+         $y < $x and ++$count;
+      }
+      push @smaller, $count;
    }
    return @smaller;
 }

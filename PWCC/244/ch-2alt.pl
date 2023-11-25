@@ -9,7 +9,7 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge 244-2.
+Solution in Perl for The Weekly Challenge 244-2, Alternate Version.
 Written by Robbie Hatley on Tue Nov 21, 2023.
 
 --------------------------------------------------------------------------------------------------------------
@@ -36,11 +36,7 @@ Sum: 8 + 1 + 64 + 4 + 32 + 16 + 16 => 141
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I was going to use CPAN module "Math::Combinatorics" on this, but then I realized, we're only looking at the
-minimum and maximum elements (exactly two elements) of each combination, so we should be able to "elide the
-middle" and look at pairs only, by first sorting the array in descending numeric order, then calculating the
-"power" for each (max,min) pair, then multiply by the total number of combinations having that (max,min)
-(which should be 2^(j-i-1) but not less than 1), then tally the results.
+In this "alternate" version I'll use CPAN module "Math::Combinatorics". Let's seen how the run time compares.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
