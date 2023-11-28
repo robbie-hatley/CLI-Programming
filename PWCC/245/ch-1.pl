@@ -71,14 +71,8 @@ sub is_array_of_pos_ints($aref) {
    return 1;
 }
 
-sub sort_by_popularity($aref1, $aref2) {
-   # First make an array of [language, popularity] pairs:
-   my @pairs;
-   for ( my $i = 0 ; $i <= $#$aref1 ; ++$i )
-   {push @pairs, [$$aref1[$i],$$aref2[$i]]}
-   # Sort the pairs by popularity, then return the
-   # 0th elements (language names) of the sorted pairs:
-   return map {$_->[0]} sort {$a->[1]<=>$b->[1]} @pairs;
+sub sort_array1_by_array2($aref1, $aref2) {
+   return @$aref1[sort{$$aref2[$a]<=>$$aref2[$b]}0..$#$aref1];
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -119,7 +113,7 @@ for my $aref (@arrays) {
       say 'Moving on to next array.';
       next;
    }
-   my @sorted = sort_by_popularity($aref1, $aref2);
+   my @sorted = sort_array1_by_array2($aref1, $aref2);
    say 'Sorted       = (' . join(', ', map {"'$_'"} @sorted) . ')';
 }
 exit;
