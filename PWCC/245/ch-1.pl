@@ -30,8 +30,12 @@ Output: ('c++', 'java', 'haskell')
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I'll solve this by "zipping" the two arrays together to make an array of [language, popularity] pairs, then
-sort that array numerically by the second elements of the pairs.
+I tried solving this problem by "zipping" the two arrays together to make an array of [language, popularity]
+pairs, then sorting that array numerically by the second elements of the pairs; however, the resulting code
+was excessively verbose. But then I hit upon a much easier way: use an array slice! Take the indexes of the
+first array (0..$#$aref1), re-order them according to a sort of the second array, then "slice" the first
+array using the re-ordered indexes. The result was that I could now solve this entire problem with half a line
+of code.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
