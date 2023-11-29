@@ -14,40 +14,43 @@ Written by Robbie Hatley on Tue Nov 28, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 2: Largest of Three
+Task 245-2: Largest of Three
 Submitted by: Mohammad S Anwar
+You are given an array of integers >= 0. Write a script to return
+the largest number formed by concatenating some of the given
+integers in any order which is also multiple of 3. Return -1 if
+none found.
 
-You are given an array of integers >= 0.
-
-Write a script to return the largest number formed by concatenating some of the given integers in any order which is also multiple of 3. Return -1 if none found.
-
-Example 1
-
+Example 1:
 Input: @ints = (8, 1, 9)
 Output: 981
-
 981 % 3 == 0
 
-Example 2
-
+Example 2:
 Input: @ints = (8, 6, 7, 1, 0)
 Output: 8760
 
-Example 3
-
+Example 3:
 Input: @ints = (1)
 Output: -1
 
-
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This WOULD BE just a matter of combinatorics if not for the fact that no upper bound is given for our
+non-negative integers. That means that we'll be "concatenating" integers with possibly more-than-one digit,
+so we can't just assume that each integer is one digit then concatenate all permutations of all combinations.
+Instead, we need to make a "sub concatenate($aref)" which first splits each input into its digits, then
+pushes those clusters of digits onto an array, then joins that array. Also we'll need a "sub are_nni($aref)"
+to check that all inputs are non-negative integers, and a "sub largest_of_three($aref)" to find the largest
+multiple of 3 we can make or return -1 if we can't make any. THEN the rest is just permutations of
+combinations. More work for CPAN module "Math::Combinatorics". This time I'll use it's non-OOP functions,
+as OOP just isn't necessary for a problem like this, and indeed just gets in the way.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-2.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+single-quoted array of arrays of non-negative integers, in proper Perl syntax, like so:
+./ch-2.pl '([3,14,0,5,72],[1,0,97,23])'
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -63,6 +66,7 @@ use utf8;
 use warnings FATAL => 'utf8';
 use Sys::Binmode;
 use Time::HiRes 'time';
+use Math::Combinatorics;
 
 # ------------------------------------------------------------------------------------------------------------
 # START TIMER:
@@ -72,22 +76,38 @@ BEGIN {$t0 = time}
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+# Are all of the elements of a referred-to array decimal representations of non-negative integers?
+sub are_nni ($aref) {
+   return 0 if 'ARRAY' ne ref $aref;
+   return 0 if scalar(@$aref) < 1;
+   for (@$aref) {return 0 if !/^0$|^[1-9]\d*$/}
+   return 1;
+}
+
+sub concatenate($aref) {
+   my @digits;
+   for (@$aref) {push @digits, split(//,$_)}
+   return join('',@digits);
+}
+
+sub largest_of_three($aref) {
+   # For each possible non-empty subset size of @$aref, get all combinations
+   # of that size, then get all permutations of each of those combinations,
+   # then concatentate each of those permutations to an integer, and keep track
+   # of the maximum divisible-by-3 integer seen, then return the maximum
+   # which will be -1 if we couldn't make any divisible-by-3 integers:
+   my $max = -1;
+   for ( my $size = scalar(@$aref) ; $size >= 1 ; --$size ) {
+      my @combs = combine($size,@$aref);
+      for my $cref ( @combs ) {
+         my @perms = permute(@$cref);
+         for my $pref ( @perms ) {
+            my $integer = concatenate($pref);
+            0 == $integer % 3 && $integer > $max and $max = $integer;
+         }
       }
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   return $max;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -96,20 +116,30 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # Inputs:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   [8, 1, 9],
+   # Expected Output: 981
+
+   # Example 2 Input:
+   [8, 6, 7, 1, 0],
+   # Expected Output: 8760
+
+   # Example 3 Input:
+   [1],
+   # Expected Output: -1
 );
 
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say 'Array = (' . join(', ', @$aref) . ')';
+   if ( !are_nni($aref) ) {
+      say 'Error: not an array of non-negative integers.';
+      say 'Moving on to next array.';
+      next;
+   }
+   say 'Greatest multiple of 3 creatable from array = ',
+   largest_of_three($aref);
 }
 exit;
 

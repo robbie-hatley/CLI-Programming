@@ -52,7 +52,7 @@ those which are descending onto "@desc", then returns @desc.
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of positive real numbers, in proper Perl syntax, like so:
-./ch-2.pl "([3.7, 9.2, 8.4, 13.6, 10.7],[3.9, 18.4, 78.6, 198.2, 3786.5])"
+./ch-2.pl '([3.7, 9.2, 8.4, 13.6, 10.7],[3.9, 18.4, 78.6, 198.2, 3786.5])'
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
