@@ -70,7 +70,7 @@ BEGIN {$t0 = time}
 sub is_array_of_numbers($aref) {
    return 0 if 'ARRAY' ne ref $aref;
    for (@$aref) {
-      return 0 if !/^0$|^-?0\.\d+$|^-?[1-9]\d*(?:\.\d+)*$/;
+      return 0 if !/^0$|^-?0\.\d+$|^-?[1-9]\d*(?:\.\d+)?$/;
    }
    return 1;
 }
