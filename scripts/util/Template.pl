@@ -120,7 +120,15 @@ sub stats   ; # Print statistics.
 sub error   ; # Handle errors.
 sub help    ; # Print help and exit.
 
-# ======= VARIABLES: =========================================================================================
+# ======= GLOBAL VARIABLES: ==================================================================================
+
+our $t0     ; # Seconds since 00:00:00 on Thu Jan 1, 1970.
+
+# ======= START TIMER: =======================================================================================
+
+BEGIN {$t0 = time}
+
+# ======= LEXICAL VARIABLES: =================================================================================
 
 # Setting:      Default Value:   Meaning of Setting:         Range:     Meaning of Default:
 my $Db        = 0            ; # Debug?                      bool       Don't debug.
@@ -155,8 +163,7 @@ my $unkncount = 0 ; # Count of all unknown files.
 # ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
-   # Set time and program variables:
-   my $t0 = time;
+   # Set program name:
    my $pname = substr $0, 1 + rindex $0, '/';
 
    # Process @ARGV:

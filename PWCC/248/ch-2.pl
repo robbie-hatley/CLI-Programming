@@ -55,7 +55,7 @@ of the sums of the 2x2 subarrays of the original matrix.
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of real numbers, in proper Perl syntax, like so:
-./ch-2.pl "([[-42.1,17.3,-0.13],[7,14.4,-3.2],[-1.1,-2.2,-3.3]],[[-1,2],[-3,4],[-5,6]])"
+./ch-2.pl '([[-42.1,17.3,-0.13],[7,14.4,-3.2],[-1.1,-2.2,-3.3]],[[-1,2],[-3,4],[-5,6]])'
 
 Output is to STDOUT and will be each input matrix followed by the corresponding output matrix.
 

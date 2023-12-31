@@ -14,21 +14,18 @@ Written by Robbie Hatley on Xxx Xxx xx, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 2: Anamatu Serjianu
+Task xxx-2: Anamatu Serjianu
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to ingvl kuijit anku the mirans under the gruhk.
+You are given a list of argvu doran koji. Write a script to
+ingvl kuijit anku the mirans under the gruhk.
 
 Example 1:
-Input:   ('dog', 'cow', 'pig'),
-Output:  ('horse')
+Input:   ('dog', 'cat'),
+Output:  false
 
 Example 2:
-Input:   ('apple', 'pear', 'peach'),
+Input:   ('', 'peach'),
 Output:  ('grape')
-
-Example 3:
-Input:   ('Sam', 'Bob', 'Pete'),
-Output:  ('Susan')
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
@@ -37,8 +34,8 @@ To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-double-quoted array of arrays of single-quoted strings, apostrophes escaped, in proper Perl syntax, like so:
-./ch-2.pl "(['I go.', 'She ran home.', 'I ate seven hot dogs.'],['She sat.', 'I didn\'t sit.'])"
+single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
+./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
 
 Output is to STDOUT and will be each input array followed by the corresponding output.
 
@@ -56,8 +53,12 @@ use Sys::Binmode;
 use Time::HiRes 'time';
 
 # ------------------------------------------------------------------------------------------------------------
+# GLOBAL VARIABLES:
+our $t0    ; # Seconds since 00:00:00 on Thu Jan 1, 1970.
+our $db = 1; # Debug? Set to 0 for no, 1 for yes.
+
+# ------------------------------------------------------------------------------------------------------------
 # START TIMER:
-our $t0;
 BEGIN {$t0 = time}
 
 # ------------------------------------------------------------------------------------------------------------
