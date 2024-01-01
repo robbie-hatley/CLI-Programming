@@ -39,7 +39,7 @@ sub is_int ($x)
    else                                         {return 0}
 }
 
-# Do ALL strings in an array prepresent integers?
+# Do ALL strings in an array represent integers?
 sub all_are_int (@a)
 {
    for (@a) {if (!is_int($_))                   {return 0}}
