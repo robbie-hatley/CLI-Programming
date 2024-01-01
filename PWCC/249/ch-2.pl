@@ -104,11 +104,9 @@ sub decrease_increase ($string) {
          'I' eq $char && $permutation->[$i] > $permutation->[$i+1] and next PERMUTATION;
          'D' eq $char && $permutation->[$i] < $permutation->[$i+1] and next PERMUTATION;
       }
-      # If we get to here, this is the first compliant permutation we've found, so return it:
-      return @$permutation;
+      # If we get to here, this is a compliant permutation, so print it:
+      say 'Compliant permutation: ('.join(', ', @$permutation).')';
    }
-   # If we get to here, no permutation was compliant, so return an empty array:
-   return ();
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -139,10 +137,8 @@ for my $string (@strings) {
    # Skip to next string if string is non-compliant:
    my $error = error($string);
    'ok' ne $error and say $error and say 'Skipping to next string.' and next;
-   # Attempt to get compliant permutation:
-   my @DI = decrease_increase($string);
-   0 == scalar @DI and say 'Unable to form decrease/increase permutation' and next
-   or say 'decrease/increase permutation: ' and say '('.join(', ', @DI).')';
+   # Generate and print all valid permutations:
+   decrease_increase($string);
 }
 exit;
 
