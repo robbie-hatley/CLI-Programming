@@ -140,9 +140,6 @@ sub intersection ($aref1, $aref2) {
 
 # Return the "lucky numbers" of a m-by-n matrix of unique integers:
 sub lucky ($mref) {
-   # Make an array to hold our lucky number(s):
-   my @lucky;
-
    # Get the dimensions of the matrix:
    my $m = scalar(@{$mref});
    my $n = scalar(@{$mref->[0]});

@@ -1,10 +1,8 @@
-Interesting set of challenges. #1 is pretty straightforward and clear in statement, but #2 has three issues with the way it's stated:
+Interesting set of challenges. #1 is pretty straightforward and clear in statement, but I see these two issues with the way #2 is phrased:
 
 Firstly, "distinct numbers" is problematic because it would necessitate running equality comparison between real numbers, which is problematic in computer programming because most computers do not store exact representations of numbers such as 2/3, π, or 0.37-5.16i. It would therefore be better to say "distinct integers" rather than "distinct numbers".
 
-Secondly, I have to wonder if a matrix of integers always has either 0 or 1 "magic numbers"? It seems to me that a matrix might have several. So unless you know a proof that there can only be 0-or-1, I suggest "return all lucky numbers" rather than "return the lucky number".
-
-Thirdly, unless you specify "non-negative integers only", -1 can't be used to indicate "no lucky number" because -1 might actually BE a "lucky number" for a given matrix. For example:
+Secondly, unless you specify "non-negative integers only", -1 can't be used to indicate "no lucky number" because -1 might actually BE a "lucky number" for a given matrix. For example:
 Matrix = 7 -18   4   9
          0  -1  37  42
         16  -8 -14  33
