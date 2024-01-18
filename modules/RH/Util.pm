@@ -171,6 +171,11 @@ sub is_utf8 :prototype($) ($text) {
    return $is_utf8;
 }
 
+# Convert a string to title-case:
+sub tc :prototype($) ($string) {
+   return $string =~ s/([\w’]+)/\u\L$1/gr;
+}
+
 # Given a string, delete all non-decimal-digit characters and all leading zeros and return the remainder,
 # which should now be a string giving the decimal representation of a positive integer, unless the string
 # is now empty, in which case return 0:
