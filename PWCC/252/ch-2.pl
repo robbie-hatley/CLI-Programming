@@ -36,8 +36,8 @@ Output: (0)
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 This is actually much simpler than Task 1, for a change. The following algorithm provides one valid solution
-(out of an always-infinite set of valid solutions) for each positive integer >= 2: Abort if $n is not a
-positive integer. Make an empty array @a. If $n is odd, push 0 to @a. Then push (1..int($n/2)) to @a. Then
+(out of an always-infinite set of valid solutions) for each positive integer: Abort if $n is not a positive
+integer. Make an empty array @a. Push (1..int($n/2)) to @a. If $n is odd, push 0 to @a. Then
 push (-int($n/2)..-1) to @a. @a will now be $n elements long and will sum to 0, as the problem requires.
 
 --------------------------------------------------------------------------------------------------------------
