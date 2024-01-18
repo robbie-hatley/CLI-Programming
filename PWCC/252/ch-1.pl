@@ -47,8 +47,9 @@ given array is:
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I'll handle this by making a sub with an accumulator $a set to 0, then for each element of the array, if it's
-"special", add its square to $a. To handle the "1 indexing", I'll set $[ = 1.
+I'll handle this by making a sub with an accumulator $accum set to 0, then for each element of the array,
+if it's "special", add its square to $a. To handle the "1 indexing", I'll let $i vary from 1 to $n, but use
+[$i-1] for array indexing.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -86,11 +87,11 @@ BEGIN {$t0 = time}
 # Return sum of squares of special numbers:
 sub sososn ($aref) {
    my $n = scalar(@$aref);
-   my $a = 0;
+   my $accum = 0;
    for ( my $i = 1 ; $i <= $n ; ++$i ) {
-      0 == $n%$i and $a += $$aref[$i-1]**2;
+      0 == $n%$i and $accum += $$aref[$i-1]**2;
    }
-   return $a;
+   return $accum;
 }
 
 # ------------------------------------------------------------------------------------------------------------
