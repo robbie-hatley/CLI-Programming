@@ -45,7 +45,7 @@ IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', with the last element
 of each inner array being construed as a "separator", in proper Perl syntax, like so:
-./ch-1.pl '(["She shaved?", "She ate 7 hot dogs.", " "],["She didn'"'"'t bathe.", "She'"'"'d bathed."])'
+./ch-1.pl '(["He shaved?", "She ate dogs!", " "],["didn'"'"'t bathe", "hadn'"'"'t eaten", '"'"'])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
