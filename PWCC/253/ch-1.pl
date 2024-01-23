@@ -9,33 +9,44 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge xxx-1.
-Written by Robbie Hatley on Xxx Xxx xx, 2023.
+Solutions in Perl for The Weekly Challenge 253-1.
+Written by Robbie Hatley on Mon Jan 22, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task xxx-1: Anamatu Serjianu
+Task 253-1: Split Strings
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to
-ingvl kuijit anku the mirans under the gruhk.
+You are given an array of strings and a character separator.
+Write a script to return all words separated by the given
+character excluding empty string.
 
 Example 1:
-Input:   ('dog', 'cat'),
-Output:  false
+Input: @words = ("one.two.three","four.five","six")
+       $separator = "."
+Output: "one","two","three","four","five","six"
 
 Example 2:
-Input:   ('', 'peach'),
-Output:  ('grape')
+Input: @words = ("$perl$$", "$$raku$")
+       $separator = "$"
+Output: "perl","raku"
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This is just a matter of splitting strings based on the given separator, then dumping the empty strings.
+One complicating factor, though, is that for separators such as the "." and "$" given in the examples to
+actually work, they must be stripped of their magical "meta" powers by using the "\Q" de-meta operator.
+So something like this sub should work:
+sub split_strings ($separator, @array) {
+   return grep {length($_)>0} map {split /\Q$separator\E/, $_} @array;
+}
+
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-1.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', with the last element
+of each inner array being construed as a "separator", in proper Perl syntax, like so:
+./ch-1.pl '(["She shaved?", "She ate 7 hot dogs.", " "],["She didn'"'"'t bathe.", "She'"'"'d bathed."])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -64,22 +75,8 @@ BEGIN {$t0 = time}
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
-      }
-   }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+sub split_strings ($separator, @array) {
+   return grep {length($_)>0} map {split /\Q$separator\E/, $_} @array;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -88,20 +85,23 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # Inputs:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   ["one.two.three", "four.five", "six", "."],
+   # Expected Output: "one","two","three","four","five","six"
+
+   # Example 2 Input:
+   ["\$perl\$\$", "\$\$raku\$", "\$"],
+   # Expected Output: "perl","raku"
 );
 
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   my @array = @$aref;
+   my $separator = splice @array, -1, 1;
+   say 'Input  array = (', join(', ', map {"\"$_\""} @array), ')';
+   say 'Separator    = ', '"', $separator, '"';
+   say 'Output array = (', join(', ', map {"\"$_\""} split_strings($separator, @array)), ')';
 }
 exit;
 

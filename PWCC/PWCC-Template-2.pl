@@ -37,7 +37,7 @@ Input is via either built-in variables or via @ARGV. If using @ARGV, provide one
 single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
 ./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
 
-Output is to STDOUT and will be each input array followed by the corresponding output.
+Output is to STDOUT and will be each input followed by the corresponding output.
 
 =cut
 

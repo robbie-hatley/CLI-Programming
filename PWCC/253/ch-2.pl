@@ -9,33 +9,66 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge xxx-1.
-Written by Robbie Hatley on Xxx Xxx xx, 2023.
+Solutions in Perl for The Weekly Challenge 253-2.
+Written by Robbie Hatley on Mon Jan 22nd, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task xxx-1: Anamatu Serjianu
+Task 253-2: Weakest Row
 Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to
-ingvl kuijit anku the mirans under the gruhk.
+You are given an m x n binary matrix i.e. only 0 and 1 where 1
+always appear before 0. A row i is weaker than a row j if one
+of the following is true:
+a) The number of 1s in row i is less than
+   the number of 1s in row j.
+b) Both rows have the same number of 1 and i < j.
+Write a script to return the order of rows from weakest to
+strongest.
 
 Example 1:
-Input:   ('dog', 'cat'),
-Output:  false
+Input: $matrix = [
+                   [1, 1, 0, 0, 0],
+                   [1, 1, 1, 1, 0],
+                   [1, 0, 0, 0, 0],
+                   [1, 1, 0, 0, 0],
+                   [1, 1, 1, 1, 1]
+                 ]
+Output: (2, 0, 3, 1, 4)
+The number of 1s in each row is:
+- Row 0: 2
+- Row 1: 4
+- Row 2: 1
+- Row 3: 2
+- Row 4: 5
 
 Example 2:
-Input:   ('', 'peach'),
-Output:  ('grape')
+Input: $matrix = [
+                   [1, 0, 0, 0],
+                   [1, 1, 1, 1],
+                   [1, 0, 0, 0],
+                   [1, 0, 0, 0]
+                 ]
+Output: (0, 2, 3, 1)
+The number of 1s in each row is:
+- Row 0: 1
+- Row 1: 4
+- Row 2: 1
+- Row 3: 1
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+A combined sort can be indicated by PrimarySort || SecondarySort. In this case, the primary sort is by
+"# of 1s" and secondary sort is by index. The "# of 1s" is just sum0(Row), and the indices are just
+0..$#$aref. So this subroutine should do the trick:
+sub weakest ($aref) {
+   return sort {sum0(@{$$aref[$a]})<=>sum0(@{$$aref[$b]}) || $a<=>$b} 0..$#$aref;
+}
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-1.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of mxn matrices of 0s and 1s, 1s first, in proper Perl syntax, like so:
+./ch-2.pl '([[1,1,1,0],[1,1,0,0]],[[1,0,0],[1,1,1],[1,1,0],[1,1,0]])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -51,6 +84,7 @@ use utf8;
 use warnings FATAL => 'utf8';
 use Sys::Binmode;
 use Time::HiRes 'time';
+use List::Util 'sum0';
 
 # ------------------------------------------------------------------------------------------------------------
 # GLOBAL VARIABLES:
@@ -64,22 +98,9 @@ BEGIN {$t0 = time}
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
-      }
-   }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+# Return the row indices of @$aref sorted from "weakest" to "strongest":
+sub weakest ($aref) {
+   return sort {sum0(@{$$aref[$a]})<=>sum0(@{$$aref[$b]}) || $a<=>$b} 0..$#$aref;
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -88,20 +109,33 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 # Inputs:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   [
+      [1, 1, 0, 0, 0],
+      [1, 1, 1, 1, 0],
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 1, 1, 1],
+   ],
+   # Expected Output: (2, 0, 3, 1, 4)
+
+   # Example 2 Input:
+   [
+      [1, 0, 0, 0],
+      [1, 1, 1, 1],
+      [1, 0, 0, 0],
+      [1, 0, 0, 0],
+   ],
+   # Expected Output: (0, 2, 3, 1)
 );
 
 # Main loop:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say 'Matrix:';
+   say join(', ', @$_) for @$aref;
+   say 'Row indices sorted from weakest to strongest:';
+   say '(', join(', ', weakest($aref)), ')';
 }
 exit;
 
