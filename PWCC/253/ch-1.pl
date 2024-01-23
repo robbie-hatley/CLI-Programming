@@ -40,7 +40,6 @@ sub split_strings ($separator, @array) {
    return grep {length($_)>0} map {split /\Q$separator\E/, $_} @array;
 }
 
-
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
