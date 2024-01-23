@@ -74,6 +74,7 @@ BEGIN {$t0 = time}
 # ------------------------------------------------------------------------------------------------------------
 # SUBROUTINES:
 
+# Split the strings of an array, using a de-meta-ed separator:
 sub split_strings ($separator, @array) {
    return grep {length($_)>0} map {split /\Q$separator\E/, $_} @array;
 }
