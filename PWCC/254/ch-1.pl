@@ -14,7 +14,7 @@ Written by Robbie Hatley on Sun Jan 28, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 254-1: Task 1: Three Power
+Task 254-1: Three Power
 Submitted by: Mohammad S Anwar
 You are given a positive integer, $n. Write a script to return
 true if the given integer is a power of three otherwise return

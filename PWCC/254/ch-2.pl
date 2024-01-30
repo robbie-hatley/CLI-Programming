@@ -14,7 +14,7 @@ Written by Robbie Hatley on Sun Jan 28, 2023.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 254-2: Task 2: Reverse Vowels
+Task 254-2: Reverse Vowels
 Submitted by: Mohammad S Anwar
 You are given a string, $s. Write a script to reverse all the
 vowels (a, e, i, o, u) in the given string.
