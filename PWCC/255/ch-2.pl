@@ -56,7 +56,7 @@ IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of two double-quoted strings, with each inner array consisting of a paragraph
 followed by a banned word, with apostrophes escaped as '"'"', in proper Perl syntax, like this:
-./ch-2.pl '(["She cried and cried and cried\!", "cried"], ["rice and beans and rice and beans", "and"])'
+./ch-2.pl '(["She cried and cried and cried\!", "cried"], ["She ate rice and beans and rice and beans\!", "and"])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
