@@ -10,7 +10,7 @@ This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard 
 --------------------------------------------------------------------------------------------------------------
 TITLE BLOCK:
 Solutions in Perl for The Weekly Challenge xxx-1.
-Written by Robbie Hatley on Xxx Xxx xx, 2023.
+Written by Robbie Hatley on Xxx Xxx xx, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
