@@ -135,8 +135,8 @@ sub cwd_utf8               :prototype()     ; # utf8 version of "get curr dir".
 sub glob_utf8              :prototype($)    ; # utf8 version of "glob".
 sub link_utf8              :prototype($$)   ; # utf8 version of "unlink".
 sub mkdir_utf8             :prototype($;$)  ; # utf8 version of "mkdir".
-sub open_utf8              :prototype($$$)  ; # utf8 version of "open". WOMBAT: Won't work with bareword filehandles.
-sub opendir_utf8           :prototype($$)   ; # utf8 version of "opendir".
+# sub open_utf8              :prototype($$$)  ; # utf8 version of "open".    ECHIDNA RH 2024-02-06: doesn't work with modern Perl.
+# sub opendir_utf8           :prototype($$)   ; # utf8 version of "opendir". ECHIDNA RH 2024-02-06: doesn't work with modern Perl.
 sub readdir_utf8           :prototype($)    ; # utf8 version of "readdir".
 sub readlink_utf8          :prototype($)    ; # utf8 version of "unlink".
 sub rmdir_utf8             :prototype($)    ; # utf8 version of "rmdir".
@@ -170,6 +170,8 @@ sub is_valid_qual_dir      :prototype($)    ; # Is a given string a fully-qualif
 # ======= VARIABLES: =========================================================================================
 
 # Symbols exported by default:
+# ECHIDNA RH 2024-02-06: open_utf8 and opendir_utf8 doen't work with modern Perl,
+# so I've removed them from this list (they were right after mkdir_utf8).
 our @EXPORT =
    qw
    (
@@ -179,7 +181,7 @@ our @EXPORT =
 
       d                       e                       chdir_utf8
       cwd_utf8                glob_utf8               link_utf8
-      mkdir_utf8              open_utf8               opendir_utf8
+      mkdir_utf8
       readdir_utf8            readlink_utf8           rmdir_utf8
       symlink_utf8            unlink_utf8             glob_regexp_utf8
 
@@ -1662,16 +1664,20 @@ sub mkdir_utf8 :prototype($;$) ($dirname, $mask = 0777) {
 # WOMBAT : Doesn't work with bareword handles;
 # for those, use this instead: open(HND, '<', e $filepath);
 # WOMBAT : Only works with the "FileHandle, Mode, FilePath" version of open.
-sub open_utf8 :prototype($$$) ($fh, $mode, $path) {
-   return open($fh, $mode, e($path));
-}
+# ECHIDNA RH 2024-02-06: This sub doesn't work with modern Perl,
+# so I'm commenting it out:
+# sub open_utf8 :prototype($$$) ($fh, $mode, $path) {
+#    return open($fh, $mode, e($path));
+# }
 
 # opendir, but using UTF-8:
 # WOMBAT : won't work with bareword handles;
 # for those, use this instead: opendir(HND, e $dirpath);
-sub opendir_utf8 :prototype($$) ($dh, $path) {
-   return opendir($dh, e($path));
-}
+# ECHIDNA RH 2024-02-06: This sub doesn't work with modern Perl,
+# so I'm commenting it out:
+# sub opendir_utf8 :prototype($$) ($dh, $path) {
+#    return opendir($dh, e($path));
+# }
 
 # readdir, but using UTF-8:
 sub readdir_utf8 :prototype($) ($dh) {

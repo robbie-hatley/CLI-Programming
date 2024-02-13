@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/perl -CSDA
 
 # This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks (\x{0A}).
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
@@ -8,27 +8,21 @@
 # "essay.pl"
 ########################################################################################################################
 
-use v5.32;
+use v5.38;
 use utf8;
-use Sys::Binmode;
-use experimental 'switch';
-use strict;
-use warnings;
-use warnings FATAL => "utf8";
 
-use RH::WinChomp;
-use RH::Util;
 use RH::Dir;
+use RH::Util;
 
-my $fh = undef;
-open_utf8($fh, '<', '/d/rhe/scripts/humor/Words-En.txt')
+my $fh;
+open($fh, '<', '/d/rhe/scripts/humor/Words-En.txt')
 or die "Couldn't open words file.\n$!\n";
-my @Words = map {winchomp $_} <$fh>;
+my @Words = map {$_ =~ s/\p{Cc}+$//r} <$fh>;
 close($fh);
 my $NumWords = scalar(@Words);
 
-my $Rows =  5; $Rows = shift if @ARGV;
-my $Cols = 50; $Cols = shift if @ARGV;
+my $Rows =  5; $Rows = int shift if @ARGV;
+my $Cols = 50; $Cols = int shift if @ARGV;
 
 for my $Row (0..$Rows-1)
 {
