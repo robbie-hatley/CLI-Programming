@@ -69,16 +69,12 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBROUTINES:
 use v5.38;
-# Reverse a string:
-sub reverse_string ($x) {
-   return join '', reverse split //, $x
-}
 # How many fwd/rev pairs are in @$words?
 sub count_pairs ($words) {
    my $pair_count = 0;
    for    ( my $i =    0   ; $i <= $#$words - 1 ; ++$i ) {
       for ( my $j = $i + 1 ; $j <= $#$words - 0 ; ++$j ) {
-         if ( fc $$words[$i] eq fc reverse_string $$words[$j] ) {
+         if ( fc $$words[$i] eq fc join '', reverse split //, $$words[$j] ) {
             ++$pair_count;
          }
       }
