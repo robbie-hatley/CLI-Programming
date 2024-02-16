@@ -35,25 +35,20 @@ Output: 2
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-This problem is easily solved by nested 3-part loops on index variables i and j such that j > i.
-The following subs do the trick nicely:
-
-# Reverse a string:
-sub reverse_string ($x) {
-   return join '', reverse split //, $x
-}
-
+This problem is easily solved using a nested pair of 3-part loops which compare the fold-case of each word
+to the fold-case of the reverse of each word to its right; each time a match is found, increment a counter:
+use v5.38;
 # How many fwd/rev pairs are in @$words?
-sub pairs ($words) {
-   my $pairs = 0;
+sub count_pairs ($words) {
+   my $pair_count = 0;
    for    ( my $i =    0   ; $i <= $#$words - 1 ; ++$i ) {
       for ( my $j = $i + 1 ; $j <= $#$words - 0 ; ++$j ) {
-         if ( fc $$words[$i] eq fc reverse_string $$words[$j] ) {
-            ++$pairs;
+         if ( fc $$words[$i] eq fc join '', reverse split //, $$words[$j] ) {
+            ++$pair_count;
          }
       }
    }
-   return $pairs;
+   return $pair_count;
 }
 
 --------------------------------------------------------------------------------------------------------------
