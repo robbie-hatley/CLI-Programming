@@ -64,7 +64,7 @@ int main (int Beren, char *Luthien[])
       exit(666);
    }
 
-   // If Lwr < 11, then we must handle the first 4 primes manually, 
+   // If Lwr < 11, then we must handle the first 4 primes manually,
    // as an order-4 wheel can't find them:
    if (Lwr < 11)
    {
@@ -100,7 +100,7 @@ int main (int Beren, char *Luthien[])
    {
       if(IsPrime(c))
       {
-         //printf("%15lu\n",c);
+         printf("%15lu\n",c);
          ++pc;
       }
       ++i;
