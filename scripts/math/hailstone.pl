@@ -1,10 +1,16 @@
 #!/usr/bin/perl
-# hailstone.pl
-use v5.10;
-sub h {my $x = shift; return 0==$x%2 ? $x/2 : 3*$x+1}
-exit if @ARGV != 1;
+sub c {
+   my $x = shift;
+   0 == $x%2
+   ? return $x/2
+   : return 3*$x+1;
+}
 my $x=$ARGV[0];
-exit if $x !~ m/^[1-9]\d*$/;
-my $n;
-for ($n=0;say($x),1!=$x;++$n) {$x=h($x)}
-say "Total Stopping Time = ", $n;
+my $n = 0;
+while (1) {
+	print("$x\n");
+	last if 1 == $x;
+	$x = c($x);
+	++$n;
+}
+print "Total Stopping Time = $n\n";
