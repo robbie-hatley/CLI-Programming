@@ -1,4 +1,8 @@
 #!/usr/bin/perl
+# hailstone.pl
+# Prints The Hailstone Sequence for a given positive-integer seed,
+# then prints the Total Stopping Time (minimum index for which
+# value of current element is 1).
 use v5.38;
 
 # Bail if number of arguments isn't 1:
