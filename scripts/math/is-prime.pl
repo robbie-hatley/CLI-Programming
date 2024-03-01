@@ -18,7 +18,7 @@ sub p ($x) {
    2 == $x     and return 1;
    0 == $x % 2 and return 0;
    my $limit = int sqrt $x;
-   for ( my $divisor = 3 ; $divisor <= $limit ; ++$divisor ) {
+   for ( my $divisor = 3 ; $divisor <= $limit ; $divisor+=2 ) {
       0 == $x % $divisor and return 0;
    }
    return 1;
