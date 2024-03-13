@@ -6,8 +6,7 @@
 
 ##############################################################################################################
 # day-of-week.pl
-# Prints day-of-week for dates from Jan  1, 100,000,000BC Julian
-#                                to Dec 31, 100,000,000CE Julian
+# Prints day-of-week for dates from 125 million BC to 125 million CE, Gregorian or Julian.
 # Dates must be entered as three integer command-line arguments in the order "year, month, day".
 # To enter CE dates, use positive year numbers (eg,  "1974" for 1974CE).
 # To enter BC dates, use negative year numbers (eg, "-5782" for 5782BC).
@@ -79,12 +78,8 @@
 # Sat Sep 30, 2023: Converted back to UTF-8, and added-in a few more pieces of poetry.
 ##############################################################################################################
 
-use v5.36;
-use strict;
-use warnings;
+use v5.38;
 use utf8;
-use warnings FATAL => 'utf8';
-use Sys::Binmode;
 
 # ======= SUBROUTINE PRE-DECLARATIONS ========================================================================
 
@@ -105,12 +100,6 @@ sub anachronistic  ; # Print "anachronistic use of Julian" message.
 sub error          ; # Print error message.
 sub help           ; # Print help  message.
 sub year_zero      ; # The Year That Stretches.
-sub second         ; # What rough beast slouches towards Bethlehem?
-sub invictus       ; # I am the captain of my soul.
-sub highway        ; # He tapped with his whip on the shutters, but all was locked and barred.
-sub swagman        ; # "You'll never catch me alive!"
-sub nazgûl         ; # Agh burzum-ishi krimpatul
-sub cthulhu        ; # Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn
 
 # ======= PAGE-GLOBAL LEXICAL VARIABLES: =====================================================================
 
@@ -250,22 +239,30 @@ sub argv {
    $A_M = $args[1];
    $A_D = $args[2];
 
-   # If input is invalid, abort:
-   if
-   (
-         $A_Y < -100002054 || $A_Y > 100002054                  # If year  is out-of-range,
-      || $A_M < 1 || $A_M > 12                                  # or month is out-of-range,
-      || $A_D < 1 || $A_D > days_per_month($A_Y, $A_M, $Julian) # or day   is out-of-range,
-   )
-   {
-      error;                                                    # print error message,
-      help;                                                     # and print help message,
-      exit 666;                                                 # and return The Number Of The Beast.
+   # If user entered the non-existent year "0", no-clip user into The Year That Stretches:
+   if ( 0 == $A_Y ) {
+      error("You have no-clipped into Year Zero, The Year That Stretches.\n"
+           ."The days of this year have no names, and their number is uncountable."); help; exit 666;
    }
 
-   # If the user has entered the non-existent year "0", no-clip use into The Year That Stretches:
-   if ( 0 == $A_Y ) {
-      exit year_zero;
+   # If year is out-of-range, abort:
+   if ( $A_Y < -125000000 || $A_Y > 125000000 ) {
+      error('Year is out-of-range.'); help; exit 666;
+   }
+
+   # If month is out-of-range, abort:
+   if ( $A_M < 1 || $A_M > 12 ) {
+      error('Month is out-of-range.'); help; exit 666;
+   }
+
+   # If non-existent leap day was given, abort:
+   if ( 2==$A_M && 29==$A_D && 28==days_per_month($A_Y, $A_M, $Julian) ) {
+      error('Non-existent leap day.'); help; exit 666;
+   }
+
+   # If day is out-of-range, abort:
+   if ( $A_D < 1 || $A_D > days_per_month($A_Y, $A_M, $Julian) ) {
+      error('Day is out-of-range.'); help; exit 666;
    }
 
    # VITALLY IMPORTANT: If year is negative, increase it by one, because our year numbers MUST BE 0-indexed
@@ -420,7 +417,7 @@ sub emit_despale ($elapsed, $julian) {
          $accum -= $dpy;
          $year = $pyear;
          if ( $Db ) {say "DBM emit_despale rev yloop: year = $year month = $mnth day = $daay"}
-         if ( $year < -100002053 ) {die "Fatal error in emit_despale(): \$year = $year.\n";}
+         if ( $year < -130000000 ) {die "Fatal error in emit_despale(): \$year = $year.\n";}
       }
 
       # Determine $mnth by subtracting-out days from whole months which have unelapsed:
@@ -451,7 +448,7 @@ sub emit_despale ($elapsed, $julian) {
          $accum += $dpy;
          ++$year; if ( 0 == $year ) {$year = 1;}
          if ( $Db ) {say "DBM emit_despale fwd: \$year = $year"}
-         if ( $year > 100002054 ) {die "Fatal error in emit_despale(): \$year = $year.\n";}
+         if ( $year > 130000000 ) {die "Fatal error in emit_despale(): \$year = $year.\n";}
       }
 
       # Determine $mnth by adding elapsed days from whole months since last second of $year:
@@ -572,10 +569,12 @@ sub anachronistic {
    return 1;
 } # end sub print_julian
 
-sub error {
-   print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
+sub error ($message) {
+   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
-   Error: day-of-week.pl takes exactly 3 integer arguments which must be year,
+   Error: $message
+
+   \"day-of-week.pl\" takes exactly 3 integer arguments which must be year,
    month, and day, in that order. Use negative year numbers for BC, positive for
    CE. To specify Julian, use a -j or --julian option. (There WAS NO "year 0" in
    ANY calendar, so if you enter 0 for year, something bizarre will happen.)
@@ -659,7 +658,6 @@ sub help {
      output:  Gregorian = Saturday May 12, 874CEG
               Julian    = Saturday May 8, 874CEJ
 
-
    Happy day-of-week printing!
 
    Cheers,
@@ -672,335 +670,10 @@ sub help {
 sub year_zero {
    print ((<<'   END_OF_ZERO') =~ s/^   //gmr);
 
-   -------------------------------------------------------------------------------
 
-   You have no-clipped into Year Zero, The Year That Stretches. The days of this
-   year have no names, and their number is uncountable. Enjoy your stay here.
-   Maybe you will eventually be able to no-clip back to normal reality, or maybe
-   not. You may be here a long time, so you might as well enjoy it.
-
-   As you look around this accursed place, a warm dry wind blows a sheet of
-   parchment onto your feet. You pick it up. It has a poem written on it. It
-   appears to have been written in black ink with a quill pen. You begin to read.
    END_OF_ZERO
-   my $idx = int(time)%6;
-   for ($idx) {
-      $Db and say "DBM in year_zero: \$idx = $idx";
-      /0/ and second;
-      /1/ and invictus;
-      /2/ and highway;
-      /3/ and swagman;
-      /4/ and nazgûl;
-      /5/ and cthulhu;
-   }
-   return -8765432;
+   return 1;
 } # end sub year_zero
-
-sub second {
-   print ((<<'   END_OF_SECOND') =~ s/^   //gmr);
-
-   -------------------------------------------------------------------------------
-
-   The Second Coming
-   by William Butler Yeats
-
-   Turning and turning in the widening gyre
-   The falcon cannot hear the falconer;
-   Things fall apart; the centre cannot hold;
-   Mere anarchy is loosed upon the world,
-   The blood-dimmed tide is loosed, and everywhere
-   The ceremony of innocence is drowned;
-   The best lack all conviction, while the worst
-   Are full of passionate intensity.
-
-   Surely some revelation is at hand;
-   Surely the Second Coming is at hand.
-   The Second Coming! Hardly are those words out
-   When a vast image out of Spiritus Mundi
-   Troubles my sight: somewhere in sands of the desert
-   A shape with lion body and the head of a man,
-   A gaze blank and pitiless as the sun,
-   Is moving its slow thighs, while all about it
-   Reel shadows of the indignant desert birds.
-   The darkness drops again; but now I know
-   That twenty centuries of stony sleep
-   Were vexed to nightmare by a rocking cradle,
-   And what rough beast, its hour come round at last,
-   Slouches towards Bethlehem to be born?
-   END_OF_SECOND
-   return;
-} # end sub second
-
-sub invictus {
-   print ((<<'   END_OF_INVICTUS') =~ s/^   //gmr);
-
-   -------------------------------------------------------------------------------
-
-   Invictus
-   by William Ernest Henley
-
-   Out of the night that covers me,
-      Black as the pit from pole to pole,
-   I thank whatever gods may be
-      For my unconquerable soul.
-
-   In the fell clutch of circumstance
-      I have not winced nor cried aloud.
-   Under the bludgeonings of chance
-      My head is bloody, but unbowed.
-
-   Beyond this place of wrath and tears
-      Looms but the Horror of the shade,
-   And yet the menace of the years
-      Finds and shall find me unafraid.
-
-   It matters not how strait the gate,
-      How charged with punishments the scroll,
-   I am the master of my fate,
-      I am the captain of my soul.
-   END_OF_INVICTUS
-   return;
-} # end sub invictus
-
-sub highway {
-   print ((<<'   END_OF_HIGHWAY') =~ s/^   //gmr);
-
-   -------------------------------------------------------------------------------
-
-   The Highwayman
-   By Alfred Noyes
-
-   PART ONE
-
-   The wind was a torrent of darkness among the gusty trees.
-   The moon was a ghostly galleon tossed upon cloudy seas.
-   The road was a ribbon of moonlight over the purple moor,
-   And the highwayman came riding—
-            Riding—riding—
-   The highwayman came riding, up to the old inn-door.
-
-   He’d a French cocked-hat on his forehead, a bunch of lace at his chin,
-   A coat of the claret velvet, and breeches of brown doe-skin.
-   They fitted with never a wrinkle. His boots were up to the thigh.
-   And he rode with a jewelled twinkle,
-            His pistol butts a-twinkle,
-   His rapier hilt a-twinkle, under the jewelled sky.
-
-   Over the cobbles he clattered and clashed in the dark inn-yard.
-   He tapped with his whip on the shutters, but all was locked and barred.
-   He whistled a tune to the window, and who should be waiting there
-   But the landlord’s black-eyed daughter,
-            Bess, the landlord’s daughter,
-   Plaiting a dark red love-knot into her long black hair.
-
-   And dark in the dark old inn-yard a stable-wicket creaked
-   Where Tim the ostler listened. His face was white and peaked.
-   His eyes were hollows of madness, his hair like mouldy hay,
-   But he loved the landlord’s daughter,
-            The landlord’s red-lipped daughter.
-   Dumb as a dog he listened, and he heard the robber say—
-
-   “One kiss, my bonny sweetheart, I’m after a prize to-night,
-   But I shall be back with the yellow gold before the morning light;
-   Yet, if they press me sharply, and harry me through the day,
-   Then look for me by moonlight,
-            Watch for me by moonlight,
-   I’ll come to thee by moonlight, though hell should bar the way.”
-
-   He rose upright in the stirrups. He scarce could reach her hand,
-   But she loosened her hair in the casement. His face burnt like a brand
-   As the black cascade of perfume came tumbling over his breast;
-   And he kissed its waves in the moonlight,
-            (O, sweet black waves in the moonlight!)
-   Then he tugged at his rein in the moonlight, and galloped away to the west.
-
-   PART TWO
-
-   He did not come in the dawning. He did not come at noon;
-   And out of the tawny sunset, before the rise of the moon,
-   When the road was a gypsy’s ribbon, looping the purple moor,
-   A red-coat troop came marching—
-            Marching—marching—
-   King George’s men came marching, up to the old inn-door.
-
-   They said no word to the landlord. They drank his ale instead.
-   But they gagged his daughter, and bound her, to the foot of her narrow bed.
-   Two of them knelt at her casement, with muskets at their side!
-   There was death at every window;
-            And hell at one dark window;
-   For Bess could see, through her casement, the road that he would ride.
-
-   They had tied her up to attention, with many a sniggering jest.
-   They had bound a musket beside her, with the muzzle beneath her breast!
-   “Now, keep good watch!” and they kissed her. She heard the doomed man say—
-   Look for me by moonlight;
-            Watch for me by moonlight;
-   I’ll come to thee by moonlight, though hell should bar the way!
-
-   She twisted her hands behind her; but all the knots held good!
-   She writhed her hands till her fingers were wet with sweat or blood!
-   They stretched and strained in the darkness, and the hours crawled by like years
-   Till, now, on the stroke of midnight,
-            Cold, on the stroke of midnight,
-   The tip of one finger touched it! The trigger at least was hers!
-
-   The tip of one finger touched it. She strove no more for the rest.
-   Up, she stood up to attention, with the muzzle beneath her breast.
-   She would not risk their hearing; she would not strive again;
-   For the road lay bare in the moonlight;
-            Blank and bare in the moonlight;
-   And the blood of her veins, in the moonlight, throbbed to her love’s refrain.
-
-   Tlot-tlot; tlot-tlot! Had they heard it? The horsehoofs ringing clear;
-   Tlot-tlot; tlot-tlot, in the distance? Were they deaf that they did not hear?
-   Down the ribbon of moonlight, over the brow of the hill,
-   The highwayman came riding—
-            Riding—riding—
-   The red coats looked to their priming! She stood up, straight and still.
-
-   Tlot-tlot, in the frosty silence! Tlot-tlot, in the echoing night!
-   Nearer he came and nearer. Her face was like a light.
-   Her eyes grew wide for a moment; she drew one last deep breath,
-   Then her finger moved in the moonlight,
-            Her musket shattered the moonlight,
-   Shattered her breast in the moonlight and warned him—with her death.
-
-   He turned. He spurred to the west; he did not know who stood
-   Bowed, with her head o’er the musket, drenched with her own blood!
-   Not till the dawn he heard it, and his face grew grey to hear
-   How Bess, the landlord’s daughter,
-            The landlord’s black-eyed daughter,
-   Had watched for her love in the moonlight, and died in the darkness there.
-
-   Back, he spurred like a madman, shrieking a curse to the sky,
-   With the white road smoking behind him and his rapier brandished high.
-   Blood red were his spurs in the golden noon; wine-red was his velvet coat;
-   When they shot him down on the highway,
-            Down like a dog on the highway,
-   And he lay in his blood on the highway, with a bunch of lace at his throat.
-
-   And still of a winter’s night, they say, when the wind is in the trees,
-   When the moon is a ghostly galleon tossed upon cloudy seas,
-   When the road is a ribbon of moonlight over the purple moor,
-   A highwayman comes riding—
-            Riding—riding—
-   A highwayman comes riding, up to the old inn-door.
-
-   Over the cobbles he clatters and clangs in the dark inn-yard.
-   He taps with his whip on the shutters, but all is locked and barred.
-   He whistles a tune to the window, and who should be waiting there
-   But the landlord’s black-eyed daughter,
-            Bess, the landlord’s daughter,
-   Plaiting a dark red love-knot into her long black hair.
-
-   -------------------------------------------------------------------------------
-
-   As you finish reading this poem, a horse appears from around a bend in a road
-   and gallops up to you. On the back of the horse is The Highwayman and his wife,
-   Bess. In THIS reality, the Ostler never betrayed The Highwayman, and he and the
-   innkeeper's daughter Bess eloped. They prove friendly. They dismount from their
-   horse and set-up camp near the side of the road and share food and drink with
-   you. After spending some hours story-telling and sharing experiences, the three
-   of you grow tired and lie down and sleep. When you awake in the morning, The
-   Highwayman and Bess are gone, and so are several valuable items which you had
-   in your possession. He couldn't help it, you see; it's his nature.
-   END_OF_HIGHWAY
-   return;
-} # end sub highway
-
-sub swagman {
-   print ((<<'   END_OF_SWAGMAN') =~ s/^   //gmr);
-
-   -------------------------------------------------------------------------------
-
-   Waltzing Matilda
-   By Andrew Barton "Banjo" Paterson, CBE
-
-   Oh there once was a swagman camped in the billabong,
-   under the shade of a coolibah tree.
-   And he sang as he looked at the old billy boiling:
-   "Who'll come a waltzing matilda with me?"
-
-   Who'll come a waltzing matilda my darling
-   Who'll come a waltzing matilda with me
-   Waltzing matilda and leading a water bag
-   Who'll come a waltzing matilda with me
-
-   Down came a jumbuck to drink at the billabong;
-   up jumped the swagman and grabbed him with glee.
-   And he said as he put him away in the tucker bag
-   "You'll come a'waltzing matilda with me!"
-
-   Who'll come a waltzing matilda my darling
-   Who'll come a waltzing matilda with me
-   Waltzing matilda and leading a water bag
-   Who'll come a waltzing matilda with me
-
-   Down came the squatter a'riding his thoroughbred.
-   Down came policemen, one, two, and three.
-   "Whose is the jumbuck you've got in the tucker bag?
-   You'll come a'waltzing matilda with we!"
-
-   Who'll come a waltzing matilda my darling
-   Who'll come a waltzing matilda with me
-   Waltzing matilda and leading a water bag
-   Who'll come a waltzing matilda with me
-
-   But the swagman he up and he jumped in the water-hole
-   Drowning himself by the coolibah tree
-   And his ghost may be heard as it sings by the billabong:
-   "Who'll come a'waltzing matilda with me?"
-
-   Who'll come a waltzing matilda my darling
-   Who'll come a waltzing matilda with me
-   Waltzing matilda and leading a water bag
-   Who'll come a waltzing matilda with me
-   END_OF_SWAGMAN
-   return;
-} # end sub swagman
-
-sub nazgûl {
-   print ((<<'   END_OF_NAZGÛL') =~ s/^   //gmr);
-
-   -------------------------------------------------------------------------------
-
-   Ash nazg durbatulûk
-   Ash nazg gimbatul
-   Ash nazg thrakatulûk
-   Agh burzum-ishi krimpatul
-
-   -------------------------------------------------------------------------------
-
-   As you finish reading this vile poem, the parchment falls from your hands
-   onto the dusty ground. Nine all-black figures ride up on nine black horses
-   with glowing red eyes. You are about to have the worst day of your life.
-   Unfortunately it will also be the last day of your life has a human.
-   You are about to be stabbed with a morgul knife and become a wraith. Sayonara.
-
-   END_OF_NAZGÛL
-   return;
-} # end sub nazgûl
-
-sub cthulhu {
-   print ((<<'   END_OF_CTHULHU') =~ s/^   //gmr);
-
-   -------------------------------------------------------------------------------
-
-   Ph'nglui mglw'nafh Cthulhu R'lyeh wgah'nagl fhtagn.
-
-   -------------------------------------------------------------------------------
-
-   As you finish reading this vile poem, the parchment falls from your hands onto
-   the ground. The spacetime continuum in front of you shatters and a hideous
-   monster erupts from the breech and stands in front of you, gazing into your
-   soul with glowing red eyes. You are about to have the worst day of your life.
-   Unfortunately it will also be the LAST day of your life has a free, sane human.
-   You are about to be enthralled to Cthulhu and become his slave. Sayonara.
-
-   END_OF_CTHULHU
-   return;
-} # end sub cthulhu
-
 
 
 

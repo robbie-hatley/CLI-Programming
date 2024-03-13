@@ -3,14 +3,9 @@
 =pod
 
 --------------------------------------------------------------------------------------------------------------
-COLOPHON:
-This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
-
---------------------------------------------------------------------------------------------------------------
-TITLE BLOCK:
-Solutions in Perl for The Weekly Challenge xxx-2.
-Written by Robbie Hatley on Xxx Xxx xx, 2024.
+TITLE AND ATTRIBUTION:
+Solutions in Perl for The Weekly Challenge xxx-2,
+written by Robbie Hatley on Xxx Xxx xx, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
@@ -42,27 +37,10 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
-# PRAGMAS AND MODULES USED:
+# PRAGMAS, MODULES, AND SUBS:
 
 use v5.38;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-use Sys::Binmode;
-use Time::HiRes 'time';
-
-# ------------------------------------------------------------------------------------------------------------
-# GLOBAL VARIABLES:
-our $t0    ; # Seconds since 00:00:00 on Thu Jan 1, 1970.
-our $db = 1; # Debug? Set to 0 for no, 1 for yes.
-
-# ------------------------------------------------------------------------------------------------------------
-# START TIMER:
-BEGIN {$t0 = time}
-
-# ------------------------------------------------------------------------------------------------------------
-# SUBROUTINES:
 
 sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
    my @tchars = split //, $target;
@@ -83,9 +61,7 @@ sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
 }
 
 # ------------------------------------------------------------------------------------------------------------
-# MAIN BODY OF PROGRAM:
-
-# Inputs:
+# INPUTS:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
    ['abc', 'xyz'],
@@ -93,7 +69,8 @@ my @arrays = @ARGV ? eval($ARGV[0]) :
    ['aabbcc', 'abc'],
 );
 
-# Main loop:
+# ------------------------------------------------------------------------------------------------------------
+# MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
    say '';
    my $source = $aref->[0];
@@ -103,9 +80,3 @@ for my $aref (@arrays) {
    say "Target string: \"$target\"";
    say "Can build Target from Source?: $output";
 }
-exit;
-
-# ------------------------------------------------------------------------------------------------------------
-# DETERMINE AND PRINT EXECUTION TIME:
-END {my $µs = 1000000 * (time - $t0);printf("\nExecution time was %.0fµs.\n", $µs)}
-__END__
