@@ -45,14 +45,18 @@ PROBLEM NOTES:
 I'll use "any" from "List::Util" to determine whether $start is in @array, and "while" to repeatedly
 double $start for so long as $start is in @array:
 
-use v5.38;
-use utf8;
-use List::Util 'any';
+   use v5.38;
+   use utf8;
+   use List::Util 'any';
 
-# Double $start while $start is in @array:
-sub mult_by_two ($start, @array) {
-   return ($start *= 2 while any {$_ == $start} @array);
-}
+   # Double $start while $start is in @array:
+   sub mult_by_two ($start, @array) {
+      return 0 if 0 == $start;
+      return ($start *= 2 while any {$_ == $start} @array);
+   }
+
+Warning: If $start is 0, and 0 is also in @array, sub "mult_by_two" will loop indefinitely, so precaution
+must be taken to ensure that $start is never 0.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -104,5 +108,10 @@ for my $aref (@arrays) {
    my $start = pop @array;
    say 'Array  = (', join(', ', @$aref), ')';
    say 'Start  = ', $start;
+   if ( 0 == $start ) {
+      say 'Error: $start may not be 0.';
+      say 'Moving on to next array.';
+      next;
+   }
    say 'Finish = ', mult_by_two($start, @array);
 }
