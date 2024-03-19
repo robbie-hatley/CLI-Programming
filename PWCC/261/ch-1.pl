@@ -43,7 +43,7 @@ Output: 1296
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I'll use "sum0" from "List::Util" to sum number lists, "split" and "grep to get the digits, and "abs" to get
+I'll use "sum0" from "List::Util" to sum number lists, "split" and "grep" to get the digits, and "abs" to get
 the absolute value of the difference between the element and digit sums:
 
    use v5.38;
