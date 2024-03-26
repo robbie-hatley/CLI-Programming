@@ -1,9 +1,9 @@
 #!/bin/perl
-use v5.10;
+use v5.36;
 use List::Util 'sum0';
 sub elem_sum (@ar) {return sum0(@ar)}
 sub digi_sum (@ar) {return sum0(map {split//, $_} @ar)}
-sub sum_diff (@ar) {return abs(elem_sum(@ar) - $digi_sum(@ar))}
+sub sum_diff (@ar) {return abs(elem_sum(@ar) - digi_sum(@ar))}
 my @arrays = @ARGV ? eval(@ARGV[0]) :
 ([1,2,3,45],[1,12,3],[1,2,3,4],[236,416,336,350]);
 for my $aref (@arrays) {

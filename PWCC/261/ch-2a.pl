@@ -1,5 +1,5 @@
 #!/bin/perl
-use v5.38;
+use v5.36;
 use List::Util 'any';
 sub mult_by_two ($start, @array) {
    $start *= 2 while any {$_ == $start} @array;

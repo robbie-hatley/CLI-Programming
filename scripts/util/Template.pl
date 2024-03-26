@@ -77,6 +77,11 @@
 #                   STDERR = entry & exit messages, stats, diagnostics, and severe errors.
 #                   STDOUT = directories ("Dir # 27: Dogs") and files ("Successfully renamed asdf to yuio").
 #                   Stats also go to STDERR, but are controlled by verbosity level (0=none, 1=some, 2=all).
+# Sat Mar 23, 2024: I'm leaving the V # set to 5.36 even though the latest is 5.38, because 5.36 is the first
+#                   version to include "signatures", and Cygwin takes a while to catch up to Linux. I've also
+#                   removed "Sys::Binmode" because as long as one always encodes outbound and decodes inbound,
+#                   it does nothing. Also corrected comments for "$filecount" to include mention of target.
+#                   Also added a comment for the "for(@ARGV)" loop in sub "argv".
 ##############################################################################################################
 
 ##############################################################################################################
@@ -93,7 +98,6 @@ use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
 
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
 use charnames qw( :full :short );
@@ -140,7 +144,7 @@ my $Predicate = 1            ; # Boolean predicate.          bool       Process 
 
 # Counts of events in this program:
 my $direcount = 0 ; # Count of directories processed by curdire().
-my $filecount = 0 ; # Count of files found which match file-name regexp.
+my $filecount = 0 ; # Count of files found which match file-type target and file-name regexp.
 my $predcount = 0 ; # Count of files found which also match file-type predicate.
 
 # Accumulations of counters from RH::Dir::GetFiles():
@@ -208,7 +212,7 @@ sub argv {
    my $end = 0;              # end-of-options flag
    my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
    my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
-   for ( @ARGV ) {
+   for ( @ARGV ) {           # For each element of @ARGV,
       /^--$/                 # "--" = end-of-options marker = construe all further CL items as arguments,
       and $end = 1           # so if we see that, then set the "end-of-options" flag
       and next;              # and skip to next element of @ARGV.

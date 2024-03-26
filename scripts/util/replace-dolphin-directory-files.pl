@@ -5,12 +5,12 @@
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
-# repair-dolphin-directory-files.pl
-# For the current directory and all subdirectories (unless a -l or --local option is used), make sure that the
-# Dolphin ".directory" file is uncorrupted and appropriate for the contents of the directory. This means that
-# directories which contain 1-or-more picture files (jpg, jpeg, bmp, png, apng, gif, tif, tiff) should have a
-# "thumbnails" or ctrl-1 ".directory" file, and all other directories should have a "details" or ctrl-3
-# ".directory" file.
+# "replace-dolphin-directory-files.pl"
+# For the current directory and all subdirectories (unless a -l or --local option is used), replace all
+# Dolphin ".directory" files with versions which are appropriate for the contents of the directory.
+# Make sure that directories which contain 1-or-more picture files (jpg, jpeg, bmp, png, apng, gif, tif,
+# tiff) have a "thumbnails" or ctrl-1 ".directory" file, and all other directories should have a "details"
+# or ctrl-3 ".directory" file.
 #
 # Written by Robbie Hatley, beginning on Monday March 13, 2023.
 #
@@ -176,7 +176,7 @@ sub curdire {
    # Return 1 if this directory doesn't match our regexp:
    return 1 if $cwd !~ m/$RegExp/;
 
-   # Return 1 if we're in one of our "exemplar" directories (or if host is unknown):
+   # Return 1 if we're in one of our "exemplar" directories:
    if ( 'Excalibur' eq $hostname ) {
       if ( '/home/aragorn/Data/Ulthar/OS-Resources/Background-Pictures/Scenic' eq $cwd ) {
          return 1;
@@ -195,6 +195,7 @@ sub curdire {
       }
    }
 
+   # Die if host is unknown:
    else {
       die "Error in rdd, in curdire(): invalid host.\n$!\n";
    }

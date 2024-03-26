@@ -65,7 +65,11 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # PRAGMAS, MODULES, AND SUBS:
 
 use v5.38;
+use strict;
+use warnings;
 use utf8;
+use warnings FATAL => 'utf8';
+
 use List::Util 'any';
 
 # Double $start while $start is in @array:
