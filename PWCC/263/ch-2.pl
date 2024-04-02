@@ -35,7 +35,8 @@ Output: [ [1,1], [2,9], [3,3] ]
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I'll make a hash with keys being "item_id" and values being "item_quanity". For each pair, I'll increment the
+value of key "item_id" by amount "item_quantity".
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
