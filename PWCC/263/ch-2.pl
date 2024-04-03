@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -41,8 +41,12 @@ value of key "item_id" by amount "item_quantity".
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays of arrays of 2-element arrays of positive integers, in proper Perl syntax:
+./ch-2.pl '( [ [[1,8],[2,6]] , [[3,7],[2,4]] ] , [ [[1,1],[2,1]] , [[3,1],[4,1]] ] )'
+The inner-most 2-element arrays will be construed as ordered [key,value] pairs.
+The second-inner-most arrays are lists of key,value pairs.
+The third-inner-most arrays are collections of such lists which are to be merged.
+The outer-most array is the set of all such collections to be processed.
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -52,46 +56,54 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # PRAGMAS, MODULES, AND SUBS:
 
 use v5.38;
-use strict;
-use warnings;
-use utf8;
-use warnings FATAL => 'utf8';
-
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+sub merge_items (@lists) {
+   # Make a hash of quantities keyed by id:
+   my %items;
+   # For each item (that is, for each (id,quantity) pair) in each list,
+   # add its quantity to the quantity for the corresponding id in the hash:
+   foreach my $list (@lists) {
+      foreach my $item (@$list) {
+         $items{$$item[0]} += $$item[1];
       }
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   # Finally, return a list of all (id,quantity) pairs from the hash,
+   # sorted by the numeric values of the keys:
+   return map {[$_,$items{$_}]} sort {$a <=> $b} keys %items;
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   [
+      [ [1,1], [2,1], [3,2] ],
+      [ [2,2], [1,3]        ],
+   ],
+   # Expected Output: [ [1,4], [2,3], [3,2] ]
+
+   # Example 2 Input:
+   [
+      [ [1,2], [2,3], [1,3], [3,2] ],
+      [ [3,1], [1,3]               ],
+   ],
+   # Expected Output: [ [1,8], [2,3], [3,3] ]
+
+   # Example 3 Input:
+   [
+      [ [1,1], [2,2], [3,3] ],
+      [ [2,3], [2,4]        ],
+   ],
+   # Expected Output: [ [1,1], [2,9], [3,3] ]
 );
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   my @lists = @$aref;
+   say 'Original lists of items:';
+   say '[ ' , join(', ', map {'[' . join(',', @$_) . ']'}         @$_        ) , ' ]' for @lists ;
+   say 'Merged list:';
+   say '[ ' , join(', ', map {'[' . join(',', @$_) . ']'} merge_items(@lists)) , ' ]'            ;
 }

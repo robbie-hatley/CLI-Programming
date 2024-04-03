@@ -85,7 +85,7 @@ sub help    ;
 my $Db        = 0          ; # Debug?                             bool           Don't debug.
 my $Verbose   = 0          ; # Print directories?                 bool           Don't print dirs.
 my $Recurse   = 0          ; # Recurse subdirectories?            bool           Be local.
-my $Target    = 'F'        ; # Files, directories, both, or All?  F|D|B|A        Regular files only.
+my $Target    = 'B'        ; # Files, directories, both, or All?  F|D|B|A        Regular files only.
 my $Mode      = 'P'        ; # Prompt mode                        P|S|Y          Prompt user.
 my $RegExp    = qr/^(.+)$/ ; # RegExp.                            RegExp         Match all file names.
 my $Replace   = '$1'       ; # Replacement string.                string         Replacement is same as match.
@@ -168,9 +168,9 @@ sub argv {
       /^-$s*v/ || /^--verbose$/  and $Verbose =  1     ;
       /^-$s*l/ || /^--local$/    and $Recurse =  0     ; # DEFAULT
       /^-$s*r/ || /^--recurse$/  and $Recurse =  1     ;
-      /^-$s*f/ || /^--files$/    and $Target  = 'F'    ; # DEFAULT
+      /^-$s*f/ || /^--files$/    and $Target  = 'F'    ;
       /^-$s*d/ || /^--dirs$/     and $Target  = 'D'    ;
-      /^-$s*b/ || /^--both$/     and $Target  = 'B'    ;
+      /^-$s*b/ || /^--both$/     and $Target  = 'B'    ; # DEFAULT
       /^-$s*a/ || /^--all$/      and $Target  = 'A'    ;
       /^-$s*p/ || /^--prompt$/   and $Mode    = 'P'    ; # DEFAULT
       /^-$s*s/ || /^--simulate$/ and $Mode    = 'S'    ;
@@ -345,8 +345,8 @@ sub stats {
 
 sub error ($NA) {
    print STDERR ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: You typed $NA arguments, but rename-files.pl takes 2, 3, or 4 arguments.
-   Help follows:
    END_OF_ERROR
    return 1;
 } # end sub error ($NA)
@@ -358,10 +358,14 @@ sub help {
    Introduction:
 
    Welcome to "rename-files.pl", Robbie Hatley's nifty file-renaming Perl script.
-   This program renames batches of directory entries in the current working
-   directory (and all of its subdirectories if a -r or --recurse option is used)
+   This program renames files and subdirectories in the current working directory
+   (and all of its subdirectories if a -r or --recurse option is used)
    by replacing matches to a given regular expression with a given replacement
    string.
+
+   By default, only regular files and subdirectories are processed, but this can
+   be altered by using --all|-a (for all entries), --files|-f (for files only),
+   or --directories|-d (for directories only).
 
    -------------------------------------------------------------------------------
    Command lines:
@@ -370,7 +374,7 @@ sub help {
    rename-files.pl [-h|--help]
 
    To rename files:
-   rename-files.pl [options] Arg1 Arg2 [Arg3]
+   rename-files.pl [options] Arg1 Arg2 [Arg3] [Arg4]
 
    -------------------------------------------------------------------------------
    Description of options:
@@ -382,9 +386,9 @@ sub help {
    -v or --verbose      DO   print directories.
    -l or --local       Rename files in current directory only.           (DEFAULT)
    -r or --recurse     Recurse subdirectories.
-   -f or --files       Rename regular files only.                        (DEFAULT)
+   -f or --files       Rename regular files only.
    -d or --dirs        Rename directories only.
-   -b or --both        Rename both regular files and directories.
+   -b or --both        Rename both regular files and directories.        (DEFAULT)
    -a or --all         Rename ALL directory entries.
    -p or --prompt      Prompt before renaming files.                     (DEFAULT)
    -s or --simulate    Simulate renames (don't actually rename files).
@@ -405,6 +409,11 @@ sub help {
    "arguments" rather than "options".
 
    All options not listed above are ignored.
+
+   WARNING: If the 4th argument ("Predicate"; see below) is used, any target-
+   selection options (-f, --files, -d, --directories, -b, --both, -a, --all)
+   will be ignored and the target will be set to "all". This is to avoid
+   conflict with predicates which may specify a boolean combination of targets.
 
    -------------------------------------------------------------------------------
    Description of arguments:
@@ -463,31 +472,22 @@ sub help {
    so they MUST appear in the order Arg1, Arg2, Arg3, Arg4. If you mix them up,
    they won't work right.
 
+   If the number of arguments is not an element of the set {2, 3, 4}, this
+   program will print an error message and abort execution.
+
    WARNING: If any of your arguments looks like an option (say, "--help"),
    use a "--" option and put any such arguments to the right of the "--"; that
    will force any items to the right of the "--" to be construed as arguments
-   rather than as options.
+   rather than as options (see the fifth usage example below).
 
    -------------------------------------------------------------------------------
-   Usage Examples:
+   Verbosity:
 
-   rename-files.pl -f 'dog' 'cat'
-   (would rename "Dogdog.txt" to "Dogcat.txt")
+   By default, rename-files will NOT announce each directory it navigates,
+   and will only print entry stats, info on files to be renamed, and exit stats.
 
-   rename-files.pl -f '(?i:dog)' 'cat'
-   (would rename "Dogdog.txt" to "catdog.txt")
-
-   rename-files.pl -f '(?i:dog)' 'cat' 'g'
-   (would rename "Dogdog.txt" to "catcat.txt")
-
-   rename-files.pl -f '--help' 'cat' 'g' '' '(-p || -S)'
-   (would just print this help and exit, because the '--help' would be
-   construed as an option, not an argument)
-
-   rename-files.pl -f -- '--help' 'cat' 'g' '' '(-p || -S)'
-   (would rename pipe "bad---help.p" to "bad-cat.p"
-   and would rename socket "--help---help.s" to "cat-cat.s",
-   because the -- forces '--help' to be an argument, not an option)
+   However, if a "-v" or "--verbose" switch is used, each directory navigated
+   will be announced.
 
    -------------------------------------------------------------------------------
    Directory Navigation:
@@ -499,13 +499,17 @@ sub help {
    -------------------------------------------------------------------------------
    Targets:
 
-   By default, rename-files renames regular files only. However, if a "-d" or
-   "--dirs" option is used, it will rename directories instead. If a "-b" or
-   "--both" option is used, it will rename both regular files and directories.
-   And if a "-a" or "--all" switch is use, it will rename ALL directory entries
-   (regular files, directories, links, pipes, sockets, etc, etc, etc).
-   And if a predicate argument (Arg4) is used, ANY combination of file types
-   can be renamed (say, sockets, pipes, and TTY files).
+   By default, rename-files renames regular files and subdirectories only.
+   This can be altered by using any of the following options:
+   -f | --files   => rename files only
+   -d | --dirs    => rename directories only
+   -b | --both    => rename both files and directories
+   -a | --all     => rename ALL directory entries
+
+   HOWEVER, if the 4th argument ("Predicate") is used, all target-selection
+   options (-f, --files, -d, --directories, -b, --both, -a, --all) will be
+   ignored, and the target will be set to "all". This is to avoid conflict with
+   predicates which may specify a boolean combination of targets.
 
    -------------------------------------------------------------------------------
    Prompting:
@@ -524,6 +528,27 @@ sub help {
    Also, the prompt mode can be changed from "prompt" to "no-prompt" on the fly
    by tapping the 'a' key when prompted.  All remaining renames will then be
    performed automatically without further prompting.
+
+   -------------------------------------------------------------------------------
+   Usage Examples:
+
+   rename-files.pl -f 'dog' 'cat'
+   (would rename "Dogdog.txt" to "Dogcat.txt")
+
+   rename-files.pl -f '(?i:dog)' 'cat'
+   (would rename "Dogdog.txt" to "catdog.txt")
+
+   rename-files.pl -f '(?i:dog)' 'cat' 'g'
+   (would rename "Dogdog.txt" to "catcat.txt")
+
+   rename-files.pl -f '--help' 'cat' 'g' '(-p || -S)'
+   (would just print this help and exit, because the '--help' would be
+   construed as an option, not an argument)
+
+   rename-files.pl -f -- '--help' 'cat' 'g' '(-p || -S)'
+   (would rename pipe "bad---help.p" to "bad-cat.p"
+   and would rename socket "--help---help.s" to "cat-cat.s",
+   because the -- forces '--help' to be an argument, not an option)
 
 
    Happy file renaming!

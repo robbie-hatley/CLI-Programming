@@ -50,11 +50,13 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-   use v5.38;
-   use List::MoreUtils 'indexes';
-   sub indices ($target, @array) {
-      return indexes {$_ == $target} sort {$a <=> $b} @array;
-   }
+use v5.38;
+use List::MoreUtils 'indexes';
+sub indices ($target, @array) {
+   # Return those indices of the sorted array
+   # for which the value equals the target:
+   return indexes {$_ == $target} sort {$a <=> $b} @array;
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
