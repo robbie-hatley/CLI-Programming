@@ -48,13 +48,14 @@
 #                   Got rid of "/...|.../" in favor of "/.../ || /.../" (speeds-up program).
 #                   Simplified way in which options and arguments are printed if debugging.
 #                   Removed "$" = ', '" and "$, = ', '". Got rid of "/o" from all instances of qr().
-#                   Changed all "$Db" to $Db". Debugging now simulates renames instead of exiting in main.
+#                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
 #                   Removed "no debug" option as that's already default in all of my programs.
 #                   "$Verbose" now means "print directories"; all other info is now printed regardless.
 #                   STDERR = "stats and serious errors". STDOUT = "files renamed, and dirs if being verbose".
 # Thu Sep 07, 2023: Added $Predicate. Using a predicate argument forces $Target to be 'A' to avoid conflicts.
 #                   Fixed "--mode=xxxx" typos in help.
 # Mon Oct 09, 2023: Fixed bug in which debug msg in curdire was being printed even when not debugging.
+# Thu Apr 04, 2023: Set default target to "both" and improved comments and help.
 ##############################################################################################################
 
 use v5.36;
@@ -85,7 +86,7 @@ sub help    ;
 my $Db        = 0          ; # Debug?                             bool           Don't debug.
 my $Verbose   = 0          ; # Print directories?                 bool           Don't print dirs.
 my $Recurse   = 0          ; # Recurse subdirectories?            bool           Be local.
-my $Target    = 'B'        ; # Files, directories, both, or All?  F|D|B|A        Regular files only.
+my $Target    = 'B'        ; # Files, directories, both, or All?  F|D|B|A        Both files & dirs.
 my $Mode      = 'P'        ; # Prompt mode                        P|S|Y          Prompt user.
 my $RegExp    = qr/^(.+)$/ ; # RegExp.                            RegExp         Match all file names.
 my $Replace   = '$1'       ; # Replacement string.                string         Replacement is same as match.
