@@ -35,11 +35,10 @@ Output: ''
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 My approach to solving this problem will be:
-1. Make a deduped sorted list "@chars" of all characters from the given input string "$str".
-2. Iterate through that list from left to right, pushing any characters which appear as both lower-case and
-   UPPER-CASE to an array "@great".
-3. Pop-and-return the right-most (and hence "greatest", according to the problem description) element of
-   @great (or return empty string if @great is empty).
+1. Make a list "@chars" of all characters from the given input string "$str".
+2. Iterate through that list from left to right, keeping track of the "greatest" character found so-far
+   which appears as both lower-case and UPPER-CASE in $str.
+3. Return the greatest character found (or return an empty string if no great characters were found).
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
