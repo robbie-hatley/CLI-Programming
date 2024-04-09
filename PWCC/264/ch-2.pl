@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -67,9 +67,6 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 use v5.38;
 use strict;
 use warnings;
-use utf8;
-use warnings FATAL => 'utf8';
-
 sub target_array ($s, $i) {
    my @t = ();
    for ( my $ii=0 ; $ii <= $#$s ; ++$ii ) {
