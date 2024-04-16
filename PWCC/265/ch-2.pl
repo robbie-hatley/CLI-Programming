@@ -11,8 +11,8 @@ written by Robbie Hatley on Mon Apr 15, 2024.
 PROBLEM DESCRIPTION:
 Task 265-2: Completing Word
 Submitted by: Mohammad Sajid Anwar
-You are given a string, $str containing alphnumeric characters
-and array of strings (alphabetic characters only), @str. Write
+You are given a string, $str, containing alphnumeric characters,
+and array of strings, @str (alphabetic characters only). Write
 a script to find the shortest completing word. If none found
 return empty string. A "completing word" is a word that contains
 all the letters in the given string, ignoring space and number.
@@ -27,7 +27,8 @@ The given string contains following, ignoring case and number:
 a 1 times
 b 1 times
 c 2 times
-The only string in the given array that satisfies the condition is 'accbbb'.
+The only string in the given array that satisfies the condition
+is 'accbbb'.
 
 Example 2:
 Input: $str = 'Da2 abc'
@@ -38,9 +39,8 @@ a 2 times
 b 1 times
 c 1 times
 d 1 times
-The are 2 strings in the given array that satisfies the condition:
-'baacd' and 'abaadc'.
-Shortest of the two is 'baacd'
+There are 2 strings that satisfies the condition:
+'baacd' and 'abaadc'. Shortest of the two is 'baacd'
 
 Example 3:
 Input: $str = 'JB 007'
@@ -49,17 +49,20 @@ Output: 'bjb'
 The given string contains following, ignoring case and number:
 j 1 times
 b 1 times
-The only string in the given array that satisfies the condition is 'bjb'.
+The only string that satisfies the condition is 'bjb'.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I solve this problem by making a list of all words (if any) from @str which contain at least as many of each
+letter of $str as $str does. If that list has words, I return the shorest; else I return an empty string.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays of double-quoted strings, in proper Perl syntax, like so:
+./ch-2.pl '(["jE38 37# b7", "Jen", "Jeff", "Jeb"],["黑94 7茶4 358", "Robbie", "黑黑茶", "Suresh", "黑茶"])'
+The first element of each inner array will be construed as "$str" and the remainder as "@str" as defined in
+the problem description.
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -73,42 +76,68 @@ use strict;
 use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
+no warnings 'uninitialized';
+use List::SomeUtils 'all';
+sub complete ($string, @array) {
+   # Make a hash of abundances of fold-cased letters from string:
+   my @str_chars = map {fc} grep {/\pL/} split //, $string;
+   my %str_ab;
+   foreach my $char (@str_chars) {
+      ++$str_ab{$char};
+   }
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
+   # Make a list of words (if any) which contain at least as many of each letter of $string as $string does:
+   my @words;
+   foreach my $element (@array) {
+      # Make a hash of abundances of fold-cased letters from array element:
+      my @ele_chars = map {fc} grep {/\pL/} split //, $element;
+      my %ele_ab;
+      foreach my $char (@ele_chars) {
+         ++$ele_ab{$char};
       }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+      # If this element contains at least as many of each letter of $string as $string does,
+      # then push this element onto our list of "completing words":
+      if (all {$ele_ab{$_} >= $str_ab{$_}} @str_chars) {
+         push @words, $element;
       }
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+
+   # If we have words, return shortest; else return empty string:
+   if (scalar(@words) > 0) {
+      my @sorted = sort {length($a)<=>length($b)} @words;
+      return shift @sorted;
+   }
+   else {
+      return '';
+   }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   ["aBc 11c", "accbbb", "abc", "abbc"],
+   # Expected Output: "accbbb"
+
+   # Example 2 Input:
+   ["Da2 abc", "abcm", "baacd", "abaadc"],
+   # Expected Output: "baacd"
+
+   # Example 3 Input:
+   ["JB 007", "jj", "bb", "bjb"],
+   # Expected Output: "bjb"
 );
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
+   my @array  = @$aref;
+   my $string = shift @array;
+   my $word   = complete($string, @array);
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say "String = \"$string\"";
+   say 'Array  = (', join(', ', @array), ')';
+   length($word) > 0 and say "Completing word = $word"
+   or say 'No completing word was found.';
 }
