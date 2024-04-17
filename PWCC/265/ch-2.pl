@@ -54,7 +54,7 @@ The only string that satisfies the condition is 'bjb'.
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 I solve this problem by making a list of all words (if any) from @str which contain at least as many of each
-letter of $str as $str does. If that list has words, I return the shorest; else I return an empty string.
+letter of $str as $str does. If that list has words, I return the shortest; else I return an empty string.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
