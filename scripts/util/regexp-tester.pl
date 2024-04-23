@@ -6,7 +6,7 @@
 
 ##############################################################################################################
 # regexp-tester.pl
-# Tests the regexp given by the first command-line argument by applying it to the text coming in on STDIN.
+# Tests the regexps given by command-line arguments by applying them to the text coming in on STDIN.
 # Written by Robbie Hatley.
 # Edit history:
 # Fri Dec 03, 2021: Wrote it.
@@ -15,6 +15,11 @@
 # Mon Aug 28, 2023: Improved argv. Got rid of "/o" on all instances of qr().
 # Tue Aug 29, 2023: Changed all "$Db" to "$Db". Argument processing now set's $RegExp even if many args.
 # Wed Aug 30, 2023: Got rid of a couple extra "say '';" (too many blank lines in output).
+# Fri Oct 20, 2023: Got rid of "$RegExp". Instead, now using "@args" to contain multiple regexps to be tested.
+#                   Input text is still via STDIN (redirect from file or pipe from echo).
+# Mon Apr 22, 2024: Corrected errors in comments and help which erroneously stated that only one RegExp can be
+#                   specified (actually, this program can now test many RegExps at once). Also got rid of
+#                   subroutine "error()" as it's no-longer needed. (If no args, program simply does nothing.)
 ##############################################################################################################
 
 use v5.36;
@@ -33,7 +38,6 @@ use RH::RegTest;
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 sub argv  ; # Process @ARGV.
-sub error ; # Handle errors.
 sub help  ; # Print help and exit.
 
 # ======= VARIABLES: =========================================================================================
@@ -88,39 +92,24 @@ sub argv {
 
    # Process options:
    for ( @opts ) {
-      /^-$s*h/ || /^--help$/ and help and exit 777 ;
+      /^-$s*h/ || /^--help$/  # If user wants help,
+      and help                # give help,
+      and exit 777;           # then exit, returning 777 to invoker of this script.
    }
 
    # Process arguments:
-   my $NA = scalar @args;       # Get number of arguments.
-   if ( 0 == $NA) {             # If there are NO arguments,
-      error($NA);               # print error message
-      help;                     # and print help message
-      exit 666;                 # and exit, returning The Number Of The Beast.
-   }
-   else {                       # Else if number of arguments is != 0,
-      ;                         # do nothing. (@args will now contain regular expressions to be tested.)
-   }
+   ;                          # Do nothing. (Arguments are in "@args" and main body processes them.)
 
-   # Return success code 1 to caller:
+   # If we get to here, return success code 1 to caller of this subroutine:
    return 1;
 } # end sub argv
-
-sub error ($NA) {
-   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
-
-   Error: you typed $NA arguments, but this program takes must have
-   1-or-more arguments, which much be valid Perl-Compliant
-   Regular Expressions. Help follows:
-   END_OF_ERROR
-} # end sub error ($)
 
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
-   Welcome to "regexp-tester.pl". This program tests a regular expression
-   (which must be given as this program's one-and-only command-line argument)
-   by matching text coming in on STDIN to that regexp.
+   Welcome to "regexp-tester.pl". This program tests a list of regular expressions
+   given as command-line arguments by matching text coming in on STDIN to those
+   regexps.
 
    Command lines:
    regexp-tester.pl -h | --help          (to print this help and exit)
@@ -133,10 +122,17 @@ sub help {
    (All other options are ignored.)
 
    Description of arguments:
+   Arguments to this program should be valid Perl-Compliant Regular Expressions.
+   This program will then test each of those regular expressions against each
+   line of text coming in on STDIN. If no arguments are given, this program will
+   do nothing.
 
-   This program must have 1-or-more arguments, which much be valid
-   Perl-Compliant Regular Expressions. This program will then test
-   each of those regular expressions against each line of input text.
+   Description of input:
+   Input is via STDIN. The two easiest ways of providing input are:
+   1. By pipe from echo:
+      echo "This is some input text!" | regexp-tester.pl '^\pL{4}\d{4}$'
+   2. By redirect from file:
+      regexp-tester.pl '^\pL{4}\d{4}$' < input_text.txt
 
 
    Happy regular-expression testing!

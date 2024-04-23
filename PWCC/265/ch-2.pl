@@ -79,37 +79,25 @@ use warnings FATAL => 'utf8';
 no warnings 'uninitialized';
 use List::SomeUtils 'all';
 sub complete ($string, @array) {
+   # Default our word-to-be-returned to an empty string:
+   my $word = '';
+
    # Make a hash of abundances of fold-cased letters from string:
    my @str_chars = map {fc} grep {/\pL/} split //, $string;
    my %str_ab;
-   foreach my $char (@str_chars) {
-      ++$str_ab{$char};
-   }
+   foreach my $char (@str_chars) {++$str_ab{$char};}
 
-   # Make a list of words (if any) which contain at least as many of each letter of $string as $string does:
-   my @words;
-   foreach my $element (@array) {
+   # Iterate through a copy of @array sorted in increasing order of element length:
+   foreach my $element (sort {length($a)<=>length($b)} @array) {
       # Make a hash of abundances of fold-cased letters from array element:
       my @ele_chars = map {fc} grep {/\pL/} split //, $element;
       my %ele_ab;
-      foreach my $char (@ele_chars) {
-         ++$ele_ab{$char};
-      }
+      foreach my $char (@ele_chars) {++$ele_ab{$char};}
       # If this element contains at least as many of each letter of $string as $string does,
-      # then push this element onto our list of "completing words":
-      if (all {$ele_ab{$_} >= $str_ab{$_}} @str_chars) {
-         push @words, $element;
-      }
+      # then set our word to this element and break from loop:
+      all {$ele_ab{$_} >= $str_ab{$_}} @str_chars and $word = $element and last;
    }
-
-   # If we have words, return shortest; else return empty string:
-   if (scalar(@words) > 0) {
-      my @sorted = sort {length($a)<=>length($b)} @words;
-      return shift @sorted;
-   }
-   else {
-      return '';
-   }
+   return $word;
 }
 
 # ------------------------------------------------------------------------------------------------------------
