@@ -57,7 +57,7 @@ make a hash of abundances of all such "words" encountered in all input strings t
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["I ate 3 hot dogs.", "i ate 7 COLD dogs!"],["sHe diD!", "She didn'"'"'t"?!])'
+./ch-1.pl '(["I ate 3 hot dogs.", "i ate 7 COLD dogs."],["sHe diD.", "She didn'"'"'t."])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -67,6 +67,9 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # PRAGMAS, MODULES, AND SUBS:
 
 use v5.36;
+
+# Return all uncommon (abundance == 1) words from a given
+# array of strings:
 sub uncommon ($aref) {
    my %a;
    for my $string (@$aref) {
@@ -74,7 +77,6 @@ sub uncommon ($aref) {
          ++$a{$word}; # Autovivify as necessary.
       }
    }
-   # Return all uncommon (abundance == 1) words:
    return grep {1 == $a{$_}} keys %a;
 }
 
