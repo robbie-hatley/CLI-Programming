@@ -55,7 +55,7 @@
 # Thu Sep 07, 2023: Added $Predicate. Using a predicate argument forces $Target to be 'A' to avoid conflicts.
 #                   Fixed "--mode=xxxx" typos in help.
 # Mon Oct 09, 2023: Fixed bug in which debug msg in curdire was being printed even when not debugging.
-# Thu Apr 04, 2023: Set default target to "both" and improved comments and help.
+# Sat Apr 27, 2024: Set default target to "both" and improved comments and help.
 ##############################################################################################################
 
 use v5.36;

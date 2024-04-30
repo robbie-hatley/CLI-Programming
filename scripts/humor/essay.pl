@@ -26,14 +26,16 @@ my $Cols = 50; $Cols = int shift if @ARGV;
 
 for my $Row (0..$Rows-1)
 {
+   if (0 != $Row) {print "\n";}
    for my $Col (0..$Cols-1)
    {
       my $Word = $Words[rand_int(0,$NumWords-1)];
       if (0 == $Col%20) {$Word =~ s/^(\pL)/\u$1/;}
-      print "$Word ";
-      if ( 4 == $Col% 5 && $Col > 0 && $Col < $Cols-4) {print "\x{8}, ";}
-      if ( 9 == $Col%10 && $Col > 0 && $Col < $Cols-4) {print "\x{8}\x{8}; ";}
-      if (19 == $Col%20 && $Col > 0 && $Col < $Cols-4) {print "\x{8}\x{8}. ";}
+      if (0 != $Col) {print " ";}
+      print "$Word";
+      if    (19 == $Col%20 && $Col > 0 && $Col < $Cols-4) {print ".";}
+      elsif ( 9 == $Col%10 && $Col > 0 && $Col < $Cols-4) {print ";";}
+      elsif ( 4 == $Col% 5 && $Col > 0 && $Col < $Cols-4) {print ",";}
    }
-   print "\x{8}. \n\n";
+   print ".\n";
 }

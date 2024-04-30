@@ -1,95 +1,96 @@
 #!/usr/bin/env -S perl -CSDA
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # file-names-to-upper.pl
-# Converts names of all files in current directory to all-upper-case.
+# Converts names of all files in current directory to UPPER-CASE.
 #
 # Edit history:
 # Tue Jun 30, 2015: Wrote it.
 # Fri Jul 17, 2015: Upgraded for utf8.
 # Sat Apr 16, 2016: Now using -CSDA.
-# Wed Feb 17, 2021: Refactored to use the new GetFiles(), which now requires a fully-qualified directory as its first
-#                   argument, target as second, and regexp (instead of wildcard) as third.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-########################################################################################################################
+# Wed Feb 17, 2021: Refactored to use the new GetFiles(), which now requires a fully-qualified directory as
+#                   its first argument, target as second, and regexp (instead of wildcard) as third.
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate. Now using "common::sense" and
+#                   "Sys::Binmode".
+# Sat Apr 27, 2024: Updated from "v5.32" to "v5.36". Reduced max line length from 120 to 110. Got rid of
+#                   "common::sense" (obsolete) and "Sys::Binmode" (unnecessary). Shorted all sub names.
+#                   Got rid of all prototypes. Now using signatures.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
 
 use RH::Util;
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub process_argv              ();
-sub process_current_directory ();
-sub process_current_file      ($);
-sub stats                     ();
-sub error                     ($);
-sub help                      ();
+sub argv    ; # Process @ARGV.
+sub curdire ; # Process current directory.
+sub curfile ; # Process current file.
+sub stats   ; # Print statistics.
+sub error   ; # Handle errors.
+sub help    ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Settings:
-my $Recurse   = 0         ; # Recurse subdirectories?  (bool)
-my $Target    = 'A'       ; # Target                   (F|D|B|A)
-my $Regexp    = qr/^.+$/o ; # Regular expression.      (regexp)
+my $Recurse   = 0        ; # Recurse subdirectories?  (bool)     (Default is "don't recurse")
+my $Target    = 'F'      ; # Target                   (F|D|B|A)  (Default is "files only"   )
+my $Regexp    = qr/^.+$/ ; # Regular expression.      (regexp)   (Default is "all names"    )
 
 # Counters:
-my $direcount = 0         ; # Count of directories processed by process_current_directory().
-my $filecount = 0         ; # Count of    files    processed by process_current_file().
-my $skipcount = 0         ; # Count of files skipped.
-my $renacount = 0         ; # Count of files renamed.
-my $failcount = 0         ; # Count of failed attempts to rename files.
+my $direcount = 0        ; # Count of directories processed by curdire().
+my $filecount = 0        ; # Count of    files    processed by curfile().
+my $skipcount = 0        ; # Count of files skipped.
+my $renacount = 0        ; # Count of files renamed.
+my $failcount = 0        ; # Count of failed attempts to rename files.
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
-   say "\nNow entering program \"file-names-to-lower.pl\".\n";
-   process_argv;
-   $Recurse and RecurseDirs {process_current_directory} or process_current_directory;
+   my $pname = substr $0, 1 + rindex $0, '/';
+   say "Now entering program \"$pname\".";
+   argv;
+   $Recurse and RecurseDirs {curdire} or curdire;
    stats;
-   say "\nNow exiting program \"file-names-to-lower.pl\".\n";
+   say '';
+   say "Now exiting program \"$pname\".";
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
-sub process_argv ()
-{
+sub argv {
    my $help   = 0;  # Just print help and exit?
    my @CLArgs = (); # Command-Line Arguments (not including options).
-   foreach (@ARGV)
-   {
-      if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
+   foreach (@ARGV) {
+      if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/) {
          /^-h$/ || /^--help$/         and $help    =  1 ;
-         /^-r$/ || /^--recurse$/      and $Recurse =  1 ;
-         /^-f$/ || /^--target=files$/ and $Target  = 'F';
+         /^-r$/ || /^--recurse$/      and $Recurse =  1 ; # Default is "don't recurse"
+         /^-f$/ || /^--target=files$/ and $Target  = 'F'; # Default is "files only"
          /^-d$/ || /^--target=dirs$/  and $Target  = 'D';
          /^-b$/ || /^--target=both$/  and $Target  = 'B';
          /^-a$/ || /^--target=all$/   and $Target  = 'A';
       }
       else {push @CLArgs, $_;}
    }
-   if ($help) {help; exit 777;}             # If user wants help, print help and exit 777.
-   my $NA = scalar(@CLArgs);                # Get number of arguments.
-   given ($NA)                              # Given the number of arguments,
-   {
-      when (0) {                         ;} # if $NA == 0, do nothing;
-      when (1) {$Regexp = qr/$CLArgs[0]/o;} # if $NA == 1, set $Regexp;
-      default  {error($NA)               ;} # otherwise, print error and help messages and exit 666.
-   }
-   return 1;
-} # end sub process_argv ()
+   if ($help) {help; exit 777;}               # If user wants help, print help and exit 777.
+   my $NA = scalar(@CLArgs);                  # Get number of arguments.
+   if    ( 0 == $NA ) { ; }                   #      if $NA == 0, do nothing;
+   elsif ( 1 == $NA ) {$Regexp = $CLArgs[0];} # else if $NA == 1, set $Regexp;
+   else  {error($NA); help; exit 666;}        # else if $NA  > 1, print error and help messages and exit 666.
+   return 1;                                  # Return success code 1 to caller.
+} # end sub argv
 
-sub process_current_directory ()
-{
+sub curdire {
    ++$direcount;
 
    # Get and announce current working directory:
@@ -100,17 +101,14 @@ sub process_current_directory ()
    my $curdirfiles = GetFiles($curdir, $Target, $Regexp);
 
    # Iterate through these files, title-casing them:
-   foreach my $file (@{$curdirfiles})
-   {
-      process_current_file($file);
+   foreach my $file (@{$curdirfiles}) {
+      curfile($file);
    }
    return 1;
-} # end sub process_current_directory ()
+} # end sub curdire
 
-sub process_current_file ($)
-{
+sub curfile ($file) {
    ++$filecount;                       # increment file counter
-   my $file = shift;                   # reference to file-info record
    my $oldname = $file->{Name};        # "Name" field of record
    my $oldpref = get_prefix($oldname); # get old prefix
    my $oldsuff = get_suffix($oldname); # get old suffix
@@ -118,31 +116,25 @@ sub process_current_file ($)
    my $newsuff = uc $oldsuff;          # convert suffix to upper-case
    my $newname = $newpref . $newsuff;  # create new name
    my $success = 0;                    # Did we succeed?
-
-   if ($newname ne $oldname)           # try rename if new name different from old
-   {
+   if ($newname ne $oldname) {         # try rename if new name different from old
       $success = rename_file($oldname, $newname);
-      if ($success)
-      {
+      if ($success) {
          say("$oldname -> $newname");
          ++$renacount;
       }
-      else
-      {
+      else {
          warn("Failed to rename $oldname to $newname\n");
          ++$failcount;
       }
    }
-   else
-   {
+   else {
       $success = 0;
       ++$skipcount;
    }
    return $success;
-} # end sub process_current_file ($)
+} # end sub curfile
 
-sub stats ()
-{
+sub stats {
    print("\nStatistics for program \"file-names-to-upper.pl\":\n");
    say "Navigated $direcount directories.";
    say "Examined  $filecount files.";
@@ -150,28 +142,23 @@ sub stats ()
    say "Renamed   $renacount files.";
    say "Failed    $failcount file rename attempts.";
    return 1;
-} # end sub stats ()
+} # end sub stats
 
-sub error ($)
-{
-   my $NA = shift;
+sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: You typed $NA arguments, but this program takes at most
    1 argument which, if present, must be a regular expression
    specifying which files and/or directories to process.
-   Help follows:
-
    END_OF_ERROR
-   help;
-   exit 666;
-} # end sub error ($)
+} # end sub error
 
-sub help ()
-{
+sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "file-names-to-upper.pl". This program converts the names of all
    files in the current directory (and all subdirectories if a -r or --recurse
-   option is used) to all-upper-case.
+   option is used) to UPPER-CASE.
 
    Command line:
    file-names-to-upper.pl [-h|--help] [-r|--recurse] [Arg1]
@@ -202,4 +189,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help
