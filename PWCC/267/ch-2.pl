@@ -44,8 +44,9 @@ out of characters, then return the scalar of that array (line count) and the len
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays, with each inner array consisting of a double-quoted string of lower-case
+English letters followed by an array of 26 positive integers, in proper Perl syntax, like so:
+./ch-2.pl '(["dlsnvkgueitasashdfirstpqwert",[1,23,17,4,7,2,8,20,5,3,1,23,17,4,7,2,8,20,5,3,5,2,4,3,1,7]])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -57,28 +58,86 @@ Output is to STDOUT and will be each input followed by the corresponding output.
    use v5.36;
    use List::Util 'sum0';
    use List::SomeUtils 'mesh';
-   sub line_counts ($str, @widths) {
-      my %w = mesh ('a'..'z'), @widths;
+   # Is a given scalar a string of lower-case English letters?
+   sub is_az_string ($x) {
+      # We're only interested in non-empty, non-huge strings consisting
+      # purely of lower-case English letters abcdefghijklmnopqrstuvwxyz:
+      $x !~ m/^[a-z]{1,10000}$/ and return 0;
+      # If we get to here, $x passes all tests so return 1:
+      return 1;
    }
-
+   # Is a given scalar a positive integer?
+   sub is_posint ($x) {
+      # We're only interested in positive integers:
+      $x !~ m/^[1-9]\d*$/ and return 0;
+      # If we get to here, $x passes all tests so return 1:
+      return 1;
+   }
+   # Is a given array a list of 26 positive integers?
+   sub are_26_posints (@widths) {
+      return 0 if 26 != scalar(@widths);
+      for my $width (@widths) {return 0 if !is_posint($width);}
+      return 1;
+   }
+   # Return count of lines, length of last line, and lines:
+   sub lines ($str, @widths) {
+      return (0,0) if !is_az_string($str);
+      return (0,0) if !are_26_posints(@widths);
+      my @letters = 'a'..'z';
+      my %w = mesh @letters, @widths;
+      my @lines ;
+      my ($line, $width, $next, $wext);
+      while ($str) {
+         $line  = '';
+         $width = 0 ;
+         $next  = '';
+         $wext  = 0 ;
+         while ($str && $width + ($wext = $w{$next = substr($str, 0, 1)}) <= 100) {
+            $line  .= $next;
+            $width += $wext;
+            substr($str, 0, 1, '');
+         }
+         push @lines, $line;
+      }
+      return (scalar(@lines), $width, @lines);
+   }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 inputs:
+   [
+      "abcdefghijklmnopqrstuvwxyz",
+      [10,10,10,10,10,10,10,10,10,10,
+       10,10,10,10,10,10,10,10,10,10,
+       10,10,10,10,10,10],
+   ],
+   # Expected output: (3, 60)
+
+   # Example 2 inputs:
+   [
+      "bbbcccdddaaa",
+      [ 4,10,10,10,10,10,10,10,10,10,
+       10,10,10,10,10,10,10,10,10,10,
+       10,10,10,10,10,10],
+   ],
+   # Expected output: (2, 4)
 );
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   my $str = $aref->[0];
+   my $wid = $aref->[1];
+   my @lines  = lines($str, @$wid);
+   my $count  = shift @lines;
+   my $length = shift @lines;
+   say "String = $str";
+   say "Widths = @$wid";
+   say 'Lines:';
+   say for @lines;
+   say "Line count  = $count";
+   say "Last length = $length";
 }
