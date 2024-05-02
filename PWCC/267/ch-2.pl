@@ -79,7 +79,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       for my $width (@widths) {return 0 if !is_posint($width);}
       return 1;
    }
-   # Return count of lines, length of last line, and lines:
+   # Return count of lines, width of last line, and lines:
    sub lines ($str, @widths) {
       return (0,0) if !is_az_string($str);
       return (0,0) if !are_26_posints(@widths);
@@ -88,10 +88,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       my @lines ;
       my ($line, $width, $next, $wext);
       while ($str) {
-         $line  = '';
-         $width = 0 ;
-         $next  = '';
-         $wext  = 0 ;
+         ($line, $width, $next, $wext) = ('',0,'',0);
          while ($str && $width + ($wext = $w{$next = substr($str, 0, 1)}) <= 100) {
             $line  .= $next;
             $width += $wext;
@@ -131,13 +128,11 @@ for my $aref (@arrays) {
    say '';
    my $str = $aref->[0];
    my $wid = $aref->[1];
-   my @lines  = lines($str, @$wid);
-   my $count  = shift @lines;
-   my $length = shift @lines;
+   my ($count, $width, @lines)  = lines($str, @$wid);
    say "String = $str";
    say "Widths = @$wid";
    say 'Lines:';
    say for @lines;
-   say "Line count  = $count";
-   say "Last length = $length";
+   say "Line count = $count";
+   say "Last width = $width";
 }

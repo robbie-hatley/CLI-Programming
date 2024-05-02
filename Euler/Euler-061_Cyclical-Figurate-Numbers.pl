@@ -52,13 +52,13 @@ sub first_two ($x) {return int $x / 100}
 sub last_two  ($x) {return     $x % 100}
 
 # Subroutine for determining whether a given ordered sextet of 4-digit positive integers is cyclic:
-sub is_cyclic ($aref) {
-   return 0 if last_two($aref->[0]) != first_two($aref->[1]);
-   return 0 if last_two($aref->[1]) != first_two($aref->[2]);
-   return 0 if last_two($aref->[2]) != first_two($aref->[3]);
-   return 0 if last_two($aref->[3]) != first_two($aref->[4]);
-   return 0 if last_two($aref->[4]) != first_two($aref->[5]);
-   return 0 if last_two($aref->[5]) != first_two($aref->[0]);
+sub is_cyclic (@a) {
+   return 0 if last_two($a[0]) != first_two($a[1]);
+   return 0 if last_two($a[1]) != first_two($a[2]);
+   return 0 if last_two($a[2]) != first_two($a[3]);
+   return 0 if last_two($a[3]) != first_two($a[4]);
+   return 0 if last_two($a[4]) != first_two($a[5]);
+   return 0 if last_two($a[5]) != first_two($a[0]);
    return 1;
 }
 
@@ -66,14 +66,16 @@ sub is_cyclic ($aref) {
 my @Numbers = ([],[],[],[],[],[]);
 
 # Fill arrays of triangle, square, pentagon, hexagon, heptagon, octagon numbers:
-for ( my $i = 10 ; $i <= 1000 ; ++$i ) {
-   my $p3 = P3($i); if ($p3 >= 1000 && $p3 <= 9999 && '0' ne substr($p3,2,1)) {push @{$Numbers[0]}, $p3}
-   my $p4 = P4($i); if ($p4 >= 1000 && $p4 <= 9999 && '0' ne substr($p4,2,1)) {push @{$Numbers[1]}, $p4}
-   my $p5 = P5($i); if ($p5 >= 1000 && $p5 <= 9999 && '0' ne substr($p5,2,1)) {push @{$Numbers[2]}, $p5}
-   my $p6 = P6($i); if ($p6 >= 1000 && $p6 <= 9999 && '0' ne substr($p6,2,1)) {push @{$Numbers[3]}, $p6}
-   my $p7 = P7($i); if ($p7 >= 1000 && $p7 <= 9999 && '0' ne substr($p7,2,1)) {push @{$Numbers[4]}, $p7}
-   my $p8 = P8($i); if ($p8 >= 1000 && $p8 <= 9999 && '0' ne substr($p8,2,1)) {push @{$Numbers[5]}, $p8}
+for ( my $i = 1 ; $i <= 150 ; ++$i ) {
+   my $p3 = P3($i); $p3 =~ m/^[1-9]\d[1-9]\d$/ and push @{$Numbers[0]}, $p3;
+   my $p4 = P4($i); $p4 =~ m/^[1-9]\d[1-9]\d$/ and push @{$Numbers[1]}, $p4;
+   my $p5 = P5($i); $p5 =~ m/^[1-9]\d[1-9]\d$/ and push @{$Numbers[2]}, $p5;
+   my $p6 = P6($i); $p6 =~ m/^[1-9]\d[1-9]\d$/ and push @{$Numbers[3]}, $p6;
+   my $p7 = P7($i); $p7 =~ m/^[1-9]\d[1-9]\d$/ and push @{$Numbers[4]}, $p7;
+   my $p8 = P8($i); $p8 =~ m/^[1-9]\d[1-9]\d$/ and push @{$Numbers[5]}, $p8;
 }
+
+=pod
 
 say '';
 say 'List of 4-digit triangle numbers:';
@@ -99,32 +101,30 @@ say '';
 say 'List of 4-digit octagon numbers:';
 say $_ for @{$Numbers[5]};
 
-# Get rid of numbers with no cross-links:
-for my $shape1 (0..5) {
-   NUMBER1: for my $number1 (@{$Numbers[$shape1]}) {
-      for my $shape2 (0..5) {
-         next if $shape2 == $shape1;
-         for my $number2 (@{$Numbers[$shape2]) {
-            next NUMBER1 if last_two($number1) == first_two($number2);
-         }
-      }
-      splice @{$Numbers[$shape1]},
-   }
-}
+=cut
 
-say '';
-for my $p3 (@{$Numbers[0]}) {
-   for my $p4 (@{$Numbers[1]}) {
-      for my $p5 (@{$Numbers[2]}) {
-         say "$p3 $p4 $p5";
-         for my $p6 (@{$Numbers[3]}) {
-            for my $p7 (@{$Numbers[4]}) {
-               for my $p8 (@{$Numbers[5]}) {
-                  my @permutations = permute($p3, $p4, $p5, $p6, $p7, $p8);
-                  for my $permutation (@permutations) {
-                     if ( is_cyclic($permutation) ) {
-                        say "FOUND CYCLIC PERMUTATION: ", join(', ', @$permutation);
-                     }
+my @shapes = ('triangle','square','pentagon','hexagon','heptagon','octagon');
+my @shapesets = permute(1,2,3,4,5);
+for my $shapeset (@shapesets) {unshift @$shapeset, 0}
+for my $shapeset (@shapesets) {
+   # say 'Current shapeset = (', join(', ', @$shapeset), ')';
+   for my $p0 (@{$Numbers[$$shapeset[0]]}) {
+      for my $p1 (@{$Numbers[$$shapeset[1]]}) {
+         next if last_two($p0) != first_two($p1);
+         for my $p2 (@{$Numbers[$$shapeset[2]]}) {
+            next if last_two($p1) != first_two($p2);
+            for my $p3 (@{$Numbers[$$shapeset[3]]}) {
+               next if last_two($p2) != first_two($p3);
+               for my $p4 (@{$Numbers[$$shapeset[4]]}) {
+                  next if last_two($p3) != first_two($p4);
+                  for my $p5 (@{$Numbers[$$shapeset[5]]}) {
+                     next if last_two($p4) != first_two($p5);
+                     next if last_two($p5) != first_two($p0);
+                     my @o = @shapes[@$shapeset];
+                     say "FOUND CYCLIC ORDERED SET: "
+                       . "$p0 ($o[0]), $p1 ($o[1]), $p2 ($o[2]), "
+                       . "$p3 ($o[3]), $p4 ($o[4]), $p5 ($o[5])  ";
+                     say 'Sum = ', $p0+$p1+$p2+$p3+$p4+$p5;
                   }
                }
             }
@@ -132,4 +132,3 @@ for my $p3 (@{$Numbers[0]}) {
       }
    }
 }
-
