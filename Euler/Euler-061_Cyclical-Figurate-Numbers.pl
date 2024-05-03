@@ -51,18 +51,7 @@ sub P8 ($n) { return $n*(3*$n-2)   }
 sub first_two ($x) {return int $x / 100}
 sub last_two  ($x) {return     $x % 100}
 
-# Subroutine for determining whether a given ordered sextet of 4-digit positive integers is cyclic:
-sub is_cyclic (@a) {
-   return 0 if last_two($a[0]) != first_two($a[1]);
-   return 0 if last_two($a[1]) != first_two($a[2]);
-   return 0 if last_two($a[2]) != first_two($a[3]);
-   return 0 if last_two($a[3]) != first_two($a[4]);
-   return 0 if last_two($a[4]) != first_two($a[5]);
-   return 0 if last_two($a[5]) != first_two($a[0]);
-   return 1;
-}
-
-# References to arrays of triangle, square, pentagon, hexagon, heptagon, octagon numbers:
+# Make arrays of triangle, square, pentagon, hexagon, heptagon, octagon numbers:
 my @Numbers = ([],[],[],[],[],[]);
 
 # Fill arrays of triangle, square, pentagon, hexagon, heptagon, octagon numbers:
