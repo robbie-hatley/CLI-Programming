@@ -82,6 +82,7 @@ sub is_possaon ($matref) {
    return 1;
 }
 
+# Determine "magic number" (if any) for given matrix:
 sub magic ($matref) {
    my @row1 = sort {$a<=>$b} @{$$matref[0]};
    my @row2 = sort {$a<=>$b} @{$$matref[1]};
