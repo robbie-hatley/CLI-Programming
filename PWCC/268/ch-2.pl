@@ -75,8 +75,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
    # Return stairway sort of an array:
    sub stairway (@array) {
-      my @sorted = sort {$a<=>$b} @array;
-      pairmap {$b,$a} @sorted;
+      pairmap {$b,$a} sort {$a<=>$b} @array;
    }
 
 # ------------------------------------------------------------------------------------------------------------
