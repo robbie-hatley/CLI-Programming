@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -9,28 +9,41 @@ written by Robbie Hatley on Wed May 13, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 269-2: Anamatu Serjianu
-Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to
-ingvl kuijit anku the mirans under the gruhk.
+Task 269-2: Distribute Elements
+Submitted by: Mohammad Sajid Anwar
+You are given an array, @ints, of 2-or-more distinct integers.
+Write a script to distribute the elements as described below:
+1) Move the 1st element of @ints to a new array @arr1.
+2) Move the 2nd element of @ints to a new array @arr2.
+3) For each first element of @ints, if the last element of @arr1
+   is greater than the last element of @arr2, then move the
+   first element of @ints to the end of @arr1; otherwise, move
+   the first element of @ints to the end of @arr2.
+4) Once @ints is empty, return the concatenated arrays
+   (@arr1, @arr2).
 
-Example 1:
-Input:   ('dog', 'cat'),
-Output:  false
+Example 1
+Input: @ints = (2, 1, 3, 4, 5)
+Expected output: (2, 3, 4, 5, 1)
 
-Example 2:
-Input:   ('', 'peach'),
-Output:  ('grape')
+Example 2
+Input: @ints = (3, 2, 4)
+Expected output: (3, 4, 2)
+
+Example 3
+Input: @ints = (5, 4, 3 ,8)
+Expected output: (5, 3, 4, 8)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This is just a matter of using "shift" to repeatedly remove the first element of the input array, and using
+"push" to push it to the end of either @arr1 or @arr2, then returning (@arr1, @arr2).
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays of 2-or-more distinct integers, in proper Perl syntax, like so:
+./ch-2.pl '([3,8,-17,13,6,82,7],[1,2,3,4,5,6,7],[7,6,5,4,3,2,1])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -39,47 +52,57 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
-use strict;
-use warnings;
-use utf8;
-use warnings FATAL => 'utf8';
+   use v5.38;
+   use List::MoreUtils 'duplicates';
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
+   sub is_distinct_ints ($aref) {
+      'ARRAY' ne ref $aref and return 0;
+      scalar(@$aref) < 2   and return 0;
+      duplicates @$aref    and return 0;
+      for my $element (@$aref) {
+         $element !~ m/^-[1-9]\d*$|^0$|^[1-9]\d*$/ and return 0;
       }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
-      }
+      return 1;
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
-}
+
+   sub distribute_elements (@ints) {
+      my @arr1; push @arr1, shift @ints;
+      my @arr2; push @arr2, shift @ints;
+      while (@ints) {
+         my $x = shift @ints;
+         $arr1[-1] > $arr2[-1] and push @arr1, $x
+                               or  push @arr2, $x;
+      }
+      return (@arr1, @arr2);
+   }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 Input:
+   [2, 1, 3, 4, 5],
+   # Expected output: (2, 3, 4, 5, 1)
+
+   # Example 2 Input:
+   [3, 2, 4],
+   # Expected output: (3, 4, 2)
+
+   # Example 3
+   [5, 4, 3 ,8],
+   # Expected output: (5, 3, 4, 8)
 );
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   $" = ', ';
+   say "Original    array = (@$aref)";
+   !is_distinct_ints($aref)
+   and say 'Not an array of 2-or-more distinct integers.'
+   and say 'Moving on to next array.'
+   and next;
+   my @distributed = distribute_elements(@$aref);
+   say "Distributed array = (@distributed)";
 }
