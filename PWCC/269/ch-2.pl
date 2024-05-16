@@ -74,11 +74,11 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       my @arr1; push @arr1, shift @ints;
       my @arr2; push @arr2, shift @ints;
       while (@ints) {
-         my $x = shift @ints;
-         $arr1[-1] > $arr2[-1] and push @arr1, $x
-                               or  push @arr2, $x;
+         $arr1[-1] > $arr2[-1]
+         and push @arr1, shift @ints
+         or  push @arr2, shift @ints;
       }
-      (@arr1, @arr2);
+      return (@arr1, @arr2);
    }
 
 # ------------------------------------------------------------------------------------------------------------
