@@ -39,9 +39,9 @@ int main (int Beren, char * Luthien[])
       );
    }
 
-   mpz_init(f);
-   mpz_fac_ui(f,n);
-   gmp_printf("%Zu", f);
+   mpz_init(f);          // Initialize f.
+   mpz_fac_ui(f,n);      // Calculate factorial.
+   gmp_printf("%Zu", f); // Print factorial.
 
    return 0;
 }
