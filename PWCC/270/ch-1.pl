@@ -47,14 +47,15 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
-# PRAGMAS, MODULES, AND SUBS:
+# PRAGMAS, MODULES, SUBS, AND VARIABLES:
 
 use v5.38;
 use List::Util 'sum0';
+$" = ', ';
 
 # Is a given scalar a ref to an m x n binary matrix?
 sub is_binary_matrix ($matref) {
-   'ARRAY' ne $matref and return 0; # Not a ref to an array?
+   'ARRAY' ne ref $matref and return 0; # Not a ref to an array?
    my $m = scalar($matref);
    0 == $m and return 1; # All 0x0 arrays are mxn binary matrices.
    my $n = scalar(@{$$matref[0]});
@@ -89,11 +90,14 @@ sub special_positions ($matref) {
    my $count = 0;
    my @rowcounts = ();
    my @colcounts = ();
-   for    ( my $i = 0 ; $i < $m ; ++$i ) {my @row = row($matref, $i); my $rcnt=sum0(@row); push @rowcounts,$rcnt;}
-   for    ( my $j = 0 ; $j < $n ; ++$j ) {my @col = col($matref, $j); my $ccnt=sum0(@col); push @colcounts,$ccnt;}
+   for    ( my $i = 0 ; $i < $m ; ++$i ) {push(@rowcounts,sum0(row($matref,$i)))}
+   for    ( my $j = 0 ; $j < $n ; ++$j ) {push(@colcounts,sum0(col($matref,$j)))}
    for    ( my $i = 0 ; $i < $m ; ++$i ) {
       for ( my $j = 0 ; $j < $n ; ++$j ) {
-         1 == $matref->[$i]->[$j] && 1 == $rowcounts[$i] && 1 == $colcounts[$j] and ++$count;
+            1 == $matref->[$i]->[$j]
+         && 1 == $rowcounts[$i]
+         && 1 == $colcounts[$j]
+         and ++$count;
       }
    }
    return $count;
@@ -124,5 +128,11 @@ my @matrices = @ARGV ? eval($ARGV[0]) :
 # MAIN BODY OF PROGRAM:
 for my $matref (@matrices) {
    say '';
+   say 'Matrix = ';
+   say "[@$_]" for @$matref;
+   !is_binary_matrix($matref)
+   and say 'Error: Not a binary matrix'
+   and say 'Moving on to next matrix.'
+   and next;
    say 'Number of Special Positions = ', special_positions($matref);
 }
