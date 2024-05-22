@@ -757,14 +757,17 @@ sub RecurseDirs :prototype(&) ($f) {
       next SUBDIR if $subdir eq '.';                            # Windows/Linux/Cygwin: Hard link to self.
       next SUBDIR if $subdir eq '..';                           # Windows/Linux/Cygwin: Hard link to parent.
       next SUBDIR if $subdir eq '.git';                         # Windows/Linux/Cygwin: git files; no touch.
+      next SUBDIR if $subdir eq 'bak';                          # Windows/Linux/Cygwin: backups;    too big.
+      next SUBDIR if $subdir eq 'net';                          # Windows/Linux/Cygwin: networks;   too big.
+      next SUBDIR if $subdir eq 'rem';                          # Windows/Linux/Cygwin: removables; too big.
       next SUBDIR if $subdir eq 'System Volume Information';    # Windows: System volume information.
       next SUBDIR if $subdir eq 'lost+found';                   # Linux: Lost & Found Dept.
 
       # Avoid rooting in trash bins:
-      next SUBDIR if $subdir =~ m/^\.Recycle$/i;                # Windows trash bins.
-      next SUBDIR if $subdir =~ m/^\$Recycle.Bin$/i;            # Windows trash bins.
-      next SUBDIR if $subdir =~ m/^Recyler$/i;                  # Windows trash bins.
-      next SUBDIR if $subdir eq 'Trash';                        # Linux trash bins.
+      next SUBDIR if $subdir =~ m/^\.Recycle/i;                 # Windows trash bins.
+      next SUBDIR if $subdir =~ m/^\$Recycle.Bin/i;             # Windows trash bins.
+      next SUBDIR if $subdir =~ m/^Recyler/i;                   # Windows trash bins.
+      next SUBDIR if $subdir =~ m/^Trash/;                      # Linux trash bins.
       next SUBDIR if $subdir =~ m/^\.Trash/;                    # Linux trash bins.
 
       # Avoid problematic subdirectories of bootable Windows partitions:
