@@ -34,7 +34,7 @@ Expected output: 3
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 To solve this problem, simply count the row-sum and column-sum for each position, then count the number of
-positions for which those sums are 1.
+positions for which the position value, row-sum, and col-sum are all 1.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -49,59 +49,72 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, SUBS, AND VARIABLES:
 
-use v5.38;
-use List::Util 'sum0';
-$" = ', ';
+   use v5.38;
+   use List::Util 'sum0';
+   $" = ', ';
 
-# Is a given scalar a ref to an m x n binary matrix?
-sub is_binary_matrix ($matref) {
-   'ARRAY' ne ref $matref and return 0; # Not a ref to an array?
-   my $m = scalar($matref);
-   0 == $m and return 1; # All 0x0 arrays are mxn binary matrices.
-   my $n = scalar(@{$$matref[0]});
-   for my $rowref (@$matref) {
-      scalar(@$rowref) != $n and return 0; # Not rectangular?
-      for my $element (@$rowref) {
-         '0' ne $element && '1' ne $element and return 0; # Not binary?
+   # Is a given scalar a ref to an m x n binary matrix?
+   sub is_binary_matrix ($matref) {
+      'ARRAY' ne ref $matref and return 0; # Not a ref to an array?
+      my $m = scalar($matref);
+      0 == $m and return 1; # All 0x0 arrays are mxn binary matrices.
+      my $n = scalar(@{$$matref[0]});
+      for my $rowref (@$matref) {
+         scalar(@$rowref) != $n and return 0; # Not rectangular?
+         for my $element (@$rowref) {
+            '0' ne $element && '1' ne $element and return 0; # Not binary?
+         }
       }
+      return 1; # Rectangular binary matrix.
    }
-   return 1; # Rectangular binary matrix.
-}
 
-# Return a row of a matrix:
-sub row ($matref, $i) {
-   return @{$$matref[$i]};
-}
-
-# Return a column of a matrix:
-sub col ($matref, $j) {
-   my @col;
-   for my $rowref (@$matref) {
-      push(@col, $$rowref[$j]);
+   # Return a row of a matrix:
+   sub row ($matref, $i) {
+      return @{$$matref[$i]};
    }
-   return @col;
-}
 
-# How many "Special Positions" (according to the problem definition)
-# are in a given binary matrix?
-sub special_positions ($matref) {
-   my $m = scalar(@$matref);       # Height.
-   my $n = scalar(@{$$matref[0]}); # Width.
-   my $count = 0;
-   my @rowcounts = ();
-   my @colcounts = ();
-   for    ( my $i = 0 ; $i < $m ; ++$i ) {push(@rowcounts,sum0(row($matref,$i)))}
-   for    ( my $j = 0 ; $j < $n ; ++$j ) {push(@colcounts,sum0(col($matref,$j)))}
-   for    ( my $i = 0 ; $i < $m ; ++$i ) {
+   # Return a column of a matrix:
+   sub col ($matref, $j) {
+      my @col;
+      for my $rowref (@$matref) {
+         push(@col, $$rowref[$j]);
+      }
+      return @col;
+   }
+
+   # How many "Special Positions" (according to the problem
+   # definition) are in a given binary matrix?
+   sub special_positions ($matref) {
+      # Determine dimensions of matrix:
+      my $m = scalar(@{ $matref   }); # Number of rows.
+      my $n = scalar(@{$$matref[0]}); # Number of columns.
+
+      # Get counts of "1" elements for each row:
+      my @rowcounts = ();
+      for ( my $i = 0 ; $i < $m ; ++$i ) {
+         push(@rowcounts,sum0(row($matref,$i)));
+      }
+
+      # Get counts of "1" elements for each column:
+      my @colcounts = ();
       for ( my $j = 0 ; $j < $n ; ++$j ) {
-            1 == $matref->[$i]->[$j]
-         && 1 == $rowcounts[$i]
-         && 1 == $colcounts[$j]
-         and ++$count;
+         push(@colcounts,sum0(col($matref,$j)));
       }
+
+      # Tally and return number of elements for which element,
+      # row-count, and col-count are all 1:
+      my $count = 0;
+      for         ( my $i = 0 ; $i < $m ; ++$i                 ) {
+         for      ( my $j = 0 ; $j < $n ; ++$j                 ) {
+            if    ( 1 == $matref->[$i]->[$j]                   ) {
+               if ( 1 == $rowcounts[$i] && 1 == $colcounts[$j] ) {
+                  ++$count;
+               }
+            }
+         }
+      }
+      return $count;
    }
-   return $count;
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
@@ -134,5 +147,6 @@ for my $matref (@matrices) {
    and say 'Error: Not a binary matrix'
    and say 'Moving on to next matrix.'
    and next;
-   say 'Number of Special Positions = ', special_positions($matref);
+   my $nsp = special_positions($matref);
+   say "Number of Special Positions = $nsp";
 }
