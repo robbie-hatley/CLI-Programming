@@ -47,7 +47,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
-# PRAGMAS, MODULES, SUBS, AND VARIABLES:
+# PRAGMAS, MODULES, VARIABLES, AND SUBS:
 
    use v5.38;
    use List::Util 'sum0';
