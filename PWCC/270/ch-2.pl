@@ -9,7 +9,7 @@ written by Robbie Hatley on Mon May 20, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 270-2: Distribute Elements
+Task 270-2: Equalize Array
 Submitted by: Mohammad Sajid Anwar
 
 You are give an array of integers, @ints and two integers,
