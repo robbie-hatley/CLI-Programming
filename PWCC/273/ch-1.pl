@@ -46,8 +46,8 @@ and rounding to nearest integer. The m// operator and the "lround" function from
 
    sub pct_chr_in_str ($str, $chr) {
       my $length = length($str);
-      my $matches = $str =~ m/$chr/g;
-      lround(100*($count/$length));
+      my @matches = $str =~ m/$chr/g;
+      lround(100*(scalar(@matches)/$length));
    }
 
 --------------------------------------------------------------------------------------------------------------
