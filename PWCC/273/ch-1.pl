@@ -9,7 +9,7 @@ written by Robbie Hatley on Mon Jun 10, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 273-1: Task 1: Percentage of Character
+Task 273-1: Percentage of Character
 Submitted by: Mohammad Sajid Anwar
 You are given a string, $str and a character $chr. Write a
 script to return the nearest integer percentage of the
