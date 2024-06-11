@@ -32,7 +32,7 @@ Output: true
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I think a regular expression will solve this. What we're looking for is "b followed by non-b character to end
+A regular expression will solve this. What we're looking for is "b followed by non-b characters to end
 of string". The regular expression for that is "^[^b]*b[^a]*$":
 
    sub b_after_a ($str) {

@@ -46,8 +46,7 @@ and rounding to nearest integer. The m// operator and the "lround" function from
 
    sub pct_chr_in_str ($str, $chr) {
       my $length = length($str);
-      my $count = 0;
-      ++$count while $str =~ m/$chr/g;
+      my $matches = $str =~ m/$chr/g;
       lround(100*($count/$length));
    }
 
@@ -73,9 +72,8 @@ Output is to STDOUT and will be each input followed by the corresponding output.
    # of a given character in a given string?
    sub pct_chr_in_str ($str, $chr) {
       my $length = length($str);
-      my $count = 0;
-      ++$count while $str =~ m/$chr/g;
-      lround(100*($count/$length));
+      my @matches = $str =~ m/$chr/g;
+      lround(100*(scalar(@matches)/$length));
    }
 
 # ------------------------------------------------------------------------------------------------------------
