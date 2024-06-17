@@ -71,6 +71,7 @@
 # Sun Aug 12, 2023: Re-enabled "use Filesys::Type;".
 # Mon Aug 14, 2023: Morphed "get_suffix_from_type" into "get_correct_suffix".
 # Tue Aug 15, 2023: Re-DIS-abled "use Filesys::Type;"; it's too slow and buggy.
+# Fri Jun 14, 2024: Wrote "get_dirname_from_path".
 ##############################################################################################################
 
 # ======= PACKAGE: ===========================================================================================
@@ -150,7 +151,8 @@ sub time_from_mtime        :prototype($)    ; # Get time from mtime.
 sub date_from_mtime        :prototype($)    ; # Get date from mtime.
 sub get_prefix             :prototype($)    ; # Get prefix from file name.
 sub get_suffix             :prototype($)    ; # Get suffix from file name.
-sub get_dir_from_path      :prototype($)    ; # Get dir  from file path.
+sub get_dir_from_path      :prototype($)    ; # Get full  directory name from file path.
+sub get_dirname_from_path  :prototype($)    ; # Get local directory name from file path.
 sub get_name_from_path     :prototype($)    ; # Get name from file path.
 sub denumerate_file_name   :prototype($)    ; # Remove all numerators from a file name.
 sub enumerate_file_name    :prototype($)    ; # Add a random numerator to a file name.
@@ -187,12 +189,12 @@ our @EXPORT =
 
       rename_file             time_from_mtime         date_from_mtime
       get_prefix              get_suffix              get_dir_from_path
-      get_name_from_path      path                    denumerate_file_name
-      enumerate_file_name     annotate_file_name      find_avail_enum_name
-      find_avail_rand_name    is_large_image          get_correct_suffix
-      cyg2win                 win2cyg                 hash
-      shorten_sl_names        is_data_file            is_meta_file
-      is_valid_qual_dir
+      get_dirname_from_path   get_name_from_path      path
+      denumerate_file_name    enumerate_file_name     annotate_file_name
+      find_avail_enum_name    find_avail_rand_name    is_large_image
+      get_correct_suffix      cyg2win                 win2cyg
+      hash                    shorten_sl_names        is_data_file
+      is_meta_file            is_valid_qual_dir
    );
 
 # Symbols which it is OK to export by request:
@@ -1897,6 +1899,35 @@ sub get_dir_from_path :prototype($) ($path) {
    # Otherwise return the part of $path to the left of the right-most "/", whether it starts with '/' or not:
    else {
       return substr($path, 0, rindex($path,'/'));
+   }
+} # end sub get_dir_from_path
+
+# Return the name of the directory part of a file path:
+sub get_dirname_from_path :prototype($) ($path) {
+   # If $path contains no "/", we have no idea of what directory we're in, so return "ERROR":
+   if (-1 == rindex($path,'/')) {
+      return 'ERROR';
+   }
+
+   # Else if right-most "/" in $path is at index 0, assume $path is the path of a file in the root directory,
+   # so return 'fsroot' (file system root):
+   elsif (0 == rindex($path,'/')) {
+      return 'fsroot';
+   }
+
+   # Otherwise return the part of $path to the right of the second-right-most "/" and  to the left of the
+   # right-most "/", whether $path starts with '/' or not:
+   else {
+      # Put a copy of $path in $dirname:
+      my $dirname = $path;
+      # Get rid of the file part:
+      $dirname =~ s/\/[^\/]+$//;
+      # Get rid of all ancestors:
+      while ($dirname =~ m/\//) {
+         $dirname =~ s/^[^\/]*\///;
+      }
+      # Return dirname:
+      return $dirname;
    }
 } # end sub get_dir_from_path
 

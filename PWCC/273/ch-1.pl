@@ -45,9 +45,7 @@ This is just a matter of counting instances of $chr in $str, dividing by length(
 and rounding to nearest integer. The m// operator and the "lround" function from POSIX are useful here:
 
    sub pct_chr_in_str ($str, $chr) {
-      my $length = length($str);
-      my @matches = $str =~ m/$chr/g;
-      lround(100*(scalar(@matches)/$length));
+      lround(100*(scalar(@{[$str =~ m/$chr/g]})/length($str)));
    }
 
 --------------------------------------------------------------------------------------------------------------

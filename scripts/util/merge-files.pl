@@ -40,6 +40,8 @@
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Tue Nov 30, 2021: Fixed wide-character errors due to not using e. Tested: Now works.
 # Sat Dec 04, 2021: Renamed back to "merge-files.pl", as that's a more accurate description of what this script does.
+# Fri Jun 14, 2024: Fixed errors in comments and in hlp_msg where it said "merge-directories.pl" instead of
+#                   "merge-files.pl" as it should have.
 ########################################################################################################################
 
 use v5.32;
@@ -72,11 +74,11 @@ my $failcount = 0; # Count of all files which couldn't be merged.
 # ======= MAIN BODY OF PROGRAM: ========================================================================================
 
 {
-   say "\nNow entering program \"merge-directories.pl\".";
+   say "\nNow entering program \"merge-files.pl\".";
    my ($dir1, $dir2) = process_argv();
    merge_directories($dir1, $dir2);
    print_stats();
-   say "\nNow exiting program \"merge-directories.pl\".";
+   say "\nNow exiting program \"merge-files.pl\".";
    exit 0;
 }
 
@@ -170,7 +172,7 @@ sub merge_directories ($$)
 sub print_stats ()
 {
    say '';
-   say "Statistics from \"merge-directories.pl\":";
+   say "Statistics from \"merge-files.pl\":";
    say "Deleted $delecount files from source directory.";
    say "Merged $mergcount files.";
    say "Failed to merge $failcount files.";
@@ -205,11 +207,11 @@ sub help_msg ()
    "-h" or "--help"             Print help and exit.
    "-v" or "--verbose"          Be verbose.
 
-   "merge-directories.pl" takes exactly two arguments which must be paths of
+   This program takes exactly two arguments which must be paths of
    existing directories; dir1 is the source directory and the dir2 is the
    destination directory.
 
-   Also note that "merge-directories.pl" is intended for use with source
+   Also note that "merge-files.pl" is intended for use with source
    directories which do NOT have subdirectories. If subdirectories of dir1
    exist, the files in the root of dir1 will be moved to the root of dir2,
    but the subdirectories and their contents will not be touched and
