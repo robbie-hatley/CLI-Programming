@@ -35,32 +35,21 @@ Example 3:
 Input: $sentence = "The Weekly Challenge"
 Output: "heTmaa eeklyWmaaa hallengeCmaaaa"
 
-
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-This one is pretty simple, just a matter of making the prescribed changes to each word. The only tricky parts
-are determining what's a "vowel", what's a "consonant", and what's a "word". My approach was like this:
+The tricky parts of this task are defining the terms "vowel", "consonant", "word", and  "sentence".
+The definitions used in English won't work here. Instead, I define these terms as follows:
 
-   use Unicode::Normalize 'NFD';
-   sub is_vowel ($x) {lc(NFD $x) =~ m/^[aeiou]$/}
-   sub is_conso ($x) {!is_vowel $x}
-   sub goat     ($x) {
-      my @words = split /[ \t.,;:\?!'"\/\(\)\[\]\{\}\*&\^%\$#\@`~]+/, $x;
-      for ( my $idx = 0 ; $idx <= $#words ; ++$idx ) {
-         if ( is_vowel substr($words[$idx], 0, 1) ) {$words[$idx] .= "ma"}
-         if ( is_conso substr($words[$idx], 0, 1) ) {$words[$idx]  = substr($words[$idx], 1, -1)
-                                                                   . substr($words[$idx], 0,  1)
-                                                                   . "ma"}
-         $words[$idx] .= "a"x(1+$idx);
-      }
-      return join ' ', @words;
-   }
+"vowel"     = one of [aeiou] and case variants, with or without combining marks. (eg: ÅËiòU)
+"consonant" = any character which is not a "vowel". (eg: b7$@ÐgÑ茶z)
+"word"      = any cluster of non-horizontal-whitespace characters. (eg: "79.m:v", "du#f", "$17")
+"sentence"  = any string consisting of "words" separated by horizontal whitespace. (eg: "79.m:v du#f $17")
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-1.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax, like so:
+./ch-1.pl '("He ate.", "Did she sit down?", "She ate 3.7 hot dogs.", "He didn'"'"'t take very many baths!")'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -70,25 +59,47 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # PRAGMAS, MODULES, AND SUBS:
 
    use v5.38;
-   use strict;
-   use warnings;
    use utf8;
-   use warnings FATAL => 'utf8';
 
    use Unicode::Normalize 'NFD';
 
-   sub is_vowel ($x) {lc(NFD $x) =~ m/^[aeiou]$/}
-   sub is_conso ($x) {!is_vowel $x}
-   sub goat     ($x) {
-      my @words = split /[ \t.,;:\?!'"\/\(\)\[\]\{\}\*&\^%\$#\@`~]+/, $x;
+   # Define "vowel" to mean one of aeiou or variants thereof (eg, ÅËiòU) :
+   sub is_vowel ($x) {
+      # Decompose any extended grapheme clusters within $x to
+      # unmarked letters followed by separate combining marks:
+      my $decomp = NFD $x;
+      # Get rid of all characters except unmarked letters:
+      my $unmarked = $decomp =~ s/[^\pL]+//gr;
+      # Convert to lower-case:
+      my $lower = lc $unmarked;
+      # $x is a "vowel" if-and-only-if $lower is one of [aeiou]:
+      return $lower =~ m/^[aeiou]{1}$/;
+   }
+
+   # Define "consonant" to mean "not a vowel" (eg, b7$@ÐgÑ茶z).
+   # (Don't write a subroutine for this; use "else" or "!is_vowel".)
+
+   # Define a "word" to be any cluster of non-horizontal-whitespace characters.
+   # (eg: "79.m:v", "du#f", "$17")
+
+   # Define a "sentence" to be any string consisting of "words"
+   # separated by horizontal whitespace. (eg: "79.m:v du#f $17")
+
+   # Convert a sentence to Goat Latin:
+   sub goat ($x) {
+      # Separate $x into "words" split by horizontal whitespace:
+      my @words = split /\h+/, $x;
+      # Process each "word" of the input by index:
       for ( my $idx = 0 ; $idx <= $#words ; ++$idx ) {
-         if ( is_vowel substr($words[$idx], 0, 1) ) {$words[$idx] .= "ma"}
-         if ( is_conso substr($words[$idx], 0, 1) ) {$words[$idx]  = substr($words[$idx], 1, -1)
-                                                                   . substr($words[$idx], 0,  1)
-                                                                   . "ma"}
-         $words[$idx] .= "a"x(1+$idx);
+         # Grab a copy of the initial letter of the "word":
+         my $init = substr($words[$idx], 0, 1);
+         # If "word" starts with consonant, move first character to end of word:
+         !is_vowel($init) and $words[$idx] = substr($words[$idx], 1) . $init;
+         # Tack-on "ma" followed by 1+$idx copies of letter "a":
+         $words[$idx] .= "ma" . "a"x(1+$idx);
       }
-      return join ' ', @words;
+      # Join processed "words" with ' ':
+      join ' ', @words;
    }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -112,6 +123,6 @@ my @strings = @ARGV ? eval($ARGV[0]) :
 # MAIN BODY OF PROGRAM:
 for my $string (@strings) {
    say '';
-   say "Original string = $string";
-   say "Goat     string = ${\goat($string)}";
+   say "Original   sentence = $string";
+   say "Goat-Latin sentence = ${\goat($string)}";
 }

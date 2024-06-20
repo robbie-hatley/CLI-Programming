@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -37,13 +37,25 @@ Output: [ 0, 1, 2, 3, 25, 26, 27, 40, 41, 42, 43, 44, 45,
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I first make a list, in no particular order, of all "trips" within the next 4 hours (NOT 1 hour!!!),
+with each "trip" being a two-element array [dep,arr] giving departure and arrival times. Each departure and
+arrival time will be "minutes after start of current hour", which may in the NEXT hour, or the NEXT,
+hence the need to collect trips for next 4 hours rather than just 1.
+
+Next, I mark those trips which should be skipped because there exists a trip with a later departure but
+earlier arrival with the word "skip".
+
+Then, for each minute within the current hour, I check the "next" trip to see if it should be skipped; if so,
+I add that minute to a @skips list.
+
+Finally, I return @skips.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays of arrays, with each inner-most array being three non-negative integers,
+which are interval, offset, and duration:
+./ch-2.pl '([[3,8,17],[6,4,52]],[[17,3,22],[5,4,33]])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -53,46 +65,81 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # PRAGMAS, MODULES, AND SUBS:
 
 use v5.38;
-use strict;
-use warnings;
-use utf8;
-use warnings FATAL => 'utf8';
+use List::Util 'uniq';
+$" = ', ';
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+sub skip (@timetables) {
+   my @trips; # All trips.
+   my @skips; # Times at which next trip should be skipped.
+
+   # Get trips:
+   foreach my $tref (@timetables) {
+      my ($int, $off, $dur) = @$tref;
+      my $dep = $off;
+      while ($dep < 240) { # Next 4 hours.
+         my $arr = $dep + $dur;
+         push @trips, [$dep, $arr, 'take'];
+         $dep += $int;
       }
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+
+   # Sort trips:
+   @trips = sort {$$a[0]<=>$$b[0]||$$a[1]<=>$$b[1]} @trips;
+
+   # Mark trips which should be skipped:
+   foreach my $trip1 (@trips) {
+      foreach my $trip2 (@trips) {
+         next unless $$trip2[0] > $$trip1[0];
+         # If there's a later departure with earlier arrival,
+         # then mark TRIP1 to be skipped:
+         if ($$trip2[1] < $$trip1[1]) {
+            $$trip1[2] = 'skip';
+            last;
+         }
+      }
+   }
+
+   # Diagnostics:
+   # say 'Trips = ';
+   # say "@$_" for @trips;
+
+   # Collect minutes for which "next trip should be skipped":
+   for my $minute (0..59) {
+      for my $trip (@trips) {
+         next if $$trip[0] < $minute;
+         if ($$trip[2] eq 'skip') {
+            push @skips, $minute;
+         }
+         last;
+      }
+   }
+
+   # Return result:
+   @skips;
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 input:
+   [ [12, 11, 41], [15, 5, 35] ],
+   # Expected output:
+   # [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47]
+
+   # Example 2 input:
+   [ [12, 3, 41], [15, 9, 35], [30, 5, 25] ],
+   # Expected output:
+   # [0, 1, 2, 3, 25, 26, 27, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 55, 56, 57, 58, 59 ]
 );
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   my @timetables = @$aref;
+   my @ttstrings = map {'[' . "@$_" . ']'} @timetables;
+   say "Times = @ttstrings";
+   my @skips = skip(@timetables);
+   say "Skips = @skips";
 }
