@@ -37,7 +37,7 @@ Output: "heTmaa eeklyWmaaa hallengeCmaaaa"
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-The tricky parts of this task are defining the terms "vowel", "consonant", "word", and  "sentence".
+The tricky parts of this task are defining the terms "vowel", "consonant", "word", and "sentence".
 The definitions used in English won't work here. Instead, I define these terms as follows:
 
 "vowel"     = one of [aeiou] and case variants, with or without combining marks. (eg: ÅËiòU)
