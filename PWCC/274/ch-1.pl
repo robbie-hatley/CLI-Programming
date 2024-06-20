@@ -40,10 +40,14 @@ PROBLEM NOTES:
 The tricky parts of this task are defining the terms "vowel", "consonant", "word", and "sentence".
 The definitions used in English won't work here. Instead, I define these terms as follows:
 
-"vowel"     = one of [aeiou] and case variants, with or without combining marks. (eg: ÅËiòU)
-"consonant" = any character which is not a "vowel". (eg: b7$@ÐgÑ茶z)
-"word"      = any cluster of non-horizontal-whitespace characters. (eg: "79.m:v", "du#f", "$17")
-"sentence"  = any string consisting of "words" separated by horizontal whitespace. (eg: "79.m:v du#f $17")
+"vowel"     = one of [aeiou] and case variants, with or without combining marks.
+              (eg: ÅËiòU)
+"consonant" = any character which is not a "vowel".
+              (eg: b7$@ÐgÑ茶z)
+"word"      = any cluster of non-horizontal-whitespace characters.
+              (eg: "79.m:v", "du#f", "$17")
+"sentence"  = any string consisting of "words" separated by horizontal whitespace.
+              (eg: "79.m:v du#f $17")
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
