@@ -91,7 +91,7 @@ sub skip (@timetables) {
       foreach my $trip2 (@trips) {
          next unless $$trip2[0] > $$trip1[0];
          # If there's a later departure with earlier arrival,
-         # then mark TRIP1 to be skipped:
+         # then mark $trip1 to be skipped:
          if ($$trip2[1] < $$trip1[1]) {
             $$trip1[2] = 'skip';
             last;
