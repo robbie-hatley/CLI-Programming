@@ -41,20 +41,21 @@ Output: 'abgz'
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I find it interesting that the examples show that "previous digit" means "nearest digit to the left, if any",
-rather than "digit immediately to the left". This opens two ambiguities:
+I find it interesting that the examples show that "previous digit" means "nearest digit to the left in
+original strinug, if any", rather than "digit immediately to the left". This causes two ambiguities:
 
-1. What if there is NO previous digit?
+1. What if there is NO previous letter?
 2. What if we try to shift 'z' by 3?
 
-I think I'll fix #1 by  starting from the right and working back, and if that doesn't work, I'll use the
-"invalid utf character" symbol. And I'll fix #2 by looping back to the beginning of the alphabet as in ROT13.
+I think I'll fix #1 by returning 'invalid_string' unless the input is well-formed (m/[a-z][a-z0-9]*/).
+
+And I'll fix #2 by looping back to the beginning of the alphabet as in ROT13 (so that z3 is c).
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of double-quoted strings matching m/^[a-z]{1}[a-z0-9]*$/, in proper Perl syntax, like so:
+./ch-2.pl '("z9a3bgq2f", "z9z1z7z2")'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -64,46 +65,53 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # PRAGMAS, MODULES, AND SUBS:
 
 use v5.38;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
 
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
+sub replace_digits ($string) {
+   return 'invalid_string' unless $string =~ m/[a-z][a-z0-9]*/;
+   my $new = '';
+   my $prev = '�';
+   for my $char (split //, $string) {
+      if ( $char =~ m/^[a-z]{1}$/ ) {
+         $prev = $char;
+         $new .= $char;
       }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+      elsif ( $char =~ m/^[0-9]{1}$/ ) {
+         return 'invalid_prev' unless $prev =~ m/^[a-z]{1}$/;
+         my $old_ord = ord($prev);
+         my $new_ord = ($old_ord - 97 + $char) % 26 + 97;
+         $new .= chr $new_ord;
       }
+      else {return 'invalid_char';}
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   $new;
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) :
+my @strings = @ARGV ? eval($ARGV[0]) :
 (
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
+   # Example 1 input:
+   'a1c1e1',
+   # Expected output = 'abcdef'
+
+   # Example 2 input:
+   'a1b2c3d4',
+   # Expected output = 'abbdcfdh'
+
+   # Example 3 input:
+   'b2b',
+   # Expected output = 'bdb'
+
+   # Example 4 input:
+   'a16z',
+   # Expected output = 'abgz'
 );
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
-for my $aref (@arrays) {
+for my $string (@strings) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say "Original string = $string";
+   say 'String with digits replacecd = ', replace_digits $string;
 }
