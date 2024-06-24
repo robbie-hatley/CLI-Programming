@@ -9,22 +9,46 @@ written by Robbie Hatley on Mon Jun 24, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 275-2: Anamatu Serjianu
-Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to
-ingvl kuijit anku the mirans under the gruhk.
+Task 275-2: Replace Digits
+Submitted by: Mohammad Sajid Anwar
+You are given an alphanumeric string, $str, where each character
+is either a letter or a digit. Write a script to replace each
+digit in the given string with the value of the previous letter
+plus (digit) places.
 
 Example 1:
-Input:   ('dog', 'cat'),
-Output:  false
+Input: $str = 'a1c1e1'
+Ouput: 'abcdef'
+shift('a', 1) => 'b'
+shift('c', 1) => 'd'
+shift('e', 1) => 'f'
 
 Example 2:
-Input:   ('', 'peach'),
-Output:  ('grape')
+Input: $str = 'a1b2c3d4'
+Output: 'abbdcfdh'
+shift('a', 1) => 'b'
+shift('b', 2) => 'd'
+shift('c', 3) => 'f'
+shift('d', 4) => 'h'
+
+Example 3:
+Input: $str = 'b2b'
+Output: 'bdb'
+
+Example 4:
+Input: $str = 'a16z'
+Output: 'abgz'
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I find it interesting that the examples show that "previous digit" means "nearest digit to the left, if any",
+rather than "digit immediately to the left". This opens two ambiguities:
+
+1. What if there is NO previous digit?
+2. What if we try to shift 'z' by 3?
+
+I think I'll fix #1 by  starting from the right and working back, and if that doesn't work, I'll use the
+"invalid utf character" symbol. And I'll fix #2 by looping back to the beginning of the alphabet as in ROT13.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
