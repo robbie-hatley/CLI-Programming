@@ -104,13 +104,13 @@ sub skip (@timetables) {
    # say "@$_" for @trips;
 
    # Collect minutes for which "next trip should be skipped":
-   for my $minute (0..59) {
-      for my $trip (@trips) {
-         next if $$trip[0] < $minute;
+   MINUTE: for my $minute (0..59) {
+      TRIP: for my $trip (@trips) {
+         next TRIP if $$trip[0] < $minute;
          if ($$trip[2] eq 'skip') {
             push @skips, $minute;
          }
-         last;
+         next MINUTE;
       }
    }
 
