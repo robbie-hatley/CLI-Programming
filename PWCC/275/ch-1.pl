@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -40,7 +40,7 @@ A simple regular expression will handle this: ^[^$keys]+$
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of two-element arrays, with each inner array being a double-quoted sentence followed by
-an array of single keyboard characters, in proper Perl syntax, like so:
+an array of double-quoted keyboard characters, in proper Perl syntax, like so:
 ./ch-1.pl '(["She shaved?", ["q","r"]],["We sat around the tree.", ["6","."]])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
@@ -51,15 +51,10 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # PRAGMAS, MODULES, VARIABLES, AND SUBS:
 
    use v5.38;
-   use utf8;
    $"='';
    sub can_type_in_spite_of_broken_keys ($sentence, @keys) {
-      my @words    = split /\h+/, $sentence;
-      my $keys     = "@keys";
       my $can_type = 0;
-      for my $word (@words) {
-         $word =~ m/^[^$keys]+$/i and ++$can_type;
-      }
+      map {/^[^@keys]+$/i and ++$can_type} split /\h+/, $sentence;
       $can_type;
    }
 

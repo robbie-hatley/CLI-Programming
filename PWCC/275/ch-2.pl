@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -64,28 +64,26 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
-use utf8;
-
-sub replace_digits ($string) {
-   return 'invalid_string' unless $string =~ m/[a-z][a-z0-9]*/;
-   my $new = '';
-   my $prev = '�';
-   for my $char (split //, $string) {
-      if ( $char =~ m/^[a-z]{1}$/ ) {
-         $prev = $char;
-         $new .= $char;
+   use v5.38;
+   sub replace_digits ($string) {
+      return 'invalid_string' unless $string =~ m/[a-z][a-z0-9]*/;
+      my $new = '';
+      my $prev = '-';
+      for my $char (split //, $string) {
+         if ( $char =~ m/^[a-z]{1}$/ ) {
+            $prev = $char;
+            $new .= $char;
+         }
+         elsif ( $char =~ m/^[0-9]{1}$/ ) {
+            return 'invalid_prev' unless $prev =~ m/^[a-z]{1}$/;
+            my $old_ord = ord($prev);
+            my $new_ord = ($old_ord - 97 + $char) % 26 + 97;
+            $new .= chr $new_ord;
+         }
+         else {return 'invalid_char';}
       }
-      elsif ( $char =~ m/^[0-9]{1}$/ ) {
-         return 'invalid_prev' unless $prev =~ m/^[a-z]{1}$/;
-         my $old_ord = ord($prev);
-         my $new_ord = ($old_ord - 97 + $char) % 26 + 97;
-         $new .= chr $new_ord;
-      }
-      else {return 'invalid_char';}
+      $new;
    }
-   $new;
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
