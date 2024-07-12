@@ -28,7 +28,9 @@ inequalities: 0 < |x - y| and |x - y| < min(x, y).
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+To prevent considering duplicate pairs, I make sorted, deduped copies of both arrays, then I use nested ranged
+for loops to consider each unique pair, and I use && to and-together the given inequalities to determine how
+many pairs are "strong".
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
