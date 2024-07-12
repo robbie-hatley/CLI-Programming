@@ -4,49 +4,66 @@
 
 --------------------------------------------------------------------------------------------------------------
 TITLE AND ATTRIBUTION:
-Solutions in Perl for The Weekly Challenge xxx-1,
-written by Robbie Hatley on Xxx Xxx xx, 2024.
+Solutions in Perl for The Weekly Challenge 277-1,
+written by Robbie Hatley on Thu Jul 11, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task xxx-1: Anamatu Serjianu
-Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to
-ingvl kuijit anku the mirans under the gruhk.
+Task 277-1: Count Common
+Submitted by: Mohammad Sajid Anwar
+Given two arrays of strings,write a script to return the count
+of words which appear once-each in the two arrays.
 
-Example 1:
-Input:   ('dog', 'cat'),
-Output:  false
+   # Example 1 input:
+   [
+      ["Perl", "is", "my", "friend"],
+      ["Perl", "and", "Raku", "are", "friend"],
+   ],
+   # Expected output: 2
+   # (The words "Perl" and "friend" appear once in each array.)
 
-Example 2:
-Input:   ('', 'peach'),
-Output:  ('grape')
+   # Example 2 input:
+   [
+      ["Perl", "and", "Python", "are", "very", "similar"],
+      ["Python", "is", "top", "in", "guest", "languages"],
+   ],
+   # Expected output: 1
+   # (The word "Python" appears once in each array.)
+
+   # Example 3 input:
+   [
+      ["Perl", "is", "imperative", "Lisp", "is", "functional"],
+      ["Crystal", "is", "similar", "to", "Ruby"],
+   ],
+   # Expected output: 0
+   # ("is" appears twice in the first array so it doesn't count.)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I attack this problem by making a hash keyed by words with each value being a 2-element array containing
+counts of how many times that word appears in each array. Then I just count how many keys have both elements
+of the value equal to 1 (which means the word appears one-each in the two arrays of words).
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-1.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays of 2 arrays of double-quoted strings, in proper Perl syntax, like so:
+./ch-1.pl '([["dog", "pig", "cow"],["bat","cat","pig"]],[["rock","stick","dish"],["metal","grunge","rock"]])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
-# PRAGMAS, MODULES, VARS, AND SUBS:
+# PRAGMAS, MODULES, AND SUBS:
 
    use v5.38;
    use utf8;
    no warnings 'uninitialized';
-   $" = ', ';
-   sub count_common :prototype(\@\@) ($a1, $a2) {
+   sub count_common ($aref1, $aref2) {
       my %counts;
-      for (@$a1) {++$counts{$_}->[0]}
-      for (@$a2) {++$counts{$_}->[1]}
+      ++$counts{$_}->[0] for @$aref1;
+      ++$counts{$_}->[1] for @$aref2;
       my $count = 0;
       for (keys %counts) {
          ++$count if 1 == $counts{$_}->[0]
@@ -65,6 +82,7 @@ my @arrays = @ARGV ? eval($ARGV[0]) :
       ["Perl", "and", "Raku", "are", "friend"],
    ],
    # Expected output: 2
+   # (The words "Perl" and "friend" appear once in each array.)
 
    # Example 2 input:
    [
@@ -72,6 +90,7 @@ my @arrays = @ARGV ? eval($ARGV[0]) :
       ["Python", "is", "top", "in", "guest", "languages"],
    ],
    # Expected output: 1
+   # (The word "Python" appears once in each array.)
 
    # Example 3 input:
    [
@@ -79,16 +98,15 @@ my @arrays = @ARGV ? eval($ARGV[0]) :
       ["Crystal", "is", "similar", "to", "Ruby"],
    ],
    # Expected output: 0
+   # ("is" appears twice in the first array so it doesn't count.)
 );
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
    say '';
-   my @array1 = @{$aref->[0]};
-   my @array2 = @{$aref->[1]};
-   my $common = count_common(@array1, @array2);
-   say "Array1 = (@array1)";
-   say "Array2 = (@array2)";
-   say "Common = $common";
+   my $common = count_common($aref->[0], $aref->[1]);
+   say "Array1 = (${\join(q(, ), map {qq(\"$_\")} @{$aref->[0]})})";
+   say "Array2 = (${\join(q(, ), map {qq(\"$_\")} @{$aref->[1]})})";
+   say "$common words appear once-each in the two arrays.";
 }
