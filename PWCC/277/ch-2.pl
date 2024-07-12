@@ -43,19 +43,19 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
-use List::Util 'uniq';
-sub min ($x,$y) {return($y<$x?$y:$x)}
-sub strong ($aref) {
-   my @uniq = uniq sort {$a<=>$b} @$aref;
-   my $strong = 0;
-   for    my $i (    0   .. $#uniq - 1 ) { my $x = $$aref[$i];
-      for my $j ( $i + 1 .. $#uniq - 0 ) { my $y = $$aref[$j];
-         ++$strong if 0 < abs($y-$x) && abs($y-$x) < min($x,$y);
+   use v5.38;
+   use List::Util 'uniq';
+   sub min ($x,$y) {return($y<$x?$y:$x)}
+   sub strong ($aref) {
+      my @uniq = uniq sort {$a<=>$b} @$aref;
+      my $strong = 0;
+      for    my $i (    0   .. $#uniq - 1 ) { my $x = $$aref[$i];
+         for my $j ( $i + 1 .. $#uniq - 0 ) { my $y = $$aref[$j];
+            ++$strong if 0 < abs($y-$x) && abs($y-$x) < min($x,$y);
+         }
       }
+      return $strong;
    }
-   return $strong;
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
