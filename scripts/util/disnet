@@ -2,11 +2,11 @@
 if test "Excalibur" = $HOSTNAME ; then
    umount-SR
    umount-KE
-   umount-AV
+   umount-CA
 elif test "Square-Rigger" = $HOSTNAME ; then
    umount-EX
    umount-KE
-   umount-AV
+   umount-CA
 elif test "Ketch" = $HOSTNAME ; then
    echo "Error in disnet: Ketch doesn't use cifs mounts."
 elif test "Avalon" = $HOSTNAME ; then

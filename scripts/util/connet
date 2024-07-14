@@ -2,11 +2,11 @@
 if test "Excalibur" = $HOSTNAME ; then
    mount-SR
    mount-KE
-   mount-AV
+   mount-CA
 elif test "Square-Rigger" = $HOSTNAME ; then
    mount-EX
    mount-KE
-   mount-AV
+   mount-CA
 elif test "Ketch" = $HOSTNAME ; then
    echo "Error in connet: Ketch doesn't use cifs mounts."
 elif test "Avalon" = $HOSTNAME ; then
