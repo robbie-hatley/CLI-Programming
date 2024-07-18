@@ -68,7 +68,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
    sub ordinal ($token) {$token =~ s/^\D+//r}
    sub sort_string ($string) {
       join ' ',
-      map {wrd($_)}
+      map {word($_)}
       sort {(0+ordinal($a)) <=> (0+ordinal($b))}
       split /\s+/, $string
    }
