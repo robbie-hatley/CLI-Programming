@@ -75,6 +75,7 @@
 #                   now printed to STDERR only if $Verbose >= 1. Directory headings are printed to STDOUT
 #                   only if $Verbose >= 2. Found paths are printed to STDOUT regardless of verbosity level.
 # Wed Sep 06, 2023: Set default target back to 'F', and set predicate to override target and force it to 'A'.
+# Mon Jul 22, 2024: Fixed minor typos in error() and help() functions.
 ##############################################################################################################
 
 use v5.36;
@@ -261,7 +262,7 @@ sub stats {
 sub error ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
-   Error: you typed $NA arguments, but \"find-files-by-type.pl\"
+   Error: you typed $NA arguments, but \"find-files.pl\"
    requires 0, 1, or 2 arguments. Help follows:
    END_OF_ERROR
 } # end error ($NA)
@@ -286,7 +287,7 @@ sub help {
    All subdirectories of the current working directory my be searched by using a
    "-r" or "--recurse" option.
 
-   If no options, no regexp, and not predicate are specified, this program prints
+   If no options, no regexp, and no predicate are specified, this program prints
    the paths of all regular files in the current working directory, which probably
    isn't what you want ("ls" is better for that), so I suggest using options and
    arguments to specify which items you're looking for.
@@ -294,8 +295,8 @@ sub help {
    -------------------------------------------------------------------------------
    Command lines:
 
-   find-files-by-type.pl [-h|--help]               (to print help)
-   find-files-by-type.pl [options] [Arg1] [Arg2]   (to find files)
+   find-files.pl [-h|--help]               (to print help)
+   find-files.pl [options] [Arg1] [Arg2]   (to find files)
 
    -------------------------------------------------------------------------------
    Description of options:
