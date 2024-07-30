@@ -641,18 +641,15 @@ sub RecurseDirs :prototype(&) ($f) {
    # ======= DIRECTORY CHECKS: ===============================================================================
 
    # Get raw current directory:
-   my $ecurdir = getcwd;
+   my $curdir = d(getcwd);
 
    # We MUST have a valid "current working directory"!!!
-   if ( ! defined $ecurdir ) {
+   if ( ! defined e($curdir) ) {
       die "Fatal error in RecurseDirs:\n"
          ."We were unable to determine the current working directory!\n"
          ."Aborting execution to prevent disaster!\n"
          ."$!\n";
    }
-
-   # Don't forget to decode that before using it!!!
-   my $curdir = d $ecurdir;
 
    # ======= RECURSION CHECKS: ===============================================================================
 
@@ -687,23 +684,21 @@ sub RecurseDirs :prototype(&) ($f) {
 
    # ======= PLATFORM-SPECIFIC ORIGINAL-DIRECTORY CHECKS: ====================================================
 
-   # If in Linux, and if "original" directory is something we shouldn't be recursing, die:
-   if ( 'Linux' eq $ENV{PLATFORM} ) {
-      if
-      (
-            $oridir eq '/'             # Too huge, and contains system files, and we don't have permissions.
-         || $oridir eq '/home'         # Too huge, and we don't have permissions.
-         || $oridir eq '/mnt'          # Too huge, maybe, depending on what's mounted there.
-         || $oridir eq '/proc'         # Trying to navigate within here causes errors.
-         || $oridir =~ m%lost\+found%i # We're not allowed in here.
-      )
-      {
-         die "Fatal Error in RecurseDirs:\n"
-            ."Can't recurse from this problematic Linux directory:\n"
-            ."$oridir\n"
-            ."Aborting program.\n"
-            ."$!\n";
-      }
+   # If "original" directory is something we shouldn't be recursing, die:
+   if
+   (
+         $oridir eq '/proc'                              # Trying to navigate within here causes errors.
+      || $oridir eq '/'          && 'root' ne $ENV{USER} # Size, system files, permissions.
+      || $oridir eq '/home'      && 'root' ne $ENV{USER} # Size, permissions.
+      || $oridir eq '/mnt'       && 'root' ne $ENV{USER} # Size.
+      || $oridir eq 'lost+found' && 'root' ne $ENV{USER} # Permissions.
+   )
+   {
+      die "Fatal Error in RecurseDirs:\n"
+         ."Can't recurse from this problematic Linux directory:\n"
+         ."$oridir\n"
+         ."Aborting program.\n"
+         ."$!\n";
    }
 
    # Try to open current directory; if that fails, print warning and return 1:
@@ -755,68 +750,74 @@ sub RecurseDirs :prototype(&) ($f) {
 
       # ======= SUBDIR NAME CHECKS: ==========================================================================
 
-      # Avoid certain specific problematic directories:
-      next SUBDIR if $subdir eq '.';                            # Windows/Linux/Cygwin: Hard link to self.
-      next SUBDIR if $subdir eq '..';                           # Windows/Linux/Cygwin: Hard link to parent.
-      next SUBDIR if $subdir eq '.git';                         # Windows/Linux/Cygwin: git files; no touch.
-      next SUBDIR if $subdir eq 'bak';                          # Windows/Linux/Cygwin: backups;    too big.
-      next SUBDIR if $subdir eq 'net';                          # Windows/Linux/Cygwin: networks;   too big.
-      next SUBDIR if $subdir eq 'rem';                          # Windows/Linux/Cygwin: removables; too big.
-      next SUBDIR if $subdir eq 'System Volume Information';    # Windows: System volume information.
-      next SUBDIR if $subdir eq 'lost+found';                   # Linux: Lost & Found Dept.
+      # Skip certain poisonous subdirectories order to avoid loops and crashes:
+      next SUBDIR if $subdir eq '.';                       # Windows/Linux/Cygwin: Hard link to self.
+      next SUBDIR if $subdir eq '..';                      # Windows/Linux/Cygwin: Hard link to parent.
+      next SUBDIR if $curdir eq '/' && $subdir eq 'proc';  # Linux: Navigating in here causes crashes.
 
-      # Avoid rooting in trash bins:
-      next SUBDIR if $subdir =~ m/^\.Recycle/i;                 # Windows trash bins.
-      next SUBDIR if $subdir =~ m/^\$Recycle.Bin/i;             # Windows trash bins.
-      next SUBDIR if $subdir =~ m/^Recyler/i;                   # Windows trash bins.
-      next SUBDIR if $subdir =~ m/^Trash/;                      # Linux trash bins.
-      next SUBDIR if $subdir =~ m/^\.Trash/;                    # Linux trash bins.
+      # If we're not 'root' then bypass various directories that only 'root' should be messing with:
+      if ( 'root' ne $ENV{USER} ) {
+         # Avoid certain specific problematic directories:
+         next SUBDIR if $subdir eq '.git';                         # Windows/Linux/Cygwin: git files; no touch.
+         next SUBDIR if $subdir eq 'bak';                          # Windows/Linux/Cygwin: backups;    too big.
+         next SUBDIR if $subdir eq 'net';                          # Windows/Linux/Cygwin: networks;   too big.
+         next SUBDIR if $subdir eq 'rem';                          # Windows/Linux/Cygwin: removables; too big.
+         next SUBDIR if $subdir eq 'System Volume Information';    # Windows: System volume information.
+         next SUBDIR if $subdir eq 'lost+found';                   # Linux: Lost & Found Dept.
 
-      # Avoid problematic subdirectories of bootable Windows partitions:
-      if
-      (
-            $curdir =~ m[^/home/aragorn/net/KE/Valinor]
-         || $curdir =~ m[^/home/aragorn/net/SR/Imladris]
-         || $curdir =~ m[^/cygdrive/c]
-         || $curdir =~ m[^/cygdrive/n]
-      ) {
-         next SUBDIR if $subdir =~ m/^\$/;                      # Windows: System directories.
-         next SUBDIR if $subdir =~ m/^cygwin/i;                 # Windows: Cygwin
-         next SUBDIR if $subdir eq 'Application Data';          # Windows: OLD LINK: App Data.
-         next SUBDIR if $subdir eq 'Documents and Settings';    # Windows: OLD LINK: Doc n Settings.
-         next SUBDIR if $subdir eq 'Local Settings';            # Windows: OLD LINK: Local Settings.
-         next SUBDIR if $subdir eq 'My Documents';              # Windows: OLD LINK: My Documents.
-         next SUBDIR if $subdir eq 'My Music';                  # Windows: OLD LINK: My Music.
-         next SUBDIR if $subdir eq 'My Pictures';               # Windows: OLD LINK: My Pictures.
-         next SUBDIR if $subdir eq 'My Videos';                 # Windows: OLD LINK: My Videos.
-         next SUBDIR if $subdir eq 'NetHood';                   # Windows: Networks.
-         next SUBDIR if $subdir eq 'PrintHood';                 # Windows: Printers.
-         next SUBDIR if $subdir eq 'PerfLogs';                  # Windows: Performance Logs.
-         next SUBDIR if $subdir eq 'ProgramData';               # Windows: Program Data.
-         next SUBDIR if $subdir eq 'Program Files';             # Windows: Program Files (64bit).
-         next SUBDIR if $subdir eq 'Program Files (x86)';       # Windows: Program Files (32bit).
-         next SUBDIR if $subdir eq 'Recovery';                  # Windows: System Recovery Files.
-         next SUBDIR if $subdir eq 'SendTo';                    # Windows: Send To.
-         next SUBDIR if $subdir eq 'Start Menu';                # Windows: Start Menu.
-         next SUBDIR if $subdir eq 'Temp';                      # Windows: Temporary Files.
-         next SUBDIR if $subdir eq 'Temporary Internet Files';  # Windows: Temporary Internet Files.
-         next SUBDIR if $subdir eq 'Windows';                   # Windows: Windows operating system.
-      }
+         # Avoid rooting in trash bins:
+         next SUBDIR if $subdir =~ m/^\.Recycle/i;                 # Windows trash bins.
+         next SUBDIR if $subdir =~ m/^\$Recycle.Bin/i;             # Windows trash bins.
+         next SUBDIR if $subdir =~ m/^Recyler/i;                   # Windows trash bins.
+         next SUBDIR if $subdir =~ m/^Trash/;                      # Linux trash bins.
+         next SUBDIR if $subdir =~ m/^\.Trash/;                    # Linux trash bins.
 
-      # Don't mess with the private files of certain Windows users:
-      if
-      (
-            $curdir eq '/home/aragorn/net/KE/Valinor/Users'
-         || $curdir eq '/home/aragorn/net/SR/Imladris/Users'
-         || $curdir eq '/cygdrive/c/Users'
-         || $curdir eq '/cygdrive/n/Users'
-      ) {
-         next SUBDIR if $subdir eq 'Administrator';             # Windows: Problematic account.
-         next SUBDIR if $subdir eq 'Default';                   # Windows: Problematic account.
-         next SUBDIR if $subdir eq 'Default User';              # Windows: Problematic account.
-         next SUBDIR if $subdir eq 'Public';                    # Windows: Problematic account.
-         next SUBDIR if $subdir eq 'All Users';                 # Windows: Problematic account.
-      }
+         # Avoid problematic subdirectories of bootable Windows partitions:
+         if
+         (
+               $curdir =~ m[^/home/aragorn/net/KE/Valinor]
+            || $curdir =~ m[^/home/aragorn/net/SR/Imladris]
+            || $curdir =~ m[^/cygdrive/c]
+            || $curdir =~ m[^/cygdrive/n]
+         ) {
+            next SUBDIR if $subdir =~ m/^\$/;                      # Windows: System directories.
+            next SUBDIR if $subdir =~ m/^cygwin/i;                 # Windows: Cygwin
+            next SUBDIR if $subdir eq 'Application Data';          # Windows: OLD LINK: App Data.
+            next SUBDIR if $subdir eq 'Documents and Settings';    # Windows: OLD LINK: Doc n Settings.
+            next SUBDIR if $subdir eq 'Local Settings';            # Windows: OLD LINK: Local Settings.
+            next SUBDIR if $subdir eq 'My Documents';              # Windows: OLD LINK: My Documents.
+            next SUBDIR if $subdir eq 'My Music';                  # Windows: OLD LINK: My Music.
+            next SUBDIR if $subdir eq 'My Pictures';               # Windows: OLD LINK: My Pictures.
+            next SUBDIR if $subdir eq 'My Videos';                 # Windows: OLD LINK: My Videos.
+            next SUBDIR if $subdir eq 'NetHood';                   # Windows: Networks.
+            next SUBDIR if $subdir eq 'PrintHood';                 # Windows: Printers.
+            next SUBDIR if $subdir eq 'PerfLogs';                  # Windows: Performance Logs.
+            next SUBDIR if $subdir eq 'ProgramData';               # Windows: Program Data.
+            next SUBDIR if $subdir eq 'Program Files';             # Windows: Program Files (64bit).
+            next SUBDIR if $subdir eq 'Program Files (x86)';       # Windows: Program Files (32bit).
+            next SUBDIR if $subdir eq 'Recovery';                  # Windows: System Recovery Files.
+            next SUBDIR if $subdir eq 'SendTo';                    # Windows: Send To.
+            next SUBDIR if $subdir eq 'Start Menu';                # Windows: Start Menu.
+            next SUBDIR if $subdir eq 'Temp';                      # Windows: Temporary Files.
+            next SUBDIR if $subdir eq 'Temporary Internet Files';  # Windows: Temporary Internet Files.
+            next SUBDIR if $subdir eq 'Windows';                   # Windows: Windows operating system.
+         }
+
+         # Don't mess with the private files of certain Windows users:
+         if
+         (
+               $curdir eq '/home/aragorn/net/KE/Valinor/Users'
+            || $curdir eq '/home/aragorn/net/SR/Imladris/Users'
+            || $curdir eq '/cygdrive/c/Users'
+            || $curdir eq '/cygdrive/n/Users'
+         ) {
+            next SUBDIR if $subdir eq 'Administrator';             # Windows: Problematic account.
+            next SUBDIR if $subdir eq 'Default';                   # Windows: Problematic account.
+            next SUBDIR if $subdir eq 'Default User';              # Windows: Problematic account.
+            next SUBDIR if $subdir eq 'Public';                    # Windows: Problematic account.
+            next SUBDIR if $subdir eq 'All Users';                 # Windows: Problematic account.
+         }
+      } # end if (we're not root)
 
       # Try to chdir to $subdir; if that fails, try to cd back to $curdir (or die if that fails),
       # then move on to next subdirectory:
