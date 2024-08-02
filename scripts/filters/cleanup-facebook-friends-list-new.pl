@@ -14,15 +14,12 @@
 #
 # Edit history:
 # Thu Nov 30, 2023: Wrote it.
+# Wed Aug 02, 2024: Got rid of "use strict", "use warnings", and "use Sys::Binmode".
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
 
-use Sys::Binmode;
 use Unicode::Collate;
 use List::Util 'uniq';
 
@@ -53,7 +50,3 @@ my $collator = Unicode::Collate->new();
 # Print result:
 say "Found ${\scalar(@unique)} names:";
 say for @unique;
-
-# We be done, so scram:
-exit 0;
-__END__

@@ -14,16 +14,13 @@
 # Edit history:
 # Sun Dec 05, 2021: Wrote it.
 # Wed Dec 08, 2021: Reformatted titlecard.
+# Fri Aug 02, 2024: Upgraded to "v5.36"; got rid of "common::sense"; got rid of "Sys::Binmode".
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
+use v5.36;
 
-for (@ARGV)
-{
-   if ($_ eq '-h' || $_ eq '--help')
-   {
+for (@ARGV) {
+   if ($_ eq '-h' || $_ eq '--help') {
       print
          "Welcome to \"hex-ordinals-to-text.pl\", Robbie Hatley's nifty\n".
          "codepoints-to-text conversion program. This program converts\n".
@@ -33,11 +30,9 @@ for (@ARGV)
    }
 }
 
-while (<>)
-{
+while (<>) {
    s/\s+$//;
-   for (split / /)
-   {
+   for (split / /) {
       if (/^[0-9a-fA-F]+$/) {print chr oct '0x'.$_;}
       else                  {print "\x{FFFD}"     ;}
    }

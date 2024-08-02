@@ -8,24 +8,20 @@
 # binary-ordinals-to-text.pl
 # Converts Unicode codepoints, written as space-separated hexadecimal ordinals, to Unicode text.
 # For example: converts "0101101111001100 0101100011101011 0101110111011101 0111010100111010" to "富士川町".
-#
-# Written in 2020 by Robbie Hatley.
-#
+# Written by Robbie Hatley.
 # Edit history:
-# ??? ??? ??, 2020: Wrote it.
+# Wed Jan 01, 2020: I probably wrote this in 2020, but I made no record, so I'm not sure.
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
+# Fri Aug 02, 2024: Upgraded to "v5.36"; got rid of "common::sense" and "Sys::Binmode".
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
+use v5.36;
+use utf8;
 
-while (<>)
-{
+while (<>) {
    s/\s+$//;
-   for (split / /)
-   {
+   for (split / /) {
       if (/^[01]+$/)        {print chr oct '0b'.$_;}
       else                  {print "\x{FFFD}"     ;}
    }

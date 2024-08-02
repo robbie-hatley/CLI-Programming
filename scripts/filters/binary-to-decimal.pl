@@ -11,20 +11,20 @@
 # Input  is via STDIN, redirect, pipe, or file-name arguments.
 # Output is to  STDOUT.
 # As usual for pipeline-style filters, the input is never altered.
-# Written by Robbie Hatley on unknown date.
+# Written by Robbie Hatley.
 # Edit history:
-# Sat Jan 04, 2020: I probably wrote this circa 2020, but I made not record, so I'm not sure.
+# Wed Jan 01, 2020: I probably wrote this in 2020, but I made no record, so I'm not sure.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
 #                   "Sys::Binmode"; changed name from "ascii-to-decimal.pl" to "binary-to-decimal.pl";
 #                   clarified what this program does; added newline to end of each printed line; and
 #                   explicitly specified STDOUT as stream to print to.
 # Sat Jul 29, 2023: Reduced width to 110 and cleaned-up these comments.
 #                   Also moved this to "filters", because it's designed to be used in a pipeline.
+# Fri Aug 02, 2024: Upgraded to "v5.36"; got rid of "common::sense" and "Sys::Binmode".
 ##############################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
+use v5.36;
+use utf8;
 
 while(<>) {
    s/^\s+//; s/\s+$//;

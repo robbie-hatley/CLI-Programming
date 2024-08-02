@@ -16,24 +16,21 @@
 # Sat Apr 16, 2016: Now using -CSDA.
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
+# Fri Aug 02, 2024: Upgraded to "v5.36"; got rid of "common::sense"; got rid of "Sys::Binmode".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+
 use Unicode::Collate;
-use RH::WinChomp;
 
 our @lfm_names = ();
 
-while (<>)
-{
-   winchomp;
+while (<>) {
+   s/\s+$//;
    my @fml = split(" ", $_);
    my @lfm = ();
    $lfm[0] = $fml[@fml - 1].",";
-   for ( my $i = 1 ; $i < @fml ; ++$i )
-   {
+   for ( my $i = 1 ; $i < @fml ; ++$i ) {
       $lfm[$i] = $fml[$i-1];
    }
    push(@lfm_names, join(" ", @lfm));

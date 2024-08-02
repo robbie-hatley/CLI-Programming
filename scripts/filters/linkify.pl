@@ -23,11 +23,11 @@
 # Wed Sep 16, 2020: Changed "print" to "say". Changed "http" to "https".
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
+# Fri Aug 02, 2024: Upgraded to "v5.36"; got rid of "common::sense"; got rid of "Sys::Binmode".
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
+use v5.36;
+
 use RH::Util;
 
 # First print the standard opening lines of an HTML file.

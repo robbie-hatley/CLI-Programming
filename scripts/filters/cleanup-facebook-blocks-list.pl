@@ -19,31 +19,28 @@
 # Wed Dec 08, 2021: Reformatted titlecard.
 # Sat Sep 23, 2023: Upgraded Perl version from "v5.32" to "v5.36". Reduced width from 120 to 110. Got rid of
 #                   CPAN module common::sense (antiquated). Got rid of RH::Winchomp (unnecessary).
+# Wed Aug 02, 2024: Got rid of "use strict", "use warnings", and "use Sys::Binmode".
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
 
-use Sys::Binmode;
 use Unicode::Collate;
 
 my @unsorted;
 my @sorted;
 
-LINE: while (<>) {
-   s/^\x{FEFF}//         ; # Get rid of BOM (if any).
-   s/\s+$//              ; # Chomp-off trailing whitespace.
-   s/\v//g               ; # Get rid of all vertical whitespace.
+while (<>) {
+   s/^\x{FEFF}//       ; # Get rid of BOM (if any).
+   s/\s+$//            ; # Chomp-off trailing whitespace.
+   s/\v//g             ; # Get rid of all vertical whitespace.
 
-   s/Unblock$//          ; # Get rid of trailing "Unblock".
-   s/^\s+//              ; # Get rid of leading  whitespace.
-   s/\s+$//              ; # Get rid of trailing whitespace.
-   next LINE if $_ eq '' ; # Skip this line if it's empty.
-   next LINE if m/^\s+$/ ; # Skip this line if it's whitespace-only.
-   push @unsorted, $_    ; # Push line onto end of @unsorted.
+   s/Unblock$//        ; # Get rid of trailing "Unblock".
+   s/^\s+//            ; # Get rid of leading  whitespace.
+   s/\s+$//            ; # Get rid of trailing whitespace.
+   next if $_ eq ''    ; # Skip this line if it's empty.
+   next if m/^\s+$/    ; # Skip this line if it's whitespace-only.
+   push @unsorted, $_  ; # Push line onto end of @unsorted.
 }
 
 # Make collator:
@@ -54,7 +51,3 @@ my $collator = Unicode::Collate->new();
 
 # Print result:
 say for @sorted;
-
-# We be done, so scram:
-exit 0;
-__END__

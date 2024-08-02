@@ -19,15 +19,12 @@
 # Wed Dec 08, 2021: Reformatted titlecard.
 # Sat Sep 23, 2023: Upgraded Perl version from "v5.32" to "v5.36". Reduced width from 120 to 110. Got rid of
 #                   CPAN module common::sense (antiquated). Got rid of RH::Winchomp (unnecessary).
+# Wed Aug 02, 2024: Got rid of "use strict", "use warnings", and "use Sys::Binmode".
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
 
-use Sys::Binmode;
 use Unicode::Collate;
 
 my @unsorted;
@@ -97,7 +94,3 @@ my $collator = Unicode::Collate->new();
 
 # Print result:
 say for @sorted;
-
-# We be done, so scram:
-exit 0;
-__END__

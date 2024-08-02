@@ -10,46 +10,30 @@
 # Written by Robbie Hatley (date unknown).
 #
 # Edit history:
-# ??? ??? ??, ????: Wrote it.
+# Wed Jan 01, 2020: I probably wrote this in 2020, but I made no record, so I'm not sure.
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
+# Fri Aug 02, 2024: Upgraded to "v5.36"; got rid of "common::sense" and "Sys::Binmode"; deleted pod comment.
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
+use v5.36;
 
 my $inpod = 0;
-while (<>)
-{
-   if ($inpod)
-   {
-      if (/^=cut/)
-      {
+while (<>) {
+   if ($inpod) {
+      if (/^=cut/) {
          $inpod = 0;
       }
-      else
-      {
+      else {
          print;
       }
    }
-   else
-   {
-      if (/^=/)
-      {
+   else {
+      if (/^=/) {
          $inpod = 1;
       }
-      else
-      {
+      else {
          ; # Do nothing.
       }
    }
 }
-
-=pod
-
-This really is a pretty ridiculous program.
-It's about as useful to a human as a bicycle is to a fish.
-
-=cut
-
