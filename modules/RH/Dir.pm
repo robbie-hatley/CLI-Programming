@@ -1,10 +1,10 @@
 #! /usr/bin/perl
 
-# This is a 110-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 120-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-##############################################################################################################
+########################################################################################################################
 # Dir.pm
 # Robbie Hatley's Directory Tools Module
 # Written by Robbie Hatley, starting 2015-03-24
@@ -72,13 +72,16 @@
 # Mon Aug 14, 2023: Morphed "get_suffix_from_type" into "get_correct_suffix".
 # Tue Aug 15, 2023: Re-DIS-abled "use Filesys::Type;"; it's too slow and buggy.
 # Fri Jun 14, 2024: Wrote "get_dirname_from_path".
-##############################################################################################################
+# Wed Jul 31, 2024: Got rid of unused variables $OldDir and $NewDir in rename_file().
+#                   Changed "rename to 'existing' path" criteria to "$PLATFORM is 'Win64', old and new names
+#                   are different, and fc($OldName) eq fc($NewName)".
+########################################################################################################################
 
-# ======= PACKAGE: ===========================================================================================
+# ======= PACKAGE: =====================================================================================================
 
 package RH::Dir;
 
-# ======= PRAGMAS: ===========================================================================================
+# ======= PRAGMAS: =====================================================================================================
 
 # Boilerplate:
 use v5.36;
@@ -86,7 +89,6 @@ use strict;
 use warnings;
 use utf8;
 use warnings FATAL => "utf8";
-use Sys::Binmode;
 
 # Encodings:
 use open ':std', IN  => ':encoding(UTF-8)';
@@ -96,6 +98,7 @@ use open         OUT => ':encoding(UTF-8)';
 # NOTE: these may be over-ridden later. Eg, "open($fh, '< :raw', e $path)".
 
 # CPAN modules:
+use Sys::Binmode;
 use parent 'Exporter';
 use POSIX 'floor', 'ceil', 'strftime';
 use Cwd;
@@ -106,10 +109,10 @@ use File::Type;
 use File::Copy;
 use Image::Size;
 use List::Util    qw( sum0 );
-use Time::HiRes   qw( time );
-#use Filesys::Type qw( fstype );
+use Time::HiRes   qw( time sleep );
+use Filesys::Type qw( fstype );
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
 # Section 1, Major Subroutines (code is long and complex):
 sub GetFiles               :prototype(;$$$) ; # Get array of filerecords.
@@ -169,7 +172,7 @@ sub is_data_file           :prototype($)    ; # Return 1 if a given string is a 
 sub is_meta_file           :prototype($)    ; # Return 1 if a given string is a path to a meta-data file.
 sub is_valid_qual_dir      :prototype($)    ; # Is a given string a fully-qualified path to an existing directory?
 
-# ======= VARIABLES: =========================================================================================
+# ======= VARIABLES: ===================================================================================================
 
 # Symbols exported by default:
 # ECHIDNA RH 2024-02-06: open_utf8 and opendir_utf8 doen't work with modern Perl,
@@ -233,7 +236,7 @@ our $hlnkcount = 0; # Count of all regular files with multiple hard links.
 our $regfcount = 0; # Count of all regular files.
 our $unkncount = 0; # Count of all unknown files.
 
-# ======= SECTION 1, MAJOR SUBROUTINES: ======================================================================
+# ======= SECTION 1, MAJOR SUBROUTINES: ================================================================================
 
 # GetFiles returns a reference to an array of filerecords for all files in a user-specified directory.
 # Optionally, user can also specify a regular expression to match names against and a single-letter "target"
@@ -1554,7 +1557,7 @@ sub move_files :prototype($$;@)
    return 1;
 } # end sub move_files
 
-# ======= SECTION 2, PRIVATE SUBROUTINES: ====================================================================
+# ======= SECTION 2, PRIVATE SUBROUTINES: ==============================================================================
 
 # Is a line of text encoded in ASCII?
 sub is_ascii :prototype($) ($text) {
@@ -1625,7 +1628,7 @@ sub eight_rand_lc_letters :prototype() {
    return join '', map {chr(rand_int(97, 122))} (1..8);
 }
 
-# ======= SECTION 3, UTF-8 SUBROUTINES: ======================================================================
+# ======= SECTION 3, UTF-8 SUBROUTINES: ================================================================================
 
 # Prepare constant "EFLAGS" which contains bitwise-OR'd flags for Encode::encode and Encode::decode :
 use constant EFLAGS => RETURN_ON_ERR | WARN_ON_ERR | LEAVE_SRC;
@@ -1801,7 +1804,7 @@ sub glob_regexp_utf8 :prototype(;$$$) ($dir = d(getcwd), $target = 'A', $regexp 
    return @paths;
 } # end sub glob_regexp_utf8 (;$$$)
 
-# ======= SECTION 4, MINOR SUBROUTINES: ======================================================================
+# ======= SECTION 4, MINOR SUBROUTINES: ================================================================================
 
 # Rename a file, with more error-checking than unwrapped rename() :
 sub rename_file :prototype($$) ($OldPath, $NewPath) {
@@ -1823,37 +1826,51 @@ sub rename_file :prototype($$) ($OldPath, $NewPath) {
    if ($NewPath eq $OldPath) {
       warn
       (
-         "Error in rename_file: new file name is same as old:\n".
-         "old name: $OldPath\n".
-         "new name: $NewPath\n"
+         "Error in rename_file: new file path is same as old:\n".
+         "old path: $OldPath\n".
+         "new path: $NewPath\n"
       );
       return 0;
    }
 
-   # Disallow renaming to a name that already exists, but allow case changes.
-   # This is tricky, because file systems can be:
+   # I want to disallow renaming a file to a name that already "exists" (according to -e), but I also want to
+   # allow case changes. This is tricky, because file names in various file systems can be:
    # 1. case-nonpreserving (everything is stored as upper-case, as in FAT16)
-   # 2. case-preserving and case-sensitive (file names are stored as-is; eg, Unix, Linux)
+   # 2. case-preserving and case-sensitive (file names are stored as-is; eg, Ext4)
    # 3. case-preserving and case-insensitive (file names must differ in more than case; eg, FAT32, NTFS)
-
-   # For the purpose of this subroutine, I'm assuming that the user is using Windows 10, Cygwin, and NTFS,
-   # which puts us in case 3 above. But if any of these assumptions are NOT true, this subroutine may need
-   # to be altered accordingly for it to work right.
-
-   # Disallow existing $NewPath unless this is just a case change:
+   # And to make matters more confusing, NTFS file systems intended primarily for use with Microsoft Windows
+   # can also be accessed from Linux by network share, so $PLATFORM does not give any clue to as file system.
+   # So I'll allow a rename to an existing path only if the old and new names are different but their
+   # casefolds are the same. But even then, in NTFS, Perl's "rename()" doesn't correctly perform case changes,
+   # so I'll have to take a more-imaginative approach.
    if ( -e e($NewPath) ) {
-      unless ( fc($OldPath) eq fc($NewPath) ) {
-         warn
-         (
-            "Error in \"rename_file\" in \"RH::Dir.pm\":\n".
-            "file at path \"$NewPath\" already exists.\n"
-         );
-         return 0;
+      if
+      (
+               $OldDir   eq    $NewDir
+         &&    $OldName  ne    $NewName
+         && fc($OldName) eq fc($NewName)
+      )
+      {
+         my $Intermediate = path($NewDir, 'aъ玔ò山ë懳z');
+        !system(e("ln '$OldPath' '$Intermediate'"))      or return 0;
+        !system(e("unlink '$OldPath'"))                  or return 0;
+         system(e("unlink '$NewPath' 2> /dev/null"));    # Succeeds but gives false failure warning.
+        !system(e("ln '$Intermediate' '$NewPath'"))      or return 0;
+        !system(e("unlink '$Intermediate'"))             or return 0;
+         return(1);
+      }
+      else {
+         say STDERR "Error in \"rename_file\" in \"RH::Dir.pm\":";
+         say STDERR "file at path \"$NewPath\" already exists.";
+         return(0);
       }
    }
 
-   # Attempt to rename the file, and return the result code (which will be 1 for success, 0 for failure):
-   return rename(e($OldPath), e($NewPath));
+   # Else if the new path does NOT exist,
+   # attempt to rename the file, and return the result code (which will be 1 for success, 0 for failure):
+   else {
+      return(rename(e($OldPath), e($NewPath)));
+   }
 } # end sub rename_file
 
 sub time_from_mtime :prototype($) ($mtime) {

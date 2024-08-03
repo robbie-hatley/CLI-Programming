@@ -8,6 +8,7 @@
  * Edit History:
  * Wed Dec 05, 2018: Wrote it.
  * Tue Mar 16, 2021: Refactored.
+ # Sat Aug 03, 2024: Fixed bug in which first 4 primes were not being printed.
 \************************************************************************************************************/
 
 #include <stdio.h>
@@ -73,7 +74,7 @@ int main (int Beren, char *Luthien[])
          c=FirstFour[i];
          if (c>=Lwr && c<=Upr)
          {
-            // printf("%lu\n", c);
+            printf("%15lu\n", c);
             ++pc;
          }
       }

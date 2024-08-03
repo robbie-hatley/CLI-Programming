@@ -23,29 +23,35 @@
 #                   Also changed the if-pile in curfile() to a given(). Also removed annoying duplication of success
 #                   and/or failure messages, by erasing those messages from THIS script so that the equivalent messages
 #                   in move_file() in RH::Dir will be the only ones printed.
+# Tue Jul 30, 2024: Fixed many new bugs which cropped-up due to changes from Perl v5.32 to Perl v5.36.
+# Wed Jul 31, 2024: Added both :prototype() and signatures () to all subroutines.
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
+use v5.36;
+use strict;
+use warnings;
+use utf8;
+use warnings FATAL => 'utf8';
+
 use Sys::Binmode;
+use Cwd;
+use Time::HiRes 'time';
+
 
 use RH::Dir;
-use RH::Util;
-use RH::WinChomp;
-
-# Turn on debugging?
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
 
 # ======= SUBROUTINE PRE-DECLARATIONS ==================================================================================
 
-sub argv    ();
-sub curfile ($);
-sub stats   ();
-sub help    ();
+sub argv    :prototype()  ;
+sub curdire :prototype()  ;
+sub curfile :prototype($) ;
+sub stats   :prototype()  ;
+sub help    :prototype()  ;
 
 # ======= GLOBAL VARIABLES =============================================================================================
 
 # Settings:
+my $Db        = 0;     # Print diagnostics and don't actually move files?
 my $Levels    = 0;     # Go up how many levels before making subdirs? (Default is 0 levels.)
 my $Regexp    = '.+';  # Regular expression. (Default is "all possible patterns of characters".)
 
@@ -57,70 +63,161 @@ my $failcount = 0;     # Count of files we couldn't file-away.
 # ======= MAIN BODY OF PROGRAM =========================================================================================
 
 { # begin main
-   say "\nNow entering program \"file-files-by-type.pl\".\n";
+   my $t0 = time;
+   my $pname = get_name_from_path($0);
    argv;
-   curfile $_ for @{GetFiles(cwd_utf8(), 'F', $Regexp)};
+   say STDERR "Now entering program \"$pname\".";
+   say STDERR "\$Db      = \"$Db\".";
+
+   say STDERR "\$Regexp  = \"$Regexp\".";
+
+   curdire;
+
    stats;
-   say "\nNow exiting program \"file-files-by-type.pl\".\n";
+   say    STDERR '';
+   say    STDERR "Now exiting program \"$pname\".";
+   printf STDERR "Execution time was %.3f seconds.", time - $t0;
    exit 0;
 } # end main()
 
 # ======= SUBROUTINE DEFINITIONS =======================================================================================
 
-sub argv ()
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if ('-h' eq $_ || '--help' eq $_) {help; exit 777;}
-         elsif ('-0' eq $_ || '--zero' eq $_) {$Levels = 0;}
-         elsif ('-1' eq $_ || '--one'  eq $_) {$Levels = 1;}
-         elsif ('-2' eq $_ || '--two'  eq $_) {$Levels = 2;}
-         splice @ARGV, $i, 1; # Remove option from @ARGV after processing.
-         --$i; # Move index 1-left, so that the "++$i" above moves index back to current spot, with new item.
-      }
+# Process arguments:
+sub argv :prototype() () {
+   # Get options and arguments:
+   my @opts = ();            # options
+   my @args = ();            # arguments
+   my $end = 0;              # end-of-options flag
+   my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   for ( @ARGV ) {           # For each element of @ARGV,
+      /^--$/                 # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1           # so if we see that, then set the "end-of-options" flag
+      and next;              # and skip to next element of @ARGV.
+      !$end                  # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/     # and if we get a valid short option
+      ||  /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_     # then push item to @opts
+      or  push @args, $_;    # else push item to @args.
    }
-   if (@ARGV > 0) {$Regexp = $ARGV[0];}
-   return 1;
-} # end sub argv ()
 
-sub curfile ($)
-{
+   # Process options:
+   for ( @opts ) {
+      /^-$s*h/ || /^--help$/    and help() and exit(777) ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1        ;
+      /^-$s*0/ || /^--zero$/    and $Levels  =  0        ;
+      /^-$s*1/ || /^--one$/     and $Levels  =  1        ;
+      /^-$s*2/ || /^--two$/     and $Levels  =  2        ;
+   }
+
+   # If debugging, print the options and arguments:
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
+   }
+
+   # Get number of arguments:
+   my $NA = scalar(@args);
+
+   # Process arguments based on number of arguments given:
+                                # If number of arguments == 0, do nothing.
+   $NA >= 1                     # If number of arguments >= 1,
+   and $Regexp = qr/$args[0]/o; # set $Regexp.
+   $NA >= 2 && !$Db             # If number of arguments >= 2 and we're not debugging,
+   and error($NA)               # print error message,
+   and help                     # and print help message,
+   and exit 666;                # and exit, returning The Number Of The Beast.
+
+   # Return success code 1 to caller:
+   return 1;
+} # end sub argv
+
+# Process current directory:
+sub curdire :prototype() () {
+
+   my $curdir = d cwd;
+
+
+
+   my @paths = glob_regexp_utf8($curdir, 'F', $Regexp);
+   for my $path (@paths) {
+      next unless is_data_file($path);
+      curfile $path;
+   }
+   return 1;
+} # end sub curdire
+
+# Process current file:
+sub curfile :prototype($) ($path) {
+   # Increment file counter:
    ++$filecount;
-   my $file = shift;
-   my $suffix = get_suffix $file->{Name};
-   $suffix =~ s/^\.//;
+
+   # Get name and suffix of file:
+   my $name     = get_name_from_path($path);
+   my $suffix   = get_suffix($name) =~ s/^\.//r;
+
+   # If debugging, print variables and return 1 for first 15 items then exit program:
+   if ($Db) {
+      say "\$name   = $name";
+      say "\$suffix = $suffix";
+      exit if $filecount >= 15;
+      return 1;
+   }
+
+   # Use suffix "noex" to indicate "no suffix":
    if ('' eq $suffix) {$suffix = 'noex';}
+
+   # Skip initialization, database, and jasc-browser files:
    return 1 if 'ini' eq $suffix;
    return 1 if 'db'  eq $suffix;
    return 1 if 'jbf' eq $suffix;
-   my $dir;
-   given ($Levels)
-   {
-      when (0) {$dir =            $suffix;}
-      when (1) {$dir = '../'    . $suffix;}
-      when (2) {$dir = '../../' . $suffix;}
-      default  {die "Error in \"file-files-by-type.pl\": Invalid \$Levels.\n$!\n";}
-   }
-   mkdir $dir unless -e e $dir;
-   move_file("$file->{Name}", $dir) and ++$succcount and return 1
-                                    or  ++$failcount and return 0;
-} # end sub curfile ($)
 
-sub stats ()
-{
+   # Set $dir based on $Levels:
+   my $dir;
+   if    ( 0 == $Levels ) {$dir =            $suffix;}
+   elsif ( 1 == $Levels ) {$dir = '../'    . $suffix;}
+   elsif ( 2 == $Levels ) {$dir = '../../' . $suffix;}
+   else                   {die "Error in \"file-files-by-type.pl\": Invalid \$Levels.\n$!\n";}
+
+   # If the directory we need doesn't already exist, create it:
+   mkdir $dir unless -e e $dir;
+
+   # Move current file to correct directory:
+   move_file($name, $dir)
+   and ++$succcount and return 1
+   or  ++$failcount and return 0;
+
+   # Return success code 1 to caller:
+   return 1;
+} # end sub curfile
+
+# Print statistics:
+sub stats :prototype() () {
    print("\nStats for \"file-files-by-type.pl\":\n");
    printf("Processed %5d files.\n",                   $filecount);
    printf("Filed     %5d files.\n",                   $succcount);
    printf("Failed    %5d file-filing attempts.\n",    $failcount);
    return 1;
-} # end sub stats ()
+} # end sub stats
 
-sub help ()
-{
+# Handle errors:
+sub error :prototype($) ($NA) {
+   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
+   Error: you typed $NA arguments, but this program takes at most
+   one argument, which, if present, must be a regular expression describing
+   which items to process. Help follows:
+   END_OF_ERROR
+   return 1;
+} # end sub error
+
+sub help :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
+   -------------------------------------------------------------------------------
+   Introduction:
+
    Welcome to "file-files-by-type.pl". This program moves all files from the
    current directory into appropriate subdirectories of the current (or parent,
    or grandparent) directory, based on file type (eg: jpg, mp3, txt, exe).
@@ -128,21 +225,34 @@ sub help ()
    it will be created. If a file of the same name exists, the moved file will
    be enumerated.
 
+   -------------------------------------------------------------------------------
    Command line:
    program-name.pl [options] [regex]
 
+   -------------------------------------------------------------------------------
    Description of options:
+
    Option:             Meaning:
    "-h" or "--help"    Print help and exit.
-   "-0" or "--zero"    Move files to subfolders of folder 0 level  up (default)
+   "-e" or "--debug"   Print diagnostics; don't actually move files.
+   "-0" or "--zero"    Move files to subfolders of folder 0 levels up (default)
    "-1" or "--two"     Move files to subfolders of folder 1 level  up
    "-2" or "--two"     Move files to subfolders of folder 2 levels up
-   (All other options are ignored.)
+   --                  End of options (all further CL items are arguments).
 
+   Multiple single-letter options may be piled-up
+   after a single hyphen; eg, use "-1e" to emulate filing files one-level-up
+   and print diagnostics. To stop processing options and consider all further
+   command-line items as being "arguments" instead, use a "--" option.
+
+   All options not listed above are ignored.
+
+   -------------------------------------------------------------------------------
    Description of arguments:
-   In addition to options, this program can take one optional argument which,
-   if present, must be a Perl-Compliant Regular Expression specifying which items
-   to process. To specify multiple patterns, use the | alternation operator.
+
+   In addition to options, this program can take zero-or-more optional arguments
+   which, if present, must be Perl-Compliant Regular Expressions specifying which
+   items to process. To specify multiple patterns, use the | alternation operator.
    To apply pattern modifier letters, use an Extended RegExp Sequence.
    For example, if you want to search for items with names containing "cat",
    "dog", or "horse", title-cased or not, you could use this regexp:
@@ -156,4 +266,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help

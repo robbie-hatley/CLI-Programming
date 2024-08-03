@@ -26,9 +26,10 @@
 #                   default. Updated argv. Updated help. Increased parallelism "(g|s)et-suffixes.pl".
 #                   Stats now always print to STDERR. Got rid of "quiet" and "verbose" options.
 #                   Instead, I'm now using STDERR for messages, stats, diagnostics, STDOUT for dirs/files.
+# Wed Jul 31, 2024: Added both :prototype() and signatures () to all subroutines.
 ##############################################################################################################
 
-use v5.38;
+use v5.36;
 use strict;
 use warnings;
 use utf8;
@@ -39,24 +40,23 @@ use Cwd;
 use Time::HiRes 'time';
 use File::Type;
 
-use RH::Util;
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv    ;
-sub curdire ;
-sub curfile ;
-sub stats   ;
-sub error   ;
-sub help    ;
+sub argv    :prototype()  ;
+sub curdire :prototype()  ;
+sub curfile :prototype($) ;
+sub stats   :prototype()  ;
+sub error   :prototype($) ;
+sub help    :prototype()  ;
 
 # ======= PAGE-GLOBAL LEXICAL VARIABLES: =====================================================================
 
-# Settings:     Defaults:  # Meaning of setting:         Range:    Meaning of default:
-my $Db        = 0        ; # Debug?                      bool      Don't debug.
-my $Recurse   = 0        ; # Recurse subdirectories?     bool      Don't recurse subdirectories.
-my $RegExp    = qr/^.+$/ ; # Process which file names?   regexp    Process files of all names.
+# Settings:     Defaults:   # Meaning of setting:         Range:    Meaning of default:
+my $Db        = 0         ; # Debug?                      bool      Don't debug.
+my $Recurse   = 0         ; # Recurse subdirectories?     bool      Don't recurse subdirectories.
+my $Regexp    = qr/^.+$/o ; # Process which file names?   regexp    Process files of all names.
 
 # Event counters:
 my $direcount = 0; # Count of directories processed.
@@ -77,7 +77,7 @@ my $failcount = 0; # Count of failed file-rename attempts.
    say STDERR "Now entering program \"$pname\".";
    say STDERR "\$Db      = \"$Db\".";
    say STDERR "\$Recurse = \"$Recurse\".";
-   say STDERR "\$RegExp  = \"$RegExp\".";
+   say STDERR "\$Regexp  = \"$Regexp\".";
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
@@ -90,106 +90,114 @@ my $failcount = 0; # Count of failed file-rename attempts.
 
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub argv {
+# Process arguments:
+sub argv :prototype() () {
    # Get options and arguments:
-   my @opts = ();             # options
-   my @args = ();             # arguments
-   my $end = 0;               # end-of-options flag
-   my $s = '[a-zA-Z0-9]';     # single-hyphen allowable chars (English letters, numbers)
-   my $d = '[a-zA-Z0-9=.-]';  # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
-   for ( @ARGV ) {
-      /^--$/                  # "--" = end-of-options marker = construe all further CL items as arguments,
-      and $end = 1            # so if we see that, then set the "end-of-options" flag
-      and next;               # and skip to next element of @ARGV.
-      !$end                   # If we haven't yet reached end-of-options,
-      && ( /^-(?!-)$s+$/      # and if we get a valid short option
-      ||   /^--(?!-)$d+$/ )   # or a valid long option,
-      and push @opts, $_      # then push item to @opts
-      or  push @args, $_;     # else push item to @args.
+   my @opts = ();            # options
+   my @args = ();            # arguments
+   my $end = 0;              # end-of-options flag
+   my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   for ( @ARGV ) {           # For each element of @ARGV,
+      /^--$/                 # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1           # so if we see that, then set the "end-of-options" flag
+      and next;              # and skip to next element of @ARGV.
+      !$end                  # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/     # and if we get a valid short option
+      ||  /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_     # then push item to @opts
+      or  push @args, $_;    # else push item to @args.
    }
 
    # Process options:
    for ( @opts ) {
-      /^-$s*h/ || /^--help$/    and help and exit 777 ;
-      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
-      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
-      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
+      /^-$s*h/ || /^--help$/    and help() and exit(777) ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1        ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0        ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1        ;
    }
+
+
+   # If debugging, print the options and arguments:
    if ( $Db ) {
       say STDERR '';
       say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
       say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
-   # Process arguments:
-   my $NA = scalar(@args);     # Get number of arguments.
-   $NA >= 1                    # If number of arguments >= 1,
-   and $RegExp = qr/$args[0]/; # set $RegExp.
-   $NA >= 2 && !$Db            # If number of arguments >= 2 and we're not debugging,
-   and error($NA)              # print error message,
-   and help                    # and print help message,
-   and exit 666;               # and exit, returning The Number Of The Beast.
+   # Get number of arguments:
+   my $NA = scalar(@args);
+
+   # Process arguments based on number of arguments given:
+                                # If number of arguments == 0, do nothing.
+   $NA >= 1                     # If number of arguments >= 1,
+   and $Regexp = qr/$args[0]/o; # set $Regexp.
+   $NA >= 2 && !$Db             # If number of arguments >= 2 and we're not debugging,
+   and error($NA)               # print error message,
+   and help                     # and print help message,
+   and exit 666;                # and exit, returning The Number Of The Beast.
 
    # Return success code 1 to caller:
    return 1;
-} # end sub argv ()
+} # end sub argv
 
-sub curdire {
+# Process current directory:
+sub curdire :prototype() () {
    ++$direcount;
-   my $curdir = cwd_utf8;
+   my $curdir = d cwd;
    say STDOUT '';
    say STDOUT "Directory # $direcount: $curdir";
    say STDOUT '';
-   my @paths = glob_regexp_utf8($curdir, 'F', $RegExp);
+   my @paths = glob_regexp_utf8($curdir, 'F', $Regexp);
    for my $path (@paths) {
       next unless is_data_file($path);
       curfile $path;
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-sub curfile ($path) {
+# Process current file:
+sub curfile :prototype($) ($old_path) {
+   # Increment file counter:
    ++$filecount;
-   my $name = get_name_from_path($path);
-   my $dir  =  get_dir_from_path($path);
-   my $new_suff = get_correct_suffix($path);
-   # If new suffix is '.unk', increment $unkncount, otherwise increment $typecount:
+
+   # Get old name and new suffix:
+   my $old_name = get_name_from_path($old_path);
+   my $new_suff = get_correct_suffix($old_path);
+
+   # Increment "unknown-type" counter if new suffix is '.unk', else increment "known-type" counter:
    $new_suff eq '.unk' and ++$unkncount or ++$typecount;
 
+   # Make new name:
+   my $new_name = get_prefix($old_name) . $new_suff;
+
+   # Increment "same" counter if new name is same as old name, else increment "different" counter:
+   $new_name eq $old_name and ++$samecount or  ++$diffcount;
+
+   # If debugging, print values of various variables:
    if ($Db) {
       say STDERR '';
-      say STDERR "In \"set-suffixes.pl\", in curfile, after getting new suffix.";
-      say STDERR "\$filecount = \"$filecount\".";
-      say STDERR "\$path  = \"$path\".";
-      say STDERR "\$new_suff  = \"$new_suff\".";
-   }
-
-   # Make new name and path:
-   my $new_name = get_prefix($name) . $new_suff;
-   my $new_path = path($dir, $new_name);
-   # Increment "same" counter if new name is same as old name, else increment "diff" counter:
-   $new_name eq $name and ++$samecount or  ++$diffcount;
-
-   if ($Db) {
+      say STDERR "In \"set-suffixes.pl\", in curfile, after setting variables.";
+      say STDERR "\$old_path  = \"$old_path\"";
+      say STDERR "\$filecount = \"$filecount\"";
+      say STDERR "\$old_name  = \"$old_name\"";
+      say STDERR "\$new_suff  = \"$new_suff\"";
+      say STDERR "\$new_name  = \"$new_name\".";
+      say STDERR "old and new names are SAME"      if $new_name eq $old_name;
+      say STDERR "old and new names are DIFFERENT" if $new_name ne $old_name;
       say STDERR '';
-      say STDERR "In \"set-suffixes.pl\", in curfile, after making new name and path.";
-      say STDERR "old name = \"$name\".";
-      say STDERR "new name = \"$new_name\".";
-      say STDERR "new path = \"$new_path\".";
-      say STDERR "old and new names are DIFFERENT" if $new_name ne $name;
-      say STDERR "old and new names are SAME"      if $new_name eq $name;
    }
 
    # If new name is same as old name, announce that old name is correct and return 1:
-   if ( $new_name eq $name ) {
-      say STDOUT "Correct:   \"$name\"";
+   if ( $new_name eq $old_name ) {
+      say STDOUT "Correct:   \"$old_name\"";
       return 1;
    }
 
    # Otherwise, announce that old name is incorrect and attempt rename:
    else {
-      print STDOUT "Incorrect: \"$name\" => \"$new_name\"";
-      rename_file($path, $new_path)
+      print STDOUT "Incorrect: \"$old_name\" => \"$new_name\"";
+      rename_file($old_name, $new_name)
       and ++$renacount
       and say STDOUT " (rename succeeded)"
       and return 1
@@ -213,9 +221,10 @@ sub curfile ($path) {
    666
 
    return 666;
-} # end sub curfile ($path)
+} # end sub curfile
 
-sub stats {
+# Print statistics:
+sub stats :prototype() () {
    say STDERR '';
    say STDERR "Stats for \"set-suffixes.pl\":";
    say STDERR "Navigated $direcount directories.";
@@ -230,16 +239,18 @@ sub stats {
 } # end sub stats
 
 # Handle errors:
-sub error ($NA) {
+sub error :prototype($) ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: you typed $NA arguments, but this program takes at most
    one argument, which, if present, must be a regular expression describing
    which items to process. Help follows:
    END_OF_ERROR
    return 1;
-} # end sub error ($NA)
+} # end sub error
 
-sub help {
+# Print help:
+sub help :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
    -------------------------------------------------------------------------------

@@ -15,11 +15,10 @@
 # Wed Feb 24, 2021: Got rid of "Settings" hash.
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
+# Thu Aug 01, 2024: Upgraded to "v5.36" and got rid of CPAN modules "common::sense" and "Sys::Binmode".
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
-use Unicode::Normalize qw( NFD );
+use v5.36;
+use Unicode::Normalize 'NFD';
 
 print map {NFD($_)} <> ; # Normalize to Form D.

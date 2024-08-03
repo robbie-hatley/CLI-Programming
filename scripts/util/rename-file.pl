@@ -24,4 +24,6 @@ use utf8;
 use warnings FATAL => 'utf8';
 use Sys::Binmode;
 use RH::Dir;
-rename_file($ARGV[0], $ARGV[1]);
+rename_file($ARGV[0], $ARGV[1])
+and say "Rename succeeded."
+or  say "Rename failed.";
