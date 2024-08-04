@@ -1,10 +1,10 @@
 #!/usr/bin/env -S perl -CSDA
 
-# This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # list-by-last-name.pl
 # Converts lists of names from "list by first" to "list by last".
 #
@@ -16,12 +16,13 @@
 # Sat Apr 16, 2016: Now using -CSDA.
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
-# Fri Aug 02, 2024: Upgraded to "v5.36"; got rid of "common::sense"; got rid of "Sys::Binmode".
-########################################################################################################################
+# Fri Aug 02, 2024: Got rid of "common::sense"; got rid of "Sys::Binmode".
+# Sat Aug 03, 2024: Upgraded to "v5.36"; added "use utf8"; ditched "Unicode::Collate" in favor of "sort";
+#                   reduced width from 120 to 110.
+##############################################################################################################
 
-use v5.32;
-
-use Unicode::Collate;
+use v5.36;
+use utf8;
 
 our @lfm_names = ();
 
@@ -35,4 +36,4 @@ while (<>) {
    }
    push(@lfm_names, join(" ", @lfm));
 }
-say for Unicode::Collate->new->sort( @lfm_names );
+say for sort @lfm_names;

@@ -24,11 +24,11 @@
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
 # Fri Aug 02, 2024: Upgraded to "v5.36"; got rid of "common::sense"; got rid of "Sys::Binmode".
+# Sat Aug 03, 2024: Added "use utf8". Got rid of "use RH::Util" (unneeded).
 ########################################################################################################################
 
 use v5.36;
-
-use RH::Util;
+use utf8;
 
 # First print the standard opening lines of an HTML file.
 # The title will be "Linkifyed HTML Document",
@@ -62,7 +62,7 @@ my $Dns = q<[0-9A-Za-z-]{1,63}>;
 # Make a regex string specifying a URL header:
 my $Header = q<s?https?://>;
 
-# Make a regex strig specifying a URL suffix:
+# Make a regex string specifying a URL suffix:
 my $Suffix = qq<(?:$Dns\\.){1,62}$Dns/$Legal+>;
 
 # $Regex1 says "find a string which is probably a URL suffix, either at the

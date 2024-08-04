@@ -2,29 +2,29 @@
 
 # This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # wrap.pl
 # Outputs a word-wrapped paragraph for each input string (input remains unchanged).
 # Written by Robbie Hatley.
 # Edit history:
 # Fri Mar 31, 2023: Wrote it.
-########################################################################################################################
+# Sat Aug 03, 2024: Reduced width from 110 to 120; got rid of "use strict"; got rid of "use warnings";
+#                   got rid of "use Sys::Binmode".
+##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use Sys::Binmode;
+
 use Text::Wrap qw(wrap $columns $huge);
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
 sub argv    ; # Process @ARGV.
 sub help    ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 # Settings:            Meaning:                         Range:   Default:
 my $db       =  0;   # Debug?                           bool     0
@@ -33,7 +33,7 @@ my $Indent   = '';   # First-line indent.               string   ''
 my $Tab      = '';   # Subsequent-line indent.          string   ''
 my $Blank    = '';   # Blank line between paragraphs.   string   ''
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 {
    argv;
@@ -43,7 +43,7 @@ my $Blank    = '';   # Blank line between paragraphs.   string   ''
    exit 0;
 }
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
 sub argv {
@@ -69,6 +69,7 @@ sub argv {
 # Print help:
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "wrap.pl". This program wraps lines of text according to
    either built-in default settings (width=72, no first-line indent,
    no blank line between paragraphs), or according to settings supplied

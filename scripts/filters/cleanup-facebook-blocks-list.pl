@@ -19,35 +19,30 @@
 # Wed Dec 08, 2021: Reformatted titlecard.
 # Sat Sep 23, 2023: Upgraded Perl version from "v5.32" to "v5.36". Reduced width from 120 to 110. Got rid of
 #                   CPAN module common::sense (antiquated). Got rid of RH::Winchomp (unnecessary).
-# Wed Aug 02, 2024: Got rid of "use strict", "use warnings", and "use Sys::Binmode".
+# Wed Jul 31, 2024: Got rid of "use strict", "use warnings", and "use Sys::Binmode".
+# Sat Aug 03, 2024: Ditched "Unicode::Collate" in favor of "sort", as I want weird codepoints obvious.
+#                   Also got rid of uniq, because two people can have the same name.
 ##############################################################################################################
 
 use v5.36;
 use utf8;
-
-use Unicode::Collate;
 
 my @unsorted;
 my @sorted;
 
 while (<>) {
    s/^\x{FEFF}//       ; # Get rid of BOM (if any).
-   s/\s+$//            ; # Chomp-off trailing whitespace.
+   s/^\h+//            ; # Get rid of leading  horizontal whitespace.
+   s/\h+$//            ; # Get rid of trailing horizontal whitespace.
    s/\v//g             ; # Get rid of all vertical whitespace.
-
-   s/Unblock$//        ; # Get rid of trailing "Unblock".
-   s/^\s+//            ; # Get rid of leading  whitespace.
-   s/\s+$//            ; # Get rid of trailing whitespace.
-   next if $_ eq ''    ; # Skip this line if it's empty.
+   s/\h*Unblock$//     ; # Get rid of trailing "Unblock" and any horizontal whitespace before it.
+   next if '' eq $_    ; # Skip this line if it's empty.
    next if m/^\s+$/    ; # Skip this line if it's whitespace-only.
    push @unsorted, $_  ; # Push line onto end of @unsorted.
 }
 
-# Make collator:
-my $collator = Unicode::Collate->new();
-
-# Sort array:
-@sorted = $collator->sort(@unsorted);
+# Sort and dedup names:
+@sorted = sort @unsorted;
 
 # Print result:
 say for @sorted;

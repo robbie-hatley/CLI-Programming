@@ -1,31 +1,33 @@
 #!/usr/bin/env -S perl -CSDA
 
-# This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # text-to-base64.pl
 # Converts plain text (from stdin) to base64 encoding (to stdout).
 # Written by Robbie Hatley.
 # Edit history:
 # Sat Jul 16, 2022: Wrote it.
-########################################################################################################################
+# Sun Aug 04, 2024: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". Added "use utf8".
+#                   Got rid of "common::sense" and "Sys::Binmode".
+##############################################################################################################
 
-use v5.32;
+use v5.36;
 
-# ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv    ()  ; # Process @ARGV.
-sub base64  ($) ; # Convert text to base64.
-sub help    ()  ; # Print help and exit.
+sub argv    :prototype()  ; # Process @ARGV.
+sub base64  :prototype($) ; # Convert text to base64.
+sub help    :prototype()  ; # Print help and exit.
 
-# ======= VARIABLES: ===================================================================================================
+# ======= VARIABLES: =========================================================================================
 
 my $db = 0; # Debug (print diagnostics)?
 my @charset = split //,'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'; # base64 charset
 
-# ======= MAIN BODY OF PROGRAM: ========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 { # begin main
    argv;
@@ -44,10 +46,10 @@ my @charset = split //,'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123
    exit 0;
 } # end main
 
-# ======= SUBROUTINE DEFINITIONS: ======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
-sub argv ()
+sub argv :prototype()
 {
    for ( @ARGV )
    {
@@ -57,7 +59,7 @@ sub argv ()
 } # end sub argv ()
 
 # Convert text to base64:
-sub base64 ($)
+sub base64 :prototype($)
 {
    my $text = shift;            # Incoming line of text.
    my @chars = split //, $text; # List of the chars of $text.
@@ -101,7 +103,7 @@ sub base64 ($)
 } # end sub base64 ($)
 
 # Print help:
-sub help ()
+sub help :prototype()
 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "text-to-base64.pl". This program converts plain text (from stdin)

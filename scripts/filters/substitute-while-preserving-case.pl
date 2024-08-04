@@ -34,16 +34,17 @@
 # Sat Apr 16, 2016: Now using -CSDA.
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
+# Sun Aug 04, 2024: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". Added "use utf8".
+#                   Got rid of "common::sense", "Sys::Binmode", and "RH::Winchomp".
 ########################################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
-use Unicode::UCD qw(charinfo);
-use RH::WinChomp;
+use v5.36;
+use utf8;
 
-sub TransferCase ($$);
-sub Help ();
+use Unicode::UCD qw(charinfo);
+
+sub TransferCase :prototype($$);
+sub Help;
 
 $\ = "\n";
 $, = ' ';
@@ -58,7 +59,7 @@ $, = ' ';
    # If number of arguments is out of range, bail:
    if ( @ARGV != 2 )
    {
-      warn "Error: \"preserve-case.pl\" requires 2 command-line arguments.";
+      warn "Error: \"substitute-while-preserving-case.pl\" requires 2 command-line arguments.";
       Help();
       exit 666;
    }
@@ -66,11 +67,10 @@ $, = ' ';
    my $Pat = $ARGV[0];
    my $Sub = $ARGV[1];
 
-   while (my $Line = <STDIN>)
-   {
-      winchomp $Line;
-      $Line =~ s/$Pat/TransferCase($&,$Sub)/ieg;
-      print $Line;
+   while (<STDIN>) {
+      s/\s+$//;
+      s/$Pat/TransferCase($&,$Sub)/ieg;
+      say;
    }
 
    # We be done, so scram:
@@ -79,7 +79,7 @@ $, = ' ';
 
 # Transfer case pattern from one string to another,
 # to the extent that the two strings overlap:
-sub TransferCase ($$)
+sub TransferCase :prototype($$)
 {
    my ($A, $B) = @_;
    # Limit case transfer to that part of $Left and $Right which overlap:
@@ -102,11 +102,12 @@ sub TransferCase ($$)
    return $B;
 }
 
-sub Help ()
+sub Help
 {
 print <<'END_OF_HELP';
-"preserve-case.pl" substitutes a given substitution string for
-case-insensitive matches to a given pattern string in a given set of target
+
+"substitute-while-preserving-case.pl" substitutes a given substitution string
+for case-insensitive matches to a given pattern string in a given set of target
 strings, preserving the case of the target strings to the maximum extent
 possible. Eg, "preserve-case.pl 'dog' 'cat'" would change Dog->Cat,
 dog->cat, DoGs to CaTs, etc.

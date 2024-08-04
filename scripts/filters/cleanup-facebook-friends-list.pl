@@ -6,7 +6,8 @@
 
 ##############################################################################################################
 # cleanup-facebook-friends-list.pl
-# Cleans up raw Facebook friends-list files.
+# Cleans up a Facebook "Friends" list copy-pasted to a text file from Facebook's regular web-page "Friends
+# list presentation (not from page source, which is limited to first 100 names).
 #
 # Written by Robbie Hatley on Monday April 14, 2015.
 #
@@ -19,78 +20,52 @@
 # Wed Dec 08, 2021: Reformatted titlecard.
 # Sat Sep 23, 2023: Upgraded Perl version from "v5.32" to "v5.36". Reduced width from 120 to 110. Got rid of
 #                   CPAN module common::sense (antiquated). Got rid of RH::Winchomp (unnecessary).
-# Wed Aug 02, 2024: Got rid of "use strict", "use warnings", and "use Sys::Binmode".
+# Fri Aug 02, 2024: Got rid of "use strict", "use warnings", and "use Sys::Binmode".
+# Sat Aug 03, 2024: Ditched "Unicode::Collate" in favor of "sort", as I want weird codepoints obvious.
+#                   Also, refactored to handle Facebook's new presentation (not source).
 ##############################################################################################################
 
 use v5.36;
 use utf8;
 
-use Unicode::Collate;
-
 my @unsorted;
 my @sorted;
 
 # Input and process text, reject some lines, clean and store others:
-LINE: while (<>) {
-   s/^\x{FEFF}//         ; # Get rid of leading BOM (if any).
-   s/\s+$//              ; # Get rid of trailing horizontal whitespace.
-   s/\v//g               ; # Get rid of all vertical whitespace.
+while (<>) {
+   s/^\x{FEFF}//                                   ; # Trim leading      BOM     (if any).
+   s/^\s+//                                        ; # Trim leading  white space (if any).
+   s/\s+$//                                        ; # Trim trailing white space (if any).
 
-   # Skip current line if it doesn't start with 4 or 8 spaces,
-   # followed by 1 or more non-space characters:
-   next LINE if !(m/^ {4}\S/ || m/^ {8}\S/);
+   next if m/^\s+$/                                ; # Skip "white"         lines.
+   next if m/^$/                                   ; # Skip "empty"         lines.
 
-   # Lines which start with 8 spaces are workplaces or homelands,
-   # so append these to previous line, after changing spaces to ', ',
-   # or skip if no previous,:
-   if (m/^ {8}\S+/) {
-      if (scalar(@unsorted) > 0) {
-         s/^ {8}/, /;
-         my $previous = pop(@unsorted);
-         $previous .= $_;
-         push @unsorted, $previous;
-      }
-      else {
-         warn
-            "Discarding this \"homeland\" / \"workplace\" line,\n".
-            "because there is no previous line to append it to:\n".
-            "$_\n";
-      }
-      next LINE;
-   }
+   next if m/mutual friend/                        ; # Skip "mutual friend" lines.
 
-   # If we get here, this line was not a "workplace" or "homeland" line,
-   # so we can get rid of any remaining leading whitespace:
-   s/^\s+//;
+   next if m/ at /                                 ; # Skip "employment"    lines.
+   next if m/Producer/                             ; # Skip "employment"    lines.
+   next if m/Kenyan Bytes/                         ; # Skip "employment"    lines.
 
-   # Remaining lines should now all be one of the following 7 forms:
+   next if m/School|College|University/            ; # Skip "education"     lines.
+   next if m/ High$/                               ; # Skip "education"     lines.
+   next if m/^Lycée /                              ; # Skip "education"     lines.
+   next if m/^[A-Z]{4}/                            ; # Skip "education"     lines.
+   next if m/Beroepsopleiding Iokai Shiatsu/       ; # Skip "education"     lines.
+   next if m/Pima CC/                              ; # Skip "education"     lines.
+   next if m/Frontier Central/                     ; # Skip "education"     lines.
+   next if m/מכון/                                  ; # Skip "education"     lines.
 
-   # Friend
-   # Close Friend
-   # Friends
-   # 1 friend
-   # 713 friends
-   # 12 mutual friends
-   # Ian Baltazar
-
-   # Lets skip this line if it's anything but a friend name:
-   next LINE if m/^Friend$/;
-   next LINE if m/^Close Friend$/;
-   next LINE if m/^Friends$/;
-   next LINE if m/^[\d,]+ friends$/;
-   next LINE if m/^1 friend$/;
-   next LINE if m/^[\d,]+ mutual friends$/;
+   next if m/, /                                   ; # Skip "location"      lines.
+   next if m/^Timbuktu$/                           ; # Skip "location"      lines.
+   next if m/^Ilesa$/                              ; # Skip "location"      lines.
 
    # If we get to here, lets assume this line is a friend name
    # and push it onto the right end of our array of unsorted names:
    push @unsorted, $_;
 }
 
-# Make collator:
-my $collator = Unicode::Collate->new();
-
-# Sort array:
-@sorted = $collator->sort(@unsorted);
+# Sort names:
+@sorted = sort @unsorted;
 
 # Print result:
 say for @sorted;

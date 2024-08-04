@@ -1,10 +1,10 @@
 #!/usr/bin/env -S perl -CSDA
 
-# This is a 120-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # sort-lines-by-unicode-collation-ascending.pl
 #
 # Written by Robbie Hatley on Wednesday June 24, 2015.
@@ -15,22 +15,23 @@
 # Sat Apr 16, 2016: Now using -CSDA.
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
-########################################################################################################################
+# Sun Aug 04, 2024: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". Added "use utf8".
+#                   Got rid of "common::sense" and "Sys::Binmode".
+##############################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
+use v5.36;
+use utf8;
+
 use Unicode::Collate;
-use RH::WinChomp;
 
-# ======= SUBROUTINE PRE-DECLARATIONS ==================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS ========================================================================
 
-sub argv             ;
-sub pre_process      ;
-sub process_line (_) ;
-sub help_msg         ;
+sub argv                       ;
+sub pre_process                ;
+sub process_line :prototype(_) ;
+sub help_msg                   ;
 
-# ======= MAIN BODY OF PROGRAM =========================================================================================
+# ======= MAIN BODY OF PROGRAM ===============================================================================
 
 MAIN:
 {
@@ -40,21 +41,17 @@ MAIN:
    exit 0;
 } # end MAIN
 
-# ======= SUBROUTINE DEFINITIONS =======================================================================================
+# ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub argv
-{
+sub argv {
    # If user wants help, just print help and bail:
-   if ( @ARGV > 0 && ( $ARGV[0] eq '-h' || $ARGV[0] eq '--help' ) )
-   {
+   if ( @ARGV > 0 && ( $ARGV[0] eq '-h' || $ARGV[0] eq '--help' ) ) {
       help_msg;
       exit 777;
    }
-
 }
 
-sub pre_process
-{
+sub pre_process {
    my $str = shift;
    #$str =~ s/\b(?:an?|the)\s+//gi;
    return $str;
@@ -62,15 +59,13 @@ sub pre_process
 
 # Chop-off BOM (if any) from start of line, and chop off
 # newlines (if any from ends of lines:
-sub process_line (_)
-{
-   remove_bom;           # Get rid of BOM (if any).
-   winchomp;             # Chomp-off newlines.
-   return $_;
+sub process_line :prototype(_) {
+   s/^\N{BOM}//; # Get rid of BOM (if any).
+   s/\s+$//;     # Chomp-off newlines.
+   return $_;    # Return result.
 }
 
-sub help_msg
-{
+sub help_msg {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to Robbie Hatley's Nifty unicode collation utility.
    This program unicode-sorts the lines of a file and prints the results to
