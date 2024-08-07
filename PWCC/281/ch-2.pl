@@ -106,35 +106,35 @@ sub octopus ($x) {
 
    # Arm 1:
    my $arm1 = [$coords->[0]+1,$coords->[1]+2];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm1)}
+   if (valid_coords($arm1)) {push @octopus, coords_to_alg($arm1)}
 
    # Arm 2:
    my $arm2 = [$coords->[0]+2,$coords->[1]+1];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm2)}
+   if (valid_coords($arm2)) {push @octopus, coords_to_alg($arm2)}
 
    # Arm 3:
    my $arm3 = [$coords->[0]+2,$coords->[1]-1];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm3)}
+   if (valid_coords($arm3)) {push @octopus, coords_to_alg($arm3)}
 
    # Arm 4:
    my $arm4 = [$coords->[0]+1,$coords->[1]-2];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm4)}
+   if (valid_coords($arm4)) {push @octopus, coords_to_alg($arm4)}
 
    # Arm 5:
    my $arm5 = [$coords->[0]-1,$coords->[1]-2];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm5)}
+   if (valid_coords($arm5)) {push @octopus, coords_to_alg($arm5)}
 
    # Arm 6:
    my $arm6 = [$coords->[0]-2,$coords->[1]-1];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm6)}
+   if (valid_coords($arm6)) {push @octopus, coords_to_alg($arm6)}
 
    # Arm 7:
    my $arm7 = [$coords->[0]-2,$coords->[1]+1];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm7)}
+   if (valid_coords($arm7)) {push @octopus, coords_to_alg($arm7)}
 
    # Arm 8:
    my $arm8 = [$coords->[0]-1,$coords->[1]+2];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm8)}
+   if (valid_coords($arm8)) {push @octopus, coords_to_alg($arm8)}
 
    # Return this monster to caller:
    return @octopus;
