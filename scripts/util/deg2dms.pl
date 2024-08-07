@@ -3,8 +3,6 @@
 # deg2dms.pl
 
 use v5.36;
-use strict;
-use warnings;
 
 my $deg_dec = $ARGV[0];
 my $deg_int = int $deg_dec;

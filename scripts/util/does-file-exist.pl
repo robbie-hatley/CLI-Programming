@@ -34,16 +34,15 @@ sub help  :prototype()  ;
 # Variables:
 my @paths; # Paths of files to check for existence.
 
-# Main body of program:
-{
+{ # begin main
    # Process @ARGV:
    argv;
 
    # Determine and print the existence or nonexistence of files at paths in @paths:
    for my $path (@paths) {
       -e encode_utf8($path)
-      and say "File exists: \"$path\""
-      or  say "Nonexistent: \"$path\""
+      and say "File exists:  \"$path\""
+      or  say "No such file: \"$path\""
    }
 
    # Exit program, returning success code "0" to caller:
@@ -52,7 +51,7 @@ my @paths; # Paths of files to check for existence.
 
 sub argv :prototype() () {
    # If user wants help, give help and exit:
-   for my $arg (@ARGV) {'-h' eq $arg || '--help' eq $arg and help and exit(777)}
+   /^-h$|^--help$/ and help and exit 777 for @ARGV;
 
    # If we get to here, store all arguments in @paths:
    @paths = @ARGV;
@@ -82,4 +81,4 @@ sub help :prototype() () {
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help_msg
+} # end sub help

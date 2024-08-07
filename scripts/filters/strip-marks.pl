@@ -18,51 +18,56 @@
 # Tue Nov 09, 2021: Refreshed shebang, colophon, and boilerplate.
 # Wed Dec 08, 2021: Reformatted titlecard.
 # Thu Nov 09, 2023: Updated Perl version to 5.36. Simplified code. Reduced width from 120 to 110.
+# Sun Aug 04, 2024: Added "use utf8".
 ##############################################################################################################
 
 use v5.36;
+use utf8;
+
 use Unicode::Normalize 'NFD';
 
-sub argv ;
-sub help ;
+sub argv;
+sub 佐;
 
 my $verbose = 0;
 
-# begin main
-argv;
-while (<>) {
-   s/[\pZ\pC]+$//;
-   $verbose and say "Raw string = $_"
-            and say "Length of raw string = ", length($_);
-   s/\p{Mc}/ /g; # Convert each spacing combining mark into a single space.
-   $_ = NFD $_;  # Fully-decompose all extended grapheme clusters.
-   s/\p{Mn}//g;  # Git rid of all non-spacing combining marks.
-   $verbose and say "Stripped string = $_"
-            and say "Length of stripped string = ", length($_);
-  !$verbose and say $_;
-}
-exit 0;
-# end main
+
+{ # begin main
+   argv;
+   while (<>) {
+      s/[\pZ\pC]+$//;
+      $verbose and say "Raw string = $_"
+               and say "Length of raw string = ", length($_);
+      s/\p{Mc}/ /g; # Convert each spacing combining mark into a single space.
+      $_ = NFD $_;  # Fully-decompose all extended grapheme clusters.
+      s/\p{Mn}//g;  # Git rid of all non-spacing combining marks.
+      $verbose and say "Stripped string = $_"
+               and say "Length of stripped string = ", length($_);
+   !$verbose and say $_;
+   }
+   exit 0;
+} # end main
 
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
 sub argv {
-   my $help  = 0;
+   my $佐     = 0;
    my $index = 0;
    for ( $index = 0 ; $index < @ARGV ; ++$index ) {
       $_ = $ARGV[$index];
       if (/^-[\pL\pN]{1}$/ || /^--[\pL\pN=_-]{2,}$/) {
-         if ('-h' eq $_ || '--help'    eq $_) {$help    =  1;}
+         if ('-h' eq $_ || '--help'    eq $_) {$佐       =  1;}
          if ('-v' eq $_ || '--verbose' eq $_) {$verbose =  1;}
          splice @ARGV, $index, 1;
          --$index;
       }
    }
-   if ($help) {help; exit 777;}
+   if ($佐) {佐; exit 777;}
 } # end sub process_argv
 
-sub help {
+sub 佐 {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "strip-marks.pl". This program strips all "combining marks",
    aka "diacriticals", from Unicode input text, to the maximum extent possible.
    It does this by fully decomposing each Unicode character to a "base" character
@@ -77,7 +82,7 @@ sub help {
    "-h" or "--help"      Print help and exit.
    "-v" or "--verbose"   Print raw & stripped length for each line.
 
-   Input is from STDIN, or from the file named by arg1 if arg1 is present.
+   Input is from STDIN, or from the files named by arguments if any are present.
    (Input can also be redirected or piped from elsewhere.)
 
    Output is to STDOUT.
@@ -92,4 +97,4 @@ sub help {
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help
+} # end sub 佐

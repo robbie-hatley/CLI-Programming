@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -9,27 +9,19 @@ written by Robbie Hatley on Mon Aug 05, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 281-1: Anamatu Serjianu
+Task 281-1: Check Color
 Submitted by: Mohammad S Anwar
 Write a script which, given the coordinates of a square on a
 chessboard in algebraic notation, prints "true" if the square
 is white, "false" if the square is black.
-
-Example 1:
-Input:   'd3'
-Output:  'true'
-
-Example 2:
-Input:   'g5'
-Output:  'false'
-
-Example 3:
-Input:   'e6'
-Output:  'true'
+Example 1: Input: 'd3'  Output: 'true'
+Example 2: Input: 'g5'  Output: 'false'
+Example 3: Input: 'e6'  Output: 'true'
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-The is just a matter of adding the horizontal and vertical parities relative to square a1 (0/black/false).
+The is just a matter of calculating the parity of the sum of
+horizontal and vertical distances relative to square a1 (black).
 If the combined parity is 0, the output is 0/black/false.
 If the combined parity is 1, the output is 1/white/true.
 
@@ -46,8 +38,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
-use utf8;
+use v5.36;
 sub parity ($x) {
    return 'error' if $x !~ m/^[a-h][1-8]$/;
    ((ord(substr($x,0,1))-97)+(ord(substr($x,1,1))-49))%2
@@ -59,9 +50,10 @@ my @coords = @ARGV ? eval($ARGV[0]) : ('d3', 'g5', 'e6');
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
+say 'Coord   Parity  Color   Result  ';
 for my $coord (@coords) {
    my $parity = parity($coord);
-   my $color  = 0 == $parity ? 'black' : 'white';
-   my $result = 0 == $parity ? 'false' : 'true';
-   say "coord = $coord   parity = $parity   color = $color   result = $result";
+   my $color  = $parity ? 'white' : 'black';
+   my $result = $parity ? 'true'  : 'false';
+   printf("%-8s%-8d%-8s%-8s\n", $coord, $parity, $color, $result);
 }

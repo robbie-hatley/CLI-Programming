@@ -2,3 +2,4 @@
 sudo umount /home/aragorn/net/CA/Skyport
 sudo umount /home/aragorn/net/CA/Avalon
 sudo umount /home/aragorn/net/CA/Jungle
+sudo umount /home/aragorn/net/CA/Lake
