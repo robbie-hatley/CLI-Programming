@@ -42,7 +42,6 @@ it to $start. I'll then process the itinerary for so long as its not empty by do
    7. Push each unvisited arm onto right of itinerary.
 After the queue empties, $squares{$end}->[1] should contain "minimum hops to get from start to end".
 
-
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
@@ -56,10 +55,10 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-# Insist on using Perl version "v5.40" or higher in order to get "inf":
+# Insist on using Perl version "v5.40" or higher in order to get "builtin::inf":
 use v5.40;
 
-# Allow experimental "inf", "nan":
+# Allow experimental "builtin::inf", "builtin::nan":
 use experimental 'builtin';
 
 # Use the "min" function from "List::Util":
@@ -83,7 +82,7 @@ sub alg_to_coords ($x) {
    return [ord(substr($x,0,1))-97,ord(substr($x,1,1))-49];
 }
 
-# Convert algebraic notation to 0-indexed coordinates:
+# Convert 0-indexed coordinates to algebraic notation:
 sub coords_to_alg ($x) {
    # Return "error" is $x aren't valid:
    return 'error' if !valid_coords($x);
@@ -104,44 +103,44 @@ sub octopus ($x) {
    my @octopus;
 
    # Add up to 8 arms to octopus:
-   my $arm;
 
    # Arm 1:
-   $arm = [$coords->[0]+1,$coords->[1]+2];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm)}
+   my $arm1 = [$coords->[0]+1,$coords->[1]+2];
+   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm1)}
 
    # Arm 2:
-   $arm = [$coords->[0]+2,$coords->[1]+1];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm)}
+   my $arm2 = [$coords->[0]+2,$coords->[1]+1];
+   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm2)}
 
    # Arm 3:
-   $arm = [$coords->[0]+2,$coords->[1]-1];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm)}
+   my $arm3 = [$coords->[0]+2,$coords->[1]-1];
+   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm3)}
 
    # Arm 4:
-   $arm = [$coords->[0]+1,$coords->[1]-2];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm)}
+   my $arm4 = [$coords->[0]+1,$coords->[1]-2];
+   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm4)}
 
    # Arm 5:
-   $arm = [$coords->[0]-1,$coords->[1]-2];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm)}
+   my $arm5 = [$coords->[0]-1,$coords->[1]-2];
+   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm5)}
 
    # Arm 6:
-   $arm = [$coords->[0]-2,$coords->[1]-1];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm)}
+   my $arm6 = [$coords->[0]-2,$coords->[1]-1];
+   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm6)}
 
    # Arm 7:
-   $arm = [$coords->[0]-2,$coords->[1]+1];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm)}
+   my $arm7 = [$coords->[0]-2,$coords->[1]+1];
+   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm7)}
 
    # Arm 8:
-   $arm = [$coords->[0]-1,$coords->[1]+2];
-   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm)}
+   my $arm8 = [$coords->[0]-1,$coords->[1]+2];
+   if (valid_coords($arm)) {push @octopus, coords_to_alg($arm8)}
 
    # Return this monster to caller:
    return @octopus;
 }
 
+# What is the minimum number of hops for a chess knight to get from point A to point B?
 sub min_hops ($start, $end) {
    # Abort if start or end points are not valid algebraic coordinates on a chess board:
    return 'error' if $start !~ m/^[a-h][1-8]$/;
