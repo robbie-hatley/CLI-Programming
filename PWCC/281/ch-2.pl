@@ -9,8 +9,8 @@ written by Robbie Hatley on Mon Aug 05, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 281-2: Anamatu Serjianu
-Submitted by: Mohammad S Anwar
+Task 281-2: Knight’s Move
+Submitted by: Peter Campbell Smith
 Write a script which calculates the minimum number of moves for
 a knight to get from one square to another on a chess board,
 given the start and end locations in algebraic notation.
