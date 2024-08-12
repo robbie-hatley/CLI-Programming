@@ -2267,6 +2267,7 @@ sub get_correct_suffix :prototype($) ($path) {
       'PNG' eq substr($buffer,1,3)                         and return '.png'  ; # PNG (Portable Network Grph.)
       'Rar' eq substr($buffer,0,3)                         and return '.rar'  ; # RAR (compressed archive)
       'WAVEfmt' eq substr($buffer,8,7)                     and return '.wav'  ; # WAV (lossless sound)
+      'WEBP' eq substr($buffer,8,4)                        and return '.webp' ; # WEBP (photo or video)
       pack('C[16]',  48,  38, 178, 117, 142, 102, 207,  17,
                     166, 217,   0, 170,   0,  98, 206, 108)
          eq substr($buffer,0,16)                           and return '.wma'  ; # WMA (Windows Media Audio)
