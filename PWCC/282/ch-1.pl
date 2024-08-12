@@ -39,7 +39,7 @@ complying matches.
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of double-quoted positive integers, in proper Perl syntax, like so:
-./ch-1.pl '("29554449377724","12223444456663388899999")'
+./ch-1.pl '("29554449377724888886610","12223444456663388899999")'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -51,10 +51,9 @@ Output is to STDOUT and will be each input followed by the corresponding output.
    use v5.36;
    sub good_ints ($x) {
       my @gi = ();
-      while ($x =~ m/(.)\1\1/g) {
-            substr($`,-1,1) ne $1
-         && substr($',0,1)  ne $1
-         and push @gi, $&
+      while ($x =~ m/(.)\1+/g) {
+         next unless 3 == length $&;
+         push @gi, $&;
       }
       !@gi and push @gi, -1;
       @gi
