@@ -63,7 +63,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
 my @ints = @ARGV ? eval($ARGV[0]) : ("12344456","1233334","10020003");
-#                  Expected output:     444      -1       000
+#                  Expected output:      444       -1          000
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
