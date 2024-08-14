@@ -45,19 +45,13 @@
 #                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
 #                   Removed "no debug" option as that's already default in all of my programs.
 #                   Changed short option for debugging from "-e" to "-d".
+# Wed Aug 14, 2024: Simplified by removing unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
-
-use RH::Util;
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
