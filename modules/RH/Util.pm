@@ -44,6 +44,7 @@ use Encode         qw( :DEFAULT encode decode :fallbacks :fallback_all );
 use parent         qw( Exporter                                        );
 use POSIX          qw( floor ceil strftime                             );
 use Term::ReadKey  qw( ReadMode ReadKey                                );
+use Carp           qw( carp croak confess longmess shortmess           );
 
 # Subroutine prototypes and descriptions:
 sub round_to_int          :prototype($)  ; # Round any real number to the nearest integer.
@@ -54,6 +55,7 @@ sub is_iso_8859_1         :prototype($)  ; # Does a given string appear to be IS
 sub is_utf8               :prototype($)  ; # Does a given string appear to be UTF-8?
 sub extract_digits        :prototype($)  ; # Return just the digits (if any) from the input.
 sub eight_rand_lc_letters :prototype()   ; # Return string of 8 random lower-case letters.
+sub confess_test          :prototype($)  ; # Test of "confess"
 
 # Symbols to be exported by default:
 our @EXPORT =
@@ -61,7 +63,7 @@ our @EXPORT =
    (
       round_to_int            rand_int                get_character
       is_ascii                is_iso_8859_1           tc
-      extract_digits          eight_rand_lc_letters
+      extract_digits          eight_rand_lc_letters   confess_test
    );
 
 # Turn-on debugging?
@@ -191,6 +193,14 @@ sub extract_digits :prototype($) ($string) {
 # Return a string of 8 random lower-case English letters:
 sub eight_rand_lc_letters :prototype() {
    return join '', map {chr(rand_int(97, 122))} (1..8);
+}
+
+# Test "confess":
+sub confess_test :prototype($) ($x) {
+   if (7 == $x) {
+      say longmess("Pete");
+      confess("AARRGGHH!!");
+   }
 }
 
 1;
