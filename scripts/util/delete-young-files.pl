@@ -5,9 +5,9 @@
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
-# delete-old-files.pl
+# delete-young-files.pl
 # Deletes all regular files in the current directory (and all subdirectories if a -r or --recurse option is
-# used) which were modified more than a given time (in days) ago (default is 365.2422 days).
+# used) which were modified less than a given time (in days) ago (default is 365.2422 days).
 #
 # This program skips all directory entries with names "." or ".." or suffixes "*.db", "*.ini", and "*.jbf",
 # all names which don't point to something that exists, and all files which are directories or link or aren't
@@ -15,16 +15,7 @@
 # least one of those regexps.
 #
 # Edit history:
-# Thu Apr 01, 2021: Wrote first draft.
-# Fri Apr 02, 2021: Made maximum age user-specifiable, and made regexps require delimiters so that qr options
-#                   can be used. Also cleaned-up some comments and formatting.
-# Thu Jun 24, 2021: Changed default age to 365.2422 days and added clarifying comments to curfile($).
-# Tue Nov 16, 2021: Now using common::sense, and now using extended regexp sequences instead of delimiters.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "Sys::Binmode".
-# Fri Dec 03, 2021: Now using just 1 regexp. (Use alternation instead of multiple regexps.)
-# Thu Aug 15, 2024: Narrowed from 120 to 110; upgraded from "v5.32" to "v5.36"; restructured all prototypes;
-#                   added signatures to all subroutines; got rid of unnecessary "use" statements;
-#                   got rid of "$Db"; changed simulation option from "-e"/"--emulate "to "-s"/"--simulate".
+# Thu Aug 15, 2024: Wrote it, based heavily on existing program "delete-old-files.pl".
 ##############################################################################################################
 
 use v5.36;
@@ -51,7 +42,7 @@ my $Recurse  = 0          ; # Recurse subdirectories?          bool      0 (don'
 my $Simulate = 0          ; # Simulate and print diagnostics?  bool      0 (don't simulate)
 my $RegExp   = qr/^.+$/o  ; # Regular Expression.              regexp    qr/^.+$/o (matches all strings)
 my $Yes      = 0          ; # Proceed without prompting?       bool      prompt
-my $Limit    = 365.2422   ; # Maximum age in days.             float     365.2422 days
+my $Limit    = 365.2422   ; # Minimum age in days.             float     365.2422 days
 
 # Counters:
 my $direcount = 0; # Count of directories processed.
@@ -79,7 +70,7 @@ my $failcount = 0; # Count of file deletion failures.
                    say 'WARNING: THIS PROGRAM WILL DELETE ALL TARGETED FILES';
       $Recurse and say 'IN THE CURRENT DIRECTORY AND IN ALL OF ITS SUBDIRECTORIES'
                or  say 'IN THE CURRENT DIRECTORY';
-                   say "WHICH HAVE NOT BEEN MODIFIED IN OVER $Limit DAYS.";
+                   say "WHICH WERE MODIFIED LESS THAN $Limit DAYS AGO.";
                    say 'ARE YOU SURE THAT THIS IS WHAT YOU REALLY WANT TO DO???';
                    say 'PRESS "&" (SHIFT-7) TO CONTINUE OR ANY OTHER KEY TO ABORT.';
       my $char = get_character;
@@ -185,12 +176,12 @@ sub curfile :prototype($) ($file) {
       return 1;
    }
 
-   # Get max age in seconds. ("$Limit" is in days, defaulting to 365.2422 days, so we need to convert.
+   # Get min age in seconds. ("$Limit" is in days, defaulting to 365.2422 days, so we need to convert.
    # Seconds-per-day = 86400.)
-   my $max_seconds = $Limit * 86400;
+   my $min_seconds = $Limit * 86400;
 
-   # Skip this file if its age is less-than-or-equal-to our age limit:
-   if ($age <= $max_seconds) {
+   # Skip this file if its age is greater-than-or-equal-to our age limit:
+   if ($age >= $min_seconds) {
       ++$skipcount;
       return 1;
    }
@@ -214,23 +205,23 @@ sub curfile :prototype($) ($file) {
 } # end sub curfile
 
 sub stats :prototype() () {
-   print STDOUT "\nStatistics for program \"delete-old-files.pl\":\n";
+   print STDOUT "\nStatistics for program \"delete-young-files.pl\":\n";
    if ($Simulate)
    {
       print STDOUT
       "Note: This program was run in simulation mode,\n",
       "so no deletions were actually performed.\n",
       "Navigated $direcount directories.\n",
-      "Skipped $skipcount hidden, meta, and young files.\n",
-      "Simulated $simucount old-file deletions.\n",
+      "Skipped $skipcount hidden, meta, and elder files.\n",
+      "Simulated $simucount young-file deletions.\n",
    }
    else
    {
       print STDOUT
       "Navigated $direcount directories.\n",
-      "Skipped $skipcount hidden, meta, and young files.\n",
-      "Attempted to delete $attecount old files.\n",
-      "Successfully deleted $delecount old files.\n",
+      "Skipped $skipcount hidden, meta, and elder files.\n",
+      "Attempted to delete $attecount young files.\n",
+      "Successfully deleted $delecount young files.\n",
       "Failed $failcount file deletion attempts.\n";
    }
    return 1;
@@ -251,9 +242,9 @@ sub help :prototype() () {
 
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Intro:
-   Welcome to "delete-old-files.pl", Robbie Hatley's old-file-deletion program.
+   Welcome to "delete-young-files.pl", Robbie Hatley's young-file-deletion program.
    Deletes all files in the current directory (and all subdirectories, if a -r or
-   --recurse option is used) which were modified more than a given time ago in
+   --recurse option is used) which were modified less than a given time ago in
    days. (The default age limit is 365.2422 days.)
 
    This program skips all nonexistent, hidden, meta (suffixes ".db", ".ini",
@@ -268,7 +259,7 @@ sub help :prototype() () {
    mode.
 
    Command line:
-   delete-old-files.pl [options] [arguments]
+   delete-young-files.pl [options] [arguments]
 
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Description of options:
@@ -303,10 +294,10 @@ sub help :prototype() () {
    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Example program invocation:
    To delete all files with "cat", "dog", or "horse" (title-cased or not) in
-   their names, in any subdirectory, which are older than 275 days, type this:
-   delete-old-files.pl -ry --age=275 '(?i:c)at|(?i:d)og|(?i:h)orse'
+   their names, in any subdirectory, which are younger than 275 days, type this:
+   delete-young-files.pl -ry --age=275 '(?i:c)at|(?i:d)og|(?i:h)orse'
 
-   Happy old-file deleting!
+   Happy young-file deleting!
    Cheers,
    Robbie Hatley,
    programmer.

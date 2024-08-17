@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -31,19 +31,13 @@
 #                   now printed only if being verbose. Entry/stats/exit are to STDERR and header and dir info
 #                   are to STDOUT. $direcount, $filecount, and $gigacount now count only directories and files
 #                   which obey the restrictions imposed by $RegExp, $Empty, $GB, and $Files. Improved help.
+# Wed Aug 14, 2024: Removed unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-use experimental 'switch';
-
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
-
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================

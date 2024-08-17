@@ -1,12 +1,12 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
 # This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
 # "replace-dolphin-directory-files.pl"
-# For the current directory and all subdirectories (unless a -l or --local option is used), replace all
+# For the current directory (and all subdirectories if a -r or --recurse option is used), replace all
 # Dolphin ".directory" files with versions which are appropriate for the contents of the directory.
 # Make sure that directories which contain 1-or-more picture files (jpg, jpeg, bmp, png, apng, gif, tif,
 # tiff) have a "thumbnails" or ctrl-1 ".directory" file, and all other directories should have a "details"
@@ -32,19 +32,14 @@
 #                   Removed "no debug" option as that's already default in all of my programs.
 #                   Variable "$Verbose" now means "print per-file info", and default is to NOT do that.
 #                   STDERR = "stats and serious errors". STDOUT = "files erased/copied, and dirs if verbose".
+# Thu Aug 15, 2024: -C63; got rid of unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-use Sys::Binmode;
-use Cwd;
+use Cwd 'getcwd';
 use Time::HiRes 'time';
 use Sys::Hostname;
-
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================

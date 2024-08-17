@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
 # This is a 110-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -94,19 +94,15 @@
 #                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
 #                   Removed "no debug" option as that's already default in all of my programs.
 #                   Changed short option for debugging from "-e" to "-d".
+# Wed Aug 14, 2024: Removed unnecessary "use" statements. Changed short option for debug from "-d" to "-e".
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
-
-use RH::Util;
 use RH::Dir;
+use RH::Util;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
@@ -248,7 +244,7 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/      and help and exit 777;
-      /^-$s*d/ || /^--debug$/     and $Db = 1;
+      /^-$s*e/ || /^--debug$/     and $Db = 1;
       # NOTE: There are no verbosity controls here because this program requires maximum verbosity, always,
       # because of its inherently highly-interactive nature.
       /^-$s*l/ || /^--local$/     and $Recurse = 0;
@@ -736,7 +732,7 @@ sub help {
 
    Option:             Meaning:
    -h or --help        Print help and exit.
-   -d or --debug       Print diagnostics and simulate renames.
+   -e or --debug       Print diagnostics and simulate renames.
    -l or --local       DON'T recurse subdirectories. (DEFAULT)
    -r or --recurse     DO    recurse subdirectories.
    -s or --spotlight   Enter Spotlight mode (erase gibberish names).

@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -15,12 +15,11 @@
 #                   work now. Also, simplified dir names, and now moving to 2021 instead of 2020.
 # Fri Jan 29, 2021: Now also renames and files-away screenshots in appropriate year/month directories.
 # Sat Feb 13, 2021: Simplified. Now an ASCII file. No-longer uses -CSDA. Runs on all Perl versions.
-# Sat Jul 31, 2021: Now a UTF-8-encoded file. Now 120 characters wide. Now using "use utf8",
-#                   "use Sys::Binmode", and e.
+# Sat Jul 31, 2021: File is now UTF-8, 120 characters wide. Now using "use utf8", "use Sys::Binmode", and e.
 # Wed Oct 27, 2021: Added Help() function.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate. Now using "common::sense".
 # Thu Nov 25, 2021: Fixed regexp bug that was causing program to find no files. Added timestamping.
-# Fri Nov 26, 2021: Fixed yet another regexp bug; this one was causing program to refuse to file files by date.
+# Fri Nov 26, 2021: Fixed yet another regexp bug (program was refusing to file files by date).
 # Thu Aug 17, 2023: Reduced width from 120 to 110. Upgraded from "V5.32" to "v5.36". Got rid of CPAN module
 #                   "common::sense" (antiquated). Got rid of prototypes. Program is very broken, though,
 #                   because it's trying to use directories which don't exist. TO-DO: Fix dirs.
@@ -29,23 +28,15 @@
 # Fri Aug 25, 2023: Now calls "rename-toontown-images.pl" in "verbose" mode.
 #                   Now expressing execution time in seconds, to nearest millisecond.
 # Mon Aug 28, 2023: Changed all "$db" to "$Db". Now using "d getcwd" instead of "cwd_utf8".
+# Wed Aug 14, 2024: Removed unnecessary "use" statements.
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
 
-# Pragmas:
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-# CPAN modules:
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
-
-# Homebrew modules:
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================

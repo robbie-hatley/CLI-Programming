@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -27,20 +27,16 @@
 #                   Stats now always print to STDERR. Got rid of "quiet" and "verbose" options.
 #                   Instead, I'm now using STDERR for messages, stats, diagnostics, STDOUT for dirs/files.
 # Wed Jul 31, 2024: Added both :prototype() and signatures () to all subroutines.
+# Thu Aug 15, 2024: -C63; Width 120->110; erased unnecessary "use ..."; added protos & sigs to all subs.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-use Sys::Binmode;
-use Cwd;
+use Cwd 'getcwd';
 use Time::HiRes 'time';
 use File::Type;
-
 use RH::Dir;
+
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
@@ -56,7 +52,7 @@ sub help    :prototype()  ;
 # Settings:     Defaults:   # Meaning of setting:         Range:    Meaning of default:
 my $Db        = 0         ; # Debug?                      bool      Don't debug.
 my $Recurse   = 0         ; # Recurse subdirectories?     bool      Don't recurse subdirectories.
-my $Regexp    = qr/^.+$/o ; # Process which file names?   regexp    Process files of all names.
+my $RegExp    = qr/^.+$/o ; # Process which file names?   regexp    Process files of all names.
 
 # Event counters:
 my $direcount = 0; # Count of directories processed.
@@ -77,7 +73,7 @@ my $failcount = 0; # Count of failed file-rename attempts.
    say STDERR "Now entering program \"$pname\".";
    say STDERR "\$Db      = \"$Db\".";
    say STDERR "\$Recurse = \"$Recurse\".";
-   say STDERR "\$Regexp  = \"$Regexp\".";
+   say STDERR "\$RegExp  = \"$RegExp\".";
 
    $Recurse and RecurseDirs {curdire} or curdire;
 
@@ -90,7 +86,7 @@ my $failcount = 0; # Count of failed file-rename attempts.
 
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
-# Process arguments:
+# Process @ARGV:
 sub argv :prototype() () {
    # Get options and arguments:
    my @opts = ();            # options
@@ -111,12 +107,11 @@ sub argv :prototype() () {
 
    # Process options:
    for ( @opts ) {
-      /^-$s*h/ || /^--help$/    and help() and exit(777) ;
-      /^-$s*e/ || /^--debug$/   and $Db      =  1        ;
-      /^-$s*l/ || /^--local$/   and $Recurse =  0        ;
-      /^-$s*r/ || /^--recurse$/ and $Recurse =  1        ;
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
    }
-
 
    # If debugging, print the options and arguments:
    if ( $Db ) {
@@ -125,13 +120,11 @@ sub argv :prototype() () {
       say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
    }
 
-   # Get number of arguments:
-   my $NA = scalar(@args);
-
-   # Process arguments based on number of arguments given:
+   # Process arguments:
+   my $NA = scalar(@args);      # Get number of arguments.
                                 # If number of arguments == 0, do nothing.
    $NA >= 1                     # If number of arguments >= 1,
-   and $Regexp = qr/$args[0]/o; # set $Regexp.
+   and $RegExp = qr/$args[0]/o; # set $RegExp.
    $NA >= 2 && !$Db             # If number of arguments >= 2 and we're not debugging,
    and error($NA)               # print error message,
    and help                     # and print help message,
@@ -144,11 +137,11 @@ sub argv :prototype() () {
 # Process current directory:
 sub curdire :prototype() () {
    ++$direcount;
-   my $curdir = d cwd;
+   my $curdir = d getcwd;
    say STDOUT '';
    say STDOUT "Directory # $direcount: $curdir";
    say STDOUT '';
-   my @paths = glob_regexp_utf8($curdir, 'F', $Regexp);
+   my @paths = glob_regexp_utf8($curdir, 'F', $RegExp);
    for my $path (@paths) {
       next unless is_data_file($path);
       curfile $path;
@@ -158,18 +151,18 @@ sub curdire :prototype() () {
 
 # Process current file:
 sub curfile :prototype($) ($old_path) {
-   # Increment file counter:
    ++$filecount;
+   my $old_name  = get_name_from_path($old_path);
+   my $old_dir   = get_dir_from_path ($old_path);
+   my $old_pref  = get_prefix        ($old_name);
+   my $new_suff  = get_correct_suffix($old_path);
 
-   # Get old name and new suffix:
-   my $old_name = get_name_from_path($old_path);
-   my $new_suff = get_correct_suffix($old_path);
-
-   # Increment "unknown-type" counter if new suffix is '.unk', else increment "known-type" counter:
+   # If new suffix is '.unk', increment $unkncount, otherwise increment $typecount:
    $new_suff eq '.unk' and ++$unkncount or ++$typecount;
 
-   # Make new name:
-   my $new_name = get_prefix($old_name) . $new_suff;
+   # Make new name and path:
+   my $new_name = $old_pref . $new_suff;
+   my $new_path = path($old_dir, $new_name);
 
    # Increment "same" counter if new name is same as old name, else increment "different" counter:
    $new_name eq $old_name and ++$samecount or  ++$diffcount;
@@ -178,11 +171,14 @@ sub curfile :prototype($) ($old_path) {
    if ($Db) {
       say STDERR '';
       say STDERR "In \"set-suffixes.pl\", in curfile, after setting variables.";
-      say STDERR "\$old_path  = \"$old_path\"";
-      say STDERR "\$filecount = \"$filecount\"";
-      say STDERR "\$old_name  = \"$old_name\"";
-      say STDERR "\$new_suff  = \"$new_suff\"";
+      say STDERR "\$filecount = \"$filecount\".";
+      say STDERR "\$old_path  = \"$old_path\".";
+      say STDERR "\$old_dir   = \"$old_dir\".";
+      say STDERR "\$old_name  = \"$old_name\".";
+      say STDERR "\$old_pref  = \"$old_pref\".";
+      say STDERR "\$new_suff  = \"$new_suff\".";
       say STDERR "\$new_name  = \"$new_name\".";
+      say STDERR "\$new_path  = \"$new_path\".";
       say STDERR "old and new names are SAME"      if $new_name eq $old_name;
       say STDERR "old and new names are DIFFERENT" if $new_name ne $old_name;
       say STDERR '';
@@ -197,7 +193,7 @@ sub curfile :prototype($) ($old_path) {
    # Otherwise, announce that old name is incorrect and attempt rename:
    else {
       print STDOUT "Incorrect: \"$old_name\" => \"$new_name\"";
-      rename_file($old_name, $new_name)
+      rename_file($old_path, $new_path)
       and ++$renacount
       and say STDOUT " (rename succeeded)"
       and return 1
@@ -265,7 +261,7 @@ sub help :prototype() () {
    rename the file to "cat.jpg".
 
    Note that this program DOES alter the names of files. To just DISPLAY the
-   correct file names, use my program "set-suffixes.pl" instead.
+   correct file names, use my program "get-suffixes.pl" instead.
 
    -------------------------------------------------------------------------------
    Command lines:
@@ -321,4 +317,3 @@ sub help :prototype() () {
    END_OF_HELP
    return 1;
 } # end sub help
-__END__

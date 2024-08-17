@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -26,25 +26,20 @@
 # Sat Dec 04, 2021: Fixed minor error in titlecard ("wildcard"->"regexp").
 # Tue Oct 03, 2023: Reduced width from 120 to 110. Upgraded from "v5.32" to "v5.36". Got rid of CPAN module
 #                   "common::sense" (antiquated). Now using "d getcwd" instead of "cwd_utf8".
+# Thu Aug 15, 2024: -C63; erased unnecessary "use" statements; put protos & sigs on all subs.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
-
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub process_argv ;
-sub error_msg    ;
-sub help_msg     ;
+sub argv  :prototype()  ;
+sub error :prototype($) ;
+sub help  :prototype()  ;
 
 # ======= PAGE-GLOBAL LEXICAL VARIABLES: =====================================================================
 
@@ -62,10 +57,10 @@ my @CopyArgs  = (); # Arguments for copy_files().
 { # begin main
    say "\nNow entering program \"" . get_name_from_path($0) . "\".\n";
    my $t0 = time;
-   process_argv;
+   argv;
    if ($db) {
       warn "In main body of program \"copy-files.pl\"\n",
-           "Just ran process_argv().\n",
+           "Just ran argv().\n",
            "\$src = \"$src\"\n",
            "\$dst = \"$dst\"\n",
            "\@CopyArgs = \n",
@@ -99,7 +94,7 @@ my @CopyArgs  = (); # Arguments for copy_files().
 
 # ======= SUBROUTINE DEFINITIONS: ============================================================================
 
-sub process_argv {
+sub argv :prototype() () {
    my @CLArgs   = ();     # Command-Line Arguments from @ARGV (not including options).
 
    if ($db)
@@ -113,7 +108,7 @@ sub process_argv {
    {
       if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
       {
-            if ( '-h' eq $_ || '--help'   eq $_ ) {help_msg; exit(777)     ;}
+            if ( '-h' eq $_ || '--help'   eq $_ ) {help ; exit(777)        ;}
          elsif ( '-S' eq $_ || '--sl'     eq $_ ) {push @CopyArgs, 'sl'    ;}
          elsif ( '-s' eq $_ || '--sha1'   eq $_ ) {push @CopyArgs, 'sha1'  ;}
          elsif ( '-u' eq $_ || '--unique' eq $_ ) {push @CopyArgs, 'unique';}
@@ -125,7 +120,7 @@ sub process_argv {
       }
    }
    my $NA = scalar(@CLArgs);
-   if ( $NA < 2 || $NA > 3 ) {error_msg($NA); help_msg; exit(666);}
+   if ( $NA < 2 || $NA > 3 ) {error($NA) ; help ; exit(666)}
    $src = $CLArgs[0];
    $dst = $CLArgs[1];
    if ( ! -e e $src ) {die "Error: $src doesn't exist.    \n";}
@@ -146,11 +141,11 @@ sub process_argv {
    }
 
    return 1;
-} # end sub process_argv
+} # end sub argv
 
-sub error_msg {
-   my $NA = shift;
+sub error :prototype($) ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: \"copy-files.pl\" takes 2 mandatory arguments (which must be paths to
    a source directory and a destination directory), and 1 optional argument
    (which, if present, must be a regular expression specifying which files to
@@ -158,10 +153,11 @@ sub error_msg {
 
    END_OF_ERROR
    return 1;
-} # end sub error_msgr
+} # end sub error
 
-sub help_msg {
+sub help :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "copy-files.pl", Robbie Hatley's nifty file-copying utility.
    This program copies all files matching a regexp from a source directory
    (let's call it "dir1") to a destination directory (let's call it "dir2"),

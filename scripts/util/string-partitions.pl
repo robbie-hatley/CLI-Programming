@@ -1,12 +1,6 @@
 #!/usr/bin/perl
-
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-use Sys::Binmode;
-
 $, = ' ';
 
 sub string_partitions ($string) {
@@ -41,7 +35,3 @@ for (@ARGV)
       say @$_;
    }
 }
-
-exit;
-
-__END__

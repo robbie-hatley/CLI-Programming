@@ -1,10 +1,10 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # file-attributes.pl
 # Prints attributes of the file (if any) at path ARGV[0].
 #
@@ -13,29 +13,30 @@
 # Fri Jul 17, 2015: Upgraded for utf8.
 # Sat Apr 16, 2016: Now using -CSDA.
 # Mon Dec 18, 2017: Improved comments and help and error messages.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-########################################################################################################################
+# Sat Nov 20, 2021: Now using "common::sense" and "Sys::Binmode".
+# Thu Aug 15, 2024: Width 120->110, upgraded from "v5.32" to "v5.36", removed unnecessary "use" statements.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
+# ======= PRAGMAS AND MODULES: ===============================================================================
 
+use v5.36;
+use utf8;
+use Cwd 'cwd';
 use POSIX 'floor', 'ceil', 'strftime';
-
 use RH::Util;
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS ==================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub process_argv          ();
-sub print_file_attributes (_);
-sub help                  ();
+sub process_argv          :prototype();
+sub print_file_attributes :prototype(_);
+sub help                  :prototype();
 
-# ======= GLOBAL VARIABLES =============================================================================================
+# ======= GLOBAL VARIABLES: ==================================================================================
 
 my @Paths; # Paths of files to give attributes for.
 
-# ======= MAIN BODY OF PROGRAM =========================================================================================
+# ======= MAIN BODY OF PROGRAM: ==============================================================================
 
 {
    process_argv;
@@ -43,12 +44,11 @@ my @Paths; # Paths of files to give attributes for.
    exit 0;
 }
 
-# ======= SUBROUTINE DEFINITIONS =======================================================================================
+# ======= SUBROUTINE DEFINITIONS: ============================================================================
 
-sub process_argv ()
-{
+sub process_argv :prototype() () {
    my $help;
-   my $cwd  = cwd_utf8;
+   my $cwd  = d cwd;
    foreach (@ARGV)
    {
       if (/^-[\pL\pN]{1}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
@@ -62,11 +62,9 @@ sub process_argv ()
    }
    if ($help) {help; exit 777;}
    return 1;
-} # end sub process_argv ()
+} # end sub process_argv
 
-sub print_file_attributes (_)
-{
-   my $path = shift;
+sub print_file_attributes :prototype(_) ($path) {
    my $name = get_name_from_path($path);
 
    # Get current file's info, using lstat instead of stat, so that for
@@ -109,11 +107,11 @@ sub print_file_attributes (_)
    printf("Socket?        %s\n", (-S e $path) ? 'Yes' : 'No');
    printf("TTY?           %s\n", (-t e $path) ? 'Yes' : 'No');
    return 1;
-} # end sub print_file_attributes (_)
+} # end sub print_file_attributes
 
-sub help ()
-{
+sub help :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "file-attributes.pl", Robbie Hatley's nifty program for
    displaying file attributes.
 
@@ -129,4 +127,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help

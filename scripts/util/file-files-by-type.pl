@@ -1,15 +1,15 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # file-files-by-type.pl
-# Moves files from current directory into appropriate subdirectories of the current directory (by default), or of the
-# parent directory (if a "--one" or "-1" option is used), or of the grandparent directory (if a "--two" or "-2" option
-# is used), based on file name extension. If the appropriate subdirectory does not exist, it will be created. If a file
-# of the same name exists, the moved file will be enumerated.
+# Moves files from current directory into appropriate subdirectories of the current directory (by default),
+# or of the parent directory (if a "--one" or "-1" option is used), or of the grandparent directory (if a
+# "--two" or "-2" option is used), based on file name extension. If the appropriate subdirectory does not
+# exist, it will be created. If a file of the same name exists, the moved file will be enumerated.
 #
 # Edit history:
 # Wed Nov 28, 2018: Started writing it.
@@ -18,29 +18,23 @@
 # Fri Jul 19, 2019: Fixed minor formatting & comments issues, and added "~" to here-document in help().
 # Tue Feb 16, 2021: Now using new GetFiles().
 # Fri Mar 19, 2021: Now using Sys::Binmode.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; now using "common::sense" (for a change).
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; now using "common::sense".
 # Fri Aug 19, 2022: Added "-0", "-1", "-2" options and corrected description above and help() below to match.
-#                   Also changed the if-pile in curfile() to a given(). Also removed annoying duplication of success
-#                   and/or failure messages, by erasing those messages from THIS script so that the equivalent messages
-#                   in move_file() in RH::Dir will be the only ones printed.
+#                   Also changed the if-pile in curfile() to a given(). Also removed annoying duplication of
+#                   success and/or failure messages, by erasing those messages from THIS script so that the
+#                   equivalent messages in move_file() in RH::Dir will be the only ones printed.
 # Tue Jul 30, 2024: Fixed many new bugs which cropped-up due to changes from Perl v5.32 to Perl v5.36.
 # Wed Jul 31, 2024: Added both :prototype() and signatures () to all subroutines.
-########################################################################################################################
+# Thu Aug 15, 2024: -C63; Width 120->110; erased unnecessary "use ..."; added protos & sigs to all subs.
+##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-use Sys::Binmode;
-use Cwd;
+use Cwd 'getcwd';
 use Time::HiRes 'time';
-
-
 use RH::Dir;
 
-# ======= SUBROUTINE PRE-DECLARATIONS ==================================================================================
+# ======= SUBROUTINE PRE-DECLARATIONS ========================================================================
 
 sub argv    :prototype()  ;
 sub curdire :prototype()  ;
@@ -48,7 +42,7 @@ sub curfile :prototype($) ;
 sub stats   :prototype()  ;
 sub help    :prototype()  ;
 
-# ======= GLOBAL VARIABLES =============================================================================================
+# ======= GLOBAL VARIABLES ===================================================================================
 
 # Settings:
 my $Db        = 0;     # Print diagnostics and don't actually move files?
@@ -60,7 +54,7 @@ my $filecount = 0;     # Count of files processed by curfile().
 my $succcount = 0;     # Count of files successfully filed-away.
 my $failcount = 0;     # Count of files we couldn't file-away.
 
-# ======= MAIN BODY OF PROGRAM =========================================================================================
+# ======= MAIN BODY OF PROGRAM ===============================================================================
 
 { # begin main
    my $t0 = time;
@@ -80,7 +74,7 @@ my $failcount = 0;     # Count of files we couldn't file-away.
    exit 0;
 } # end main()
 
-# ======= SUBROUTINE DEFINITIONS =======================================================================================
+# ======= SUBROUTINE DEFINITIONS =============================================================================
 
 # Process arguments:
 sub argv :prototype() () {
@@ -135,11 +129,7 @@ sub argv :prototype() () {
 
 # Process current directory:
 sub curdire :prototype() () {
-
-   my $curdir = d cwd;
-
-
-
+   my $curdir = d getcwd;
    my @paths = glob_regexp_utf8($curdir, 'F', $Regexp);
    for my $path (@paths) {
       next unless is_data_file($path);

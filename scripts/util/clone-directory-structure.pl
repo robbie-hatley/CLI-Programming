@@ -1,10 +1,10 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # Welcome to script file "clone-directory-structure.pl".
 # This program clones the directory structure of a source directory to an empty destination directory.
 #
@@ -14,20 +14,20 @@
 # Sat Apr 16, 2016: Now using -CSDA.
 # Sat Jan 02, 2021: Simplified and updated.
 # Sat Jan 16, 2021: Refactored. Now using indented here documents.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
 # Thu Nov 25, 2021: Renamed to "for-each-directory-in-tree.pl" to avoid confusion with other programs.
 #                   Shortened subroutine names. Added time stamping.
 # Wed Feb 08, 2023: Forked a copy of "clone-directory-structure.pl" to "/d/rhe/PWCC/203/ch-2.pl".
-########################################################################################################################
+# Wed Aug 14, 2024: Removed unnecessary "use" statements; -C63; width from 120 to 110.
+##############################################################################################################
 
-# ======================================================================================================================
+# ============================================================================================================
 # PRELIMINARIES:
 
+# Pragmas:
 use v5.36;
 use utf8;
-use strict;
-use warnings;
-use warnings FATAL => 'utf8';
 
 # Encodings:
 use open ':std', IN  => ':encoding(UTF-8)';
@@ -37,7 +37,6 @@ use open         OUT => ':encoding(UTF-8)';
 # NOTE: these may be over-ridden later. Eg, "open($fh, '< :raw', e $path)".
 
 # CPAN modules:
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
 
@@ -45,7 +44,7 @@ use Time::HiRes 'time';
 use RH::Util;
 use RH::Dir;
 
-# ======================================================================================================================
+# ============================================================================================================
 # VARIABLES:
 
 my $db1        = 0  ; # Set to 1 to debug, 0 to not debug.
@@ -56,7 +55,7 @@ my $srcedire        ; # Source      directory.
 my $destdire        ; # Destination directory.
 my $direcount  = 0  ; # Count of subdirectories created.
 
-# ======================================================================================================================
+# ============================================================================================================
 # SUBROUTINE PRE-DECLARATIONS:
 
 sub argv     ; # Process @ARGV.
@@ -65,7 +64,7 @@ sub stats    ; # Print statistics.
 sub croak    ; # Print error message and die.
 sub help     ; # Print help.
 
-# ======================================================================================================================
+# ============================================================================================================
 # MAIN BODY OF PROGRAM:
 
 { # begin main
@@ -79,7 +78,7 @@ sub help     ; # Print help.
    exit 0;
 } # end main
 
-# ======================================================================================================================
+# ============================================================================================================
 # SUBROUTINE DEFINITIONS:
 
 sub argv
@@ -100,7 +99,7 @@ sub argv
    my $NA = scalar(@ARGV);
 
    # Croak if number of arguments is not 2:
-   if ( 2 != $NA )                                         {croak "Error: number of arguments is not two.          ";}
+   if ( 2 != $NA )                                 {croak "Error: number of arguments is not two.          ";}
 
    # Store arguments in $srcedire and $destdire:
    $srcedire = $ARGV[0];
@@ -110,25 +109,26 @@ sub argv
    # or of either directory is not a directory,
    # or if either directory cannot be opened,
    # or if destination directory is not empty:
-   if ( ! -e e $srcedire )                                 {croak "Error: source directory doesn't exist.          ";}
-   if ( ! -d e $srcedire )                                 {croak "Error: source directory isn't a directory.      ";}
-   if ( ! -e e $destdire )                                 {croak "Error: destination directory doesn't exist.     ";}
-   if ( ! -d e $destdire )                                 {croak "Error: destination directory isn't a directory. ";}
+   if ( ! -e e $srcedire )                         {croak "Error: source directory doesn't exist.          ";}
+   if ( ! -d e $srcedire )                         {croak "Error: source directory isn't a directory.      ";}
+   if ( ! -e e $destdire )                         {croak "Error: destination directory doesn't exist.     ";}
+   if ( ! -d e $destdire )                         {croak "Error: destination directory isn't a directory. ";}
 
-   # OK, we have directories. But can we actually open them?
+   # OK, we have directories.
+   # But can we actually open them?
    my $dhs = undef;
    my $dhd = undef;
-   opendir($dhs, e $srcedire) or                            croak "Error: couldn't open source directory.          ";
-   opendir($dhd, e $destdire) or                            croak "Error: couldn't open destination directory.     ";
+   opendir($dhs, e $srcedire) or                    croak "Error: couldn't open source directory.          ";
+   opendir($dhd, e $destdire) or                    croak "Error: couldn't open destination directory.     ";
 
-   # If non-empty destination directory is not being
-   # allowed, then enforce that here:
+   # If non-empty destination directory is
+   # not being allowed, then enforce that here:
    if (!$allow)
    {
       my @dest = d readdir $dhd;
       for (@dest)
       {
-         if ('.' ne $_ && '..' ne $_)                      {croak "Error: destination directory isn't empty.       "}
+         if ('.' ne $_ && '..' ne $_)              {croak "Error: destination directory isn't empty.       ";}
       }
    }
 
@@ -136,19 +136,24 @@ sub argv
    closedir $dhs;
    closedir $dhd;
 
-   # IMPORTANT: Canonicalize $srcedire and $destdire so that they become absolute instead of relative:
+   # IMPORTANT: Canonicalize $srcedire and $destdire
+   # so that they become absolute instead of relative:
    my $strtdire = d getcwd;
-   chdir e $srcedire or                                     croak "Error: couldn't chdir to source directory.      ";
+   chdir e $srcedire or                             croak "Error: couldn't chdir to source directory.      ";
    $srcedire = d getcwd;
-   if ($db2) {say "source directory = $srcedire";}
-   chdir e $strtdire or                                     croak "Error: couldn't chdir to starting directory.    ";
-   chdir e $destdire or                                     croak "Error: couldn't chdir to destination directory. ";
+   if ($db2) {
+      say "source directory = $srcedire";
+   }
+   chdir e $strtdire or                             croak "Error: couldn't chdir to starting directory.    ";
+   chdir e $destdire or                             croak "Error: couldn't chdir to destination directory. ";
    $destdire = d getcwd;
-   if ($db2) {say "destination directory = $destdire";}
+   if ($db2) {
+      say "destination directory = $destdire";
+   }
 
    # IMPORTANT: chdir back to srcedir,
    # else we'll start at the wrong place!!!
-   chdir e $srcedire or                                     croak "Error: couldn't chdir back to source directory. ";
+   chdir e $srcedire or                             croak "Error: couldn't chdir back to source directory. ";
 
    return 1;
 } # end sub argv

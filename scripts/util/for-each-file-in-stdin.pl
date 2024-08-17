@@ -1,17 +1,20 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 110-character-wide UTF-8-encoded Perl source-code text ficdcd le with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
 # for-each-file-in-stdin.pl
-# Performs a given command (written in Perl and passed to this program as its first argument) for each file
-# path in a list of file paths passed to this program via stdin.
+# Performs a given BASH command (passed to this program as its first argument) once for each file path in a
+# list of file paths passed to this program via stdin. Each time the command is executed, the token "FilePath"
+# is set to the current file path. For example, the following will print all *.txt files in current directory:
+# ls -1 *.txt | for-each-file-in-stdin.pl 'cat "FilePath"'
 #
 # Edit history:
 # Sun Jul 21, 2024: Wrote it.
 # Mon Jul 22, 2024: Improved error() and help().
+# Thu Aug 15, 2024: -C63; improved comments and help().
 ##############################################################################################################
 
 use v5.36;
@@ -40,13 +43,13 @@ my $Count     = 0  ; # Count of files processed.
    argv;
    say "\$Command = $Command" if $Db;
 
-   for my $FilePath (<stdin>) {
-      chomp $FilePath;
+   for my $FilePath (<STDIN>) { # DON'T decode here! (-C63 already does that for us.)
+      $FilePath =~ s/[\r\n]+$//;
       say "\$FilePath = \"$FilePath\"" if $Db;
       my $command  = $Command; # Capitalized version is template.
       $command =~ s/FilePath/$FilePath/g;
       say "\$command = \"$command\"" if $Db;
-      system e $command;
+      system e $command; # DO encode here! (-C63 doesn't help with system calls.)
       ++$Count;
    }
 
@@ -95,10 +98,13 @@ sub error ($NA) {
 sub help {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Intro:
    Welcome to "for-each-file-in-stdin.pl", Robbie Hatley's nifty program for
-   applying a command (given as the only command-line argument) to each file path
-   given by a list of file paths fed into this program via stdin.
+   applying a given BASH command (given as the only command-line argument) to
+   each file path given by a list of file paths fed into this program via STDIN.
 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Command lines:
 
    1. To print this help and exit:
@@ -112,10 +118,12 @@ sub help {
       for-each-file-in-stdin.pl Command < pathlist
       (where "pathlist" is a file containing file paths, one-per-line)
 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Description of options:
    Option:             Meaning:
    "-h" or "--help"    Print this help and exit.
 
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Description of argument:
    Unless just asking for help, "for-each-file-in-stdin.pl" takes exactly 1
    argument, which must be a valid BASH command which does something to a file

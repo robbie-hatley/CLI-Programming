@@ -1,6 +1,6 @@
-This folder ("/rhe/scripts/util") is for utility programs written in 
+This folder ("/rhe/scripts/util") is for utility programs written in
 interpretive languages such as Sed, Awk, Perl, Python, Bash, etc, and
-intended to be run via BASH, OTHER THAN "filter" programs (programs which 
+intended to be run via BASH, OTHER THAN "filter" programs (programs which
 input from STDIN and output to STDOUT rather than acting on files or folders).
 
 Put filters in "/d/rhe/scripts/filters" instead.

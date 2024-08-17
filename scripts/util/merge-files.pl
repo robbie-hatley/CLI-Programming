@@ -1,17 +1,18 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ########################################################################################################################
 # merge-files.pl
-# Given the paths of two directories, Source and Destination, this script first deletes all "Thumbs.db", "pspbrwse.jbf",
-# and "desktop.ini" files from Source, then moves all remaining files from Source to Destination, enumerating each file
-# for which a file exists in Destination with a matching name, then erases the Source directory if it's now empty.
+# Given the paths of two directories, Source and Destination, this script first deletes all "Thumbs.db",
+# "pspbrwse.jbf", and "desktop.ini" files from Source, then moves all remaining files from Source to
+# Destination, enumerating each file for which a file exists in Destination with a matching name, then erases
+# the Source directory if it's now empty.
 #
-# NOTE: You must have Perl and my RH::Dir module installed in order to use this script. Contact Robbie Hatley
-# at <lonewolf@well.com> and I'll send my RH::Dir module to you.
+# NOTE: You must have Perl version 5.36 or newer and my RH modules installed in order to use this script.
+# My modules and scripts can be downloaded for free from github account "robbie-hatley".
 #
 # Edit history:
 # Mon May 04, 2015: Wrote first draft, but it's just a stub.
@@ -21,9 +22,10 @@
 # Sat Apr 16, 2016: Now using -CSDA,   but still just a STUB.
 # Mon Dec 25, 2017: Now splicing options from @ARGV; and, made program fully functional.
 # Wed Dec 27, 2017: Renamed from "rhmerge.pl" to "merge-files.pl".
-# Sat Oct 27, 2018: Dramatically simplified main body of program, split program into more subroutines, improved help,
-#                   removed enumeration of dir2, added code to print $mergcount and $failcount, and moved "merge_file"
-#                   from RH::Dir back to this file, as it's only being used here and nowhere else.
+# Sat Oct 27, 2018: Dramatically simplified main body of program, split program into more subroutines,
+#                   improved help, removed enumeration of dir2, added code to print $mergcount and $failcount,
+#                   and moved "merge_file" from RH::Dir back to this file, as it's only being used here and
+#                   nowhere else.
 # Thu Feb 20, 2020: At some point I must have moved "merge_file()" back OUT of this program and back into
 #                   my RH::Dir module, because it's sure-as-Hell no longer HERE.
 # Sun Mar 08, 2020: Changed version to "use v5.30;", and corrected comments above to mention the fact
@@ -37,34 +39,33 @@
 #                   easily be run from command line by typing ddf dfn so there's no point doing it here).
 #                   Removed advanced statistics, as user can always use my "dir-stats.pl".
 #                   Fixed bug where dir1 couldn't be removed because it was the current directory.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
 # Tue Nov 30, 2021: Fixed wide-character errors due to not using e. Tested: Now works.
-# Sat Dec 04, 2021: Renamed back to "merge-files.pl", as that's a more accurate description of what this script does.
+# Sat Dec 04, 2021: Renamed back to "merge-files.pl" as a more accurate description of what this script does.
 # Fri Jun 14, 2024: Fixed errors in comments and in hlp_msg where it said "merge-directories.pl" instead of
 #                   "merge-files.pl" as it should have.
-########################################################################################################################
+# Thu Aug 15, 2024: -C63; got rid of unnecessary "use" statements; upgraded to "use v5.36;"; reduced width
+#                   from 120 to 110; and added prototypes and signatures to all subroutines.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
-
+use v5.36;
 use Encode;
-
 use RH::Dir;
 use RH::Util;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub process_argv      ();
-sub merge_directories ($$);
-sub print_stats       ();
-sub error_msg         ();
-sub help_msg          ();
+sub argv  :prototype()   ;
+sub merge :prototype($$) ;
+sub stats :prototype()   ;
+sub error :prototype($)  ;
+sub help  :prototype()   ;
 
 # ======= PAGE-GLOBAL LEXICAL VARIABLES: ===============================================================================
 
 # Debugging:
-my $db = 0; # Use debugging? (Ie, print diagnostics?)
+my $Db = 0; # Use debugging? (Ie, print diagnostics?)
 
 # Counts of events:
 my $delecount = 0; # Count of all files deleted from Dir1
@@ -75,17 +76,16 @@ my $failcount = 0; # Count of all files which couldn't be merged.
 
 {
    say "\nNow entering program \"merge-files.pl\".";
-   my ($dir1, $dir2) = process_argv();
-   merge_directories($dir1, $dir2);
-   print_stats();
+   my ($dir1, $dir2) = argv();
+   merge($dir1, $dir2);
+   stats();
    say "\nNow exiting program \"merge-files.pl\".";
    exit 0;
 }
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
-sub process_argv ()
-{
+sub argv :prototype() () {
    my $help     = 0;   # Print help and exit?
    my $dir1     = '';  # Directory 1 (source)
    my $dir2     = '';  # Directory 2 (destination)
@@ -101,8 +101,9 @@ sub process_argv ()
          push @CLArgs, $_;
       }
    }
-   if ($help)        {help_msg; exit(777);}
-   if (@CLArgs != 2) {error_msg; help_msg; exit(666);}
+   if ($help) {help; exit(777);}
+   my $NA = scalar @CLArgs;
+   if (2 != $NA) {error($NA); help; exit(666);}
    $dir1 = $CLArgs[0];
    $dir2 = $CLArgs[1];
    if ( ! -e e $dir1 ) {die "Error: $dir1 doesn't exist.    \n";}
@@ -110,14 +111,11 @@ sub process_argv ()
    if ( ! -e e $dir2 ) {die "Error: $dir2 doesn't exist.    \n";}
    if ( ! -d e $dir2 ) {die "Error: $dir2 isn't a directory.\n";}
    return ($dir1, $dir2);
-} # end sub process_argv
+} # end sub argv
 
-sub merge_directories ($$)
-{
-   my ($dir1, $dir2) = @_;
+sub merge :prototype($$) ($dir1, $dir2) {
    my @spaths = glob_utf8("${dir1}/* ${dir1}/.*");
-   if ($db)
-   {
+   if ($Db) {
       say $dir1;
       say $dir2;
       say for @spaths;
@@ -125,8 +123,7 @@ sub merge_directories ($$)
 
    say '';
    say "Getting rid of junk in \"${dir1}\" and moving remainder to \"${dir2}\"...";
-   foreach my $spath (@spaths)
-   {
+   foreach my $spath (@spaths) {
       my $sname = get_name_from_path($spath);
       if    ($sname eq '.' || $sname eq '..') {next;}
       elsif (-d e $spath)                     {next;}
@@ -139,15 +136,13 @@ sub merge_directories ($$)
    # What contents (if any) is still in dir1?
    @spaths = glob_utf8("${dir1}/* ${dir1}/.*");
    my $remainder = scalar @spaths;
-   if ($db)
-   {
+   if ($Db) {
       say for @spaths;
       say "remainder = $remainder";
    }
 
    # If the only two things in this directory are now '.' and '..', remove this directory:
-   if (2 == $remainder)
-   {
+   if (2 == $remainder) {
       # Because we're about to attempt to delete directory $dir1, we first need to get it's absolute address,
       # then chdir to root, so that we will never be attempting to delete a directory at or above our current
       # location on the directory tree, which never works:
@@ -161,16 +156,14 @@ sub merge_directories ($$)
    }
 
    # Otherwise, we can't, because it's not empty:
-   else
-   {
+   else {
       say "\nCan't remove directory \"${dir1}\" because it's not empty.";
    }
 
    return 1;
 } # end subroutine merge_directories
 
-sub print_stats ()
-{
+sub stats :prototype() () {
    say '';
    say "Statistics from \"merge-files.pl\":";
    say "Deleted $delecount files from source directory.";
@@ -179,19 +172,19 @@ sub print_stats ()
    return 1;
 }
 
-sub error_msg ()
-{
-   print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
-   Error: "merge-files.pl" takes exactly 2 arguments, which must be paths
-   to an existing source directory and an existing destination directory.
+sub error :prototype($) ($NA) {
+   print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
 
+   Error: You typed $NA arguments, but "merge-files.pl" takes exactly 2 arguments
+   which must be paths to an existing source directory and an existing destination
+   directory. Help follows.
    END_OF_ERROR
    return 1;
 }
 
-sub help_msg ()
-{
+sub help_msg :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "merge-files.pl", Robbie Hatley's nifty directory merging
    utility. This program moves all files from a source directory (lets call it
    "dir1") to a destination directory (let's call it "dir2"), enumerting each file

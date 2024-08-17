@@ -1,6 +1,6 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
@@ -17,48 +17,14 @@
 # Sat Aug 03, 2024: Reduced width from 120 to 110 (for github purposes). Upgraded from "v5.32" to "v5.36".
 #                   Got rid of "common::sense". Shortened sub names. Added prototypes. Added "use utf8".
 #                   Allowed checking of multiple paths at once (because, why not?).
+# Thu Aug 15, 2024: -C63; got rid of "Sys::Binmode".
 ##############################################################################################################
 
-# Pragmas:
 use v5.36;
 use utf8;
-
-# CPAN modules:
-use Sys::Binmode;
 use Encode 'encode_utf8';
 
-# Subroutine predeclarations:
-sub argv  :prototype()  ;
-sub help  :prototype()  ;
-
-# Variables:
 my @paths; # Paths of files to check for existence.
-
-{ # begin main
-   # Process @ARGV:
-   argv;
-
-   # Determine and print the existence or nonexistence of files at paths in @paths:
-   for my $path (@paths) {
-      -e encode_utf8($path)
-      and say "File exists:  \"$path\""
-      or  say "No such file: \"$path\""
-   }
-
-   # Exit program, returning success code "0" to caller:
-   exit(0);
-} # end main
-
-sub argv :prototype() () {
-   # If user wants help, give help and exit:
-   /^-h$|^--help$/ and help and exit 777 for @ARGV;
-
-   # If we get to here, store all arguments in @paths:
-   @paths = @ARGV;
-
-   # Return success code 1 to caller:
-   return 1;
-} # end sub argv
 
 sub help :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
@@ -82,3 +48,24 @@ sub help :prototype() () {
    END_OF_HELP
    return 1;
 } # end sub help
+
+sub argv :prototype() () {
+   # If user wants help, give help and exit:
+   /^-h$|^--help$/ and help and exit 777 for @ARGV;
+
+   # If we get to here, store all arguments in @paths:
+   @paths = @ARGV;
+
+   # Return success code 1 to caller:
+   return 1;
+} # end sub argv
+
+# Process @ARGV:
+argv;
+
+# Determine and print the existence or nonexistence of files at paths in @paths:
+for my $path (@paths) {
+   -e encode_utf8($path)
+   and say "File exists:  \"$path\""
+   or  say "No such file: \"$path\""
+}

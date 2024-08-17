@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
 # This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -10,11 +10,10 @@
 # Written by Robbie Hatley.
 # Edit history:
 # Sun Jan 28, 2024: Wrote it.
+# Thu Aug 15, 2024: -C63; got rid of unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
@@ -32,9 +31,11 @@ my @hex = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
 
 { # begin main
    argv;
-   my $string = '';
-   for ( my $i = 0 ; $i < $digits ; ++$i ) {$string .= $hex[int rand 16]}
-   say $string;
+   for ( my $i = 1 ; $i <= $digits ; ++$i ) {
+      print $hex[int rand 16];
+      #0 == $i%64 and print "\n";
+   }
+   print "\n";
    exit 0;
 } # end main
 

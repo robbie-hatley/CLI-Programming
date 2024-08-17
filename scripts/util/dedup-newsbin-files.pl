@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -40,18 +40,13 @@
 #                   Changed all "$db" to $Db". Debugging now simulates renames instead of exiting in main.
 #                   Removed "no debug" option as that's already default in all of my programs.
 #                   Changed short option for debugging from "-e" to "-d".
+# Wed Aug 14, 2024: Removed unnecessary "use" statements. Changed short option for debug from "-d" to "-e".
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
-
-use RH::Util;
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
@@ -129,7 +124,7 @@ sub argv {
    # Process options:
    for ( @opts ) {
       /^-$s*h/ || /^--help$/    and help and exit 777 ;
-      /^-$s*d/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
       /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
       /^-$s*t/ || /^--terse$/   and $Verbose =  1     ;
       /^-$s*v/ || /^--verbose$/ and $Verbose =  2     ;
@@ -343,7 +338,7 @@ sub help {
 
    Option:             Meaning:
    -h or --help        Print help and exit.
-   -d or --debug       Print diagnostics and simulate renames.
+   -e or --debug       Print diagnostics and simulate renames.
    -q or --quiet       Don't print variables, time, or stats.
    -t or --terse       Print variables and time but not stats.
    -v or --verbose     Print variables, time, and stats.       (DEFAULT)

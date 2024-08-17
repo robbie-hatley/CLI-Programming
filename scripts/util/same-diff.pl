@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
 # This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -12,14 +12,11 @@
 # Wed Mar 09, 2022: Wrote it.
 # Wed Aug 09, 2023: Upgraded from "v5.32" to "v5.36". Got rid of "common::sense" (antiquated). Reduced width
 #                   from 120 to 110. Added strict, warnings, etc, to boilerplate.
+# Thu Aug 15, 2024: -C63; got rid of unnecessary "use" statements; fixed regex meta bug with "\Q".
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => "utf8";
-use Sys::Binmode;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
@@ -39,16 +36,21 @@ my $test   = ''  ; # Test string.                 string    Empty string.
    argv;
    say STDERR "refe = $refe";
    say STDERR "test = $test";
-   my $tsz = length($test);
-   my ($i, $j, $matches, $same, $diff, $substring);
-   for ( $i = 0 ; $i < $tsz ; ++$i )
+   my $tsz       = length($test);
+   my $matches   = '';
+   my $same      = '';
+   my $diff      = '';
+   my $substring = '';;
+   for ( my $i = 0 ; $i < $tsz ; ++$i )
    {
-      for ( $j = $tsz - $i ; $j > 0 ; --$j )
+      for ( my $j = $tsz - $i ; $j > 0 ; --$j )
       {
          $substring = substr($test, $i, $j);
-         $matches = ($refe =~ m/$substring/);
+         say "\$substring = $substring";
+         $matches = ($refe =~ m/\Q$substring/);
          if ($matches)
          {
+            say "Match found: $&";
             $same .= substr($test, $i, $j);
             $i += ($j - 1);
             last;
@@ -67,8 +69,7 @@ my $test   = ''  ; # Test string.                 string    Empty string.
 # ======= SUBROUTINE DEFINITIONS: ============================================================================
 
 # Process @ARGV :
-sub argv ()
-{
+sub argv {
    # Get options and arguments:
    my @opts = ();
    my @args = ();
@@ -101,7 +102,7 @@ sub argv ()
 
    # Return success code 1 to caller:
    return 1;
-} # end sub argv ()
+} # end sub argv
 
 # Handle errors:
 sub error ($NA) {

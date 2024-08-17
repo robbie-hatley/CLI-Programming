@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
 # This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -76,6 +76,7 @@
 #                   on earth in 2 billion BC anyway, so who cares what day-of-week 2 billion BC is? At least
 #                   in 100 million BC, humans existed, though at that time we were small furry rodents.
 # Sat Sep 30, 2023: Converted back to UTF-8, and added-in a few more pieces of poetry.
+# Thu Aug 15, 2024: -C63.
 ##############################################################################################################
 
 use v5.38;

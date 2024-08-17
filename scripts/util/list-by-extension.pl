@@ -1,18 +1,22 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
+
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
 # list-by-extension.pl
-# Written by Robbie Hatley.
+# Prints list of regular files in current directory sorted by name extension.
+# Written by Robbie Hatley at unknown date, maybe in 2022.
 # Edit history:
-# Xxx Xxx ##, ####: Wrote it on an unknown date.
+# Sun Jun 05, 2022: Wrote this file on this date (give or take a few years).
 # Thu Sep 07, 2023: Now prints the "ls -l" list of all regular files in the current directory,
 #                   grouped by extension and case-insensitively sorted within each group.
+# Thu Aug 15, 2024: -C63; got rid of unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
-use Sys::Binmode;
+use utf8;
 
 # Extract the name of a file from its "ls -l" directory listing:
 sub name ( $line ) {

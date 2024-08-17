@@ -1,31 +1,26 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
 # This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。麦藁雪、富士川町、山梨県。
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
-# "repair-directory-dates.pl"
+# repair-directory-dates.pl
 # Repairs the dates on directories which have been "bumped" by "repair-dolphin-directory-files.pl" (or other
 # program that creates, removes, or alters hidden files in directories) by setting the directory dates to the
 # date of the most-recent non-hidden file in the directory.
 # Written by Robbie Hatley.
 # Edit history:
 # Sat Mar 23, 2024: Wrote it.
+# Thu Aug 15, 2024: -C63; got rid of unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-use Cwd;
+use Cwd 'getcwd';
 use Time::HiRes 'time';
-
 use RH::Dir;
 use RH::Util;
-use RH::WinChomp;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 

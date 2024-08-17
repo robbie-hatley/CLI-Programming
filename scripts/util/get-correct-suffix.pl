@@ -1,4 +1,8 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
+
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
 # get_correct_suffix.pl
@@ -12,16 +16,11 @@
 # Tue Aug 15, 2023: Wrote first draft.
 # Mon Aug 28, 2023: Changed "$db" to $Db". Got rid of prototypes. Now using Signatures. Improved formatting.
 # Wed Sep 06, 2023: Added & edited some comments.
+# Thu Aug 15, 2024: -C63; got rid of unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => "utf8";
-
-use Sys::Binmode;
-use Cwd;
 use Time::HiRes qw( time );
 use Encode      qw( :DEFAULT encode decode :fallbacks :fallback_all );
 use File::Type;
@@ -335,5 +334,3 @@ for ( @ARGV ) { /-h/ || /--help/ and help and exit ; }
 and die "Error: this program must have one argument, which must be \n".
         "-h or --help or a path to an existing regular file.\n";
 say get_correct_suffix($ARGV[0]);
-exit 0;
-__END__

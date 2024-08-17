@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 110-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -12,17 +12,12 @@
 #                   "Sys::Binmode".
 # Tue Oct 03, 2023: Got rid of "common::sense" (who needs it, anyway?). Corrected broken variable inits.
 #                   Decreased width from 120 to 110. Upgraged to "v5.36".
+# Thu Aug 15, 2024: -C63; Erased unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-use Sys::Binmode;
 use Unicode::Normalize 'NFD';
-
 use RH::Dir;
 
 my $line    = '' ; # Line of text.
@@ -32,13 +27,11 @@ my $chr_num = 0  ; # Character number.
 my $rep     = '' ; # Glyphical representation.
 my $ord     = 0  ; # Unicode ordinal.
 my $type    = '' ; # Character type.
-foreach $line (<>)
-{
+foreach $line (<>) {
    ++$lin_num;
    say "Line #$lin_num:\n$line";
    my @chars = split '',$line;
-   foreach $char (@chars)
-   {
+   foreach $char (@chars) {
       ++$chr_num;
 
       # Decide representation:
@@ -53,8 +46,7 @@ foreach $line (<>)
       $type = '';
       if ($char =~ m/\p{White_Space}/)                 {$type .= ' Whitespace'        ;}
       if ($char =~ m/\pC/)                             {$type .= ' Control Character' ;}
-      if ($char =~ m/\p{L}/)
-      {
+      if ($char =~ m/\p{L}/) {
                                                         $type .= ' Letter'            ;
          if ($char =~ m/\p{Ll}/)                       {$type .= ', lower-case'       ;}
          elsif ($char =~ m/\p{Lu}/)                    {$type .= ', upper-case'       ;}
@@ -79,6 +71,4 @@ foreach $line (<>)
       printf("line# %3d char# %2d char = %s\tord = %7d(dec) = %5X(hex)%s\n",
              $lin_num, $chr_num, $rep, $ord, $ord, $type);
    } # end for each character
-}
-exit 0;
-__END__
+} # end foreach $line

@@ -1,7 +1,7 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
-# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
+# ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
 # =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
 ##############################################################################################################
@@ -18,28 +18,23 @@
 #                   and stats are to STDOUT; STDERR in this program is for errors and debugging only. There
 #                   are no verbosity controls, as the whole purpose of this program is to print statistics.
 # Wed Sep 06, 2023: Predicate now overrides target and forces it to 'A' to avoid conflicts with predicate.
+# Wed Aug 14, 2024: Removed unnecessary "use" statements.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
-
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
-
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =======================================================================
 
-sub argv       ;
-sub curdire    ;
-sub dire_stats ;
-sub tree_stats ;
-sub error      ;
-sub help       ;
+sub argv       :prototype()  ;
+sub curdire    :prototype()  ;
+sub dire_stats :prototype()  ;
+sub tree_stats :prototype()  ;
+sub error      :prototype($) ;
+sub help       :prototype()  ;
 
 # ======= LEXICAL VARIABLES: =================================================================================
 
@@ -113,7 +108,7 @@ my @deadpaths = ();
 
 # ======= SUBROUTINE DEFINITIONS =============================================================================
 
-sub argv {
+sub argv :prototype() () {
    # Get options and arguments:
    my @opts = ();            # options
    my @args = ();            # arguments
@@ -168,7 +163,7 @@ sub argv {
 } # end sub argv
 
 # Process current directory:
-sub curdire {
+sub curdire :prototype() () {
    # Increment directory counter.
    ++$direcount;
 
@@ -227,7 +222,7 @@ sub curdire {
    return 1;
 } # end sub curdire
 
-sub dire_stats {
+sub dire_stats :prototype() () {
    say '';
    say "Entries encountered in this directory included:";
    printf "%7u total files.\n",                           $RH::Dir::totfcount;
@@ -248,7 +243,7 @@ sub dire_stats {
    return 1;
 } # end sub dire_stats
 
-sub tree_stats {
+sub tree_stats :prototype() () {
    say '';
    say "Statistics for this directory tree:";
    say "Navigated $direcount directories.";
@@ -289,7 +284,7 @@ sub tree_stats {
    return 1;
 } # end sub tree_stats
 
-sub error ($NA) {
+sub error :prototype($) ($NA) {
    print ((<<'   END_OF_ERROR') =~ s/^   //gmr);
 
    Error: you typed $NA arguments, but this program takes 0, 1, or 2 arguments.
@@ -298,7 +293,7 @@ sub error ($NA) {
    return 1;
 } # end sub error
 
-sub help {
+sub help :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
 
    -------------------------------------------------------------------------------
@@ -392,4 +387,3 @@ sub help {
    END_OF_HELP
    return 1;
 } # end sub help
-__END__

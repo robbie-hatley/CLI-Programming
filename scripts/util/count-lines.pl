@@ -1,17 +1,19 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env -S perl -C63
 
-# This is a 120-character-wide UTF-8-encoded Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide Unicode UTF-8 Perl-source-code text file with hard Unix line breaks ("\x0A").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय.    看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # count-lines.pl
 # Written by Robbie Hatley on Sat Feb 13, 2021.
-# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
-########################################################################################################################
+# Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and
+#                   "Sys::Binmode".
+# Thu Aug 15, 2024: Narrowed from 120 to 110, "use v5.36", -C63, and removed unnecessary "use" statements.
+##############################################################################################################
 
-use v5.32;
-use common::sense;
-use Sys::Binmode;
-
-my $i = 0; map {++$i} <>; print "$i\n";
+use v5.36;
+use utf8;
+my $i = 0;
+map {++$i} <>;
+say "$i"
