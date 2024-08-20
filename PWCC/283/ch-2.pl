@@ -3,7 +3,6 @@
 # Solution in Perl written 2024-08-19 by Robbie Hatley
 # ./ch-2.pl '([2, 1, 2, 0, 0],[2,1,3,0,0])'
 use v5.36;
-use List::SomeUtils 'mesh';
 my @arrays = @ARGV ? eval $ARGV[0] :
 (
    [1, 2, 1, 0],       # true
