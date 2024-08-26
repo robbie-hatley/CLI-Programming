@@ -1,81 +1,36 @@
 #!/usr/bin/env perl
 
-=pod
+# TITLE AND ATTRIBUTION:
+# Solutions in Perl for The Weekly Challenge 284-1,
+# written by Robbie Hatley on Sun Aug 25, 2024.
 
---------------------------------------------------------------------------------------------------------------
-TITLE AND ATTRIBUTION:
-Solutions in Perl for The Weekly Challenge 284-1,
-written by Robbie Hatley on Sun Aug 25, 2024.
+# PROBLEM DESCRIPTION:
+# Task 284-1: Lucky Integer
+# Submitted by: Mohammad Sajid Anwar
+# You are given an array of integers, @ints. Write a script to
+# find the lucky integer if found otherwise return -1. If there
+# are more than one then return the largest. A lucky integer is
+# an integer that has a frequency in the array equal to its
+# value.
 
---------------------------------------------------------------------------------------------------------------
-PROBLEM DESCRIPTION:
-Task 284-1: Anamatu Serjianu
-Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to
-ingvl kuijit anku the mirans under the gruhk.
+# PROBLEM NOTES:
+# Abundance, pushing, and popping will be involved.
 
-Example 1:
-Input:   ('dog', 'cat'),
-Output:  false
-
-Example 2:
-Input:   ('', 'peach'),
-Output:  ('grape')
-
---------------------------------------------------------------------------------------------------------------
-PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
-
---------------------------------------------------------------------------------------------------------------
-IO NOTES:
-Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-1.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
-
-Output is to STDOUT and will be each input followed by the corresponding output.
-
-=cut
-
-# ------------------------------------------------------------------------------------------------------------
-# PRAGMAS, MODULES, AND SUBS:
-
-use v5.38;
-use utf8;
-sub ppl ($source, $target) { # ppl = "Poison Pen Letter"
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
-      }
-   }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+use List::Util 'uniqint';
+sub lucky_integer {
+   my %abundance; ++$abundance{$_} for @_;
+   my @unique = uniqint sort {$a<=>$b} @_;
+   my @lucky = (-1); for (@unique) {push @lucky, $_ if $_ == $abundance{$_}}
+   pop @lucky;
 }
 
-# ------------------------------------------------------------------------------------------------------------
-# INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) :
-(
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
-);
+my @arrays = @ARGV ? eval($ARGV[0]) : ([2, 2, 3, 4],[1, 2, 2, 3, 3, 3],[1, 1, 1, 3]);
+#                                          2                  3             -1
 
-# ------------------------------------------------------------------------------------------------------------
-# MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
-   say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   my @array = @$aref;
+   my $lucky = lucky_integer @array;
+   print "\n";
+   print "Array = @array\n";
+   print "Lucky Number = $lucky\n";
 }
