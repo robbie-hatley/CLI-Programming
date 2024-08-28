@@ -8,6 +8,7 @@ Solution in Perl, written by Robbie Hatley on Wed Aug 28, 2024.
 Problem description:
 Of the lines of text from STDIN, which has the most unique anagrams
 (after removing all whitespace and converting to fold-case)?
+(Submitted by Neil Bowers.)
 
 Problem notes:
 Not all permutations are unique anagrams. For example, "Robbie" (with the first and second letters "b"

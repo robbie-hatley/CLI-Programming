@@ -7,6 +7,7 @@ Solution in Perl, written by Robbie Hatley on Wed Aug 28, 2024.
 
 Problem description:
 For a given word, print all of its anagrams.
+(Submitted by Neil Bowers.)
 
 Problem notes:
 Not all permutations are unique anagrams. For example, "Robbie" (with the first and second letters "b"
