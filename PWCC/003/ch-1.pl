@@ -8,6 +8,8 @@ Problem description: Write a script to generate "Regular Numbers", aka "5-Smooth
 defined as "integers of the form 2^i*3^j*5^k for non-negative integers i,j,k. The smallest Regular Number is
 thus 1, which is 2^0*3^0*5^0.
 
+Note: for practical reasons, I'm limiting this to 1 <= n <= 1 billion, else the program takes too long to run.
+
 =cut
 
 1 != scalar(@ARGV) || $ARGV[0] !~ m/^[1-9][0-9]*$/ || $ARGV[0] > 1000000000

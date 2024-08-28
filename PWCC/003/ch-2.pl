@@ -4,7 +4,9 @@
 
 The Weekly Challenge 003-2, "Pascal's Triangle"
 Solution in Perl by Robbie Hatley, Wed Aug 28, 2024
-Problem description: Write a script to generate the first n rows of Pascal's Triangle, for 3 <= n <= 20.
+Problem description: Write a script to generate the first n rows of Pascal's Triangle, for n >= 3.
+
+Note: For practical reasons, I'm limiting this to 3 <= n <= 20, else the printing becomes a nightmare.
 
 =cut
 
