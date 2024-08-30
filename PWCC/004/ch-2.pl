@@ -20,10 +20,11 @@ The letter list, I'll pass-in via $ARGV[0].
 
 =cut
 
-use v5.15;
+use v5.15; # To get fc (fold-case).
 
 1!=scalar(@ARGV) || $ARGV[0] !~ m/^[a-zA-Z]+$/
-and die "Error: This program must have 1 argument which must be a cluster of letters.\n";
+and die "Error: This program takes exactly 1 argument,\n"
+       ."which must be a cluster of English letters.\n";
 my $list = $ARGV[0];
 my $l    = fc $list;
 my @l    = split '', $l;
