@@ -8,68 +8,83 @@ Solution in Perl written by Robbie Hatley on Fri Aug 30, 2024.
 =cut
 
 use v5.16;
+$"=',';
+my $db = 0;
 
-@ARGV < 2
-   and die "Error: Must have a space-separated list of 2-or-more integers as arguments.\n";
 for (@ARGV) {
-   $_ !~ m/^-[1-9][0-9]*$|^0$|^[1-9][0-9]*$/
-   and die "Error: Must have a space-separated list of 2-or-more integers as arguments.\n";
+   /^-h$|^--help$/
+   and print "This program, given a space-separated sequence of integers as arguments,\n"
+            ."prints the sequence as a \"Compact Number List\".\n";
 }
 
 my @numbers = @ARGV;
 
+$db and say '';
+$db and say "\@numbers = \"@numbers\"";
+$db and say '';
+
 use constant {
-   BEG_SEG => 0,
-   CNT_SEG => 1,
+   BEG_SEG => 1, # Set $state to this to indicate that next index  begins   a segment.
+   CNT_SEG => 2, # Set $state to this to indicate that next index continues a segment.
 };
 
 my $state = BEG_SEG;
-my $seg_start;
-my $prev;
-my $number;
+my $seg_start_idx;
 my @segments;
 my $output = '';
 
-for $number (@numbers) {
+for my $idx (0..$#numbers) {
+   # If we're at the beginning of a segment:
    if    (BEG_SEG == $state) {
-      $seg_start = $number;
-      $prev = $number;
-      $state = CNT_SEG;
-   }
-   elsif (CNT_SEG == $state) {
-      if ($number == $prev+1) {
-         $prev = $number;
-         $state = CNT_SEG;
+      $db and say "\$state = BEG_SEG, \$idx = $idx, \$numbers[\$idx] = $numbers[$idx]";
+      $seg_start_idx = $idx;
+      # If we're at the end, push this solo orphan onto @segments:
+      if ($idx == $#numbers) {
+         push @segments, "$numbers[$idx]";
       }
+      # If we're NOT at the end, set state depending on whether next number is 1 + current number:
       else {
-         $prev == $seg_start and push @segments, "$prev"
-         or push @segments, "$seg_start-$prev";
-         $seg_start = $number;
-         $prev = $number;
-         $state = BEG_SEG;
+         # If next number is a continuation, set state to CNT_SEG:
+         if ((1 + $numbers[$idx]) == $numbers[$idx+1]) {
+            $state = CNT_SEG;
+         }
+         # Otherwise, push this orphan to @segments and set state to BEG_SEG:
+         else {
+            push @segments, "$numbers[$idx]";
+            $state = BEG_SEG;
+         }
       }
    }
-}
 
-# Handle final numbers:
-# If list ends with a single orphan, push that single number to @segments:
-if    (BEG_SEG == $state) {
-   push @segments, "$number";
-}
-# Else if list ends with 2-or-more orphans, push that range or those numbers to @segments:
-elsif (CNT_SEG == $state) {
-   # If segment continues to be unfractured, push range to @segments:
-   if ($number == $prev+1) {
-      push @segments, "$seg_start-$number"
+   # Else if we're in a continuation of a segment:
+   elsif (CNT_SEG == $state) {
+      $db and say "\$state = CNT_SEG, \$idx = $idx, \$numbers[\$idx] = $numbers[$idx]";
+      # If we're at the end, push this current range onto @segments:
+      if ($#numbers == $idx) {
+         push @segments, "$numbers[$seg_start_idx]-$numbers[$idx]";
+      }
+      # If we're NOT at the end, set state depending on whether next number is 1 + current number:
+      else {
+         # If next number is a continuation, leave state set to CNT_SEG:
+         if ((1 + $numbers[$idx]) == $numbers[$idx+1]) {
+            ; # Don't change state; leave it set to CNT_SEG.
+         }
+         # Otherwise, push this range to @segments and set state to BEG_SEG:
+         else {
+            push @segments, "$numbers[$seg_start_idx]-$numbers[$idx]";
+            $state = BEG_SEG;
+         }
+      }
    }
-   # Else if last number is a discontinuity, push previous numbers-or-range to @segments,
-   # then push final number to @segments:
+
+   # We can't possibly get here. But if we do:
    else {
-      $prev == $seg_start and push @segments, "$prev"
-      or  push @segments, "$seg_start-$prev";
+      die "Hello, hello! Nice to meet you, Voice Inside My Head!\n"
+         ."Hello, hello! I believe you! How can I forget?!\n"
+         ."Is this a place that I call home? To find what I've become?\n"
+         ."Walk along the path unknown! We live, we love, we lie!\n"
    }
 }
 
 # Print @segments interpolated into a single string:
-$"=',';
 say "@segments";
