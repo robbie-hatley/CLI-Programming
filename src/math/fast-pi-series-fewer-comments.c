@@ -2,7 +2,7 @@
 /*=======|=========|=========|=========|=========|=========|=========|=======*/
 
 /*****************************************************************************\
- * File name:     fast-pi-series-2.c
+ * File name:     fast-pi-series-fewer-comments.c
  * Description:   Fast series for Pi, fewer comments.
  * Author:        Robbie Hatley
  * Edit history:
@@ -38,7 +38,7 @@ int main (int Beren, char * Luthien[])
          error
          (
             0,
-            0, 
+            0,
             "This program takes one argument,\n"
             "which is the number of iterations.\n"
             "This number should be between 1 and 100 inclusive.\n"
@@ -46,7 +46,7 @@ int main (int Beren, char * Luthien[])
          );
       }
    }
-   // sum n:0->inf 6(OddProd(n))/(EvenProd(n)*(2.0*n+1.0)*pow(2.0,2.0*n+1.0)) 
+   // sum n:0->inf 6(OddProd(n))/(EvenProd(n)*(2.0*n+1.0)*pow(2.0,2.0*n+1.0))
    for ( n = 0 ; n < Iterations ; ++n )
    {                             //   1, 3, 5        2, 8, 32
       Sum += 6.0 * OddProd(n)

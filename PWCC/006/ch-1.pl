@@ -7,7 +7,7 @@ Solution in Perl written by Robbie Hatley on Fri Aug 30, 2024.
 
 =cut
 
-use v5.16;
+use v5.16; # To get "say".
 $"=',';
 my $db = 0;
 
@@ -41,11 +41,13 @@ for my $idx (0..$#numbers) {
       # If we're at the end, push this solo orphan onto @segments:
       if ($idx == $#numbers) {
          push @segments, "$numbers[$idx]";
+         ; # Don't change states; the time for states has passed.
       }
       # If we're NOT at the end, set state depending on whether next number is 1 + current number:
       else {
          # If next number is a continuation, set state to CNT_SEG:
          if ((1 + $numbers[$idx]) == $numbers[$idx+1]) {
+            ; # Don't push; we're not done creating this range.
             $state = CNT_SEG;
          }
          # Otherwise, push this orphan to @segments and set state to BEG_SEG:
@@ -62,11 +64,13 @@ for my $idx (0..$#numbers) {
       # If we're at the end, push this current range onto @segments:
       if ($#numbers == $idx) {
          push @segments, "$numbers[$seg_start_idx]-$numbers[$idx]";
+         ; # Don't change states; the time for states has passed.
       }
       # If we're NOT at the end, set state depending on whether next number is 1 + current number:
       else {
          # If next number is a continuation, leave state set to CNT_SEG:
          if ((1 + $numbers[$idx]) == $numbers[$idx+1]) {
+            ; # Don't push; we're not done creating this range.
             ; # Don't change state; leave it set to CNT_SEG.
          }
          # Otherwise, push this range to @segments and set state to BEG_SEG:

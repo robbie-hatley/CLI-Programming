@@ -94,10 +94,7 @@
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use warnings FATAL => 'utf8';
 
 use Cwd;
 use Time::HiRes 'time';
@@ -140,7 +137,7 @@ my $Db        = 0            ; # Debug?                      bool       Don't de
 my $Verbose   = 0            ; # Be wordy?                   0,1,2      Be quiet.
 my $Recurse   = 0            ; # Recurse subdirectories?     bool       Be local.
 my $Target    = 'A'          ; # Files, dirs, both, all?     F|D|B|A    Process all file types.
-my $RegExp    = qr/^.+$/     ; # Regular expression.         regexp     Process all file names.
+my $RegExp    = qr/^.+$/o    ; # Regular expression.         regexp     Process all file names.
 my $Predicate = 1            ; # Boolean predicate.          bool       Process all file types.
 
 # Counts of events in this program:
@@ -252,7 +249,7 @@ sub argv {
 
    # Use positional arguments instead?
    if ( $NA >= 1 ) {           # If number of arguments >= 1,
-      $RegExp = qr/$args[0]/;  # set $RegExp to $args[0].
+      $RegExp = qr/$args[0]/o; # set $RegExp to $args[0].
    }
    if ( $NA >= 2 ) {           # If number of arguments >= 2,
       $Predicate = $args[1];   # set $Predicate to $args[1]

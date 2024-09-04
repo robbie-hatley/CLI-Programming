@@ -2,7 +2,7 @@
 /*=======|=========|=========|=========|=========|=========|=========|=======*/
 
 /*****************************************************************************\
- * File name:     pi.c
+ * File name:     fast-pi-series-unlimited.c
  * Description:   Fast series for Pi, unlimited-precision.
  * Author:        Robbie Hatley
  * Edit history:
@@ -29,7 +29,7 @@ int main (int Beren, char * Luthien[])
    uint64_t  Input       =   0;  // user input
    uint64_t  n           =   0;  // sum term index
    uint64_t  Two         =   0;  // 2n+1
-   
+
    // Declare unlimited-precision variables:
    mpf_t     Odd;                // odd product
    mpf_t     Evn;                // evn product
@@ -82,7 +82,7 @@ int main (int Beren, char * Luthien[])
    mpf_init(Quo);
    mpf_init(Sum);
 
-   // Sum n:0->inf 6(OddProd(n))/(EvenProd(n)*(2.0*n+1.0)*pow(2.0,2.0*n+1.0)) 
+   // Sum n:0->inf 6(OddProd(n))/(EvenProd(n)*(2.0*n+1.0)*pow(2.0,2.0*n+1.0))
    for ( n = 0 ; n < Iterations ; ++n )
    {
       // Get odd product:
@@ -141,7 +141,7 @@ void Help (void)
 {
    fprintf
    (
-      stdout, 
+      stdout,
       "Welcome to \"pi\", Robbie Hatley's nifty pi-printing program.\n"
       "This program takes one optional argument, which should be an integer\n"
       "in the 1-1,000,000,000 range, indicating the number of significant\n"

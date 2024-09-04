@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+# pi
+
+use bignum 'lib'=>'GMP', 'a'=>275;
+
+# k!
+sub fact {
+   my $k = shift;
+   my $f = 1;
+   for my $i (2..$k) {$f *= $i}
+   return $f;
+}
+
+# (2k+1)!/k!
+sub tkp1f_kf {
+   my $k = shift;
+   my $f = 1;
+   for my $i ($k+1..2*$k+1) {$f *= $i}
+   return $f;
+}
+
+my $k;
+my $pi = 0;
+for $k (0..1000) {
+   $pi += 2**($k+1) * fact($k) / tkp1f_kf($k);
+}
+my $pi_string = substr $pi, 0, 251;
+print "$pi_string";
