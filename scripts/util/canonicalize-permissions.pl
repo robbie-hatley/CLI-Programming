@@ -284,7 +284,10 @@ sub curfile ($file) {
          say STDERR "Debug msg in canoperm, in curfile: file $file->{Name} has suffix \"$lsuf\"." if $Db;
          for ( $lsuf ) {
             # Scripts in known languages need to be executable:
-            if ( /^(apl|au3|awk|bat|pl|perl|ps1|py|raku|sed|sh|vbs)$/ ) {
+            # NOTE RH 2024-09-06: I removed "au3", "bat", "ps1", "vbs" because from the standpoint of Linux,
+            # such files should NOT be considered "executable" because they're DOS/Windows, not Linux.
+            # I also added "elf" and "run" as these ARE executable Linux files.
+            if ( /^(apl|awk|elf|pl|perl|py|raku|run|sed|sh)$/ ) {
                set_exec($file);
             }
 
