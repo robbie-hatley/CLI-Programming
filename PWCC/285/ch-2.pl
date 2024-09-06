@@ -36,7 +36,7 @@ Ouput: 292
 Solution in Perl written by Robbie Hatley on Fri Sep 06, 2024.
 
 Input is by @ARGV or internal array. If using @ARGV, provide one input which must be a single-quoted array of
-non-negative integers in proper perl syntax, like so:
+non-negative integers in proper Perl syntax, like so:
 ./ch-2.pl '(0, 13, 74, 203)'
 
 Output is to STDOUT and will be each input followed by its corresponding output.
@@ -73,5 +73,3 @@ for my $value (@values) {
    say "Ways of making change for $value¢:";
    say for @ways;
 }
-
-
