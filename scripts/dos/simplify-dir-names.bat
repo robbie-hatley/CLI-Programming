@@ -1,6 +1,0 @@
-renamefiles -d -r -q -y "[ -]+\(" "("
-renamefiles -d -r -q -y "\)[ -]+" ")"
-renamefiles -d -r -q -y "&" "-And-"
-renamefiles -d -r -q -y ", " "-"
-renamefiles -d -r -q -y " " "-"
-renamefiles -d -r -q -y "--+" "-"

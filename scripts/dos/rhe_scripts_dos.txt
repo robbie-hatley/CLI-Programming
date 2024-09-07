@@ -1,0 +1,1 @@
+This directory ("rhe/scripts/dos") is for DOS scripts which are still useful on my few remaining Microsoft-Windows computers.

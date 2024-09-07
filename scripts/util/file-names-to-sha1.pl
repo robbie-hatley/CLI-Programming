@@ -74,7 +74,7 @@ sub argv ()
       if ('-r' eq $_ || '--recurse' eq $_) {$Recurse = 1;}
    }
    return 1;
-} # end sub argv ()
+} # end sub argv
 
 sub curdire ()
 {
@@ -114,22 +114,22 @@ sub curdire ()
       }
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
 # Process current file.
 # (Warning: This subroutine has a bad attitude.)
-sub curfile ($)                                            # What the fuck kind of subroutine IS this, anyway???
-{                                                          # I hope it's not boring or I'll be pissed-off.
-   ++$filecount;                                           # Another god-damned file to process. Aw, fuck.
-   my $path = shift;                                       # Here the fucking piece of shit is. Shit.
-   my $name = get_name_from_path($path);                   # What's your fucking name, asshole??
-   my $newname = hash($path, 'sha1', 'name');              # Get a new, hash-based, name for this goddamn motherfucker.
-   rename_file($name, $newname)                            # Attempt to rename this fucker.
-   and say "Renamed \"$name\" to \"$newname\"."            # If the attempt fucking succeeds, announce success
-   and return 1                                            # and return the fucking success code.
-   or warn "Failed to rename \"$name\" to \"$newname\".\n" # Aw, fuck, it failed. Announce the god-damned failure,
-   and return 0;                                           # and return a fucking failure code. Fuck!
-} # end sub curfile ()                                     # Let's get the fuck out of here. God damn!
+sub curfile ($)
+{
+   ++$filecount;
+   my $path = shift;
+   my $name = get_name_from_path($path);
+   my $newname = hash($path, 'sha1', 'name');
+   rename_file($name, $newname)
+   and say "Renamed \"$name\" to \"$newname\"."
+   and return 1
+   or warn "Failed to rename \"$name\" to \"$newname\".\n"
+   and return 0;
+} # end sub curfile
 
 sub stats ()
 {
@@ -140,7 +140,7 @@ sub stats ()
    printf("Renamed   %6u files.\n",                $renacount);
    printf("Failed    %6u file-rename attempts.\n", $failcount);
    return 1;
-} # end sub stats ()
+} # end sub stats
 
 sub help ()
 {
@@ -176,4 +176,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help
