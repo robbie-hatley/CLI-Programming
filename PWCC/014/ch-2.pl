@@ -62,7 +62,7 @@ sub make_state_words ($root) {
 }
 
 # Main body of program:
-say 'The English words of length 2, 4, or 6 which can be made'; # 6, 8, or 10 which can be made';
+say 'The English words of length 2, 4, or 6 which can be made';
 say 'by concatenating US postal state abbreviations are:';
 make_state_words('');
 say "@state_words";
