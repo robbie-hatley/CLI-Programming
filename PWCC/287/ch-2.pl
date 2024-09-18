@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -55,7 +55,6 @@ Output is to STDOUT and will be each input string followed by a statement saying
 # PRAGMAS, MODULES, AND SUBS:
 
 use v5.36;
-use utf8;
 sub is_number ($x) {
    my $int_pat = '(\+|-)?\d+';
    my $dec_pat = '(\+|-)?((\d+)\.|(\.\d+)|(\d+\.\d+))';
