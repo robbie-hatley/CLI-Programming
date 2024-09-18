@@ -38,15 +38,16 @@ Example 7:  Input: $str = ".44"      Output: true
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+To solve this problem, I made regular expressions for "integer", "decimal", and "exponent", then tacked them
+together to make a regular expression for "number", then just tested inputs against that regular expression.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of double-quoted strings, in proper Perl syntax, like so:
-./ch-2.pl '("37.8F17", "37.8E17", ".99e72.3", ".99e72", "a.99e72", "8.99e72")'
+./ch-2.pl '("-37.8F17", "-37.8E17", ".99e-72.3", ".99e-72", "+a.99e72", "+8.99e72", "I ate salmon")'
 
-Output is to STDOUT and will be each input followed by the corresponding output.
+Output is to STDOUT and will be each input string followed by a statement saying whether it's a number.
 
 =cut
 

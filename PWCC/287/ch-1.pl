@@ -23,7 +23,7 @@ The definition of "strong password" is as follows:
 - It must contain at least one digit
 - It mustn't contain 3 repeating characters in a row
 
-Each of the following can be considered one "step":
+Each of the following is considered one "step":
 - Insert one character
 - Delete one character
 - Replace one character with another
@@ -36,37 +36,19 @@ Example 5:  Input: $str = "aaaaa"      Output: 2
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I'll start by writing subs to do these things:
-1. Does a given string contain a contiguous triplet of identical characters?
-2. Does a given string contain all required characters to be a strong password?
-3. What is the least-abundant type of character in a given string?
-4. What is the most-abundant  type of character in a given string?
-5. What is the first index of a given type in a given string? (Return -1 if type not found.)
-6. Make a strong password out of a possibly-weak one.
+I'll start by writing subs to do these two things:
+ - Determine the least-abundant type of character in a given string.
+ - Make a strong password out of any string.
 
 That last sub will involve doing the following:
-
-1. While an identical triplet exists:
-   if    (length  < 6) {
-      insert a character of least-abundant time between 1st & 2nd chars of triplet,
-      making sure that it doesn't match what's too its left or right
-   }
-   elsif (length == 6) {
-      replace center character of triplet with a character of the least-abundant type,
-      making sure the added character doesn't match what's to its left or right
-   }
-   else                {
-      delete the center character and close-up the gap
-   }
-2. Increase the length of the string to 6 if necessary by concatenating characters to the end, making sure we
-   don't miss the opportunity of rectifying missing character types in the process, and making sure each
-   additional character doesn't match the last.
-3. If we still don't have a lower-case letter, replace first instance of most-abundant type with an LC letter.
-4. If we still don't have a upper-case letter, replace first instance of most-abundant type with a  UC letter.
-5. If we still don't have a      digit       , replace first instance of most-abundant type with a  digit.
-6. Loop 1,2,3,4,5 while length($p) < 6 || !has_required($p) || has_triplet($p)
-7. Increment a step counter each time we insert, delete, or replace a character
-7. Return strong password and number of steps required.
+1. For each identical triplet, insert a character of least-abundant type between 2nd & 3rd chars of triplet,
+   making sure that it doesn't match what's to its left or right.
+2. While we don't have all required types, tack a least-abundant character to the end,
+   making sure that it doesn't match the character to its left.
+3. While length < 6, tack a symbol to the end,
+   making sure that it doesn't match the character to its left.
+4. Increment a step counter each time we insert a character.
+5. Return strong password and number of steps required to strengthen it.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -79,58 +61,81 @@ Output is to STDOUT and will be each weak password followed by strengthened pass
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
-# PRAGMAS, MODULES, AND SUBS:
+# PRAGMAS, MODULES, VARIABLES, AND SUBS:
 
 use v5.36;
-use use Scalar::Util
+no warnings 'qw';
 
-# Does a given string contain a contiguous triplet of identical characters?
-sub has_triplet ($p) {
-   for my $i (0..(length($p)-3) {
-      return 1 if substr($p,$i+2,1) eq substr($p,$i,1) && substr($p,$i+2,1) eq substr($p,$i,1);
+# What is the least-abundant type of character in a given string?
+sub least :prototype($) ($p) {
+   my %types = ('L' => 0, 'U' => 0, 'D' => 0);
+   for my $c (split '', $p) {
+      $c =~ m/[a-z]/ and ++$types{'L'} and next;
+      $c =~ m/[A-Z]/ and ++$types{'U'} and next;
+      $c =~ m/[0-9]/ and ++$types{'D'} and next;
    }
-   return 0;
+   my @sorted = sort {$types{$a}<=>$types{$b}} keys %types;
+   return $sorted[0];
 }
 
-# Does a given string contain 1-or-more LC letters, 1-or-more UC letters, and 1-or-more digits?
-sub has_required ($p) {
-   ;
-}
-
-   my @tchars = split //, $target;
-   foreach my $tchar (@tchars) {
-      my $index = index $source, $tchar;
-      # If index is -1, this Target CAN'T be built from this Source:
-      if ( -1 == $index ) {
-         return 'false';
-      }
-      # Otherwise, no problems have been found so-far, so remove $tchar from $source and continue:
-      else {
-         substr $source, $index, 1, '';
+# Morph any string into a "strong password":
+sub make_strong :prototype($) ($p) {
+   # Start by making a "count of steps" counter and initializing it to zero:
+   my $c = 0;
+   # Now, make four arrays of different types of characters, for strengthening our password:
+   my %types =
+   (
+      'L' => [qw( a b c d e f g h i j k l m n o p q r s t u v w x y z )], # Lower
+      'U' => [qw( A B C D E F G H I J K L M N O P Q R S T U V W X Y Z )], # Upper
+      'D' => [qw( 0 1 2 3 4 5 6 7 8 9                                 )], # Digits
+      'O' => [qw( ~ ! @ # $ % ^ & * + - = : ; \ | / ?                 )], # Other
+   );
+   # Next, get rid of any triplets.
+   # (I'm using a 3-part loop here because a ranged foreach won't work because the size of $p changes.)
+   foreach ( my $i = 0 ; $i <= length($p) - 3 ; ++$i ) {
+      my $first  = substr($p, $i+0, 1);
+      my $second = substr($p, $i+1, 1);
+      my $third  = substr($p, $i+2, 1);
+      # Are the next three characters all equal? If so, we have a triplet here and we need to break it up:
+      if ($second eq $first && $third eq $first) {
+         # Insert a least-abundant character between second and third characters of triplet:
+         my $least = least($p);
+         my $insert = $types{$least}->[int rand scalar @{$types{$least}}];
+         redo if $insert eq $second || $insert eq $third;
+         substr($p, $i+1, 1, $second.$insert);
+         ++$c;
       }
    }
-   # If we get to here, there were no characters in Target which couldn't be obtained from Source,
-   # so this poison-pen letter CAN be built from the source letters given:
-   return 'true';
+   # Now, as long as we don't have all three required types of characters, keep tacking-on the least abundant:
+   while ( $p !~ m/[a-z]/ || $p !~ m/[A-Z]/ || $p !~ m/[0-9]/ ) {
+      # Tack a least-abundant character to the end:
+      my $least = least($p);
+      my $insert = $types{$least}->[int rand scalar @{$types{$least}}];
+      redo if $insert eq substr($p, -1, 1);
+      $p .= $insert;
+      ++$c;
+   }
+   # Finally, while our password is still less than 6 characters long, tack-on some symbols to lengthen it:
+   while ( length($p) < 6 ) {
+      my $insert = $types{'O'}->[int rand scalar @{$types{'O'}}];
+      redo if $insert eq substr($p, -1, 1);
+      $p .= $insert;
+      ++$c;
+   }
+   return ($p,$c);
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) :
-(
-   ['abc', 'xyz'],
-   ['scriptinglanguage', 'perl'],
-   ['aabbcc', 'abc'],
-);
+my @passwords = @ARGV ? eval($ARGV[0]) : ('a', 'aB2', 'PaaSW0rd', 'Paaasw0rd', 'aaaaa');
+# Expected outputs:                        5     3         0           1          2
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
-for my $aref (@arrays) {
+for my $p (@passwords) {
    say '';
-   my $source = $aref->[0];
-   my $target = $aref->[1];
-   my $output = ppl($source, $target);
-   say "Source string: \"$source\"";
-   say "Target string: \"$target\"";
-   say "Can build Target from Source?: $output";
+   say "Original password   = $p";
+   my ($s,$c) = make_strong($p);
+   say "Strong   password   = $s";
+   say "Steps to strengthen = $c";
 }
