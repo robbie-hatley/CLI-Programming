@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------------------------------------
 TITLE AND ATTRIBUTION:
 Solutions in Perl for The Weekly Challenge 288-2,
-written by Robbie Hatley on Mon Sep 23, 2024.
+written by Robbie Hatley on Wed Sep 25, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
@@ -54,21 +54,21 @@ Ouput: 7
 There are two other 2-cell blocks of 'o'.
 There are three 2-cell blocks of 'x' and one 3-cell.)
 
-
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-This one is complicated! This is the approach I came up with:
- 1. Assign a unique id integer to every cell in matrix.
- 2. Make a hash to keep track of block number assigned to each id.
- 3. Initialize all hash elements to "-1", meaning "no block has been assigned yet".
+This one is complicated! The approach I came up with goes like this:
+ 1. Assign a unique integer id to every cell in matrix.
+ 2. Make a hash "%ids" to keep track of the block number assigned to each id.
+ 3. For keys (0..MatrixSize-1), initialize all values of %ids to "-1", meaning "no block assigned yet".
  3. Make a single pass through each cell of matrix, comparing each "current" cell to all neighbors.
  4. If current cell matches a neighbor, and both have no block, assign a new block number to both.
  5. If current cell matches a neighbor, and one has a block, assign block to cell that doesn't have one.
  6. If current cell matches a neighbor, and both have a block, and they're the same, do nothing.
  7. If current cell matches a neighbor, and both have a block, and they're different, then reassign lesser
-    block number to all cells with greater block number.
- 8. Make array to serve as list of block sizes.
- 9  For each key of hash, increment the value of the size-list element having that key's value as its index.
+    block number to all cells with greater block number, thus merging the two blocks.
+ 8. Make array "@blocks" to serve as list of how many cells are in each block.
+ 9  For each key $id of %ids, increment $blocks[$ids{$id}].
+    @blocks will now be a list of how many cells are in each block.
 10. Reverse-sort the list of block sizes.
 11. Return 0th element of reverse-sorted list of block sizes.
 
@@ -103,7 +103,6 @@ sub max_contiguous_block_size ($mref) {
    my $w = scalar @{$mref->[0]};  # Width  of matrix.
    my $h = scalar @{$mref};       # Height of matrix.
    my %ids;                       # Block membership of each id.
-   my @blocks;                    # Number of ids for each block.
    my $num_blks = 0;              # How many blocks currently exist?
    # Assign a unique integer id for each of the $w*$h elements in this matrix,
    # and assign block number "-1" to each id, meaning "no block yet":
@@ -169,8 +168,12 @@ sub max_contiguous_block_size ($mref) {
       # If block number is still -1, then this block is isolated, so assign a new block number:
       if (-1 == $ids{$id}) {$ids{$id} = $num_blks; ++$num_blks;}
    }
+   # Make a list of how many cells are in each block, with index being block number:
+   my @blocks = (0)x($h*$w); # $blocks[$x] == number of cells in block $x
    for my $id (keys %ids) {++$blocks[$ids{$id}]}
-   my @sorted = reverse sort {$a<=>$b} @blocks;
+   # Reverse-sort the list of block sizes, then return 0th element of reverse-sorted list:
+   my @sorted = sort {$b<=>$a} @blocks;
+   $"=', ';say "reverse-sorted array of block sizes = (@sorted)";
    return $sorted[0];
 }
 
