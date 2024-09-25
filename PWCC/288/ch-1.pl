@@ -29,15 +29,16 @@ Example 4:  Input: $str = "1001"  Output: "999"
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This is just a matter of counting down and up to find the nearest lower and upper palindromes, then returning
+the lower palindrome unless the upper is closer. (Of course, one needs to implement an "is_palindrome" sub.)
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of non-negative integers, in proper Perl syntax, like so:
-./ch-1.pl '(385,1,84,376)'
+./ch-1.pl '(385, 1, 84, 376)'
 
-Output is to STDOUT and will be each input followed by the corresponding output.
+Output is to STDOUT and will be each input integer followed by the nearest palindrome.
 
 =cut
 
@@ -46,20 +47,42 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
 use v5.36;
 
+sub is_non_neg_int ($int) {
+   $int =~ m/^0$|^[1-9][0-9]*$/;
+}
+
 sub is_palindrome ($int) {
    return (0+join '', reverse split '', $int) == (0+$int);
 }
 
+sub nearest_palindrome ($int) {
+   my $NLP; # Nearest Lower Palindrome
+   my $NUP; # Nearest Upper Palindrome
+   for my $test (reverse 0..$int-1) {
+      if (is_palindrome($test)) {$NLP = $test; last;}
+   }
+   for my $test ($int+1..10*$int) {
+      if (is_palindrome($test)) {$NUP = $test; last;}
+   }
+   if ($NUP-$int < $int-$NLP) {return $NUP;}
+   else                       {return $NLP;}
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) : (123, 2, 1400, 1001);
+my @ints = @ARGV ? eval($ARGV[0]) : (123, 2, 1400, 1001);
 # Expected outputs:                    121  1  1441  999
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
-for my $aref (@arrays) {
+for my $int (@ints) {
    say '';
-   say 'is 1440 a palindrome? ', is_palindrome(1440) ? 'yes' : 'no';
-   say 'is 1441 a palindrome? ', is_palindrome(1441) ? 'yes' : 'no';
+   say "Input = $int";
+   if (!is_non_neg_int($int)) {
+      say "Error: $int isn't a non-negative integer.";
+      say "Moving on to next input.";
+      next;
+   }
+   my $NP = nearest_palindrome($int);
+   say "Nearest palindrome = $NP";
 }
