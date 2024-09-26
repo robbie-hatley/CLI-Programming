@@ -103,7 +103,6 @@ sub max_contiguous_block_size ($mref) {
    my $w = scalar @{$mref->[0]};  # Width  of matrix.
    my $h = scalar @{$mref};       # Height of matrix.
    my %ids;                       # Block membership of each id.
-   my $num_blks = 0;              # How many blocks currently exist?
    # Assign a unique integer id for each of the $w*$h elements in this matrix,
    # and assign block number "-1" to each id, meaning "no block yet":
    for my $id (0..$w*$h-1) {
@@ -131,10 +130,9 @@ sub max_contiguous_block_size ($mref) {
             if (-1 == $ids{$id}) {
                # If neighbor has no block assigned yet:
                if (-1 == $ids{$ne}) {
-                  # Assign new block number to both:
-                  $ids{$id} = $num_blks;
-                  $ids{$ne} = $num_blks;
-                  ++$num_blks;
+                  # Assign current id as new block number to both:
+                  $ids{$id} = $id;
+                  $ids{$ne} = $id;
                }
                # Else if neighbor DOES have a block assigned:
                else {
@@ -165,15 +163,14 @@ sub max_contiguous_block_size ($mref) {
             }
          }
       }
-      # If block number is still -1, then this block is isolated, so assign a new block number:
-      if (-1 == $ids{$id}) {$ids{$id} = $num_blks; ++$num_blks;}
+      # If block number is still -1, then this block is isolated, so assign current id as new block number:
+      if (-1 == $ids{$id}) {$ids{$id} = $id}
    }
    # Make a list of how many cells are in each block, with index being block number:
    my @blocks = (0)x($h*$w); # $blocks[$x] == number of cells in block $x
    for my $id (keys %ids) {++$blocks[$ids{$id}]}
    # Reverse-sort the list of block sizes, then return 0th element of reverse-sorted list:
    my @sorted = sort {$b<=>$a} @blocks;
-   $"=', ';say "reverse-sorted array of block sizes = (@sorted)";
    return $sorted[0];
 }
 
