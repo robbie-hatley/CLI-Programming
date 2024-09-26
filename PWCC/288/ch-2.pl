@@ -60,17 +60,17 @@ This one is complicated! The approach I came up with goes like this:
  1. Assign a unique integer id to every cell in matrix.
  2. Make a hash "%ids" to keep track of the block number assigned to each id.
  3. For keys (0..MatrixSize-1), initialize all values of %ids to "-1", meaning "no block assigned yet".
- 3. Make a single pass through each cell of matrix, comparing each "current" cell to all neighbors.
- 4. If current cell matches a neighbor, and both have no block, assign a new block number to both.
- 5. If current cell matches a neighbor, and one has a block, assign block to cell that doesn't have one.
- 6. If current cell matches a neighbor, and both have a block, and they're the same, do nothing.
- 7. If current cell matches a neighbor, and both have a block, and they're different, then reassign lesser
+ 4. Make a single pass through each cell of matrix, comparing each "current" cell to all neighbors.
+ 5. If current cell matches a neighbor, and both have no block, assign a new block number to both.
+ 6. If current cell matches a neighbor, and one has a block, assign block to cell that doesn't have one.
+ 7. If current cell matches a neighbor, and both have a block, and they're the same, do nothing.
+ 8. If current cell matches a neighbor, and both have a block, and they're different, then reassign lesser
     block number to all cells with greater block number, thus merging the two blocks.
- 8. Make array "@blocks" to serve as list of how many cells are in each block.
- 9  For each key $id of %ids, increment $blocks[$ids{$id}].
+ 9. Make array "@blocks" to serve as list of how many cells are in each block.
+10. For each key $id of %ids, increment $blocks[$ids{$id}].
     @blocks will now be a list of how many cells are in each block.
-10. Reverse-sort the list of block sizes.
-11. Return 0th element of reverse-sorted list of block sizes.
+11. Reverse-sort the list of block sizes.
+12. Return 0th element of reverse-sorted list of block sizes.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
