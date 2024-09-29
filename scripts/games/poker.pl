@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # poker.pl
+# Written by Robbie Hatley on Mon Sep 16, 2024.
 use v5.36;
-use bigint "lib" => "GMP";
 
 # x!:
 sub fact ($x) {
@@ -40,11 +40,11 @@ my $TP = comb(13,2)           # 13c2=78 poss pairs of pair values
 my $OP = 13                   # 13 poss pair values
        * comb(4,2)            # 4c2=6 suit combos for pair
        * comb(12,3)           # 12c3=220 val combos for 3rd, 4th, 5th cards
-       * 4                    # 4c1 poss 3rd-card suits
-       * 4                    # 4c1 poss 4th-card suits
-       * 4;                   # 4c1 poss 5th-card suits                                              1_098_240
+       * 4                    # 4 poss 3rd-card suits
+       * 4                    # 4 poss 4th-card suits
+       * 4;                   # 4 poss 5th-card suits                                                1_098_240
 my $ZP = (comb(13,5)-10)      # (13c5 poss  val combos, minus 10 for straights) = 1277
-       * (4**5 - 4);          # (4**5 poss suit combos, minu   4 for flushes  ) = 1020               1_302_540
+       * (4**5 - 4);          # (4**5 poss suit combos, minus  4 for flushes  ) = 1020               1_302_540
 
 printf "Number of Poker Hands      = %7d\n", comb(52,5);
 printf "Number of Royal    Flushes = %7d\n", $RF;
