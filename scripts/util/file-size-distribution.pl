@@ -28,6 +28,7 @@
 # Wed Sep 06, 2023: Re-named from "file-size-stats.pl" to "file-size-distribution.pl".
 # Thu Sep 07, 2023: No-longer printing directories (no point, just spams scrollback). Entry, exit, error,
 #                   debug, and help messages are to STDERR, but size distribution is now to STDOUT.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ##############################################################################################################
 
 use v5.36;
@@ -36,7 +37,6 @@ use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
 
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
 

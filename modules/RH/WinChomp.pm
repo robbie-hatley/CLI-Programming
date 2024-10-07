@@ -24,12 +24,13 @@
 # Copyleft 2015, Robbie Hatley. No rights reserved. Use as you please.
 #
 # Edit history:
-# Some time in 2015: 
+# Some time in 2015:
 #    Wrote it.
 # Sun Dec 31, 2017:
 #    use 5.026_001. use Exporter.
 # Tue Jun 05, 2018: use v5.20
 # Sat Nov 20, 2021: use v5.32. Renewed colophon. Revamped pragmas & encodings.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ########################################################################################################################
 
 # Package:
@@ -51,16 +52,15 @@ use open         OUT => ':encoding(UTF-8)';
 # NOTE: these may be over-ridden later. Eg, "open($fh, '< :raw', e $path)".
 
 # CPAN modules:
-use Sys::Binmode;
 use parent 'Exporter';
 
 # Symbols exported by default:
 our @EXPORT = qw( winchomp remove_bom );
 
 # Symbols which may be exported by-request:
-our %EXPORT_TAGS = 
+our %EXPORT_TAGS =
 (
-   esoteric => [qw(line_ends_to_unix   line_ends_to_windows   line_ends_to_oldmac      
+   esoteric => [qw(line_ends_to_unix   line_ends_to_windows   line_ends_to_oldmac
                    add_unix_newline    add_windows_newline    add_oldmac_newline       )]
 );
 Exporter::export_ok_tags('esoteric');
@@ -81,8 +81,8 @@ sub winchomp
    }
 }
 
-# Remove a BOM mark from the beginning of a line. NOTE: while a BOM mark 
-# in a utf-8 file is "EF BB BF" as the first 3 bytes of the file, in Perl's 
+# Remove a BOM mark from the beginning of a line. NOTE: while a BOM mark
+# in a utf-8 file is "EF BB BF" as the first 3 bytes of the file, in Perl's
 # memory a BOM mark is the 2-byte sequence "FEFF". This is because
 # "EF BB BF" is the utf8 encoding of the Unicode "BOM" character,
 # which is actually \N{U+FEFF}, or \N{BOM} for short.

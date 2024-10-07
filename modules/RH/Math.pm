@@ -20,6 +20,7 @@
 #                   integer results. Now using modules "Math::BigInt", "Math::BigFloat", and "bigint".
 #                   Now using "Math::BigInt->accuracy(250)" to get 250-digit integer accuracy.
 #                   And, I narrowed the formatting from 120 chars to 110 chars, to fit in github.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ##############################################################################################################
 
 # ============================================================================================================
@@ -43,7 +44,6 @@ use open         IN  => ':encoding(UTF-8)';
 use open         OUT => ':encoding(UTF-8)';
 
 # CPAN modules:
-use Sys::Binmode;
 use parent 'Exporter';
 use Regexp::Common;
 use Math::BigInt;

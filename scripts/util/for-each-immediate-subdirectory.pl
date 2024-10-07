@@ -18,11 +18,12 @@
 # Thu Nov 25, 2021: Renamed to "for-each-immediate-subdirectory.pl" to avoid confusion. Shortened subroutine names.
 #                   Now using GetFiles instead of glob_utf8, so as to more-easily get fully-qualified directory names.
 #                   Also added time-stamping.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+use utf8;
+
 use Time::HiRes 'time';
 
 use RH::Dir;

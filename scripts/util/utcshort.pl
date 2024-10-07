@@ -18,13 +18,12 @@
 #                   "Sys::Binmode".
 # Wed Aug 09, 2023: Upgraded from "v5.32" to "v5.36". Got rid of "common::sense" (antiquated). Reduced width
 #                   from 120 to 110. Added strict, warnings, etc, to boilerplate.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
-use Sys::Binmode;
+
 use POSIX 'strftime';
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime;

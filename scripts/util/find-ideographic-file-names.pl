@@ -13,11 +13,11 @@
 # Mon Mar 15, 2021: Wrote it.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Sat Nov 27, 2021: Shortened sub names. Fixed regexp bug that was causing program to find no files. Tested: Works.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+use utf8;
 
 use Time::HiRes 'time';
 

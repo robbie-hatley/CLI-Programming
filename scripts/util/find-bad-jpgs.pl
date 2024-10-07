@@ -23,12 +23,14 @@
 #                   argument, target as second, and regexp (instead of wildcard) as third.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Sat Nov 27, 2021: Renamed to "find-bad-jpgs.pl". Fixed wide character error (due to sending unencrypted name to open).
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+use utf8;
+
 use Time::HiRes 'time';
+
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================

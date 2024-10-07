@@ -1,10 +1,10 @@
 #! /usr/bin/perl
 
-# This is a 120-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
+# This is a 110-character-wide UTF-8 Unicode Perl source-code text file with hard Unix line breaks ("\x{0A}").
 # ¡Hablo Español! Говорю Русский. Björt skjöldur. ॐ नमो भगवते वासुदेवाय. 看的星星，知道你是爱。 麦藁雪、富士川町、山梨県。
-# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
+# =======|=========|=========|=========|=========|=========|=========|=========|=========|=========|=========|
 
-########################################################################################################################
+##############################################################################################################
 # Dir.pm
 # Robbie Hatley's Directory Tools Module
 # Written by Robbie Hatley, starting 2015-03-24
@@ -75,13 +75,15 @@
 # Wed Jul 31, 2024: Got rid of unused variables $OldDir and $NewDir in rename_file().
 #                   Changed "rename to 'existing' path" criteria to "$PLATFORM is 'Win64', old and new names
 #                   are different, and fc($OldName) eq fc($NewName)".
-########################################################################################################################
+# Thu Oct 03, 2024: Dramatically-simplified RecurseDirs (got rid of unnecessary restrictions on directories
+#                   and removed personal identifying information). Got rid of Sys::Binmode.
+##############################################################################################################
 
-# ======= PACKAGE: =====================================================================================================
+# ======= PACKAGE: ===========================================================================================
 
 package RH::Dir;
 
-# ======= PRAGMAS: =====================================================================================================
+# ======= PRAGMAS: ===========================================================================================
 
 # Boilerplate:
 use v5.36;
@@ -98,7 +100,6 @@ use open         OUT => ':encoding(UTF-8)';
 # NOTE: these may be over-ridden later. Eg, "open($fh, '< :raw', e $path)".
 
 # CPAN modules:
-use Sys::Binmode;
 use parent 'Exporter';
 use POSIX 'floor', 'ceil', 'strftime';
 use Cwd;
@@ -687,21 +688,25 @@ sub RecurseDirs :prototype(&) ($f) {
 
    # ======= PLATFORM-SPECIFIC ORIGINAL-DIRECTORY CHECKS: ====================================================
 
-   # If "original" directory is something we shouldn't be recursing, die:
+   # If "original" directory is something we shouldn't recurse, print warning and return 0 (failure):
    if
    (
-         $oridir eq '/proc'                              # Trying to navigate within here causes errors.
-      || $oridir eq '/'          && 'root' ne $ENV{USER} # Size, system files, permissions.
-      || $oridir eq '/home'      && 'root' ne $ENV{USER} # Size, permissions.
-      || $oridir eq '/mnt'       && 'root' ne $ENV{USER} # Size.
-      || $oridir eq 'lost+found' && 'root' ne $ENV{USER} # Permissions.
+         $oridir eq '/proc' # Linux: Attempting to navigate from "/proc" can cause system crashes!
+      || $oridir =~ m#/\.git$#                     && 'root' ne $ENV{USER} # All OSs: git        is root-only.
+      || $oridir =~ m#/System Volume Information$# && 'root' ne $ENV{USER} # Windows: SysVolInf  is root-only.
+      || $oridir =~ m#/lost+found$#                && 'root' ne $ENV{USER} # Linux:   Lost&Found is root-only.
+      || $oridir =~ m#/\.Recycle/$#i               && 'root' ne $ENV{USER} # Windows: trash      is root-only.
+      || $oridir =~ m#/\$Recycle\.Bin$#i           && 'root' ne $ENV{USER} # Windows: trash      is root-only.
+      || $oridir =~ m#/Recyler$#i                  && 'root' ne $ENV{USER} # Windows: trash      is root-only.
+      || $oridir =~ m#/Trash.*$#i                  && 'root' ne $ENV{USER} # Linux:   trash      is root-only.
+      || $oridir =~ m#/\.Trash.*$#i                && 'root' ne $ENV{USER} # Linux:   trash      is root-only.
    )
    {
-      die "Fatal Error in RecurseDirs:\n"
-         ."Can't recurse from this problematic Linux directory:\n"
-         ."$oridir\n"
-         ."Aborting program.\n"
-         ."$!\n";
+      warn "Error in RecurseDirs:\n"
+          ."Can't recurse from this problematic starting directory:\n"
+          ."$oridir\n"
+          ."Aborting directory-tree walk.\n";
+      return 0;
    }
 
    # Try to open current directory; if that fails, print warning and return 1:
@@ -761,65 +766,16 @@ sub RecurseDirs :prototype(&) ($f) {
       # If we're not 'root' then bypass various directories that only 'root' should be messing with:
       if ( 'root' ne $ENV{USER} ) {
          # Avoid certain specific problematic directories:
-         next SUBDIR if $subdir eq '.git';                         # Windows/Linux/Cygwin: git files; no touch.
-         next SUBDIR if $subdir eq 'bak';                          # Windows/Linux/Cygwin: backups;    too big.
-         next SUBDIR if $subdir eq 'net';                          # Windows/Linux/Cygwin: networks;   too big.
-         next SUBDIR if $subdir eq 'rem';                          # Windows/Linux/Cygwin: removables; too big.
-         next SUBDIR if $subdir eq 'System Volume Information';    # Windows: System volume information.
-         next SUBDIR if $subdir eq 'lost+found';                   # Linux: Lost & Found Dept.
+         next SUBDIR if $subdir eq '.git';                         # All OSs: don't mess with git.
+         next SUBDIR if $subdir eq 'System Volume Information';    # Windows: SysVolInf is off-limits.
+         next SUBDIR if $subdir =~ m/lost+found$/;                 # Linux:   Lost&Found is root-only.
 
          # Avoid rooting in trash bins:
          next SUBDIR if $subdir =~ m/^\.Recycle/i;                 # Windows trash bins.
          next SUBDIR if $subdir =~ m/^\$Recycle.Bin/i;             # Windows trash bins.
          next SUBDIR if $subdir =~ m/^Recyler/i;                   # Windows trash bins.
-         next SUBDIR if $subdir =~ m/^Trash/;                      # Linux trash bins.
-         next SUBDIR if $subdir =~ m/^\.Trash/;                    # Linux trash bins.
-
-         # Avoid problematic subdirectories of bootable Windows partitions:
-         if
-         (
-               $curdir =~ m[^/home/aragorn/net/KE/Valinor]
-            || $curdir =~ m[^/home/aragorn/net/SR/Imladris]
-            || $curdir =~ m[^/cygdrive/c]
-            || $curdir =~ m[^/cygdrive/n]
-         ) {
-            next SUBDIR if $subdir =~ m/^\$/;                      # Windows: System directories.
-            next SUBDIR if $subdir =~ m/^cygwin/i;                 # Windows: Cygwin
-            next SUBDIR if $subdir eq 'Application Data';          # Windows: OLD LINK: App Data.
-            next SUBDIR if $subdir eq 'Documents and Settings';    # Windows: OLD LINK: Doc n Settings.
-            next SUBDIR if $subdir eq 'Local Settings';            # Windows: OLD LINK: Local Settings.
-            next SUBDIR if $subdir eq 'My Documents';              # Windows: OLD LINK: My Documents.
-            next SUBDIR if $subdir eq 'My Music';                  # Windows: OLD LINK: My Music.
-            next SUBDIR if $subdir eq 'My Pictures';               # Windows: OLD LINK: My Pictures.
-            next SUBDIR if $subdir eq 'My Videos';                 # Windows: OLD LINK: My Videos.
-            next SUBDIR if $subdir eq 'NetHood';                   # Windows: Networks.
-            next SUBDIR if $subdir eq 'PrintHood';                 # Windows: Printers.
-            next SUBDIR if $subdir eq 'PerfLogs';                  # Windows: Performance Logs.
-            next SUBDIR if $subdir eq 'ProgramData';               # Windows: Program Data.
-            next SUBDIR if $subdir eq 'Program Files';             # Windows: Program Files (64bit).
-            next SUBDIR if $subdir eq 'Program Files (x86)';       # Windows: Program Files (32bit).
-            next SUBDIR if $subdir eq 'Recovery';                  # Windows: System Recovery Files.
-            next SUBDIR if $subdir eq 'SendTo';                    # Windows: Send To.
-            next SUBDIR if $subdir eq 'Start Menu';                # Windows: Start Menu.
-            next SUBDIR if $subdir eq 'Temp';                      # Windows: Temporary Files.
-            next SUBDIR if $subdir eq 'Temporary Internet Files';  # Windows: Temporary Internet Files.
-            next SUBDIR if $subdir eq 'Windows';                   # Windows: Windows operating system.
-         }
-
-         # Don't mess with the private files of certain Windows users:
-         if
-         (
-               $curdir eq '/home/aragorn/net/KE/Valinor/Users'
-            || $curdir eq '/home/aragorn/net/SR/Imladris/Users'
-            || $curdir eq '/cygdrive/c/Users'
-            || $curdir eq '/cygdrive/n/Users'
-         ) {
-            next SUBDIR if $subdir eq 'Administrator';             # Windows: Problematic account.
-            next SUBDIR if $subdir eq 'Default';                   # Windows: Problematic account.
-            next SUBDIR if $subdir eq 'Default User';              # Windows: Problematic account.
-            next SUBDIR if $subdir eq 'Public';                    # Windows: Problematic account.
-            next SUBDIR if $subdir eq 'All Users';                 # Windows: Problematic account.
-         }
+         next SUBDIR if $subdir =~ m/^Trash/i;                     # Linux trash bins.
+         next SUBDIR if $subdir =~ m/^\.Trash/i;                   # Linux trash bins.
       } # end if (we're not root)
 
       # Try to chdir to $subdir; if that fails, try to cd back to $curdir (or die if that fails),

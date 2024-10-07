@@ -22,6 +22,7 @@
 #                   Now considering ".htm", ".html", ".HTM", ".HTML" as being 4 different extensions.
 #                   (Program was hiding those differences, but that's a mistake, as we need to see what
 #                   non-cannonical file-name extensions are being used, so we can fix them.)
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ##############################################################################################################
 
 use v5.36;
@@ -30,7 +31,6 @@ use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
 
-use Sys::Binmode;
 use Cwd;
 
 use RH::Dir;

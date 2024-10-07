@@ -14,11 +14,11 @@
 # Fri Jul 17, 2015: Upgraded for utf8.
 # Sat Apr 16, 2016: Now using -CSDA.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+use utf8;
 
 use RH::Util;
 use RH::Dir;

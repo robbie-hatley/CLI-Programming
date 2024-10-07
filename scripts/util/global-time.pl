@@ -18,11 +18,11 @@
 # Mon Feb 15, 2021: Pulled all time-related subs from RH::Util and dropped them in here instead, as they're
 #                   highly-experimental and they're ONLY being used here.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+use utf8;
 
 use RH::Util;
 

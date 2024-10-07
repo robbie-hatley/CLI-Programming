@@ -42,14 +42,12 @@
 #                   between separate short and long /regexps/ for processing options. Now using map and join
 #                   instead of separate print statements for printing options and arguments. Fixed "--debut"
 #                   bug in argv (should have been --debug).
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
 
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
 use Data::Dumper qw(Dumper);

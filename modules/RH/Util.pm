@@ -19,6 +19,7 @@
 # Tue Aug 15, 2023: Decreased width from 120 to 110. Upgraded from "v5.32" to "v5.36". Added ":prototype"
 #                   to every subroutine declaration and definition. Now using signatures. Got rid of
 #                   "common::sense" (antiquated). Got rid of all "given" and "when".
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ##############################################################################################################
 
 # Package:
@@ -39,7 +40,6 @@ use open         OUT => ':encoding(UTF-8)';
 # NOTE: these may be over-ridden later. Eg, "open($fh, '< :raw', e $path)".
 
 # CPAN modules:
-use Sys::Binmode;
 use Encode         qw( :DEFAULT encode decode :fallbacks :fallback_all );
 use parent         qw( Exporter                                        );
 use POSIX          qw( floor ceil strftime                             );

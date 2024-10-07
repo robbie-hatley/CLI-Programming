@@ -17,11 +17,12 @@
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Thu Nov 25, 2021: Renamed "for-each-directory-in-tree.pl" to avoid confusion with other programs. Shortened subroutine
 #                   names. Added time stamping.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+use utf8;
+
 use Time::HiRes qw( time );
 
 use RH::Dir;

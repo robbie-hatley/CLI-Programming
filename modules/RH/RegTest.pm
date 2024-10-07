@@ -23,6 +23,7 @@
 # Thu Aug 24, 2023: Changed to C-style {bracing}. Got rid of "o" option on the qr// (unnecessary).
 #                   Added some comments to clarify various tricky bits.
 # Mon Aug 28, 2023: Fixed bug in which, if capture $1 is "0", it will be reported as "no captures".
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ##############################################################################################################
 
 # Package:
@@ -36,7 +37,7 @@ use utf8;
 use warnings FATAL => 'utf8';
 
 # CPAN modules:
-use Sys::Binmode;
+# (none)
 # Note: Don't use "use parent 'Exporter';" here, because this module doesn't export anything,
 # because it is a class. Also, don't put -CSDA on the shebang, because it's too late for that.
 

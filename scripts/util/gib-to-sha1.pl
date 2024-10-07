@@ -17,12 +17,14 @@
 # Mon Feb 15, 2021: Split into "gib-to-sha1.pl" and "wsl-to-sha1.pl". "gib-to-sha1.pl" now handles gib only, with no
 #                   extension discrimination.
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+use utf8;
+
 use Digest::SHA1 qw(sha1_hex);
+
 use RH::Util;
 use RH::Dir;
 

@@ -43,15 +43,13 @@
 #                   Removed "no debug" option as that's already default in all of my programs.
 #                   Now using "d getcwd" instead of "cwd_utf8". Reverted to using "-9" for "--nine".
 #                   $Db now triggers only diagostics and simulation, not entry/exit or stats.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ##############################################################################################################
 
 use v5.36;
-use strict;
-use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
 
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
 

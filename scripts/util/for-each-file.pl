@@ -21,11 +21,12 @@
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Sat Nov 27, 2021: Shortened sub names, fixed wide character error (due to missing e), and now printing each command
 #                   line immediately before executing it. Tested: Works.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
 use v5.32;
-use common::sense;
-use Sys::Binmode;
+use utf8;
+
 use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================

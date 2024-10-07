@@ -35,19 +35,17 @@
 #                   that's already default in ALL my programs. Changed all "$db" to "$Db".
 #                   Now using "d getcwd" instead of "cwd_utf8". sub curfile() no longer calls getcwd.
 # Wed Aug 14, 2024: Removed unnecessary "use" statements.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
 
 # Pragmas:
 use v5.36;
-use strict;
-use warnings;
 use utf8;
 use warnings FATAL => 'utf8';
 
 # CPAN modules:
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
 

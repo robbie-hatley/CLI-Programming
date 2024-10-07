@@ -26,6 +26,7 @@
 # Fri Sep 01, 2023: Got rid of $db, -e, --debug (unnecessary). Now using "d getcwd" instead of "cwd_utf8".
 #                   Got rid of $Verbose (not necessary). Now always printing entry and exit messages and stats
 #                   to STDERR and file header to STDOUT. Fixed some errors in comments and help.
+# Thu Oct 03, 2024: Got rid of Sys::Binmode.
 ##############################################################################################################
 
 # Pragmas:
@@ -36,7 +37,6 @@ use utf8;
 use warnings FATAL => 'utf8';
 
 # CPAN modules:
-use Sys::Binmode;
 use Cwd;
 use Time::HiRes 'time';
 use Digest::MD5 qw( md5_hex );
