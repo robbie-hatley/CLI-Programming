@@ -57,10 +57,12 @@
 # Mon Oct 09, 2023: Fixed bug in which debug msg in curdire was being printed even when not debugging.
 # Sat Apr 27, 2024: Set default target to "both" and improved comments and help.
 # Wed Aug 14, 2024: Removed unnecessary "use" statements.
+# Mon Oct 07, 2024: Added "use warnings FATAL => 'utf8';". Removed "_END_".
 ##############################################################################################################
 
 use v5.36;
 use utf8;
+use warnings FATAL => 'utf8';
 use Cwd;
 use Time::HiRes 'time';
 use RH::Util;
@@ -345,7 +347,7 @@ sub error ($NA) {
    Error: You typed $NA arguments, but rename-files.pl takes 2, 3, or 4 arguments.
    END_OF_ERROR
    return 1;
-} # end sub error ($NA)
+} # end sub error
 
 sub help {
    print STDERR ((<<'   END_OF_HELP') =~ s/^   //gmr);
@@ -555,4 +557,3 @@ sub help {
    # Return success code 1 to caller:
    return 1;
 } # end sub help
-__END__

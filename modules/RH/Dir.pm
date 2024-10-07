@@ -1810,7 +1810,7 @@ sub rename_file :prototype($$) ($OldPath, $NewPath) {
          my $Intermediate = path($NewDir, 'aъ玔ò山ë懳z');
         !system(e("ln '$OldPath' '$Intermediate'"))      or return 0;
         !system(e("unlink '$OldPath'"))                  or return 0;
-         system(e("unlink '$NewPath' 2> /dev/null"));    # Succeeds but gives false failure warning.
+        !system(e("unlink '$NewPath'"))                  or return 0;
         !system(e("ln '$Intermediate' '$NewPath'"))      or return 0;
         !system(e("unlink '$Intermediate'"))             or return 0;
          return(1);
@@ -1822,8 +1822,12 @@ sub rename_file :prototype($$) ($OldPath, $NewPath) {
       }
    }
 
-   # Else if the new path does NOT exist,
-   # attempt to rename the file, and return the result code (which will be 1 for success, 0 for failure):
+   # Else if the new path does NOT exist, attempt to rename the file, and return the result code, which will
+   # be 1 for success, 0 for failure. Note that if $OldPath or $NewPath are relative, rather than absolute,
+   # paths, then they will be construed relative to the "current directory" of the environment of the calling
+   # program, NOT relative to the directory of $OldPath. So, something like "rename('asdf/qwer', 'yuio')",
+   # executed from current directory "/hjkl", will rename file "/hjkl/asdf/qwer" to "/hjkl/yuio", NOT to
+   # "/hhjkl/asdf/yuio".
    else {
       return(rename(e($OldPath), e($NewPath)));
    }

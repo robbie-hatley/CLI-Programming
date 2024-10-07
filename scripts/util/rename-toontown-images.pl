@@ -36,6 +36,7 @@
 #                   Now using "d getcwd" instead of "cwd_utf8". sub curfile() no longer calls getcwd.
 # Wed Aug 14, 2024: Removed unnecessary "use" statements.
 # Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
+# Mon Oct 07, 2024: Got rid of "use warnings FATAL => 'utf8';" (unnecessary).
 ##############################################################################################################
 
 # ======= PRELIMINARIES: =====================================================================================
@@ -43,7 +44,6 @@
 # Pragmas:
 use v5.36;
 use utf8;
-use warnings FATAL => 'utf8';
 
 # CPAN modules:
 use Cwd;
@@ -374,7 +374,7 @@ sub curfile ($file) {
 
    END_OF_TWILIGHT_ZONE
    return 666;
-} # end sub curfile ($file)
+} # end sub curfile
 
 sub stats {
    if ( $Db || $Verbose >= 1 ) {

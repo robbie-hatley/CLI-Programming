@@ -21,7 +21,16 @@
 use v5.36;
 use utf8;
 use RH::Dir;
-
+if ( 2 != scalar(@ARGV) || ! -e $ARGV[0] ) {
+   warn "Error: \"rename-file.pl\" needs exactly two arguments.\n"
+       ."The first  argument must be a path to an existing file.\n"
+       ."The second argument must be a valid path to rename the file to.\n"
+       ."Aborting program execution.\n";
+   exit 666;
+}
+say "\"rename-file.pl\" will attempt the following file rename:";
+say "Original file path: $ARGV[0]";
+say "Proposed file path: $ARGV[1]";
 rename_file($ARGV[0], $ARGV[1])
 and say "Rename succeeded."
 or  say "Rename failed.";

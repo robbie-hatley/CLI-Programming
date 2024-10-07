@@ -14,10 +14,13 @@
 # Sat Nov 20, 2021: Refreshed shebang, colophon, titlecard, and boilerplate; using "common::sense" and "Sys::Binmode".
 # Sat Nov 27, 2021: Shortened sub names. Fixed regexp bug that was causing program to find no files. Tested: Works.
 # Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
+# Mon Oct 07, 2024: Added "use warnings FATAL => 'utf8';", as this program deals with elaborate UTF-8 file names.
+#                   Also upgraded to "v5.36" with prototypes and signatures.
 ########################################################################################################################
 
-use v5.32;
+use v5.36;
 use utf8;
+use warnings FATAL => 'utf8';
 
 use Time::HiRes 'time';
 
@@ -25,17 +28,17 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub argv    ()  ; # Process @ARGV.
-sub curdire ()  ; # Process current directory.
-sub curfile ($) ; # Process current file.
-sub stats   ()  ; # Print statistics.
-sub error   ($) ; # Handle errors.
-sub help    ()  ; # Print help and exit.
+sub argv    :prototype()  ; # Process @ARGV.
+sub curdire :prototype()  ; # Process current directory.
+sub curfile :prototype($) ; # Process current file.
+sub stats   :prototype()  ; # Print statistics.
+sub error   :prototype($) ; # Handle errors.
+sub help    :prototype()  ; # Print help and exit.
 
 # ======= VARIABLES: ===================================================================================================
 
 # Turn on debugging?
-my $db = 0; # Set to 1 for debugging, 0 for no debugging.
+my $Db = 0; # Set to 1 for debugging, 0 for no debugging.
 
 #Program Settings:             Meaning:                 Range:     Default:
 my $Recurse   = 0          ; # Recurse subdirectories?  (bool)     0
@@ -68,42 +71,63 @@ my $findcount = 0; # Count of dir entries matching regexps.
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
-sub argv ()
-{
-   for ( my $i = 0 ; $i < @ARGV ; ++$i )
-   {
-      $_ = $ARGV[$i];
-      if (/^-[\pL]{1,}$/ || /^--[\pL\pM\pN\pP\pS]{2,}$/)
-      {
-            if ( $_ eq '-h' || $_ eq '--help'         ) {help; exit 777;}
-         elsif ( $_ eq '-r' || $_ eq '--recurse'      ) {$Recurse =  1 ;}
-         elsif ( $_ eq '-f' || $_ eq '--target=files' ) {$Target  = 'F';}
-         elsif ( $_ eq '-d' || $_ eq '--target=dirs'  ) {$Target  = 'D';}
-         elsif ( $_ eq '-b' || $_ eq '--target=both'  ) {$Target  = 'B';}
-         elsif ( $_ eq '-a' || $_ eq '--target=all'   ) {$Target  = 'A';}
-         elsif ( $_ eq '-v' || $_ eq '--verbose'      ) {$Verbose =  1 ;}
-         splice @ARGV, $i, 1;
-         --$i;
-      }
+sub argv :prototype() () {
+   # Get options and arguments:
+   my @opts = ();            # options
+   my @args = ();            # arguments
+   my $end = 0;              # end-of-options flag
+   my $s = '[a-zA-Z0-9]';    # single-hyphen allowable chars (English letters, numbers)
+   my $d = '[a-zA-Z0-9=.-]'; # double-hyphen allowable chars (English letters, numbers, equal, dot, hyphen)
+   for ( @ARGV ) {           # For each element of @ARGV,
+      /^--$/                 # "--" = end-of-options marker = construe all further CL items as arguments,
+      and $end = 1           # so if we see that, then set the "end-of-options" flag
+      and next;              # and skip to next element of @ARGV.
+      !$end                  # If we haven't yet reached end-of-options,
+      && ( /^-(?!-)$s+$/     # and if we get a valid short option
+      ||  /^--(?!-)$d+$/ )   # or a valid long option,
+      and push @opts, $_     # then push item to @opts
+      or  push @args, $_;    # else push item to @args.
    }
-   my $NA = scalar(@ARGV);
-   given ($NA)
-   {
-      when (0) {                       ;} # Do nothing.
-      when (1) {$RegExp = qr/$ARGV[0]/o;} # Set $RegExp.
-      default  {error($NA)             ;} # Print error and help messages then exit 666.
-   }
-   return 1;
-} # end sub argv ()
 
-sub curdire ()
-{
+   # Process options:
+   for ( @opts ) {
+      /^-$s*h/ || /^--help$/    and help and exit 777 ;
+      /^-$s*e/ || /^--debug$/   and $Db      =  1     ;
+      /^-$s*q/ || /^--quiet$/   and $Verbose =  0     ;
+      /^-$s*t/ || /^--terse$/   and $Verbose =  1     ;
+      /^-$s*v/ || /^--verbose$/ and $Verbose =  2     ;
+      /^-$s*l/ || /^--local$/   and $Recurse =  0     ;
+      /^-$s*r/ || /^--recurse$/ and $Recurse =  1     ;
+      /^-$s*f/ || /^--files$/   and $Target  = 'F'    ;
+      /^-$s*d/ || /^--dirs$/    and $Target  = 'D'    ;
+      /^-$s*b/ || /^--both$/    and $Target  = 'B'    ;
+      /^-$s*a/ || /^--all$/     and $Target  = 'A'    ;
+   }
+   if ( $Db ) {
+      say STDERR '';
+      say STDERR "\$opts = (", join(', ', map {"\"$_\""} @opts), ')';
+      say STDERR "\$args = (", join(', ', map {"\"$_\""} @args), ')';
+   }
+
+   # Get number of arguments:
+   my $NA = scalar(@args);
+
+   # Process arguments:
+   if    ( 0 == $NA ) {                              ; } # Do nothing.
+   elsif ( 1 == $NA ) { $RegExp = qr/$args[0]/o      ; } # Set $RegExp.
+   else               { error($NA) ; help ; exit 666 ; } # Error.
+
+   # Return success code 1 to caller:
+   return 1;
+} # end sub argv
+
+sub curdire :prototype() () {
    # Increment directory counter:
    ++$direcount;
 
-   # Get and announce current working directory:
+   # Get and announce current working directory if being verbose:
    my $cwd = cwd_utf8;
-   say "\nDirectory # $direcount: $cwd\n";
+   say "\nDirectory # $direcount: $cwd\n" if $Verbose;
 
    # Get list of file-info packets in $cwd matching $Target and $RegExp:
    my $curdirfiles = GetFiles($cwd, $Target, $RegExp);
@@ -114,11 +138,9 @@ sub curdire ()
       curfile($file);
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-sub curfile ($)
-{
-   my $file = shift;
+sub curfile :prototype($) ($file) {
    ++$filecount; # Count of all files processed by this sub.
    # Print paths of all files with names containing at least one character which matches
    # the Unicode "Letters, Other" property:
@@ -128,32 +150,29 @@ sub curfile ($)
       say $file->{Path};
    }
    return 1;
-} # end sub curfile ()
+} # end sub curfile
 
-sub stats ()
-{
+sub stats :prototype() () {
    warn "\nStatistics for this directory tree:\n";
    warn "Navigated $direcount directories.\n";
    warn "Processed $filecount files.\n";
    warn "Found $findcount paths with names containing \"other\" letters.\n";
    return 1;
-} # end sub stats ()
+} # end sub stats
 
-sub error ($)
-{
-   my $NA = shift;
+sub error :prototype($) ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: you typed $NA arguments, but this program takes at most 1 argument,
    which, if present, must be a Perl-Compliant Regular Expression specifying
-   which directory entries to process. Help follows:
+   which directory entries to process.
 
+   Help follows.
    END_OF_ERROR
-   help;
-   exit 666;
-} # end sub error ($)
+   return 1;
+} # end sub error
 
-sub help ()
-{
+sub help :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
    Welcome to "find-ideographic-file-names.pl". This program finds all files
    in the current directory (and all subdirectories if a -r or --recurse
