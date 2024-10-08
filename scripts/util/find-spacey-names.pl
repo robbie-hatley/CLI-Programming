@@ -19,7 +19,7 @@
 # Thu Oct 03, 2024: Got rid of Sys::Binmode and common::sense; added "use utf8".
 ########################################################################################################################
 
-use v5.32;
+use v5.36;
 use utf8;
 
 use Time::HiRes 'time';
@@ -28,12 +28,12 @@ use RH::Dir;
 
 # ======= SUBROUTINE PRE-DECLARATIONS: =================================================================================
 
-sub argv    ()  ; # Process @ARGV.
-sub curdire ()  ; # Process current directory.
-sub curfile ($) ; # Process current file.
-sub stats   ()  ; # Print statistics.
-sub error   ($) ; # Handle errors.
-sub help    ()  ; # Print help and exit.
+sub argv    :prototype()  ; # Process @ARGV.
+sub curdire :prototype()  ; # Process current directory.
+sub curfile :prototype($) ; # Process current file.
+sub stats   :prototype()  ; # Print statistics.
+sub error   :prototype($) ; # Handle errors.
+sub help    :prototype()  ; # Print help and exit.
 
 # ======= VARIABLES: ===================================================================================================
 
@@ -82,8 +82,7 @@ my $spaccount = 0; # Count of spacey directory names found.
 
 # ======= SUBROUTINE DEFINITIONS: ======================================================================================
 
-sub argv ()
-{
+sub argv :prototype() () {
    for ( my $i = 0 ; $i < @ARGV ; ++$i )
    {
       $_ = $ARGV[$i];
@@ -108,26 +107,13 @@ sub argv ()
       }
    }
    my $NA = scalar(@ARGV);
-   given ($NA)
-   {
-      when (0)
-      {
-         ; # Do nothing.
-      }
-      when (1)
-      {
-         $Regexp = shift(@ARGV);
-      }
-      default
-      {
-         error($NA);
-      }
-   }
+   if    ( 0 == $NA ) {                           ; } # Do nothing.
+   elsif ( 1 == $NA ) {$Regexp = shift(@ARGV)     ; } # Set $Regexp.
+   else               {error($NA); help; exit 666 ; } # Error.
    return 1;
-} # end sub argv ()
+} # end sub argv
 
-sub curdire ()
-{
+sub curdire :prototype() () {
    ++$direcount;
    my $curdir = cwd_utf8;
    if ($Verbose)
@@ -146,12 +132,10 @@ sub curdire ()
       curfile($file);
    }
    return 1;
-} # end sub curdire ()
+} # end sub curdire
 
-sub curfile ($)
-{
+sub curfile :prototype($) ($file) {
    ++$filecount;
-   my $file = shift;
    if ($file->{Name} =~ m/\s/)
    {
       ++$spaccount;
@@ -162,10 +146,9 @@ sub curfile ($)
       );
    }
    return 1;
-} # end sub curfile ($)
+} # end sub curfile
 
-sub stats ()
-{
+sub stats :prototype() () {
    print
    (
       STDERR
@@ -176,25 +159,24 @@ sub stats ()
     . "\n"
    );
    return 1;
-} # end sub stats ()
+} # end sub stats
 
-sub error ($)
-{
-   my $NA = shift;
+sub error :prototype($) ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
+
    Error: you typed $NA arguments, but \"find-spacey-names.pl\" takes
    at most 1 argument, which, if present, must be a regular expression
    specifying which directory entries to process. (Did you forget to put
-   your regexp in 'single quotes'?) Help follows:
+   your regexp in 'single quotes'?)
 
+   Help follows.
    END_OF_ERROR
-   help;
-   exit 666;
-} # end sub error ($)
+   return 1;
+} # end sub error
 
-sub help ()
-{
+sub help :prototype() () {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
+
    Welcome to "find-spacey-names.pl". This program finds entries in the current
    directory (and all subdirectories if a -r or --recurse option is used) which
    have names containing white space.
@@ -232,4 +214,4 @@ sub help ()
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help

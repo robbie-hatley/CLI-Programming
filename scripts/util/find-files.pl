@@ -260,7 +260,7 @@ sub error ($NA) {
    Error: you typed $NA arguments, but \"find-files.pl\"
    requires 0, 1, or 2 arguments. Help follows:
    END_OF_ERROR
-} # end error ($NA)
+} # end error
 
 # Print help message:
 sub help {

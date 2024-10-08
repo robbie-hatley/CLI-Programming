@@ -154,7 +154,7 @@ sub stats :prototype() {
     . "\n"
    );
    return 1;
-} # end sub stats ()
+} # end sub stats
 
 sub error :prototype($) ($NA) {
    print ((<<"   END_OF_ERROR") =~ s/^   //gmr);
@@ -165,7 +165,7 @@ sub error :prototype($) ($NA) {
    your regexp in 'single quotes'?)
    END_OF_ERROR
    return 1;
-} # end sub error ($)
+} # end sub error
 
 sub help :prototype() {
    print ((<<'   END_OF_HELP') =~ s/^   //gmr);
@@ -209,4 +209,4 @@ sub help :prototype() {
    programmer.
    END_OF_HELP
    return 1;
-} # end sub help ()
+} # end sub help
