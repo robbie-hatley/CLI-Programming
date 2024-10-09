@@ -50,7 +50,12 @@ Output: false
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+I actually found this one easier than task 1. It's basically just a matter of following the steps of Luhn's
+Algorithm as defined in the problem description:
+1. Get the "payload" (right-most digit).
+2. From the right, double the digit at every 0-based even index (2,4,6...); if digit sum > 9, add the digits.
+3. The "checksum" is the number necessary to be added to sum-of-digits to bring it up to a factor of 10.
+4. Return true if-and-only-if payload == checksum; else return false.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
