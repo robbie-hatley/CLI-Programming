@@ -44,19 +44,20 @@ possible 5-card Poker hands.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.36;
+   use v5.36;
 
-# x!:
-sub fact ($x) {
-   my $f = 1;
-   for my $i (2..$x) {$f *= $i}
-   $f
-}
+   # x!:
+   sub fact ($x) {
+      my $f = 1;
+      for my $i (2..$x) {$f *= $i}
+      $f
+   }
 
-# Unordered combinations of x things taken y-at-a-time:
-sub comb ($x, $y) {
-   fact($x)/fact($x-$y)/fact($y);
-}
+   # Unordered combinations
+   # of x things taken y-at-a-time:
+   sub comb ($x, $y) {
+      fact($x)/fact($x-$y)/fact($y);
+   }
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
