@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------------------------------------
 TITLE AND ATTRIBUTION:
 Solutions in Perl for The Weekly Challenge 291-2,
-written by Robbie Hatley on Xxx Xxx xx, 2024.
+written by Robbie Hatley on Tue Oct 15, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
@@ -64,8 +64,8 @@ sub comb ($x, $y) {
 # Note that in 5-Card Aces-High-Or-Low Nothing-Wild Draw Poker, there is no "Five-Of-A-Kind" because that
 # would require a wildcard. So the highest possible rank is "Straight Flush", or "Royal Flush" if one chooses
 # to consider "Royal Flush" (ace-high straight flush) to be its own rank; I DO so elect, in this solution,
-# thus giving 10 ranks instead of the usual 9. That doesn't affect the sum of "ways"; it just splits the 40
-# "ways" of "Straight Flush" into 4+36.
+# thus giving 10 ranks instead of the usual 9. That doesn't affect the sum of "ways"; it just splits the
+# 40 "ways" of "Straight Flush" into 4 + 36.
 
 # Also note that the worst rank, "High Card", can also be called "No Pair"; I DO so elect, in this solution.
 

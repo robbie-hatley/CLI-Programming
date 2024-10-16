@@ -12,7 +12,9 @@ my $wref;
       return sub { $y };
    };
    my $subscriber = {};
-   weaken($wref = $subscriber);
+   $wref = $subscriber;
+   weaken $wref;
    $subscriber->{foo} = $subject->($subscriber);
 }
-!defined $wref or die "Leak";
+!defined $wref or say "Leak in \$wref";
+

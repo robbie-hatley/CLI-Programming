@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------------------------------------
 TITLE AND ATTRIBUTION:
 Solutions in Perl for The Weekly Challenge 291-1,
-written by Robbie Hatley on Xxx Xxx xx, 2024.
+written by Robbie Hatley on Tue Oct 15, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
@@ -51,28 +51,31 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.36;
+   use v5.36;
 
-# What is the partial sum of values of array pointed-to-by $aref from one index to another?
-sub sum ($aref, $i, $j) {
-   my $accumulator = 0;
-   for my $k ($i..$j) {
-      $accumulator += $$aref[$k];
-   }
-   return $accumulator;
-}
-
-# What is the smallest Middle Index of the array pointed-to-by $aref, or -1 if no such thing exists?
-sub smallest_MI ($aref) {
-   my $return = -1;
-   for my $i (0..$#$aref) {
-      if ( sum($aref, 0, $i-1) == sum($aref, $i+1, $#$aref) ) {
-         $return = $i;
-         last;
+   # What is the partial sum of values of the array
+   # pointed-to by $aref from one index to another?
+   sub sum ($aref, $i, $j) {
+      my $accumulator = 0;
+      for my $k ($i..$j) {
+         $accumulator += $$aref[$k];
       }
+      return $accumulator;
    }
-   return $return;
-}
+
+   # What is the smallest Middle Index of the array
+   # pointed-to by $aref, or -1 if no such thing exists?
+   sub smallest_MI ($aref) {
+      my $return = -1;
+      for my $i (0..$#$aref) {
+         if ( sum($aref,   0 , $i-1)
+         == sum($aref, $i+1, $#$aref) ) {
+            $return = $i;
+            last;
+         }
+      }
+      return $return;
+   }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
