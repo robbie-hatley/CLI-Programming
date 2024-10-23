@@ -17,4 +17,4 @@ use List::Util 'sum0';
 
 exit if scalar(@ARGV) < 2;
 
-say 1 / sum0 map {1/$_} @ARGV;
+say 1 / sum0 map {1/eval($_)} @ARGV;
