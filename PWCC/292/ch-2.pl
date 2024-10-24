@@ -63,7 +63,7 @@ with an algorithm which makes "good effort" towards removing all the balls. I us
 3. For each ball in hand:
       If there are two contiguous balls of that color on row, insert to their right.
       Else if there is 1 ball of that color on row, insert to its right.
-      Else don't use current hand ball.
+      Else don't use current hand ball (as this would be counterproductive).
       Keep count of how many hand balls were added to row.
       Remove any contiguous clusters of 3-or-more balls from hand.
       Stop processing hand balls if row is now empty.
