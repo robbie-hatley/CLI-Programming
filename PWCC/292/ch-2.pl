@@ -57,7 +57,8 @@ so Output = 2.
 PROBLEM NOTES:
 I don't know about "minimum" (which would require elaborate mathematical proofs), but I can certainly come up
 with an algorithm which makes "good effort" towards removing all the balls. I use this approach:
-1. Sort hand in increasing order of abundance of each hand ball in row.
+1. Sort hand in increasing order of abundance of each hand ball in row. (I do this because highly-abundant
+   colors in row tend to self-destruct after less-abundant intermediaries are removed.)
 2. Process all balls in sorted hand from left to right.
 3. For each ball in hand:
       If there are two contiguous balls of that color on row, insert to their right.
@@ -97,7 +98,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
    # Try to clear colors from row using balls from hand:
    sub clear_colors ($row, $hnd) {
-      # Sort hand in increasing order of abundance of each hand card in row; I do this because highly-
+      # Sort hand in increasing order of abundance of each hand ball in row; I do this because highly-
       # abundant colors in row tend to self-destruct after less-abundant intermediaries are removed:
       $hnd = join '', sort {abundance($row,$a)<=>abundance($row,$b)} split '', $hnd;
       # Count of hand balls used:
