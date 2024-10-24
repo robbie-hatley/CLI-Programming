@@ -67,7 +67,7 @@ with an algorithm which makes "good effort" towards removing all the balls. I us
       Keep count of how many hand balls were added to row.
       Remove any contiguous clusters of 3-or-more balls from hand.
       Stop processing hand balls if row is now empty.
-5. If row is now empty, we win, so return number of hand balls used;
+4. If row is now empty, we win, so return number of hand balls used;
    otherwise, we lose, so return -1.
 
 --------------------------------------------------------------------------------------------------------------
