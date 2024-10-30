@@ -45,8 +45,9 @@ There are a number of different approaches one could take to this. Two approache
 compare angles. However, I note that every three points define a (possibly-degenerate) triangle, and every
 triangle has a (possibly-zero) area given by Heron's Formula, which says that given a triangle with sides
 having lengths a,b,c, if we let s = (a+b+c)/2 then the area A = sqrt(s*(s-a)*(s-b)*(s-c)). If a triangle's
-area is NOT close-to-zero (say, less than 0.0001 of the square of the quarter-perimeter of the triangle),
-then the triangle is a "boomerang".
+area is at least 1/10000 of the maximum area a triangle of that semiperimeter can have, then I'll consider
+that triangle to be a "boomerang". (The max area of a triangle with semiperimeter s is when the triangle
+is equilateral, which gives max_area = s**2/sqrt(27).)
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
