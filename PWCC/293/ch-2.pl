@@ -64,11 +64,8 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
    use v5.36;
 
-   # What is the square of a real number?
-   sub sqr ($x) {$x*$x}
-
    # What is the distance between two points?
-   sub dst ($x1,$y1,$x2,$y2) {sqrt(sqr($x1-$x2)+sqr($y1-$y2))}
+   sub dst ($x1,$y1,$x2,$y2) {sqrt(($x1-$x2)**2+($y1-$y2)**2)}
 
    # What are the semiperimeter and area of a triangle?
    sub Heron ($x1,$y1,$x2,$y2,$x3,$y3) {
@@ -85,7 +82,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       # What are the semiperimeter and area of the triangle?
       my ($s,$A) = Heron($x1,$y1,$x2,$y2,$x3,$y3);
       # What is the max area a triangle of semiperimeter s can have?
-      my $max_area = sqr($s)/sqrt(27);
+      my $max_area = $s**2/sqrt(27);
       # This is a boomerang if $A is at least 1/10000 of $max_area:
       $A >= $max_area/10_000;
    }
