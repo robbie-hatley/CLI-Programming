@@ -43,7 +43,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-   use v5.38;
+   use v5.36;
    use utf8;
 
    sub sim_dom ($dref1, $dref2) {
@@ -54,25 +54,27 @@ Output is to STDOUT and will be each input followed by the corresponding output.
    }
 
    sub num_sim_doms (@dominos) {
-      my $sim = 0;
+      my $num_sim_doms = 0;
       my $n = scalar(@dominos);
       I: for    ( my $i = 0 ; $i < $n ; ++$i ) {
          J: for ( my $j = 0 ; $j < $n ; ++$j ) {
             next J if $i == $j;
-            if ( sim_dom($dominos[$i],$dominos[$j]) ) {
-               ++$sim;
+            if (sim_dom $dominos[$i], $dominos[$j]) {
+               ++$num_sim_doms;
                next I;
             }
          }
       }
-      $sim;
+      $num_sim_doms;
    }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @sets = @ARGV ? eval($ARGV[0])
-                 : ( [[1, 3], [3, 1], [2, 4], [6, 8]] , [[1, 2], [2, 1], [1, 1], [1, 2], [2, 2]] );
-# Expected outputs:                 2                                      3
+my @sets = @ARGV ? eval($ARGV[0]) :
+(
+   [ [1, 3], [3, 1], [2, 4], [6, 8]         ], # Expected output: 2
+   [ [1, 2], [2, 1], [1, 1], [1, 2], [2, 2] ], # Expected output: 3
+);
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
