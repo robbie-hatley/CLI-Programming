@@ -348,14 +348,18 @@ sub help {
    the predicate.
 
    Here are some examples of valid and invalid predicate arguments:
-   '(-d && -l)'  # VALID:   Finds symbolic links to directories
-   '(-l && !-d)' # VALID:   Finds symbolic links to non-directories
-   '(-b)'        # VALID:   Finds block special files
-   '(-c)'        # VALID:   Finds character special files
-   '(-S || -p)'  # VALID:   Finds sockets and pipes.  (S must be CAPITAL S   )
-    '-d && -l'   # INVALID: missing parentheses       (confuses program      )
-    (-d && -l)   # INVALID: missing quotes            (confuses shell        )
-     -d && -l    # INVALID: missing parens AND quotes (confuses prgrm & shell)
+   '(-d && -l)'   # VALID:   Finds symbolic links to directories
+   '(-l && !-d)'  # VALID:   Finds symbolic links to non-directories
+   '(-b)'         # VALID:   Finds block special files
+   '(-c)'         # VALID:   Finds character special files
+   '(-f&&(-M)<3)' # VALID:   Finds regular files modified less than 3 days ago.
+   '(-f&&(-A)<3)' # VALID:   Finds regular files accessed less than 3 days ago.
+   '(-f&&(-C)<3)' # VALID:   Finds regular files created  less than 3 days ago.
+   '(-f&&(-s)>100000000)' # VALID: Finds regular files bigger than 100MB.
+   '(-S || -p)'   # VALID:   Finds sockets and pipes.
+    '-d && -l'    # INVALID: missing parentheses       (confuses program      )
+    (-d && -l)    # INVALID: missing quotes            (confuses shell        )
+     -d && -l     # INVALID: missing parens AND quotes (confuses prgrm & shell)
 
    Arguments and options may be freely mixed, but the arguments must appear in
    the order Arg1, Arg2 (RegExp first, then File-Type Predicate); if you get them
