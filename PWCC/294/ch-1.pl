@@ -61,7 +61,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       # Examine each element of the input array to see if it's
       # the beginning of a consecutive subsequence:
       for my $x (@_) {
-         # Move on to next array element if current-1 is in hash:
+         # Move on to next array element if $x-1 is in hash:
          next if $hash{$x-1};
          # We're at the beginning of a new consecutive subsequence,
          # so set $beg and $end to here:
