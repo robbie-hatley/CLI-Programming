@@ -39,40 +39,101 @@ Output: (3, 2, 1)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+After doing some researching, I came up with a method of finding "the next permutation" of a list which
+doesn't need to generate all permutations. It goes like this:
+
+1. Find the "pivot", which is the rightmost index i such that array[i]<array[i-1].
+2. Find the "successor", which is the rightmost index j such that array[i]<array[j].
+3. Swap the pivot and the successor.
+4. Reverse the "suffix", which is the part to the right of the pivot.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays (of anything printable), in proper Perl syntax, like so:
+./ch-2.pl '([3,2,1],[42],[3,5,17,8,4],[3,5,4,17,8],[3,5,4,8,17],[3,5,8,17,4],["she","Bob","he","Susan"])'
 
-Output is to STDOUT and will be each input followed by the corresponding output.
+Output is to STDOUT and will be each array followed by its next permutation.
 
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
+use v5.16;
 use utf8;
-sub asdf ($x, $y) {
-   -2.73*$x + 6.83*$y;
+$"=', ';
+
+# Get "next permutation", without permuting or comparing lists:
+sub next_permutation {
+   # Get a copy of the original array:
+   my @array = @_;
+   # If this array is empty, it's its own "next permutation":
+   if ( 0 == scalar(@array) ) {
+      return -2, (@array);
+   }
+   # If this array only has one element, it's its own "next permutation":
+   if ( 1 == scalar(@array) ) {
+      say 'single element = ', $array[0];
+      return -1, (@array);
+   }
+   # Find the pivot, if any:
+   my $pivot = -1;
+   for my $i (reverse 0..$#array-1) {
+      if ($array[$i] lt $array[$i+1]) {
+         $pivot = $i;
+         last;
+      }
+   }
+   # If there is no pivot, this is the last permutation, so next is first:
+   if (-1 == $pivot) {
+      return 0, (reverse @array);
+   }
+   # Find the successor:
+   my $successor = -1;
+   for my $j (reverse $pivot+1..$#array) {
+      if ($array[$j] gt $pivot) {
+         $successor = $j;
+         last;
+      }
+   }
+   # If there is no successor, something disastrous has happened:
+   if (-1 == $successor) {
+      return -3, ();
+   }
+   # Swap pivot and successor:
+   my $temp = $array[$pivot];
+   $array[$pivot] = $array[$successor];
+   $array[$successor] = $temp;
+   # Reverse the suffix (the part to the right of the pivot):
+   @array[$pivot+1..$#array] = reverse @array[$pivot+1..$#array];
+   # Return next permutation:
+   return 1, (@array);
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) : ([2.61,-8.43],[6.32,84.98]);
+my @arrays = @ARGV ? eval($ARGV[0]) :
+(
+   [1, 2, 3], # Expected output: (1, 3, 2)
+   [2, 1, 3], # Expected output: (2, 3, 1)
+   [3, 1, 2], # Expected output: (3, 2, 1)
+);
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
-$"=', ';
 for my $aref (@arrays) {
    say '';
-   my $x = $aref->[0];
-   my $y = $aref->[1];
-   my $z = asdf($x, $y);
-   say "x = $x";
-   say "y = $y";
-   say "z = $z";
+   my @array = @$aref;
+   say "Array = (@array)";
+   my ($code, @next) = next_permutation(@array);
+   if    (-3 == $code) {say 'Error: no successor in subroutine "next_permutation".';}
+   elsif (-2 == $code) {say 'Warning: array is empty, so it\'s its own "next permutation".';
+                        say "\"Next\" (empty) permutation = (@next)";}
+   elsif (-1 == $code) {say 'Warning: array only has one element, so it\'s its own "next permutation".';
+                        say "\"Next\" (single-element) permutation = (@next)";}
+   elsif ( 0 == $code) {say 'Warning: array is its own last permutation, so "next" is first.';
+                        say "\"Next\" (first) permutation = (@next)";}
+   elsif ( 1 == $code) {say "Next permutation = (@next)";}
+   else                {say 'Error: invalid return code from subroutine "next_permutation".';}
 }
