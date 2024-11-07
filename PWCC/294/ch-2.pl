@@ -68,56 +68,47 @@ Output is to STDOUT and will be each array followed by its next permutation.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.16;
-use utf8;
-$"=', ';
+   use v5.16;
+   use utf8;
+   $"=', ';
 
-# Get "next permutation", without permuting or comparing lists:
-sub next_permutation {
-   # Get a copy of the original array:
-   my @array = @_;
-   # If this array is empty, it's its own "next permutation":
-   if ( 0 == scalar(@array) ) {
-      return -2, (@array);
-   }
-   # If this array only has one element, it's its own "next permutation":
-   if ( 1 == scalar(@array) ) {
-      say 'single element = ', $array[0];
-      return -1, (@array);
-   }
-   # Find the pivot, if any:
-   my $pivot = -1;
-   for my $i (reverse 0..$#array-1) {
-      if ($array[$i] lt $array[$i+1]) {
-         $pivot = $i;
-         last;
+   # Get the "next permutation" of an array:
+   sub next_permutation {
+      # Get a copy of the original array:
+      my @array = @_;
+      # If this array is empty, it's its own "next permutation":
+      if ( 0 == scalar(@array) ) {return -2, (@array);}
+      # If this array only has one element, it's its own "next permutation":
+      if ( 1 == scalar(@array) ) {return -1, (@array);}
+      # Find the pivot, if any:
+      my $pivot = -1;
+      for my $i (reverse 0..$#array-1) {
+         if ($array[$i] lt $array[$i+1]) {
+            $pivot = $i;
+            last;
+         }
       }
-   }
-   # If there is no pivot, this is the last permutation, so next is first:
-   if (-1 == $pivot) {
-      return 0, (reverse @array);
-   }
-   # Find the successor:
-   my $successor = -1;
-   for my $j (reverse $pivot+1..$#array) {
-      if ($array[$j] gt $pivot) {
-         $successor = $j;
-         last;
+      # If there is no pivot, this is the last permutation, so next is first:
+      if (-1 == $pivot) {return 0, (reverse @array);}
+      # Find the successor:
+      my $successor = -1;
+      for my $j (reverse $pivot+1..$#array) {
+         if ($array[$j] gt $pivot) {
+            $successor = $j;
+            last;
+         }
       }
+      # If there is no successor, something disastrous has happened:
+      if (-1 == $successor) {return -3, ();}
+      # Swap pivot and successor:
+      my $temp = $array[$pivot];
+      $array[$pivot] = $array[$successor];
+      $array[$successor] = $temp;
+      # Reverse the suffix (the part to the right of the pivot):
+      @array[$pivot+1..$#array] = reverse @array[$pivot+1..$#array];
+      # Return next permutation:
+      return 1, (@array);
    }
-   # If there is no successor, something disastrous has happened:
-   if (-1 == $successor) {
-      return -3, ();
-   }
-   # Swap pivot and successor:
-   my $temp = $array[$pivot];
-   $array[$pivot] = $array[$successor];
-   $array[$successor] = $temp;
-   # Reverse the suffix (the part to the right of the pivot):
-   @array[$pivot+1..$#array] = reverse @array[$pivot+1..$#array];
-   # Return next permutation:
-   return 1, (@array);
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
