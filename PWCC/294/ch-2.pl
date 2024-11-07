@@ -36,7 +36,6 @@ Example 3:
 Input: @ints = (3, 1, 2)
 Output: (3, 2, 1)
 
-
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 After doing some researching, I found a method of finding "the lexicographically 'next' permutation" of a

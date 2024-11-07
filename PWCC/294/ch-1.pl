@@ -30,7 +30,6 @@ Example 3:
 Input: @ints = (10, 30, 20)
 Output: -1
 
-
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 I could first sort the array, but that would be O(n*log(n)), not O(n). Faster will be to make a hash and look
