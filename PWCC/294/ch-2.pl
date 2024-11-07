@@ -58,7 +58,7 @@ But I'm interpreting "lexicographical" as meaning "Unicode codepoint order", whi
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of number and/or strings, in proper Perl syntax, like so:
-./ch-2.pl '([3,2,1],[42],[8,1164,7,3,5],[8,1164,7,5,3],["she","Bob","he","Susan"])'
+./ch-2.pl '([],[42],[3,2,1],[42],[8,1164,7,3,5],[8,1164,7,5,3],["she","Bob","he","Susan"])'
 
 Output is to STDOUT and will be each array followed by its next permutation.
 
