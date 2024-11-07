@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------------------------------------
 TITLE AND ATTRIBUTION:
 Solutions in Perl for The Weekly Challenge 294-2,
-written by Robbie Hatley on Mon Nov 04, 2024.
+written by Robbie Hatley on Wed Nov 06, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
@@ -39,19 +39,27 @@ Output: (3, 2, 1)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-After doing some researching, I came up with a method of finding "the next permutation" of a list which
-doesn't need to generate all permutations. It goes like this:
+After doing some researching, I found a method of finding "the lexicographically 'next' permutation" of a
+list of strings which doesn't need to generate all of the permutations, just the "next". It goes like this:
 
-1. Find the "pivot", which is the rightmost index i such that array[i]<array[i-1].
-2. Find the "successor", which is the rightmost index j such that array[i]<array[j].
+1. Find the "pivot", which is the rightmost index i such that array[i] lt array[i-1].
+2. Find the "successor", which is the rightmost index j such that array[j] gt array[i].
 3. Swap the pivot and the successor.
 4. Reverse the "suffix", which is the part to the right of the pivot.
+
+Note that in the above I use "lt" and "gt" instead of "<" and ">". This is because the problem specifies the
+"lexicographical" next permutation, as opposed to the "numerical" next permutation which would have used
+"<" and ">" instead. Note, for example, that 123 is lexicographically less than 34 (because "1" is less than
+"3"), and "Robbie" is lexicographically less than "girl" (because "R" is less than "g", because the capital
+letters have lower ASCII/iso-8859-1/Unicode codepoints than the small letters). If the problem had specified
+"numerical" or "natural" or "Unicode collation", those would have resulted in different collation orders.
+But I'm interpreting "lexicographical" as meaning "Unicode codepoint order", which is what "lt" and "gt" do.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays (of anything printable), in proper Perl syntax, like so:
-./ch-2.pl '([3,2,1],[42],[3,5,17,8,4],[3,5,4,17,8],[3,5,4,8,17],[3,5,8,17,4],["she","Bob","he","Susan"])'
+single-quoted array of arrays of number and/or strings, in proper Perl syntax, like so:
+./ch-2.pl '([3,2,1],[42],[8,1164,7,3,5],[8,1164,7,5,3],["she","Bob","he","Susan"])'
 
 Output is to STDOUT and will be each array followed by its next permutation.
 
