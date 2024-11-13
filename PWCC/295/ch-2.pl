@@ -33,7 +33,7 @@ Output: -1
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This problem (like the first) lends itself to solution by recursion.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -48,7 +48,8 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
+use v5.36;
+
 use utf8;
 sub asdf ($x, $y) {
    -2.73*$x + 6.83*$y;
