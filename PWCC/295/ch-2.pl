@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -48,26 +48,40 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.36;
+   use v5.36;
+   use List::Util 'min';
 
-use utf8;
-sub asdf ($x, $y) {
-   -2.73*$x + 6.83*$y;
-}
+   sub jumps ($aref, $start=0, $jumps=0) {
+      if ($start == $#$aref) {
+         return $jumps;
+      }
+      my @jumps = ();
+      for my $jump (1..$aref->[$start]) {
+         next if $start+$jump < 0 || $start+$jump > $#$aref;
+         push @jumps, jumps($aref, $start+$jump, $jumps+1);
+      }
+      if (0 == $start) {
+         if (0 == scalar(@jumps)) {return -1;}
+         else {return min(@jumps);}
+      }
+      return @jumps;
+   }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) : ([2.61,-8.43],[6.32,84.98]);
+my @arrays = @ARGV ? eval($ARGV[0]) :
+(
+   [2, 3, 1, 1, 4],
+   [2, 3, 0, 4],
+   [2, 0, 0, 4],
+);
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 $"=', ';
 for my $aref (@arrays) {
    say '';
-   my $x = $aref->[0];
-   my $y = $aref->[1];
-   my $z = asdf($x, $y);
-   say "x = $x";
-   say "y = $y";
-   say "z = $z";
+   say "Array = (@$aref)";
+   my $jumps = jumps($aref);
+   say "Min jump = $jumps";
 }
