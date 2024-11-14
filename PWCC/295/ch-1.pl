@@ -31,7 +31,10 @@ Output: false
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-This problem (like the second) lends itself to solution by recursion.
+This problem (like the second) lends itself to solution by recursion. My recursive subroutine first segments
+the string into two non-empty fragments, using every possible first-segment length. For each first segment
+which is in the list, send the corresponding second segment back through the subroutine, in a process of
+"recursive segmentation".
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -64,7 +67,9 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       # if any first segment is in list, and if second segment
       # can be segmented into words from list, return 1:
       for my $i (1..length($item)-1) {
+         # First, do a sanity check:
          is_in(substr($item,0,$i), $aref)
+         # RECURSE!!!
          && segment(substr($item,$i), $aref)
          and return 1;
       }

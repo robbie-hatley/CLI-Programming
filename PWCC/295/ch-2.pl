@@ -33,13 +33,16 @@ Output: -1
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-This problem (like the first) lends itself to solution by recursion.
+This problem (like the first) lends itself to solution by recursion. My recursive subroutine first jumps
+every allowable distance forward from the current position. Then for each new position it lands on, it
+sends the corresponding new start location and jumps-so-far back through the subroutine, in a process of
+"recursive segmentation".
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of nonnegative integers, in proper Perl syntax, like so:
-./ch-2.pl '([2, 1, 1, 1, 3, 1, 1, 1, 42],[2, 1, 1, 1, 2, 1, 1, 1, 42],[2, 1, 1, 1, 1, 1, 1, 1, 42])'
+./ch-2.pl '([2, 1, 1, 1, 3, 1, 1, 1, 42],[2, 1, 1, 1, 2, 1, 1, 1, 42],[2, 1, 1, 1, 1, 1, 1, 1, 42]),[1,0,1]'
 This program will attempt to jump forward from the 0th to last element of each inner array in the minimum
 number of jumps, while obeying the restriction that each element specifies the maximum forward jump length
 which may be executed from that element.
@@ -64,7 +67,9 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       # the current start point by all allowable lengths:
       else {
          for my $jump (1..$aref->[$start]) {
+            # First, do a sanity check:
             next if $start+$jump < 0 || $start+$jump > $#$aref;
+            # RECURSE!!!
             push @jumps, jumps($aref, $start+$jump, $jumps+1);
          }
       }
