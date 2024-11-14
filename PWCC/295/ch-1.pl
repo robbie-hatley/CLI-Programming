@@ -68,10 +68,9 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       # can be segmented into words from list, return 1:
       for my $i (1..length($item)-1) {
          # First, do a sanity check:
-         is_in(substr($item,0,$i), $aref)
+         next if !is_in(substr($item,0,$i), $aref);
          # RECURSE!!!
-         && segment(substr($item,$i), $aref)
-         and return 1;
+         segment(substr($item,$i), $aref) and return 1;
       }
       # If we get to here, all possible attempts at segmenting
       # item into words from string failed so return 0:
