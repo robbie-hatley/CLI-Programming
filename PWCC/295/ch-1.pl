@@ -36,8 +36,9 @@ This problem (like the second) lends itself to solution by recursion.
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-1.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays of double-quoted strings, in proper Perl syntax, like so:
+./ch-1.pl '(["antidisestablishmentarian", "anti", "disestablishment", "arian"],["bluesky","blues","sky"])'
+This program will attempt to segment the first element of each inner array into copies of the other elements.
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -48,21 +49,27 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
    use v5.36;
    use utf8;
-
+   # Is a given string in a given list?
    sub is_in ($item, $aref) {
       for my $test (@$aref) {
          return 1 if $test eq $item;
       }
       return 0;
    }
-
+   # Can a string be segmented into words from a list?
    sub segment ($item, $aref) {
+      # If item is in list, return 1:
       is_in($item,$aref) and return 1;
+      # Otherwise, try all segmentations into 2 pieces;
+      # if any first segment is in list, and if second segment
+      # can be segmented into words from list, return 1:
       for my $i (1..length($item)-1) {
          is_in(substr($item,0,$i), $aref)
          && segment(substr($item,$i), $aref)
          and return 1;
       }
+      # If we get to here, all possible attempts at segmenting
+      # item into words from string failed so return 0:
       return 0;
    }
 
@@ -85,5 +92,5 @@ for my $aref (@arrays) {
    say "List   = @$aref";
    segment($item,$aref)
    and say "String CAN be segmented into words from list."
-   or  say "String CAN'T be segmented into words from list.";
+   or  say "String can NOT be segmented into words from list.";
 }

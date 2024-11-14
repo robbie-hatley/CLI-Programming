@@ -38,8 +38,11 @@ This problem (like the first) lends itself to solution by recursion.
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of arrays of nonnegative integers, in proper Perl syntax, like so:
+./ch-2.pl '([2, 1, 1, 1, 3, 1, 1, 1, 42],[2, 1, 1, 1, 2, 1, 1, 1, 42],[2, 1, 1, 1, 1, 1, 1, 1, 42])'
+This program will attempt to jump forward from the 0th to last element of each inner array in the minimum
+number of jumps, while obeying the restriction that each element specifies the maximum forward jump length
+which may be executed from that element.
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -50,30 +53,41 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
    use v5.36;
    use List::Util 'min';
-
    sub jumps ($aref, $start=0, $jumps=0) {
-      if ($start == $#$aref) {
-         return $jumps;
-      }
       my @jumps = ();
-      for my $jump (1..$aref->[$start]) {
-         next if $start+$jump < 0 || $start+$jump > $#$aref;
-         push @jumps, jumps($aref, $start+$jump, $jumps+1);
+      # If we've reached the end, no need to consider any further jumps,
+      # just record the jumps we did to get here:
+      if ($start == $#$aref) {
+         push @jumps, $jumps;
       }
+      # Otherwise, we need to explore the result of jumping forward from
+      # the current start point by all allowable lengths:
+      else {
+         for my $jump (1..$aref->[$start]) {
+            next if $start+$jump < 0 || $start+$jump > $#$aref;
+            push @jumps, jumps($aref, $start+$jump, $jumps+1);
+         }
+      }
+      # If returning from the top level, return minimum number of jumps,
+      # unless we couldn't reach end, in which case return -1:
       if (0 == $start) {
          if (0 == scalar(@jumps)) {return -1;}
          else {return min(@jumps);}
       }
-      return @jumps;
+      # Otherwise, return the list of number of jumps from here to end
+      # which we've found via this sub-tree:
+      else {
+         return @jumps;
+      }
    }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
 my @arrays = @ARGV ? eval($ARGV[0]) :
 (
-   [2, 3, 1, 1, 4],
-   [2, 3, 0, 4],
-   [2, 0, 0, 4],
+   [2, 3, 1, 1, 4], # expected output: 2
+   [2, 3, 0, 4],    # expected output: 2
+   [2, 0, 0, 4],    # expected output: -1
 );
 
 # ------------------------------------------------------------------------------------------------------------
