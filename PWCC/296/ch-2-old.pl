@@ -56,20 +56,66 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
-# PRAGMAS, MODULES, VARS, AND SUBS:
+# PRAGMAS, MODULES, AND SUBS:
 
    use v5.36;
-   use List::Util qw( sum0 all );
-   use Algorithm::Combinatorics qw( partitions );
+   use List::Util 'sum0';
+   use Math::Combinatorics;
    $"=', ';
 
+   # Return all possible partitionings of a set of n elements into m partitions, with m <= n:
+   sub rhpartition ($m, @set) {#,
+      my $n = scalar(@set);
+      # If $m is 1, there is only one way to partition this set: a single partition containing all elements:
+      if ( 1 == $m ) {return [[@set]]}
+      # Otherwise, make a 3D array to hold all possible partitionings (including some which are permutative
+      # duplicates of each other) of our input set:
+      my @partitionings;
+      # For each possible first partition, push all partitionings starting with that partition onto
+      # @partitionings:
+      foreach my $ps (1..$n-$m+1) {                    # for each possible first-partition size
+         my @index_combos = combine($ps,0..$#set);     # All possible $ps-element subsets of indexes of @set.
+         foreach my $index_combo (@index_combos) {     # for each index-combo reference
+            my @first;                                 # first partition
+            my @remai;                                 # remainder, to be partitioned
+            I:foreach my $i (0..$#set) {                        # for each index of set
+               J:foreach my $j (@$index_combo) {                # for each index of index combo
+                  if ($i == $j) {push @first, $set[$i];next I}  # if equal, push to @first
+               }
+               push @remai, $set[$i];                           # otherwise, push to @remai
+            }
+            # Get all smaller (size $m-1) partitionings of the unsliced remainder of @copy:
+            my @smaller_partitionings = rhpartition($m-1,@remai);
+            # For each smaller (size $m-1) partitioning of @remai, make a larger (size $m) partitioning
+            # with @first as first partition:
+            foreach my $smaller_partitioning (@smaller_partitionings) {
+               push @partitionings, [\@first, @$smaller_partitioning];
+            }
+         }
+      }
+      return @partitionings;
+   }
+
+   # Do the partitions of a given partitioning of a set have equal sums?
+   sub equal {
+      my @partitions = @_;
+      my $reference  = sum0(@{$partitions[0]});
+      foreach my $partition (@partitions) {
+         if (sum0(@{$partition}) != $reference) {
+            return 0;
+         }
+      }
+      return 1;
+   }
+
    # Can we make a square out of a pile of sticks?
-   sub square ($aref) {
-      my @partitionings = partitions($aref,4);
+   sub square (@array) {
+      my @partitionings = rhpartition(4,@array);
       foreach my $partitioning (@partitionings) {
-         if (all {sum0(@{$$partitioning[0]}) == sum0(@$_)} @$partitioning) {
+         my @partitions = @$partitioning;
+         if (equal(@partitions)) {
             say 'I can make a square from this partitioning of the given array:';
-            say join(', ', map {'['."@$_".']'} @$partitioning);
+            say join(', ', map {'['."@$_".']'} @partitions);
             return;
          }
       }
@@ -92,6 +138,7 @@ my @arrays = @ARGV ? eval($ARGV[0]) :
 # MAIN BODY OF PROGRAM:
 for my $aref (@arrays) {
    say '';
-   say "Array = [@$aref]";
-   square($aref);
+   my @array = @{$aref};
+   say "Array = [@array]";
+   square(@array);
 }

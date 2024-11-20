@@ -52,32 +52,30 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
-use utf8;
-sub compress ($x) {
-   my $n    = length($x);
-   my $prev = 0;
-   my $slen = 0;
-   my $char = substr $x, 0, 1;
-   my $compressed = '';
-   for my $i (1..$n) {
-      # If we've gone one-past-end,
-      # or if current character is different from previous,
-      # calculate lenth of previous segment,
-      # tack compressed version to end of $compressed,
-      # and update $char and $prev:
-      if ($i == $n || substr($x,$i,1) ne $char) {
-         $slen = $i - $prev;
-         if (1 == $slen) {$compressed .= $char}
-         else {$compressed .= ($slen . $char)}
-         if ($i < $n) {
-            $char = substr($x,$i,1);
-            $prev = $i;
+   use v5.38;
+   use utf8;
+   sub compress ($x) {
+      my $n    = length($x);
+      my $prev = 0;
+      my $slen = 0;
+      my $char = substr $x, 0, 1;
+      my $compressed = '';
+      for my $i (1..$n) {
+         # If we've gone one-past-end, or if current character is different from
+         # previous, calculate length of previous segment, tack compressed version
+         # to end of $compressed, and update $char and $prev (provided $i < $n):
+         if ($i == $n || substr($x,$i,1) ne $char) {
+            $slen = $i - $prev;
+            if (1 == $slen) {$compressed .= $char}
+            else {$compressed .= ($slen . $char)}
+            if ($i < $n) {
+               $char = substr($x,$i,1);
+               $prev = $i;
+            }
          }
       }
+      return $compressed;
    }
-   return $compressed;
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
