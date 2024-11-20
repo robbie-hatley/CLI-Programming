@@ -103,13 +103,14 @@ my @strings = @ARGV ? @ARGV :
 $"=', ';
 for my $string (@strings) {
    say '';
-   say "String     = $string";
    if ($decode) {
       my $decomp = decompress($string);
+      say "String       = $string";
       say "Decompressed = $decomp"
    }
    else {
       my $compressed = compress($string);
+      say "String     = $string";
       say "Compressed = $compressed";
    }
 }
