@@ -89,6 +89,7 @@ Output is to STDOUT and will be each input followed by the compressed (or decomp
 my $decode = 0;
 if ( scalar(@ARGV) > 1 && ('-d' eq $ARGV[0] || '--decode' eq $ARGV[0]) ) {
    $decode = 1;
+   shift @ARGV;
 }
 my @strings = @ARGV ? @ARGV :
 # Example inputs:
