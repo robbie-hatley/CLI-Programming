@@ -39,13 +39,16 @@ and move to the next character, until all segment lengths (and their characters)
 segment will be written to the compressed string as "length followed by character" (except for segments of
 length 1, which will be written as just the character).
 
+I've also included
+
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one-or-more arguments which must
 be quoted strings, like so:
-./ch-1.pl "She ate 7 hot dogs." "Oooscaaarrrrr Maaaadiisooonnn"
+./ch-1.pl "She ate three hot dogs." "Oooscaaarrrrr Maaaadiisooonnn"
+./ch-1.pl -d "She ate thr2e hot dogs." "O2osc3a5r M4ad2is3o3n"
 
-Output is to STDOUT and will be each input followed by the corresponding output.
+Output is to STDOUT and will be each input followed by the compressed (or decompressed) output.
 
 =cut
 
@@ -77,17 +80,36 @@ Output is to STDOUT and will be each input followed by the corresponding output.
       return $compressed;
    }
 
+   sub decompress ($x) {
+      $x =~ s/(\d+)(\D)/${2}x${1}/ger;
+   }
+
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @strings = @ARGV ? @ARGV : ("abbc","aaabccc","abcc");
-          # Expected outputs:   a2bc    3ab3c    ab2c
+my $decode = 0;
+if ( scalar(@ARGV) > 1 && ('-d' eq $ARGV[0] || '--decode' eq $ARGV[0]) ) {
+   $decode = 1;
+}
+my @strings = @ARGV ? @ARGV :
+# Example inputs:
+(
+   "abbc",    # Expected output: a2bc
+   "aaabccc", # Expected output: 3ab3c
+   "abcc",    # Expected output: ab2c
+);
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 $"=', ';
 for my $string (@strings) {
    say '';
-   my $compressed = compress($string);
    say "String     = $string";
-   say "Compressed = $compressed";
+   if ($decode) {
+      my $decomp = decompress($string);
+      say "Decompressed = $decomp"
+   }
+   else {
+      my $compressed = compress($string);
+      say "Compressed = $compressed";
+   }
 }
