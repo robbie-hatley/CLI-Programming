@@ -38,12 +38,8 @@ Output: true
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 This problem essentially asks if a set of integers can be partitioned into 4 partitions with the sums of the
-integers in the 4 partitions being equal. I can envision ways of doing this involving imposing segmentation
-patterns onto permutations, but those are going to have very-high big-O. Better will be to make a recursive
-subroutine that generates all size-m non-empty partitions of a set of n elements. It should ensure that the
-size of each partition is >= the size of the partition to its right in order to minimize (but not eliminate)
-duplication of partitionings. I'll this use this subroutine to make all 4-partitions of our set of sticks,
-and see if any of those partitionings have all 4 partitions summing equally.
+integers in the 4 partitions being equal. To reduce headaches and complexity, I'll use CPAN module
+Algorithm::Combinatorics for the partitionings. (See file ch-2-old.pl for a "manual" version of this program.)
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:

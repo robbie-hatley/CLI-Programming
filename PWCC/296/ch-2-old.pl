@@ -43,7 +43,9 @@ patterns onto permutations, but those are going to have very-high big-O. Better 
 subroutine that generates all size-m non-empty partitions of a set of n elements. It should ensure that the
 size of each partition is >= the size of the partition to its right in order to minimize (but not eliminate)
 duplication of partitionings. I'll this use this subroutine to make all 4-partitions of our set of sticks,
-and see if any of those partitionings have all 4 partitions summing equally.
+and see if any of those partitionings have all 4 partitions summing equally. (Note: For a simpler-and-faster
+version of this program, see file "ch-2.pl" in this directory, which uses CPAN module
+"Algorithm::Combinatorics" instead of doing partitionings manually.)
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
