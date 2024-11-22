@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -11,16 +11,14 @@ written by Robbie Hatley on Fri Nov 22, 2024.
 PROBLEM DESCRIPTION:
 Task 122-2: Basketball Points
 Submitted by: Mohammad S Anwar
+Write a script to determine in which ways a given score can be
+attained by shooting basketball shots of 1pt (free throw), 2pts
+(regular shot), and 3pts (3-pointer).
 
-You are given a score $S.
-
-You can win basketball points e.g. 1 point, 2 points and 3 points.
-
-Write a script to find out the different ways you can score $S.
-Example
-
-Input: $S = 4
-Output: 1 1 1 1
+Example #1:
+Input: 4
+Output:
+1 1 1 1
 1 1 2
 1 2 1
 1 3
@@ -28,8 +26,10 @@ Output: 1 1 1 1
 2 2
 3 1
 
-Input: $S = 5
-Output: 1 1 1 1 1
+Example #2:
+Input: 5
+Output:
+1 1 1 1 1
 1 1 1 2
 1 1 2 1
 1 1 3
@@ -51,35 +51,50 @@ This is best done using recursion.
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-2.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of non-negative integers, in proper Perl syntax, like so:
+./ch-2.pl '(0,1,5,10,15)'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
-# PRAGMAS, MODULES, AND SUBS:
+# PRAGMAS, VARIABLES, MODULES, AND SUBS:
 
-use v5.38;
-use utf8;
-sub asdf ($x, $y) {
-   -2.73*$x + 6.83*$y;
+sub part3 {
+   my $score = shift;
+   if ($score < 2) {return ([$score])}
+   my @partitionings = ();
+   foreach my $first (1,2,3) {
+      if ($first > $score) {
+         next;
+      }
+      elsif ($first == $score) {
+         push @partitionings, ([$first])
+      }
+      else {
+         my @partials = part3($score-$first);
+         foreach my $partial (@partials) {
+            my @partitioning = ($first, @$partial);
+            push @partitionings, [@partitioning];
+         }
+      }
+   }
+   return @partitionings;
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) : ([2.61,-8.43],[6.32,84.98]);
+my @scores = @ARGV ? eval($ARGV[0]) : (4,5);
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 $"=', ';
-for my $aref (@arrays) {
-   say '';
-   my $x = $aref->[0];
-   my $y = $aref->[1];
-   my $z = asdf($x, $y);
-   say "x = $x";
-   say "y = $y";
-   say "z = $z";
+for my $score (@scores) {
+   print "\n";
+   print "Basketball score $score may be made in the following ways:\n";
+   my @partitionings = part3($score);
+   foreach my $partitioning (@partitionings) {
+      print "@$partitioning\n";
+   }
 }
