@@ -36,10 +36,12 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
+# Print the running averages of a finite sequence of real numbers:
 sub running_average {
    my $accumulator = 0;
    my $index       = 0;
    my $average     = 0;
+   print "Array    = (@_)\n";
    print "Averages = (";
    foreach my $value (@_) {
       $accumulator += $value;
@@ -61,6 +63,6 @@ my @arrays = @ARGV ? eval($ARGV[0]) : ([10, 20, 30, 40, 50, 60, 70, 80, 90,]);
 $"=', ';
 for my $array (@arrays) {
    print "\n";
-   print "Array    = (@$array)\n";
+
    running_average(@$array);
 }

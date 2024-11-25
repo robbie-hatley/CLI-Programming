@@ -61,6 +61,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, VARIABLES, MODULES, AND SUBS:
 
+# Determine all ways to partition a given positive integer into shots of 1, 2, and 3:
 sub part3 {
    my $score = shift;
    if ($score < 2) {return ([$score])}
