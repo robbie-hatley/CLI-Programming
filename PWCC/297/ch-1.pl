@@ -40,8 +40,8 @@ PROBLEM NOTES:
 I'll take the approach of summing the elements of each sub-array by feeding array slices to the "sum0"
 function from CPAN module "List::Util", then dividing the length of each sub-array by its sum; a sub-array
 will have equal numbers of 0s and 1s if-and-only-if length == 2*sum. (It's tempting to test for
-length/sum == 0, but that would be a disaster because sum will sometimes be 0.) Helping will be the fact that
-only even-length sub-arrays need be checked, which cuts the work in half.
+length/sum == 2, but that would be a disaster because sum will sometimes be 0, causing divide-by-zero errors.)
+Helping will be the fact that only even-length sub-arrays need be checked, which cuts the work in half.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
