@@ -47,7 +47,7 @@ Helping will be the fact that only even-length sub-arrays need be checked, which
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of 0s and 1s, in proper Perl syntax, like so:
-./ch-1.pl '([10,01],["apple","pear"],[0,1,0,1,0,1,0,1],[0,0,1,0,1,1,1,1])'
+./ch-1.pl '([10,5],["apple","pear"],[0,1,0,1,0,1,0,1],[0,0,1,0,1,1,1,1])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -69,6 +69,10 @@ Output is to STDOUT and will be each input followed by the corresponding output.
    # Return length of longest contiguous sub-array with
    # equal numbers of 0s and 1s:
    sub longest ($aref) {
+      if (!is_array_of_0s_and_1s($aref)) {
+         say 'Error: not an array of 0s and 1s.';
+         return -1;
+      }
       my $longest = 0;
       for my $i (0..$#$aref-1) {
          for ( my $j = $i + 1 ; $j <= $#$aref ; $j += 2 ) {
@@ -102,10 +106,8 @@ for my $aref (@arrays) {
    say '';
    my @array = @$aref;
    say "Array = (@array)";
-   if (!is_array_of_0s_and_1s($aref)) {
-      say "Error: Not an array of 0s and 1s.";
-      next;
-   }
    my $longest = longest($aref);
-   say "Longest contiguous sub-array with equal numbers of 0s and 1s = $longest"
+   if ($longest > -1) {
+      say "Longest contiguous sub-array with equal numbers of 0s and 1s = $longest";
+   }
 }

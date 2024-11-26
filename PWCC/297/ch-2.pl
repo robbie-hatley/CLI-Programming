@@ -36,15 +36,18 @@ Output: 0 (Already a semi-ordered permutation.)
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-This task is much easier than the first, because it's just a matter of following instructions, and there is
-only one way to perform this task. (TIEOWTDI=There Is Exactly One Way To Do It.) So we'll just swap til done.
+This task is much easier than the first, because it's just a matter of counting swaps needed. And we don't
+even have to do any real swaps! Since we're only interested in the "1" and "n" elements, we need only count
+the number of swaps that would have been needed to pull "1" to the beginning and "n" to the end (keeping
+in-mind that if "1" and "n" cross-over, we save 1 swap, so we need to reduce our swaps count by 1 in that
+case).
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of positive integers, with each inner array being a permutation of the sequence
-1..n for sum positive-integer n, in proper Perl syntax, like so:
-./ch-2.pl '([1,3,5,2,7],[1,3,5,4,2],[5,2,3,6,4,1])'
+1..n for some positive integer n, in proper Perl syntax, like so:
+./ch-2.pl '([10,5],["apple","pear"],[1,3,5,2,7],[1,3,5,4,2],[5,2,3,6,4,1])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -100,5 +103,7 @@ for my $aref (@arrays) {
    say '';
    say "Array = (@$aref)";
    my $swaps = min_swaps($aref);
-   -1 != $swaps and say "Min swaps = $swaps";
+   if ($swaps > -1) {
+      say "Min swaps = $swaps";
+   }
 }
