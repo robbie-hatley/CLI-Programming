@@ -47,7 +47,7 @@ IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of arrays of positive integers, with each inner array being a permutation of the sequence
 1..n for some positive integer n, in proper Perl syntax, like so:
-./ch-2.pl '([10,5],["apple","pear"],[1,3,5,2,7],[1,3,5,4,2],[5,2,3,6,4,1])'
+./ch-2.pl '([10,5],["apple","pear"],[1,3,5,4,2],[5,2,3,6,4,1])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
