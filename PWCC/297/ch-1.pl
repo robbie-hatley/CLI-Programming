@@ -9,11 +9,11 @@ written by Robbie Hatley on Mon Nov 25, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 297-1: Contiguous Array
+Task 297-1: Contiguous Sub-Arrays
 Submitted by: Mohammad Sajid Anwar
 Write a script which, given an array of 1-digit-binary integers
-(0s and 1s), determines the maximum length of a contiguous
-sub-array with equal numbers of 0s and 1s.
+(0s and 1s), determines the maximum length of contiguous
+sub-arrays with equal numbers of 0s and 1s.
 
 Example #1:
 Input: @binary = (1, 0)
