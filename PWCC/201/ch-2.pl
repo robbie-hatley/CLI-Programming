@@ -20,12 +20,12 @@ Since $n=5, there are 7 ways of stacking 5 pennies in ascending piles:
 1 4
 5
 
-Note: The algorithm for this program is taken from the 
+Note: The algorithm for this program is taken from the
 "Recurrence Relations" section of Wikipedia's article on
 "Partition Function":
 "https://en.wikipedia.org/wiki/Partition_function_(number_theory)"
 
-The numbers-of-partitions for integers 0-10 are taken from 
+The numbers-of-partitions for integers 0-10 are taken from
 Sequence # A000041 on the "oeis.org" web site:
 "https://oeis.org/A000041"
 
@@ -49,10 +49,10 @@ use bigint;
 
 # Most computers can handle an array of one million integers.
 # (You may need to set this number smaller if yours can't.)
-my $MAX_N = 1000000;
+our $MAX_N = 1000000;
 
 # Taken from web site "oeis.org" sequence # A000041:
-my @PTable = (1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42);
+our @PTable = (1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42);
 
 # SUBROUTINES:
 
