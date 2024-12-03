@@ -68,23 +68,76 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
 use v5.38;
 use utf8;
-sub asdf ($x, $y) {
-   -2.73*$x + 6.83*$y;
+
+sub is_square_matrix ($mref) {
+   return 1;
+}
+
+sub maximal_square ($mref) {
+   return 0 if !is_square_matrix($mref);
+   # Make a variable to keep track of maximal square area:
+   my $msa = 0;
+   # For each possible square starting point:
+   for    my $i (0..$#$mref) {
+      for my $j (0..$#{$mref->[0]}) {
+         # For each possible square size using this point as upper-left:
+         my $s = 1;
+         while ($i+$s-1 <= $#$mref && $j+$s-1 <= $#{$mref->[0]}) {
+            # Determine if these are all 1s:
+            my $are_ones = 1;
+            K: for    my $k ($i..$i+$s-1) {
+               L: for my $l ($j..$j+$s-1) {
+                  if (1 != $mref->[$k]->[$l]) {
+                     $are_ones = 0;
+                     last K;
+                  }
+               }
+            }
+            # If these are all ones, if area > max, update max:
+            if ($are_ones) {
+               if ($s**2 > $msa) {
+                  $msa = $s**2;
+               }
+            }
+            ++$s;
+         }
+      }
+   }
+   return $msa;
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) : ([2.61,-8.43],[6.32,84.98]);
+my @matrices = @ARGV ? eval($ARGV[0]) :
+# Example inputs:
+(
+   # Example #1 input:
+   [
+      [1, 0, 1, 0, 0],
+      [1, 0, 1, 1, 1],
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 1, 0],
+   ],
+   # Expected output: 4
+
+   # Example #2 input:
+   [
+      [0, 1],
+      [1, 0],
+   ],
+   # Expected output: 1
+
+   # Example #3 input:
+   [
+      [0],
+   ],
+   # Expected output: 0
+);
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 $"=', ';
-for my $aref (@arrays) {
+for my $mref (@matrices) {
    say '';
-   my $x = $aref->[0];
-   my $y = $aref->[1];
-   my $z = asdf($x, $y);
-   say "x = $x";
-   say "y = $y";
-   say "z = $z";
+   say maximal_square($mref);
 }
