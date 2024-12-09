@@ -49,23 +49,53 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
 use v5.38;
 use utf8;
-sub asdf ($x, $y) {
-   -2.73*$x + 6.83*$y;
+sub replace_words :prototype(\@$) ($rref, $sentence) {
+   my @replacements = @$rref;
+   my @words = split /[^\pL']/, $sentence;
+   foreach my $word (@words) {
+      foreach my $replacement (@replacements) {
+         if ($word =~ m/^$replacement/) {
+            $sentence =~ s/$word/$replacement/g;
+         }
+      }
+   }
+   return $sentence;
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) : ([2.61,-8.43],[6.32,84.98]);
+my @pairs = @ARGV ? eval($ARGV[0]) :
+(
+   # Example #1 input:
+   [
+      ["cat", "bat", "rat"],
+      "the cattle was rattle by the battery",
+   ],
+   # Expected output: "the cat was rat by the bat"
+
+   # Example #2 input:
+   [
+      ["a", "b", "c"],
+      "aab aac and cac bab",
+   ],
+   # Expected output: "a a a c b"
+
+   # Example #3 input:
+   [
+      ["man", "bike"],
+      "the manager was hit by a biker",
+   ],
+   # Expected output: "the man was hit by a bike"
+);
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 $"=', ';
-for my $aref (@arrays) {
+for my $pref (@pairs) {
    say '';
-   my $x = $aref->[0];
-   my $y = $aref->[1];
-   my $z = asdf($x, $y);
-   say "x = $x";
-   say "y = $y";
-   say "z = $z";
+   my @replacements = @{$$pref[0]};
+   my $sentence     = $$pref[1];
+   my $replaced     = replace_words(@replacements, $sentence);
+   say "Original sentence: $sentence";
+   say "replaced sentence: $replaced";
 }

@@ -17,26 +17,29 @@ grid of characters. You may start anywhere and take any
 orthogonal path, but may not reuse a grid cell.
 
 Example #1:
-Input: @chars = (['A', 'B', 'D', 'E'],
+Input: @chars =
+['A', 'B', 'D', 'E'],
 ['C', 'B', 'C', 'A'],
 ['B', 'A', 'A', 'D'],
-['D', 'B', 'B', 'C'])
+['D', 'B', 'B', 'C'],
 $str = 'BDCA'
 Output: true
 
 Example #2:
-Input: @chars = (['A', 'A', 'B', 'B'],
+Input: @chars =
+['A', 'A', 'B', 'B'],
 ['C', 'C', 'B', 'A'],
 ['C', 'A', 'A', 'A'],
-['B', 'B', 'B', 'B'])
+['B', 'B', 'B', 'B'],
 $str = 'ABAC'
 Output: false
 
 Example #3:
-Input: @chars = (['B', 'A', 'B', 'A'],
+Input: @chars =
+['B', 'A', 'B', 'A'],
 ['C', 'C', 'C', 'C'],
 ['A', 'B', 'A', 'B'],
-['B', 'B', 'A', 'A'])
+['B', 'B', 'A', 'A'],
 $str = 'CCCAA'
 Output: true
 
