@@ -66,8 +66,35 @@ use v5.36;
 use utf8;
 
 # Can a path be formed in a given matrix matching a given string?
-sub word_search :prototype(\@$) ($mref, $string) {
-   my @matrix = @$mref;
+sub word_search ($mref, $string, @path) {
+   # If @path is empty, check paths using every cell as starting point:
+   if ( 0 == scalar @path ) {
+      for    ( my $i = 0 ; $i <= $#$mref         ; ++$i ) {
+         for ( my $j = 0 ; $j <= $#{$mref->[$i]} ; ++$j ) {
+            return 1 if (word_search($mref, $string, ([$i,$j])));
+         }
+      }
+      # If we get to here, we couldn't find a path, so return 0:
+      return 0;
+   }
+
+   # If @path is NOT empty, try all possible next cells, but reject
+   # any that are out-of-bounds or don't match string:
+   else {
+      my $next_i;
+      my $next_j;
+
+      $next_i = $path[-1]->[0]+1;
+      $next_j = $path[-1]->[1]+0;
+      if
+      (
+            $next_i >= 0 && $next_i <= $#$mref
+         && $next_j >= 0 && $next_j <= $#{$mref->[$next_i]}
+         && substr($string, scalar(@path), 1) eq $mref->[$next_i]->[$next_j]
+      ){
+         ;
+      }
+   }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -116,5 +143,7 @@ my @pairs = @ARGV ? eval($ARGV[0]) :
 $"=', ';
 for my $pref (@pairs) {
    say '';
-
+   my $mref   = $pref->[0];
+   my $string = $pref->[1];
+   my $result = word_search($mref, $string);
 }
