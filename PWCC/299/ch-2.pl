@@ -45,7 +45,9 @@ Output: true
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This problem begs for recursion, real or fake. No need to pass "cells used" to next level, just "partial
+path", because the cells of a partial path ARE the "cells used". (That issue was holding me up until I made
+that realization.) And there's no need to check ALL paths, just "paths that match the given string so far".
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -60,25 +62,59 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
+use v5.36;
 use utf8;
-sub asdf ($x, $y) {
-   -2.73*$x + 6.83*$y;
+
+# Can a path be formed in a given matrix matching a given string?
+sub word_search :prototype(\@$) ($mref, $string) {
+   my @matrix = @$mref;
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) : ([2.61,-8.43],[6.32,84.98]);
+my @pairs = @ARGV ? eval($ARGV[0]) :
+(
+   # Example #1 input:
+   [
+      [
+         ['A', 'B', 'D', 'E'],
+         ['C', 'B', 'C', 'A'],
+         ['B', 'A', 'A', 'D'],
+         ['D', 'B', 'B', 'C'],
+      ],
+      'BDCA',
+   ],
+   # Expected output: true
+
+   # Example #2 input:
+   [
+      [
+         ['A', 'A', 'B', 'B'],
+         ['C', 'C', 'B', 'A'],
+         ['C', 'A', 'A', 'A'],
+         ['B', 'B', 'B', 'B'],
+      ],
+      'ABAC',
+   ],
+   # Expected output: false
+
+   # Example #3 input:
+   [
+      [
+         ['B', 'A', 'B', 'A'],
+         ['C', 'C', 'C', 'C'],
+         ['A', 'B', 'A', 'B'],
+         ['B', 'B', 'A', 'A'],
+      ],
+      'CCCAA',
+   ],
+   # Expected output: true
+);
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 $"=', ';
-for my $aref (@arrays) {
+for my $pref (@pairs) {
    say '';
-   my $x = $aref->[0];
-   my $y = $aref->[1];
-   my $z = asdf($x, $y);
-   say "x = $x";
-   say "y = $y";
-   say "z = $z";
+
 }

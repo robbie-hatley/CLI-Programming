@@ -97,5 +97,5 @@ for my $pref (@pairs) {
    my $sentence     = $$pref[1];
    my $replaced     = replace_words(@replacements, $sentence);
    say "Original sentence: $sentence";
-   say "replaced sentence: $replaced";
+   say "Replaced sentence: $replaced";
 }
