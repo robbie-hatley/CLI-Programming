@@ -45,9 +45,8 @@ Output: true
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-This problem begs for recursion, real or fake. No need to pass "cells used" to next level, just "partial
-path", because the cells of a partial path ARE the "cells used". (That issue was holding me up until I made
-that realization.) And there's no need to check ALL paths, just "paths that match the given string so far".
+I used this approach: From each possible starting point, try all allowable paths from that point which have
+length <= the length of the given word. If any path matches the word, return 1; if none match, return 0.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:

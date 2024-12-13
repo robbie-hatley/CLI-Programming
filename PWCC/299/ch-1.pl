@@ -32,7 +32,9 @@ Output: "the man was hit by a bike"
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+My approach was to first split the sentence into a list of words, then for each word/replacement pair,
+if the word starts with the replacement, then change every instance of that word within the sentence to
+that replacement word.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
