@@ -45,8 +45,12 @@ Output: true
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-I used this approach: From each possible starting point, try all allowable paths from that point which have
-length <= the length of the given word. If any path matches the word, return 1; if none match, return 0.
+I made a subroutine which uses this approach: From each possible starting point, try building paths from that
+point which obey these three restrictions:
+1. Path doesn't go out-of-bounds
+2. Path doesn't re-use any cells
+3. Path so-far matches relevant characters of string
+If any path is found which fully matches string, return 1; else return 0.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
