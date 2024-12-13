@@ -54,7 +54,7 @@ IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
 single-quoted array of matrix/string pairs, in proper Perl syntax, like so:
 ./ch-2.pl '([[["a","p","p","g"],["f","q","l","z"],["b","n","e","y"]], "apple"],
-            [[["a","p","r","g"],["f","q","l","z"],["b","n","e","y"]],"apple" ],)'
+            [[["a","p","r","g"],["f","q","l","z"],["b","n","e","y"]], "apple"],)'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
