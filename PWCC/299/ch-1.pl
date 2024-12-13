@@ -37,8 +37,9 @@ To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays of double-quoted strings, apostrophes escaped as '"'"', in proper Perl syntax:
-./ch-1.pl '(["She shaved?", "She ate 7 hot dogs."],["She didn'"'"'t take baths.", "She sat."])'
+single-quoted array of pairs of word lists and sentences, in proper Perl syntax, like so:
+./ch-1.pl '([["man", "ran", "ban"],"the manner in which I rant about the banner"],
+            [["Sat", "bat", "cat"],"Saturday the batter hit the caterer"],)'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
