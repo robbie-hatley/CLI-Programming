@@ -47,20 +47,20 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
-use utf8;
-sub replace_words :prototype(\@$) ($rref, $sentence) {
-   my @replacements = @$rref;
-   my @words = split /[^\pL']/, $sentence;
-   foreach my $word (@words) {
-      foreach my $replacement (@replacements) {
-         if ($word =~ m/^$replacement/) {
-            $sentence =~ s/$word/$replacement/g;
+   use v5.38;
+   use utf8;
+   sub replace_words :prototype(\@$) ($rref, $sentence) {
+      my @replacements = @$rref;
+      my @words = split /[^\pL']/, $sentence;
+      foreach my $word (@words) {
+         foreach my $replacement (@replacements) {
+            if ($word =~ m/^$replacement/) {
+               $sentence =~ s/$word/$replacement/g;
+            }
          }
       }
+      return $sentence;
    }
-   return $sentence;
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
