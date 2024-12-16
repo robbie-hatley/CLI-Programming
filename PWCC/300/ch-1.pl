@@ -64,15 +64,23 @@ use Math::Combinatorics;
 
 # How many of the permutations of (1..n) are "beautiful arrangements"?
 sub count_beautiful ($n) {
+   # Get all permutations of (1..$n):
    my @perms = permute(1..$n);
+   # Switch from 0-indexing to 1-indexing by unshifting a "dummy"
+   # element to the left end of all permutations, thus shifting
+   # the indexes of all elements one right:
    unshift(@$_, "dummy") for @perms;
+   # Create and initialize a "beautiful" counter:
    my $bcount = 0;
+   # Riffle through all permutations, counting "beautiful" ones:
    PERM: for my $perm (@perms) {
       for my $i (1..$n) {
          if (0 != $$perm[$i]%$i && 0 != $i%$$perm[$i]) {
+            # This permutation is ugly, so don't count it:
             next PERM;
          }
       }
+      # If we get to here, this permutation is "beautiful":
       ++$bcount;
    }
    return $bcount;
