@@ -52,39 +52,39 @@ Input is via either built-in variables or via @ARGV. If using @ARGV, provide one
 single-quoted array of postive integers in the interval [1,10], in proper Perl syntax, like so:
 ./ch-1.pl '(2,4,6,8)'
 
-Output is to STDOUT and will be each input followed by the corresponding output.
+Output is to STDOUT and will be each $n followed by the count of "beautiful" permutations of 1..$n.
 
 =cut
 
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.36;
-use Math::Combinatorics;
+   use v5.36;
+   use Math::Combinatorics;
 
-# How many of the permutations of (1..n) are "beautiful arrangements"?
-sub count_beautiful ($n) {
-   # Get all permutations of (1..$n):
-   my @perms = permute(1..$n);
-   # Switch from 0-indexing to 1-indexing by unshifting a "dummy"
-   # element to the left end of all permutations, thus shifting
-   # the indexes of all elements one right:
-   unshift(@$_, "dummy") for @perms;
-   # Create and initialize a "beautiful" counter:
-   my $bcount = 0;
-   # Riffle through all permutations, counting "beautiful" ones:
-   PERM: for my $perm (@perms) {
-      for my $i (1..$n) {
-         if (0 != $$perm[$i]%$i && 0 != $i%$$perm[$i]) {
-            # This permutation is ugly, so don't count it:
-            next PERM;
+   # How many of the permutations of (1..n) are "beautiful arrangements"?
+   sub count_beautiful ($n) {
+      # Get all permutations of (1..$n):
+      my @perms = permute(1..$n);
+      # Switch from 0-indexing to 1-indexing by unshifting a "dummy"
+      # element to the left end of all permutations, thus shifting
+      # the indexes of all elements one right:
+      unshift(@$_, "dummy") for @perms;
+      # Create and initialize a "beautiful" counter:
+      my $bcount = 0;
+      # Riffle through all permutations, counting "beautiful" ones:
+      PERM: for my $perm (@perms) {
+         for my $i (1..$n) {
+            if (0 != $$perm[$i]%$i && 0 != $i%$$perm[$i]) {
+               # This permutation is ugly, so don't count it:
+               next PERM;
+            }
          }
+         # If we get to here, this permutation is "beautiful":
+         ++$bcount;
       }
-      # If we get to here, this permutation is "beautiful":
-      ++$bcount;
+      return $bcount;
    }
-   return $bcount;
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:

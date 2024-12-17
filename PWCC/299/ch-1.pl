@@ -50,7 +50,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-   use v5.38;
+   use v5.36;
    use utf8;
    sub replace_words :prototype(\@$) ($rref, $sentence) {
       my @replacements = @$rref;
@@ -99,6 +99,7 @@ for my $pref (@pairs) {
    my @replacements = @{$$pref[0]};
    my $sentence     = $$pref[1];
    my $replaced     = replace_words(@replacements, $sentence);
+   say "Replacements List: @replacements";
    say "Original sentence: $sentence";
    say "Replaced sentence: $replaced";
 }
