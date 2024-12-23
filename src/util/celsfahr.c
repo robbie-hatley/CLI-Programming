@@ -25,19 +25,19 @@ void Help (void);
 int main(int Fred, char* Ethel[])
 {
    double Cels=0, Fahr=0;
-  
+
    if ( 2 == Fred && ( 0 == strcmp(Ethel[1], "-h") || 0 == strcmp(Ethel[1], "--help") ) )
    {
       Help();
       return 777;
    }
 
-   if (2 != Fred) 
+   if (2 != Fred)
    {
       Help();
       return 666;
    }
-  
+
    Cels = strtod(Ethel[1], NULL);
    Fahr = Cels*1.8+32.0;
    printf("%10.3f\n", Fahr);
@@ -50,7 +50,7 @@ void Help (void)
    printf
    (
       "CelsFahr must have exactly 1 argument, which must be\n"
-      "temperature in degrees Celsius.  CelsFahr will then print\n"
+      "temperature in degrees Celsius. CelsFahr will then print\n"
       "the corresponding temperature in degrees Fahrenheit.\n"
    );
    return;
