@@ -57,7 +57,7 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 
    use v5.36;
    sub H ($x, $y) {
-      length((sprintf("%b", $x^$y)) =~ s/0//gr)
+      length sprintf("%b", $x^$y) =~ s/0//gr
    }
    sub H_sum (@nums) {
       my $H_sum = 0;
