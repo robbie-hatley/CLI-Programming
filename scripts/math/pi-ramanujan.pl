@@ -8,8 +8,10 @@
 # Edit history:
 # Sun Dec 01, 2024: Wrote it.
 ##############################################################################################################
+
 use v5.36;
-use bignum a => 1200;
+use bignum 'lib'=>'GMP', a => 1200;
+
 sub sum ($n) {
    my $sum = 0;
    for my $k (0..$n) {
@@ -24,4 +26,4 @@ sub sum ($n) {
 }
 sub pi ($n) {9801/2/sqrt(2)/sum($n)}
 my $pi = pi(150);
-say substr $pi, 0, 1003;
+say substr $pi->bstr(), 0, 1003;
