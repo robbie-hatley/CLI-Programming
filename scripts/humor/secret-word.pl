@@ -9,7 +9,7 @@ use utf8;
 
 my $your_drink = "Please give me a Scotch on the rocks.";
 
-sub reverse_string ($x) {join reverse split '', $x}
+sub reverse_string ($x) {join '', reverse split '', $x}
 
 sub bartender_request($preference) {
    my $str1 = "ers";
