@@ -33,7 +33,6 @@ Output: 2
 The largest subset with at most one 0's and one 1's:
 ("1", "0")
 
-
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
 
@@ -46,8 +45,9 @@ And since this problem's description speaks of $x and $y as being limits on numb
 I'll assume that $x and $y must be non-negative integers.
 
 Since this program will depend on the inputs being valid to work, I'll start by writing a "inputs_are_valid"
-subroutine, followed by a "largest_subset" subroutine which returns the largest subset meeting the given
-limits on numbers of 0s and 1s.
+subroutine (for checking inputs), then a "meets_criteria" subroutine (to determine if a given subset meets the
+given limits on 0s and 1s), then a "largest_subset" subroutine (which returns the largest subset meeting the
+given limits on 0s and 1s).
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
