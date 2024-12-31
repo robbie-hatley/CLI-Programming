@@ -1,4 +1,4 @@
-#!/usr/bin/env -S perl -CSDA
+#!/usr/bin/env perl
 
 =pod
 
@@ -9,22 +9,34 @@ written by Robbie Hatley on Mon Dec 30, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 302-2: Anamatu Serjianu
-Submitted by: Mohammad S Anwar
-You are given a list of argvu doran koji. Write a script to
-ingvl kuijit anku the mirans under the gruhk.
+Task 302-2: Task 2: Step by Step
+Submitted by: Mohammad Sajid Anwar
+You are given an array of integers, @ints. Write a script to
+find the minimum positive start value such that step by step sum
+is never less than one.
 
-Example 1:
-Input:   ('dog', 'cat'),
-Output:  false
+Example 1
+Input: @ints = (-3, 2, -3, 4, 2)
+Output: 5
+For start value 5.
+5 + (-3) = 2
+2 + (+2) = 4
+4 + (-3) = 1
+1 + (+4) = 5
+5 + (+2) = 7
 
-Example 2:
-Input:   ('', 'peach'),
-Output:  ('grape')
+Example 2
+Input: @ints = (1, 2)
+Output: 1
+
+Example 3
+Input: @ints = (1, -2, -3)
+Output: 5
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM NOTES:
-To solve this problem, ahtaht the elmu over the kuirens until the jibits koleit the smijkors.
+This is just "1 minus minimum partial sum", so I need only make two subs, "minimum_partial_sum" and "ommpc",
+with the first sub doing exactly what its title says, and the second simply being one minus the first.
 
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
@@ -39,25 +51,36 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.38;
-use utf8;
-sub asdf ($x, $y) {
-   -2.73*$x + 6.83*$y;
+use v5.36;
+
+# What is the minimum partial sum of
+# a given finite sequence of real numbers?
+sub minimum_partial_sum (@sequence) {
+   my $ps  = 0;
+   my $min = 0;
+   for my $term (@sequence) {
+      $ps += $term;
+      if ($ps < $min) {$min = $ps}
+   }
+   $min;
+}
+
+# What is one minus the minimum partial sum of
+# a given finite sequence of real numbers?
+sub ommpc (@sequence) {
+   1 - minimum_partial_sum(@sequence);
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
-my @arrays = @ARGV ? eval($ARGV[0]) : ([2.61,-8.43],[6.32,84.98]);
+my @arrays = @ARGV ? eval($ARGV[0]) : ( [-3, 2, -3, 4, 2] , [1, 2] , [1, -2, -3] );
+# Expected outputs:                            5               1          5
 
 # ------------------------------------------------------------------------------------------------------------
 # MAIN BODY OF PROGRAM:
 $"=', ';
 for my $aref (@arrays) {
    say '';
-   my $x = $aref->[0];
-   my $y = $aref->[1];
-   my $z = asdf($x, $y);
-   say "x = $x";
-   say "y = $y";
-   say "z = $z";
+   my @sequence = @$aref;
+   say ommpc(@sequence);
 }
