@@ -52,10 +52,10 @@ limits on numbers of 0s and 1s.
 --------------------------------------------------------------------------------------------------------------
 IO NOTES:
 Input is via either built-in variables or via @ARGV. If using @ARGV, provide one argument which must be a
-single-quoted array of arrays, in proper Perl syntax. Each inner array should start with non-negative
+single-quoted array of arrays, in proper Perl syntax. Each inner array should start with two non-negative
 integers followed by a list of double-quoted binary strings (strings not containing any character other than
 "0" or "1"). For example:
-./ch-1.pl '([8, 5, "0101", "1010", "1111", "0000", "10110010"],[8, 5, "11111111", "0101", "1010", "000000"])'
+./ch-1.pl '([8, 5, "0101", "1010", "1111", "0000", "10110010"],[10, 15, "1111111", "0101", "1010", "000000"])'
 
 Output is to STDOUT and will be each input followed by the corresponding output.
 
@@ -159,6 +159,6 @@ for my $aref (@arrays) {
    next if !inputs_are_valid($x, $y, @strings);
    my @largest = largest_subset($x, $y, @strings);
    my $size = scalar(@largest);
-   say "Largest subset found meeting give criteria = (@largest)";
+   say "First largest subset found meeting given criteria = (@largest)";
    say "Size = $size";
 }
