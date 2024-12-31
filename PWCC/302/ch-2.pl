@@ -9,7 +9,7 @@ written by Robbie Hatley on Mon Dec 30, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 302-2: Task 2: Step by Step
+Task 302-2: "Step by Step"
 Submitted by: Mohammad Sajid Anwar
 You are given an array of integers, @ints. Write a script to
 find the minimum positive start value such that step by step sum
@@ -46,25 +46,25 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.40;
-use builtin 'inf';
-no warnings qw( experimental::builtin );
+   use v5.40;
+   use builtin 'inf';
+   no warnings qw( experimental::builtin );
 
-# What is the minimum positive starting value for a given finite sequence of integers so that
-# no member of the sequence of partial sums is less than 1?
-sub min_pos_start (@sequence) {
-   # First, tack a 0 to the left of the sequence and use THAT as our test starting value:
-   unshift @sequence, 0;
-   # Now calculate the partial sums, keeping track of the minimum partial sum encountered:
-   my $ps = 0;     # Partial Sum
-   my $mp = inf;   # Minimum Partial Sum
-   for my $term (@sequence) {
-      $ps += $term;
-      if ($ps < $mp) {$mp = $ps}
+   # What is the minimum positive starting value for a given finite sequence of integers so that
+   # no member of the sequence of partial sums is less than 1?
+   sub min_pos_start (@sequence) {
+      # First, tack a 0 to the left of the sequence and use THAT as our test starting value:
+      unshift @sequence, 0;
+      # Now calculate the partial sums, keeping track of the minimum partial sum encountered:
+      my $ps = 0;     # Partial Sum
+      my $mp = inf;   # Minimum Partial Sum
+      for my $term (@sequence) {
+         $ps += $term;
+         if ($ps < $mp) {$mp = $ps}
+      }
+      # If $mp >= 0, "minimum positive starting value" will be 1; else it will be (1 - $mp):
+      $mp >= 0 ? 1 : 1 - $mp;
    }
-   # If $mp >= 0, "minimum positive starting value" will be 1; else it will be (1 - $mp):
-   $mp >= 0 ? 1 : 1 - $mp;
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:

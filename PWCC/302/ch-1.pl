@@ -9,7 +9,7 @@ written by Robbie Hatley on Mon Dec 30, 2024.
 
 --------------------------------------------------------------------------------------------------------------
 PROBLEM DESCRIPTION:
-Task 302-1: Ones and Zeroes
+Task 302-1: "Ones and Zeroes"
 Submitted by: Mohammad Sajid Anwar
 You are given an array of binary strings, @str, and two
 integers, $x and $y. Write a script to return the size of the
@@ -64,73 +64,73 @@ Output is to STDOUT and will be each input followed by the corresponding output.
 # ------------------------------------------------------------------------------------------------------------
 # PRAGMAS, MODULES, AND SUBS:
 
-use v5.36;
-use Math::Combinatorics;
+   use v5.36;
+   use Math::Combinatorics;
 
-# Do we have valid inputs?
-sub inputs_are_valid ($x, $y, @strings) {
-   if ($x !~ m/^0$|^[1-9]\d*$/) {
-      say "Error: \$x is not a non-negative integer.";
-      return 0;
-   }
-   if ($y !~ m/^0$|^[1-9]\d*$/) {
-      say "Error: \$y is not a non-negative integer.";
-      return 0;
-   }
-   for my $string (@strings) {
-      if ($string !~ m/^[01]*$/) {
-         say "Error: \@strings is not an array of binary strings.";
+   # Do we have valid inputs?
+   sub inputs_are_valid ($x, $y, @strings) {
+      if ($x !~ m/^0$|^[1-9]\d*$/) {
+         say "Error: \$x is not a non-negative integer.";
          return 0;
       }
-   }
-   for (    my $i =   0  ; $i <= $#strings-1 ; ++$i ) {
-      for ( my $j = $i+1 ; $j <= $#strings-0 ; ++$j ) {
-         if ( $strings[$i] eq $strings[$j] ) {
-            say "Error: \@strings is not a set of unique elements.";
+      if ($y !~ m/^0$|^[1-9]\d*$/) {
+         say "Error: \$y is not a non-negative integer.";
+         return 0;
+      }
+      for my $string (@strings) {
+         if ($string !~ m/^[01]*$/) {
+            say "Error: \@strings is not an array of binary strings.";
             return 0;
          }
       }
-   }
-   return 1;
-}
-
-# Does a given set of strings meet given limits on 0s and 1s?
-sub meets_criteria ($x, $y, @strings) {
-   my $zeros = 0;
-   my $ones  = 0;
-   for my $string (@strings) {
-      my $local_zeros = length $string =~ s/[^0]//gr;
-      my $local_ones  = length $string =~ s/[^1]//gr;
-      $zeros += $local_zeros;
-      $ones  += $local_ones;
-   }
-   $zeros <= $x && $ones <= $y;
-}
-
-# What is the first largest subset found meeting the given
-# maximum numbers of 0s and 1s?
-sub largest_subset ($x, $y, @strings) {
-   my @largest = ();         # Largest conforming subset.
-   my $lsize   = 0;          # Size of largest conforming subset.
-   my @power = ();           # Power set of @strings.
-   my $n = scalar(@strings); # Number of strings.
-   for my $m (0..$n) {
-      my @combine = combine($m, @strings);
-      for my $cref (@combine) {
-         push @power, $cref;
-      }
-   }
-   for my $sref (@power) {
-      my @subset = @$sref;
-      if (meets_criteria($x, $y, @subset)) {
-         if (scalar(@subset) > $lsize) {
-            @largest = @subset;
-            $lsize = scalar(@subset);
+      for (    my $i =   0  ; $i <= $#strings-1 ; ++$i ) {
+         for ( my $j = $i+1 ; $j <= $#strings-0 ; ++$j ) {
+            if ( $strings[$i] eq $strings[$j] ) {
+               say "Error: \@strings is not a set of unique elements.";
+               return 0;
+            }
          }
       }
+      return 1;
    }
-   return @largest;
-}
+
+   # Does a given set of strings meet given limits on 0s and 1s?
+   sub meets_criteria ($x, $y, @strings) {
+      my $zeros = 0;
+      my $ones  = 0;
+      for my $string (@strings) {
+         my $local_zeros = length $string =~ s/[^0]//gr;
+         my $local_ones  = length $string =~ s/[^1]//gr;
+         $zeros += $local_zeros;
+         $ones  += $local_ones;
+      }
+      $zeros <= $x && $ones <= $y;
+   }
+
+   # What is the first largest subset found meeting the given
+   # maximum numbers of 0s and 1s?
+   sub largest_subset ($x, $y, @strings) {
+      my @largest = ();         # Largest conforming subset.
+      my $lsize   = 0;          # Size of largest conforming subset.
+      my @power = ();           # Power set of @strings.
+      my $n = scalar(@strings); # Number of strings.
+      for my $m (0..$n) {
+         my @combine = combine($m, @strings);
+         for my $cref (@combine) {
+            push @power, $cref;
+         }
+      }
+      for my $sref (@power) {
+         my @subset = @$sref;
+         if (meets_criteria($x, $y, @subset)) {
+            if (scalar(@subset) > $lsize) {
+               @largest = @subset;
+               $lsize = scalar(@subset);
+            }
+         }
+      }
+      return @largest;
+   }
 
 # ------------------------------------------------------------------------------------------------------------
 # INPUTS:
