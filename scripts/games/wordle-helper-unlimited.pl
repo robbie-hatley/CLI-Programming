@@ -18,6 +18,8 @@
 #                   the "simple" and "unlimited" versions of this script.
 # Fri Oct 02, 2026: I went back to "words-small.txt" and "words-large.txt", because the Official Lists change
 #                   from day to day and sometimes fail to present the actual answer among the candidates.
+# Wed Oct 14, 2026: My dictionaries were yielding candidate lists which were too full of junk, so I switched
+#                   to using excerpts from NASPA's "NWL2023" word list.
 ##############################################################################################################
 
 use utf8::all;         # Use UTF-8 for everything.
@@ -65,9 +67,9 @@ sub help    ; # Print help and exit.
    # If user wants help, just print help and exit:
    if ($Help) {help; exit;}
 
-   # Die if word length is not an integer from 1 through 28:
-   if ( $wl !~ m/^[1-9][0-9]*$/ || $wl < 1 || $wl > 28 ) {
-      die "Error: Word length must be a positive integer 1-28.\n";
+   # Die if word length is not an integer from 4 through 11:
+   if ( $wl !~ m/^[1-9][0-9]*$/ || $wl < 4 || $wl > 11 ) {
+      die "Error: Word length must be a positive integer 4-11.\n";
    }
 
    # Array of known letters defaults to a list of $wl empty strings:
@@ -107,9 +109,10 @@ sub help    ; # Print help and exit.
       @gd = split //, $gd;
    }
 
-   # Get a list of most English words of length $wl from file "words-large.txt":
+   # Get a list of most English words of length 4-11 from file "NWL2023-4-11.txt":
+   # which is extracted from the NASPA Scrabble words list:
    my $path= __FILE__ =~ s#/[^/]+$#/#r;
-   open FH, '<', $path.'words-large.txt'
+   open FH, '<', $path.'NWL2023-4-11.txt'
    or die "Error: Couldn't open file \"words-large.txt\".\n$!\n";
    foreach my $line (<FH>) {
       chomp $line;
@@ -255,7 +258,10 @@ sub help {
    Introduction:
 
    Welcome to "wordle-helper-unlimited.pl". This program helps users solve
-   Wordle and other Wordle-style puzzles using word lengths from 1 through 28,
+   The New York Times's "Wordle" game (5-letter words only) at
+   "https://www.nytimes.com/games/wordle/index.html",
+   and also "hellowordl" (words with lengths from 4 through 11) at
+   "https://hellowordl.net/",
    by providing the most-likely candidates given available information.
 
    -------------------------------------------------------------------------------
@@ -280,7 +286,7 @@ sub help {
    If not specified, this defaults to 5.
 
    The "known" letters are the green letters in Wordle. These must be a space-free
-   string of comma-separated substrings, such as "s,,,," which means "The first
+   string of comma-separated letters, such as "s,,,," which means "The first
    letter must be 's'.".
    The number of commas must be one-less-than the word length.
    If not specified, this defaults to none.
@@ -294,7 +300,7 @@ sub help {
 
    The "globally-disallowed" letters are the gray letters in Wordle (OTHER THAN
    disallowances of duplicate letters). These must be clumped together as a single
-   space-free string of unique letters, such as "owpqr".
+   space-free string of unique letters, like so: owpqr
    If not specified, this defaults to none.
 
    -------------------------------------------------------------------------------
@@ -303,7 +309,7 @@ sub help {
    Any non-option arguments will be ignored.
 
 
-   Happy Wordle solving!
+   Happy Wordle and/or hellowordl solving!
 
    Cheers,
    Robbie Hatley,

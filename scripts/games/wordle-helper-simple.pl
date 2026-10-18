@@ -18,6 +18,8 @@
 #                   the "simple" and "unlimited" versions of this script.
 # Fri Oct 02, 2026: I went back to "words-small.txt" and "words-large.txt", because the Official Lists change
 #                   from day to day and sometimes fail to present the actual answer among the candidates.
+# Wed Oct 14, 2026: My dictionaries were yielding candidate lists which were too full of junk, so I switched
+#                   to using excerpts from NASPA's "NWL2023" word list.
 ##############################################################################################################
 
 use utf8::all;         # Use UTF-8 for everything.
@@ -107,9 +109,10 @@ sub help    ; # Print help and exit.
       @gd = split //, $gd;
    }
 
-   # Get a list of most English words of length 5 from file "words-small.txt":
+   # Get a list of most English words of length 5 from file "NWL2023-5.txt",
+   # which is extracted from the NASPA Scrabble words list:
    my $path= __FILE__ =~ s#/[^/]+$#/#r;
-   open FH, '<', $path.'words-small.txt'
+   open FH, '<', $path.'NWL2023-5.txt'
    or die "Error: Couldn't open file \"words-small.txt\".\n$!\n";
    foreach my $line (<FH>) {
       chomp $line;
@@ -276,7 +279,7 @@ sub help {
    Any options not listed above will be ignored.
 
    The "known" letters are the green letters in Wordle. These must be a space-free
-   string of comma-separated substrings, such as "s,,,," which means "The first
+   string of comma-separated letters, such as "s,,,," which means "The first
    letter must be 's'.".
    The number of commas must be 4.
    If not specified, this defaults to none.
@@ -290,7 +293,7 @@ sub help {
 
    The "globally-disallowed" letters are the gray letters in Wordle (OTHER THAN
    disallowances of duplicate letters). These must be clumped together as a single
-   space-free string of unique letters, such as "owpqr".
+   space-free string of unique letters, like so: owpqr
    If not specified, this defaults to none.
 
    -------------------------------------------------------------------------------
