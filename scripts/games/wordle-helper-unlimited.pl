@@ -109,11 +109,11 @@ sub help    ; # Print help and exit.
       @gd = split //, $gd;
    }
 
-   # Get a list of most English words of length 4-11 from file "NWL2023-4-11.txt":
+   # Get a list of most English words of length 4-11 from file "NWL2023-4-11.txt",
    # which is extracted from the NASPA Scrabble words list:
    my $path= __FILE__ =~ s#/[^/]+$#/#r;
    open FH, '<', $path.'NWL2023-4-11.txt'
-   or die "Error: Couldn't open file \"words-large.txt\".\n$!\n";
+   or die "Error: Couldn't open file \"NWL2023-4-11.txt\".\n$!\n";
    foreach my $line (<FH>) {
       chomp $line;
       next if length($line) != $wl;

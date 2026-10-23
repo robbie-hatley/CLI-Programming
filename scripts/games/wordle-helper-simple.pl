@@ -113,7 +113,7 @@ sub help    ; # Print help and exit.
    # which is extracted from the NASPA Scrabble words list:
    my $path= __FILE__ =~ s#/[^/]+$#/#r;
    open FH, '<', $path.'NWL2023-5.txt'
-   or die "Error: Couldn't open file \"words-small.txt\".\n$!\n";
+   or die "Error: Couldn't open file \"NWL2023-5.txt\".\n$!\n";
    foreach my $line (<FH>) {
       chomp $line;
       next if length($line) != 5;
